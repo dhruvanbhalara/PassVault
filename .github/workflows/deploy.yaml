@@ -1,0 +1,115 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: ${{ secrets.FLUTTER_VERSION }}
+
+jobs:
+  build-android:
+    name: Build Android APKs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Cache Pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Disable Flutter analytics
+        run: flutter config --no-analytics
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: |
+          flutter gen-l10n
+          dart run build_runner build --delete-conflicting-outputs
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/release.jks
+          echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 --decode > android/Project-debug.jks
+
+      - name: Create keystore.properties
+        run: |
+          cat > android/keystore.properties << EOF
+          debugKeyAlias=${{ secrets.DEBUG_KEY_ALIAS }}
+          debugKeyPassword=${{ secrets.DEBUG_KEY_PASSWORD }}
+          debugKeyStore=Project-debug.jks
+          debugStorePassword=${{ secrets.DEBUG_STORE_PASSWORD }}
+          releaseKeyAlias=${{ secrets.RELEASE_KEY_ALIAS }}
+          releaseKeyPassword=${{ secrets.RELEASE_KEY_PASSWORD }}
+          releaseKeyStore=release.jks
+          releaseStorePassword=${{ secrets.RELEASE_STORE_PASSWORD }}
+          EOF
+
+      - name: Build Production APKs
+        run: |
+          flutter build apk --flavor prod -t lib/main.dart \
+            --release \
+            --split-per-abi \
+            --obfuscate \
+            --split-debug-info=build/symbols/prod \
+            --tree-shake-icons
+
+      - name: Prepare release artifacts
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          mkdir -p release-artifacts
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-prod-release.apk release-artifacts/passvault-${VERSION}-arm64.apk
+          cp build/app/outputs/flutter-apk/app-x86_64-prod-release.apk release-artifacts/passvault-${VERSION}-x86_64.apk
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: release-artifacts/
+          retention-days: 5
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release-artifacts/*.apk
+          body: |
+            ## PassVault ${{ github.ref_name }}
+
+            ### Downloads
+            | File | Description |
+            |------|-------------|
+            | `passvault-${{ github.ref_name }}-arm64.apk` | For most Android devices |
+            | `passvault-${{ github.ref_name }}-x86_64.apk` | For emulators & Chromebooks |
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,26 @@
+Business Source License 1.1
+
+Parameters:
+
+- License Text: Copyright © 2025 Dhruvan Bhalara. All rights reserved.
+- Licensed Work: PassVault (including all source code, assets, and documentation).
+- Additional Use Grant: You may use the Licensed Work for personal, non-commercial, 
+  and educational purposes only. Any deployment of the Licensed Work as a 
+  competing service or internal business tool is strictly prohibited.
+- Change Date: 2029-12-20
+- Change License: Apache License, Version 2.0
+
+Terms:
+
+1. The Licensor hereby grants you the right to copy, modify, create derivative 
+   works, redistribute, and make non-production use of the Licensed Work. 
+   "Non-production use" includes personal experiments, learning, and testing.
+
+2. You may NOT use the Licensed Work in production or for any commercial purposes 
+   until the Change Date.
+
+3. On the Change Date, or upon the occurrence of a Specified Event, the 
+   restrictions in Section 2 shall terminate, and this License shall 
+   automatically convert to the Change License (Apache 2.0).
+
+4. All copies of the Licensed Work must retain this license and copyright notice.
