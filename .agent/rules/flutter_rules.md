@@ -2,14 +2,17 @@
 trigger: always_on
 ---
 
-# Flutter & Dart Coding Standards (Portfolio Project)
+# Flutter & Dart Coding Standards (Bloc Project)
 
 ## 1. Project Architecture & Organization
 * **Feature-First Clean Architecture:**
     * `lib/features/<feature>/data/`: Data sources, DTOs, Repository Implementations.
     * `lib/features/<feature>/domain/`: Entities, Enums, Repository Interfaces.
-    * `lib/features/<feature>/presentation/`: Pages, Widgets, Providers/Controllers.
-    * `lib/core/`: Shared utilities, themes, and global providers.
+    * `lib/features/<feature>/presentation/`:
+        * `blocs/` or `cubits/`: State management classes.
+        * `pages/`: Full screen widgets (Scaffold).
+        * `widgets/`: Reusable UI components.
+    * `lib/core/`: Shared utilities, themes, and global service locators.
 * **SOLID Principles:**
     * **Single Responsibility:** One class = one purpose.
     * **Dependency Inversion:** Depend on abstractions (Interfaces), not implementations.
@@ -17,8 +20,8 @@ trigger: always_on
 
 ## 2. Dart 3+ & Language Features
 * **Sealed Classes (Union Types):**
-    * Use `sealed class` for state hierarchies (e.g., `PortfolioState`) or fixed polymorphic types.
-    * **Requirement:** Exhaustive `switch` expressions must be used to handle these states.
+    * Use `sealed class` for Bloc States and Events.
+    * **Requirement:** Exhaustive `switch` expressions must be used in the Bloc/UI to handle every state.
 * **Extensions:**
     * **On Context:** Use extensions on `BuildContext` for repetitive accessors.
         * *Preferred:* `context.colors.primary`, `context.textTheme.headlineLarge`.
@@ -41,7 +44,7 @@ trigger: always_on
     * **NEVER** use raw `TextStyle(...)` in Widgets.
     * Use `context.textTheme.bodyMedium!.copyWith(...)` only if absolutely necessary to override a specific property (like color).
 * **Dimensions & Spacing:**
-    * Use a standardized spacing class (e.g., `AppSpacing.md` or `16`) rather than magic numbers, unless the specific layout requires a unique pixel value.
+    * Use a standardized spacing class (e.g., `AppSpacing.md` or `16`) rather than magic numbers.
 
 ## 4. UI & Widget Guidelines
 * **No Helper Methods:** NEVER use private `_build*` methods (e.g., `_buildHeader()`) to return widgets. Extract them into separate `StatelessWidget` classes.
@@ -56,23 +59,31 @@ trigger: always_on
 
 ## 5. Test Coverage & Structure (Strict)
 * **Mirroring Rule:** Every source file in `lib/` MUST have a corresponding test file in `test/` mimicking the exact folder structure.
-    * *Source:* `lib/features/home/presentation/widgets/skills_grid.dart`
-    * *Test:* `test/features/home/presentation/widgets/skills_grid_test.dart`
+    * *Source:* `lib/features/home/presentation/blocs/home_bloc.dart`
+    * *Test:* `test/features/home/presentation/blocs/home_bloc_test.dart`
 * **Naming Conventions:**
     * **File:** `{original_name}_test.dart`
     * **Group:** `group('$ClassName', ...)`
     * **Tests:** Descriptive and behavior-focused.
 * **Methodology:**
-    * Follow **Arrange-Act-Assert** (AAA).
-    * Test business logic in isolation (Unit Tests).
-    * Test UI interactions and state (Widget Tests).
+    * **Unit Tests:** Use `bloc_test` package for testing Blocs/Cubits.
+    * **Widget Tests:** Use `BlocProvider.value` to inject mock Blocs into the widget tree.
+    * **Mocking:** Use `mocktail` or `mockito`.
 
-## 6. State Management (Riverpod 2.0)
-* **Generator Syntax:** Always use `@riverpod` annotations.
-* **Usage:**
-    * Use `ref.watch` in `build()` for UI updates.
-    * Use `ref.read` in callbacks.
-    * Separate logic into Notifiers/Controllers; never keep logic in UI widgets.
+## 6. State Management (Bloc / Cubit)
+* **Selection:**
+    * Use **Cubit** for simple state streams (Boolean toggles, simple data fetching).
+    * Use **Bloc** for complex, event-driven logic (Debouncing, distinct events, transforming streams).
+* **Structure:**
+    * **Events & States:** Must use `sealed class` or `Freezed` unions to ensure exhaustiveness.
+    * **Equality:** All States/Events must extend `Equatable` (or use `Freezed`) to prevent unnecessary rebuilds.
+* **UI Implementation:**
+    * **Build:** Use `BlocBuilder` or `BlocSelector` for drawing widgets based on state.
+    * **Side Effects:** Use `BlocListener` for navigation, Snackbars, or Dialogs. **NEVER** perform side effects inside `build()`.
+    * **Combined:** Use `BlocConsumer` only when you need both building and listening.
+* **Logic Separation:**
+    * UI Widgets should only dispatch events (e.g., `context.read<HomeBloc>().add(LoadData())`).
+    * All business logic resides in the Bloc/Cubit.
 
 ## 7. Localization (Strict)
 * **No Hardcoded Strings:** String literals in UI are forbidden.
@@ -83,31 +94,28 @@ trigger: always_on
 
 ## 8. Git & Version Control (Conventional Commits)
 * **Pattern:** `<type>(<scope>): <short description>`
-* **Allowed Types:**
-    * `feat`: A new feature.
-    * `fix`: A bug fix.
-    * `chore`: Maintenance (dependencies, build scripts) with no production code change.
-    * `refactor`: Code change that neither fixes a bug nor adds a feature.
-    * `test`: Adding or correcting tests.
-    * `style`: Formatting, missing semi-colons (no code change).
-    * `docs`: Documentation only changes.
-    * `perf`: Performance improvements.
+* **Allowed Types:** `feat`, `fix`, `chore`, `refactor`, `test`, `style`, `docs`, `perf`.
 * **Rules:**
     * Use imperative mood ("add" not "added").
     * No period at the end of the subject.
     * Keep the first line under 72 characters.
     * *Example:* `feat(auth): add google sign-in button`
 
-## 9. Code Quality & Formatting
+## 9. Dependency Management (Strict)
+* **Selection Criteria:**
+    * **Latest Versions:** Always use the latest stable version of packages.
+    * **Pub Score:** Prioritize packages with the maximum pub points and high popularity.
+    * **Maintenance:** Do NOT use deprecated or abandoned packages.
+
+## 10. Code Quality & Formatting
 * **Zero Warnings:** Code must pass `dart analyze` with zero errors or warnings.
 * **Formatting:** All code must be formatted via `dart format .`.
 
-## 10. AI Agent Instructions (Meta-Rules)
-* **Test Generation:** When generating a new Dart file, you MUST immediately generate its corresponding test file in the mirrored `test/` directory.
-* **Theme Enforcement:** Refactor any raw colors/styles (`Colors.blue`, `TextStyle`) to use the Design System (`context.colors.primary`).
-* **Commit Messages:** If asked to generate a commit message or PR description, strictly follow the Conventional Commits pattern defined in Section 8.
+## 11. AI Agent Instructions (Meta-Rules)
+* **Test Generation:** When generating a Bloc/Cubit, you MUST immediately generate its corresponding `bloc_test` file.
+* **Theme Enforcement:** Refactor any raw colors/styles (`Colors.blue`) to use the Design System.
 * **Pre-Computation Checks:** Before declaring a task complete, verify:
     1.  Did I extract helper methods into Classes?
-    2.  Is the Design System used (No raw colors/styles)?
+    2.  Did I use `BlocBuilder`/`BlocListener` correctly?
     3.  Is every string localized?
     4.  Did I generate the test file?
