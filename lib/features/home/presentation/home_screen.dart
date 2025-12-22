@@ -200,7 +200,7 @@ class PasswordListTile extends StatelessWidget {
             borderRadius: AppDimensions.borderRadiusS,
           ),
           child: IconButton(
-            icon: Icon(LucideIcons.copy, size: 20),
+            icon: const Icon(LucideIcons.copy, size: 20),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: entry.password));
               ScaffoldMessenger.of(context).showSnackBar(

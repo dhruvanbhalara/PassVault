@@ -19,7 +19,7 @@ void main() {
   late MockDataService mockDataService;
   late MockPasswordRepository mockPasswordRepository;
 
-  final tSettings = PasswordGenerationSettings();
+  const tSettings = PasswordGenerationSettings();
 
   setUp(() {
     mockDatabaseService = MockDatabaseService();
@@ -76,7 +76,7 @@ void main() {
           () => mockDatabaseService.write(any(), any(), any()),
         ).thenAnswer((_) async {});
 
-        bloc.add(ToggleBiometrics(true));
+        bloc.add(const ToggleBiometrics(true));
 
         await expectLater(
           bloc.stream,
@@ -98,7 +98,7 @@ void main() {
           () => mockDatabaseService.write(any(), any(), any()),
         ).thenAnswer((_) async {});
 
-        bloc.add(UpdatePasswordSettings(tSettings));
+        bloc.add(const UpdatePasswordSettings(tSettings));
 
         await expectLater(
           bloc.stream,
@@ -133,7 +133,7 @@ void main() {
           () => mockDataService.exportToJson(any()),
         ).thenAnswer((_) async {});
 
-        bloc.add(ExportData(isJson: true));
+        bloc.add(const ExportData(isJson: true));
 
         await expectLater(
           bloc.stream,

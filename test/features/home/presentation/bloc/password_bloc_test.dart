@@ -140,7 +140,7 @@ void main() {
         when(() => mockDeletePasswordUseCase(any())).thenAnswer((_) async {});
         when(() => mockGetPasswordsUseCase()).thenAnswer((_) async => []);
 
-        bloc.add(DeletePassword('test-id-1'));
+        bloc.add(const DeletePassword('test-id-1'));
         await Future.delayed(const Duration(milliseconds: 100));
 
         verify(() => mockDeletePasswordUseCase('test-id-1')).called(1);
