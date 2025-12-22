@@ -1,0 +1,21 @@
+#!/bin/sh
+# Pre-commit hook to check formatting and analysis
+
+echo "🔍 Running pre-commit checks..."
+
+# Check formatting
+echo "🎨 Running dart format..."
+if ! dart format --output=none --set-exit-if-changed .; then
+  echo "❌ Error: Code is not formatted. Run 'dart format .'"
+  exit 1
+fi
+
+# Check analysis
+echo "🕵️ Running dart analyze..."
+if ! dart analyze .; then
+  echo "❌ Error: dart analyze found issues."
+  exit 1
+fi
+
+echo "✅ Pre-commit checks passed!"
+exit 0
