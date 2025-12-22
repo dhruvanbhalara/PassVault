@@ -81,9 +81,31 @@ trigger: always_on
     * Access via: `final l10n = AppLocalizations.of(context)!;` (or `context.l10n`).
     * Use: `Text(l10n.welcomeMessage)`
 
-## 8. AI Agent Instructions (Meta-Rules)
+## 8. Git & Version Control (Conventional Commits)
+* **Pattern:** `<type>(<scope>): <short description>`
+* **Allowed Types:**
+    * `feat`: A new feature.
+    * `fix`: A bug fix.
+    * `chore`: Maintenance (dependencies, build scripts) with no production code change.
+    * `refactor`: Code change that neither fixes a bug nor adds a feature.
+    * `test`: Adding or correcting tests.
+    * `style`: Formatting, missing semi-colons (no code change).
+    * `docs`: Documentation only changes.
+    * `perf`: Performance improvements.
+* **Rules:**
+    * Use imperative mood ("add" not "added").
+    * No period at the end of the subject.
+    * Keep the first line under 72 characters.
+    * *Example:* `feat(auth): add google sign-in button`
+
+## 9. Code Quality & Formatting
+* **Zero Warnings:** Code must pass `dart analyze` with zero errors or warnings.
+* **Formatting:** All code must be formatted via `dart format .`.
+
+## 10. AI Agent Instructions (Meta-Rules)
 * **Test Generation:** When generating a new Dart file, you MUST immediately generate its corresponding test file in the mirrored `test/` directory.
-* **Theme Enforcement:** If you see `Colors.blue` or `TextStyle(fontSize: 20)` in the code, Refactor it to use the Design System (`context.colors.primary`, `context.textTheme.titleLarge`).
+* **Theme Enforcement:** Refactor any raw colors/styles (`Colors.blue`, `TextStyle`) to use the Design System (`context.colors.primary`).
+* **Commit Messages:** If asked to generate a commit message or PR description, strictly follow the Conventional Commits pattern defined in Section 8.
 * **Pre-Computation Checks:** Before declaring a task complete, verify:
     1.  Did I extract helper methods into Classes?
     2.  Is the Design System used (No raw colors/styles)?
