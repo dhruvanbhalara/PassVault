@@ -173,13 +173,21 @@ class SettingsView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Drag handle
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: AppDimensions.spaceM),
-                decoration: BoxDecoration(
-                  color: colors.surfaceDim,
-                  borderRadius: AppDimensions.borderRadiusS,
+              Expanded(
+                child: SizedBox(
+                  width: 40,
+                  height: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: AppDimensions.spaceM,
+                    ),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colors.surfaceDim,
+                        borderRadius: AppDimensions.borderRadiusS,
+                      ),
+                    ),
+                  ),
                 ),
               ),
               Padding(
@@ -284,13 +292,19 @@ class SettingsView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Drag handle
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: colors.surfaceDim,
-                  borderRadius: AppDimensions.borderRadiusS,
+              Expanded(
+                child: SizedBox(
+                  width: 40,
+                  height: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colors.surfaceDim,
+                        borderRadius: AppDimensions.borderRadiusS,
+                      ),
+                    ),
+                  ),
                 ),
               ),
               Padding(
@@ -404,12 +418,14 @@ class SettingsView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: AppDimensions.spaceS),
-            Container(
+            SizedBox(
               width: 40,
               height: 4,
-              decoration: BoxDecoration(
-                color: context.colors.surfaceDim,
-                borderRadius: AppDimensions.borderRadiusS,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: context.colors.surfaceDim,
+                  borderRadius: AppDimensions.borderRadiusS,
+                ),
               ),
             ),
             const SizedBox(height: AppDimensions.spaceM),

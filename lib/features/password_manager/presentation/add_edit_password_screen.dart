@@ -265,7 +265,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 80), // Fab spacing
+                  const SizedBox(height: AppDimensions.space4XL), // Fab spacing
                 ],
               ),
             ),

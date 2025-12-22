@@ -65,16 +65,18 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
+                              DecoratedBox(
                                 decoration: BoxDecoration(
                                   color: colors.primary.withValues(alpha: 0.1),
                                   borderRadius: AppDimensions.borderRadiusS,
                                 ),
-                                child: Icon(
-                                  LucideIcons.ruler,
-                                  color: colors.primary,
-                                  size: 18,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Icon(
+                                    LucideIcons.ruler,
+                                    color: colors.primary,
+                                    size: 18,
+                                  ),
                                 ),
                               ),
 
@@ -85,20 +87,22 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppDimensions.radiusM,
-                              vertical: 6,
-                            ),
+                          DecoratedBox(
                             decoration: BoxDecoration(
                               color: colors.primary,
                               borderRadius: AppDimensions.borderRadiusXL,
                             ),
-                            child: Text(
-                              '${settings.length}',
-                              style: textTheme.titleMedium?.copyWith(
-                                color: colors.onPrimary,
-                                fontWeight: FontWeight.bold,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppDimensions.radiusM,
+                                vertical: 6,
+                              ),
+                              child: Text(
+                                '${settings.length}',
+                                style: textTheme.titleMedium?.copyWith(
+                                  color: colors.onPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
@@ -139,13 +143,13 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                             Text(
                               '8',
                               style: textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.outline,
+                                color: context.colors.outline,
                               ),
                             ),
                             Text(
                               '64',
                               style: textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.outline,
+                                color: context.colors.outline,
                               ),
                             ),
                           ],
@@ -303,7 +307,7 @@ class _PreviewCardState extends State<_PreviewCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer,
+      color: context.colors.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppDimensions.spaceL,

@@ -55,6 +55,9 @@ class AppTheme {
       strengthFair: AppColors.strengthFair,
       strengthGood: AppColors.strengthGood,
       strengthStrong: AppColors.strengthStrong,
+      outline: AppColors.lightDivider,
+      primaryContainer: scheme.primaryContainer,
+      onPrimaryContainer: scheme.onPrimaryContainer,
     );
 
     return _buildTheme(
@@ -96,6 +99,9 @@ class AppTheme {
       strengthFair: AppColors.strengthFair,
       strengthGood: AppColors.strengthGood,
       strengthStrong: AppColors.strengthStrong,
+      outline: AppColors.darkDivider,
+      primaryContainer: scheme.primaryContainer,
+      onPrimaryContainer: scheme.onPrimaryContainer,
     );
 
     return _buildTheme(
@@ -137,6 +143,9 @@ class AppTheme {
       strengthFair: AppColors.strengthFair,
       strengthGood: AppColors.strengthGood,
       strengthStrong: AppColors.strengthStrong,
+      outline: AppColors.darkDivider,
+      primaryContainer: scheme.primaryContainer,
+      onPrimaryContainer: scheme.onPrimaryContainer,
     );
 
     return _buildTheme(

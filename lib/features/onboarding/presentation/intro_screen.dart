@@ -107,7 +107,9 @@ class _IntroViewState extends State<IntroView> {
                         ),
                       )
                     else
-                      const SizedBox(width: 64), // Placeholder for alignment
+                      const SizedBox(
+                        width: AppDimensions.space3XL,
+                      ), // Placeholder for alignment
                     // Indicators
                     Row(
                       children: List.generate(
@@ -179,13 +181,15 @@ class _IntroSlide extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: const EdgeInsets.all(AppDimensions.spaceXXL),
+          DecoratedBox(
             decoration: BoxDecoration(
               color: context.colors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 80, color: context.colors.primary),
+            child: Padding(
+              padding: const EdgeInsets.all(AppDimensions.spaceXXL),
+              child: Icon(icon, size: 80, color: context.colors.primary),
+            ),
           ),
           const SizedBox(height: AppDimensions.spaceXXL),
           Text(

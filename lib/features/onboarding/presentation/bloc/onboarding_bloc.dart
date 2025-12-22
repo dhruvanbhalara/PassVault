@@ -14,7 +14,7 @@ abstract class OnboardingEvent extends Equatable {
 class CompleteOnboarding extends OnboardingEvent {}
 
 // States
-abstract class OnboardingState extends Equatable {
+sealed class OnboardingState extends Equatable {
   const OnboardingState();
   @override
   List<Object> get props => [];

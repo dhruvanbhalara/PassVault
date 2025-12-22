@@ -49,77 +49,77 @@ class AuthView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                context.colors.primary.withValues(alpha: 0.05),
-                context.colors.surface,
-              ],
+        body: SizedBox.expand(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  context.colors.primary.withValues(alpha: 0.05),
+                  context.colors.surface,
+                ],
+              ),
             ),
-          ),
-          child: SafeArea(
-            child: Center(
-              child: BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  if (state is AuthLoading) {
-                    return const CircularProgressIndicator(
-                      key: Key('auth_loading'),
-                    );
-                  }
+            child: SafeArea(
+              child: Center(
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state is AuthLoading) {
+                      return const CircularProgressIndicator(
+                        key: Key('auth_loading'),
+                      );
+                    }
 
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RepaintBoundary(
-                        child: SizedBox(
-                          height: 180,
-                          child: Lottie.asset(
-                            'assets/animations/fingerprint.json',
-                            repeat: true,
-                            animate: true,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: AppDimensions.spaceXL),
-                      Text(
-                        AppLocalizations.of(context)!.appName,
-                        key: const Key('auth_title'),
-                        style: context.typography.headlineLarge,
-                      ),
-                      const SizedBox(height: AppDimensions.spaceS),
-                      Text(
-                        AppLocalizations.of(context)!.locked,
-                        key: const Key('auth_locked_text'),
-                        style: context.typography.bodyMedium,
-                      ),
-                      const SizedBox(height: AppDimensions.spaceXXL),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            key: const Key('auth_unlock_button'),
-                            onPressed: () {
-                              context.read<AuthBloc>().add(
-                                AuthLoginRequested(),
-                              );
-                            },
-                            child: Text(
-                              AppLocalizations.of(
-                                context,
-                              )!.unlockWithBiometrics,
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RepaintBoundary(
+                          child: SizedBox(
+                            height: 180,
+                            child: Lottie.asset(
+                              'assets/animations/fingerprint.json',
+                              repeat: true,
+                              animate: true,
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  );
-                },
+                        const SizedBox(height: AppDimensions.spaceXL),
+                        Text(
+                          AppLocalizations.of(context)!.appName,
+                          key: const Key('auth_title'),
+                          style: context.typography.headlineLarge,
+                        ),
+                        const SizedBox(height: AppDimensions.spaceS),
+                        Text(
+                          AppLocalizations.of(context)!.locked,
+                          key: const Key('auth_locked_text'),
+                          style: context.typography.bodyMedium,
+                        ),
+                        const SizedBox(height: AppDimensions.spaceXXL),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              key: const Key('auth_unlock_button'),
+                              onPressed: () {
+                                context.read<AuthBloc>().add(
+                                  AuthLoginRequested(),
+                                );
+                              },
+                              child: Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.unlockWithBiometrics,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),

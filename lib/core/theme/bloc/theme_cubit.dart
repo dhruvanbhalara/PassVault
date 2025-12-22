@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -5,7 +6,7 @@ import 'package:passvault/core/services/database_service.dart';
 
 enum ThemeType { system, light, dark, amoled }
 
-class ThemeState {
+class ThemeState extends Equatable {
   final ThemeType themeType;
   final ThemeMode themeMode;
 
@@ -15,6 +16,9 @@ class ThemeState {
     themeType: ThemeType.system,
     themeMode: ThemeMode.system,
   );
+
+  @override
+  List<Object> get props => [themeType, themeMode];
 }
 
 @lazySingleton

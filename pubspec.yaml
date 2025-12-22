@@ -76,8 +76,9 @@ dev_dependencies:
   build_runner: ^2.4.6
   injectable_generator: ^2.4.1
   flutter_launcher_icons: ^0.13.1
-  hive_ce_generator: ^1.11.0
+  hive_ce_generator: ^1.10.0
   mocktail: ^1.0.4
+  bloc_test: ^9.1.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

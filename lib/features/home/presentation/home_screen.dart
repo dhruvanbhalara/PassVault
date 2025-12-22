@@ -70,21 +70,23 @@ class HomeView extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(
-                                AppDimensions.spaceL,
-                              ),
+                            DecoratedBox(
                               decoration: BoxDecoration(
                                 color: context.colors.primary.withValues(
                                   alpha: 0.1,
                                 ),
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(
-                                LucideIcons.shieldCheck,
-                                size: 64,
-                                color: context.colors.primary.withValues(
-                                  alpha: 0.4,
+                              child: Padding(
+                                padding: const EdgeInsets.all(
+                                  AppDimensions.spaceL,
+                                ),
+                                child: Icon(
+                                  LucideIcons.shieldCheck,
+                                  size: 64,
+                                  color: context.colors.primary.withValues(
+                                    alpha: 0.4,
+                                  ),
                                 ),
                               ),
                             ),
@@ -177,26 +179,27 @@ class PasswordListTile extends StatelessWidget {
           horizontal: AppDimensions.spaceM,
           vertical: AppDimensions.spaceS,
         ),
-        leading: Container(
+        leading: SizedBox(
           width: 48,
           height: 48,
-          decoration: BoxDecoration(
-            color: colors.primary.withValues(alpha: 0.1),
-            borderRadius: AppDimensions.borderRadiusM,
-          ),
-          child: Center(
-            child: Text(
-              entry.appName.isNotEmpty ? entry.appName[0].toUpperCase() : "?",
-              style: textTheme.titleMedium?.copyWith(color: colors.primary),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: colors.primary.withValues(alpha: 0.1),
+              borderRadius: AppDimensions.borderRadiusM,
+            ),
+            child: Center(
+              child: Text(
+                entry.appName.isNotEmpty ? entry.appName[0].toUpperCase() : "?",
+                style: textTheme.titleMedium?.copyWith(color: colors.primary),
+              ),
             ),
           ),
         ),
         title: Text(entry.appName, style: textTheme.titleMedium),
         subtitle: Text(entry.username, style: textTheme.bodyMedium),
-        trailing: Container(
+        trailing: DecoratedBox(
           decoration: BoxDecoration(
-            color: colors
-                .surfaceDim, // Replaced surfaceContainerHighest.withValues(alpha: 0.3)
+            color: colors.surfaceDim,
             borderRadius: AppDimensions.borderRadiusS,
           ),
           child: IconButton(

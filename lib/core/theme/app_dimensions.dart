@@ -8,6 +8,8 @@ class AppDimensions {
   static const double spaceL = 24.0;
   static const double spaceXL = 32.0;
   static const double spaceXXL = 48.0;
+  static const double space3XL = 64.0;
+  static const double space4XL = 80.0;
 
   // Border Radius
   static const double radiusXXS = 2.0;

@@ -18,6 +18,9 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.strengthFair,
     required this.strengthGood,
     required this.strengthStrong,
+    required this.outline,
+    required this.primaryContainer,
+    required this.onPrimaryContainer,
   });
 
   final Color primary;
@@ -37,6 +40,9 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   final Color strengthFair;
   final Color strengthGood;
   final Color strengthStrong;
+  final Color outline;
+  final Color primaryContainer;
+  final Color onPrimaryContainer;
 
   @override
   ThemeExtension<AppThemeExtension> copyWith({
@@ -55,6 +61,9 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     Color? strengthFair,
     Color? strengthGood,
     Color? strengthStrong,
+    Color? outline,
+    Color? primaryContainer,
+    Color? onPrimaryContainer,
   }) {
     return AppThemeExtension(
       primary: primary ?? this.primary,
@@ -72,6 +81,9 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       strengthFair: strengthFair ?? this.strengthFair,
       strengthGood: strengthGood ?? this.strengthGood,
       strengthStrong: strengthStrong ?? this.strengthStrong,
+      outline: outline ?? this.outline,
+      primaryContainer: primaryContainer ?? this.primaryContainer,
+      onPrimaryContainer: onPrimaryContainer ?? this.onPrimaryContainer,
     );
   }
 
@@ -99,6 +111,17 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       strengthFair: Color.lerp(strengthFair, other.strengthFair, t)!,
       strengthGood: Color.lerp(strengthGood, other.strengthGood, t)!,
       strengthStrong: Color.lerp(strengthStrong, other.strengthStrong, t)!,
+      outline: Color.lerp(outline, other.outline, t)!,
+      primaryContainer: Color.lerp(
+        primaryContainer,
+        other.primaryContainer,
+        t,
+      )!,
+      onPrimaryContainer: Color.lerp(
+        onPrimaryContainer,
+        other.onPrimaryContainer,
+        t,
+      )!,
     );
   }
 }
