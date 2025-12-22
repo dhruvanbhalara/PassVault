@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/core/theme/design_system.dart';
+import 'package:passvault/core/theme/app_dimensions.dart';
+import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
@@ -41,10 +42,9 @@ class _IntroViewState extends State<IntroView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
+    final textTheme = context.typography;
 
     final slides = [
       _IntroSlide(
@@ -88,8 +88,8 @@ class _IntroViewState extends State<IntroView> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: DesignSystem.spacingL,
-                  vertical: DesignSystem.spacingXL,
+                  horizontal: AppDimensions.spaceL,
+                  vertical: AppDimensions.spaceXL,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -102,7 +102,7 @@ class _IntroViewState extends State<IntroView> {
                         child: Text(
                           l10n.skip,
                           style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.secondary,
+                            color: colors.secondary,
                           ),
                         ),
                       )
@@ -119,9 +119,9 @@ class _IntroViewState extends State<IntroView> {
                           width: _currentPage == index ? 24 : 8,
                           decoration: BoxDecoration(
                             color: _currentPage == index
-                                ? colorScheme.primary
-                                : colorScheme.secondary.withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(4),
+                                ? colors.primary
+                                : colors.secondary.withValues(alpha: 0.3),
+                            borderRadius: AppDimensions.borderRadiusXS,
                           ),
                         ),
                       ),
@@ -145,7 +145,7 @@ class _IntroViewState extends State<IntroView> {
                             ? l10n.done
                             : l10n.next,
                         style: textTheme.titleMedium?.copyWith(
-                          color: colorScheme.primary,
+                          color: colors.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -175,34 +175,28 @@ class _IntroSlide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: DesignSystem.paddingPage,
+      padding: const EdgeInsets.all(AppDimensions.spaceL),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(DesignSystem.spacingXXL),
+            padding: const EdgeInsets.all(AppDimensions.spaceXXL),
             decoration: BoxDecoration(
-              color: Theme.of(
-                context,
-              ).colorScheme.primary.withValues(alpha: 0.1),
+              color: context.colors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              size: 80,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            child: Icon(icon, size: 80, color: context.colors.primary),
           ),
-          const SizedBox(height: DesignSystem.spacingXXL),
+          const SizedBox(height: AppDimensions.spaceXXL),
           Text(
             title,
-            style: Theme.of(context).textTheme.headlineMedium,
+            style: context.typography.headlineMedium,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: DesignSystem.spacingM),
+          const SizedBox(height: AppDimensions.spaceM),
           Text(
             description,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: context.typography.bodyMedium,
             textAlign: TextAlign.center,
           ),
         ],

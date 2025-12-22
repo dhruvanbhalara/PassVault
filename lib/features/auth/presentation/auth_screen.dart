@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/core/theme/design_system.dart';
+import 'package:passvault/core/theme/app_dimensions.dart';
+import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
@@ -56,8 +57,8 @@ class AuthView extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
-                Theme.of(context).colorScheme.surface,
+                context.colors.primary.withValues(alpha: 0.05),
+                context.colors.surface,
               ],
             ),
           ),
@@ -84,19 +85,19 @@ class AuthView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(height: DesignSystem.spacingXL),
+                      const SizedBox(height: AppDimensions.spaceXL),
                       Text(
                         AppLocalizations.of(context)!.appName,
                         key: const Key('auth_title'),
-                        style: Theme.of(context).textTheme.headlineLarge,
+                        style: context.typography.headlineLarge,
                       ),
-                      const SizedBox(height: DesignSystem.spacingS),
+                      const SizedBox(height: AppDimensions.spaceS),
                       Text(
                         AppLocalizations.of(context)!.locked,
                         key: const Key('auth_locked_text'),
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: context.typography.bodyMedium,
                       ),
-                      const SizedBox(height: DesignSystem.spacingXXL),
+                      const SizedBox(height: AppDimensions.spaceXXL),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 40),
                         child: SizedBox(

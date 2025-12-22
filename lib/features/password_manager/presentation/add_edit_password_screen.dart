@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/core/theme/app_colors.dart';
-import 'package:passvault/core/theme/design_system.dart';
+import 'package:passvault/core/theme/app_dimensions.dart';
+import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_bloc.dart';
@@ -103,17 +103,19 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
     }
   }
 
-  Color _getStrengthColor(double strength) {
-    if (strength <= 0.25) return AppColors.strengthWeak;
-    if (strength <= 0.5) return AppColors.strengthFair;
-    if (strength <= 0.75) return AppColors.strengthGood;
-    return AppColors.strengthStrong;
+  Color _getStrengthColor(BuildContext context, double strength) {
+    final colors = context.colors;
+    if (strength <= 0.25) return colors.strengthWeak;
+    if (strength <= 0.5) return colors.strengthFair;
+    if (strength <= 0.75) return colors.strengthGood;
+    return colors.strengthStrong;
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final textTheme = context.typography;
 
     return BlocConsumer<AddEditPasswordBloc, AddEditPasswordState>(
       listener: (context, state) {
@@ -145,7 +147,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
             label: Text(l10n.save),
           ),
           body: SingleChildScrollView(
-            padding: DesignSystem.paddingPage,
+            padding: const EdgeInsets.all(AppDimensions.spaceM),
             child: Form(
               key: _formKey,
               child: Column(
@@ -165,7 +167,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                           v?.isEmpty == true ? l10n.errorOccurred : null,
                     ),
                   ),
-                  const SizedBox(height: DesignSystem.spacingL),
+                  const SizedBox(height: AppDimensions.spaceL),
                   LabeledInputField(
                     title: l10n.usernameLabel,
                     child: TextFormField(
@@ -178,7 +180,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: DesignSystem.spacingL),
+                  const SizedBox(height: AppDimensions.spaceL),
                   LabeledInputField(
                     title: l10n.passwordLabel,
                     child: Column(
@@ -205,7 +207,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                           validator: (v) =>
                               v?.isEmpty == true ? l10n.errorOccurred : null,
                         ),
-                        const SizedBox(height: DesignSystem.spacingM),
+                        const SizedBox(height: AppDimensions.spaceM),
                         // Strength Indicator from BLoC state
                         if (_passwordController.text.isNotEmpty)
                           Row(
@@ -219,22 +221,23 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                                         .colorScheme
                                         .outlineVariant
                                         .withValues(alpha: 0.2),
-                                    color: _getStrengthColor(strength),
+                                    color: _getStrengthColor(context, strength),
                                     minHeight: 4,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 8),
+
+                              const SizedBox(width: AppDimensions.spaceS),
                               Text(
                                 "${(strength * 100).toInt()}%",
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: _getStrengthColor(strength),
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: _getStrengthColor(context, strength),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
                           ),
-                        const SizedBox(height: DesignSystem.spacingL),
+                        const SizedBox(height: AppDimensions.spaceL),
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton.icon(
@@ -247,7 +250,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                                 ),
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: DesignSystem.borderRadiusM,
+                                borderRadius: AppDimensions.borderRadiusM,
                               ),
                             ),
                             onPressed: () {
@@ -289,15 +292,16 @@ class LabeledInputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: AppDimensions.spaceS,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          padding: const EdgeInsets.only(left: 4),
           child: Text(
             title.toUpperCase(),
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            style: context.typography.labelSmall?.copyWith(
               fontWeight: FontWeight.bold,
               letterSpacing: 1.0,
-              color: Theme.of(context).colorScheme.primary,
+              color: context.colors.primary,
             ),
           ),
         ),

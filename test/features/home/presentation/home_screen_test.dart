@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/core/theme/app_theme.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/home/presentation/home_screen.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
@@ -48,6 +49,7 @@ void main() {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
+      theme: AppTheme.lightTheme,
       home: BlocProvider<PasswordBloc>.value(
         value: mockPasswordBloc,
         child: const HomeView(),
