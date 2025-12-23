@@ -1,0 +1,14 @@
+#!/bin/sh
+# Pre-push hook to run tests
+
+echo "🧪 Running pre-push checks..."
+
+# Run tests
+echo "🏃 Running flutter test..."
+if ! flutter test; then
+  echo "❌ Error: Tests failed."
+  exit 1
+fi
+
+echo "✅ Pre-push checks passed!"
+exit 0

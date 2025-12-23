@@ -198,11 +198,31 @@ make icons          # Generate icons for both flavors
 make icons_dev      # Generate launcher icons (dev)
 make icons_prod     # Generate launcher icons (prod)
 
+# Git Hooks
+make setup_hooks    # Configure git hooks (run once after clone)
+
 # Quality
 make lint           # Run Flutter analyze
 make format         # Format Dart code
 make clean          # Clean build artifacts
 ```
+
+### 🪝 Git Hooks
+
+PassVault uses Git hooks to maintain code quality. The hooks are stored in `.github/hooks/` and must be enabled after cloning.
+
+**Setup (one-time):**
+```bash
+make setup_hooks
+# or manually: git config core.hooksPath .github/hooks
+```
+
+| Hook | Trigger | Checks |
+|------|---------|--------|
+| **pre-commit** | Before each commit | `dart format` (auto-formatting) + `dart analyze` (static analysis) |
+| **pre-push** | Before each push | `flutter test` (all tests must pass) |
+
+> **Note:** If a hook fails, the git operation is aborted. Fix the issues and retry.
 
 ### Environment
 

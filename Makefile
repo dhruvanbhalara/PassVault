@@ -1,4 +1,4 @@
-.PHONY: clean pub_get build_runner watch_runner l10n generate run_dev run_prod build_apk_dev build_apk_prod build_appbundle_prod build_ios_dev build_ipa_prod test pod_install pod_repo_update lint format icons icons_dev icons_prod
+.PHONY: clean pub_get build_runner watch_runner l10n generate run_dev run_prod build_apk_dev build_apk_prod build_appbundle_prod build_ios_dev build_ipa_prod test pod_install pod_repo_update lint format icons icons_dev icons_prod setup_hooks
 
 # --- Cleaning ---
 clean:
@@ -138,3 +138,9 @@ analyze_apk:
 # --- Full Workflows ---
 build_all: generate build_apk_prod build_appbundle_prod
 	@echo "All builds complete!"
+
+# --- Git Hooks ---
+setup_hooks:
+	@echo "Setting up git hooks..."
+	git config core.hooksPath .github/hooks
+	@echo "✅ Git hooks configured! Hooks will run on commit and push."
