@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/di/injection.dart';
+import 'package:passvault/core/theme/app_dimensions.dart';
+import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/core/theme/bloc/theme_cubit.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
@@ -70,7 +72,7 @@ class SettingsView extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(title: Text(l10n.settings)),
         body: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spaceM),
           children: [
             _SectionHeader(title: l10n.appearance),
             Card(
@@ -83,7 +85,7 @@ class SettingsView extends StatelessWidget {
                 onTap: () => _showThemePicker(context, themeCubit, l10n),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppDimensions.spaceXL),
             _SectionHeader(title: l10n.security),
             Card(
               child: Column(
@@ -120,7 +122,7 @@ class SettingsView extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppDimensions.spaceXL),
             _SectionHeader(title: l10n.dataManagement),
             Card(
               child: Column(
@@ -143,7 +145,7 @@ class SettingsView extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: AppDimensions.spaceXXL),
           ],
         ),
       ),
@@ -153,12 +155,16 @@ class SettingsView extends StatelessWidget {
   void _showExportPicker(BuildContext context, SettingsBloc bloc) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final colors = context.colors;
+    final textTheme = context.typography;
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: colors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppDimensions.radiusXL),
+        ),
       ),
       builder: (context) => SafeArea(
         child: Padding(
@@ -167,42 +173,50 @@ class SettingsView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Drag handle
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.outline.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
+              Expanded(
+                child: SizedBox(
+                  width: 40,
+                  height: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: AppDimensions.spaceM,
+                    ),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colors.surfaceDim,
+                        borderRadius: AppDimensions.borderRadiusS,
+                      ),
+                    ),
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
                   l10n.exportData,
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppDimensions.spaceM),
               ListTile(
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(12),
+                    color: colors.primary.withValues(alpha: 0.1),
+                    borderRadius: AppDimensions.borderRadiusM,
                   ),
                   child: Icon(
                     LucideIcons.braces,
-                    color: theme.colorScheme.onPrimaryContainer,
+                    color: colors.primary,
                     size: 20,
                   ),
                 ),
                 title: Text(l10n.exportJson),
                 subtitle: Text(
                   l10n.jsonBackupFormat,
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
@@ -218,16 +232,14 @@ class SettingsView extends StatelessWidget {
               Divider(
                 indent: 72,
                 endIndent: 16,
-                color: theme.colorScheme.onSurfaceVariant.withValues(
-                  alpha: 0.2,
-                ),
+                color: theme.colorScheme.outline.withValues(alpha: 0.2),
               ),
               ListTile(
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppDimensions.borderRadiusM,
                   ),
                   child: Icon(
                     LucideIcons.table,
@@ -238,7 +250,7 @@ class SettingsView extends StatelessWidget {
                 title: Text(l10n.exportCsv),
                 subtitle: Text(
                   l10n.csvSpreadsheetFormat,
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
@@ -251,7 +263,7 @@ class SettingsView extends StatelessWidget {
                   Navigator.pop(context);
                 },
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppDimensions.spaceS),
             ],
           ),
         ),
@@ -262,12 +274,16 @@ class SettingsView extends StatelessWidget {
   void _showImportPicker(BuildContext context, SettingsBloc bloc) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final colors = context.colors;
+    final textTheme = context.typography;
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: colors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppDimensions.radiusXL),
+        ),
       ),
       builder: (context) => SafeArea(
         child: Padding(
@@ -276,42 +292,48 @@ class SettingsView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Drag handle
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.outline.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
+              Expanded(
+                child: SizedBox(
+                  width: 40,
+                  height: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colors.surfaceDim,
+                        borderRadius: AppDimensions.borderRadiusS,
+                      ),
+                    ),
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
                   l10n.importData,
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppDimensions.spaceM),
               ListTile(
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(12),
+                    color: colors.primary.withValues(alpha: 0.1),
+                    borderRadius: AppDimensions.borderRadiusM,
                   ),
                   child: Icon(
                     LucideIcons.braces,
-                    color: theme.colorScheme.onPrimaryContainer,
+                    color: colors.primary,
                     size: 20,
                   ),
                 ),
                 title: Text(l10n.importJson),
                 subtitle: Text(
                   l10n.importFromJsonBackup,
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
@@ -327,16 +349,14 @@ class SettingsView extends StatelessWidget {
               Divider(
                 indent: 72,
                 endIndent: 16,
-                color: theme.colorScheme.onSurfaceVariant.withValues(
-                  alpha: 0.2,
-                ),
+                color: theme.colorScheme.outline.withValues(alpha: 0.2),
               ),
               ListTile(
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppDimensions.borderRadiusM,
                   ),
                   child: Icon(
                     LucideIcons.table,
@@ -347,7 +367,7 @@ class SettingsView extends StatelessWidget {
                 title: Text(l10n.importCsv),
                 subtitle: Text(
                   l10n.importFromSpreadsheet,
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
@@ -360,7 +380,7 @@ class SettingsView extends StatelessWidget {
                   Navigator.pop(context);
                 },
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppDimensions.spaceS),
             ],
           ),
         ),
@@ -389,22 +409,26 @@ class SettingsView extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppDimensions.radiusXL),
+        ),
       ),
       builder: (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 8),
-            Container(
+            const SizedBox(height: AppDimensions.spaceS),
+            SizedBox(
               width: 40,
               height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: context.colors.surfaceDim,
+                  borderRadius: AppDimensions.borderRadiusS,
+                ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppDimensions.spaceM),
             ListTile(
               leading: const Icon(LucideIcons.monitor),
               title: Text(l10n.system),
@@ -437,7 +461,7 @@ class SettingsView extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppDimensions.spaceM),
           ],
         ),
       ),
@@ -455,8 +479,8 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(8, 24, 8, 12),
       child: Text(
         title.toUpperCase(),
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
+        style: context.typography.labelLarge?.copyWith(
+          color: context.colors.primary,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.1,
         ),

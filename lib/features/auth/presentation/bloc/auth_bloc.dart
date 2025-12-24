@@ -17,7 +17,7 @@ class AuthCheckRequested extends AuthEvent {}
 class AuthLoginRequested extends AuthEvent {}
 
 // States
-abstract class AuthState extends Equatable {
+sealed class AuthState extends Equatable {
   const AuthState();
   @override
   List<Object> get props => [];

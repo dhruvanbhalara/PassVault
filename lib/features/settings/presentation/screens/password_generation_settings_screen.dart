@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/core/theme/design_system.dart';
+import 'package:passvault/core/theme/app_dimensions.dart';
+import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
@@ -26,6 +27,8 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
+    final textTheme = context.typography;
 
     return Scaffold(
       appBar: AppBar(
@@ -39,22 +42,22 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
           final settings = state.passwordSettings;
 
           return ListView(
-            padding: const EdgeInsets.all(DesignSystem.spacingL),
+            padding: const EdgeInsets.all(AppDimensions.spaceL),
             children: [
               _PreviewCard(settings: settings),
-              const SizedBox(height: DesignSystem.spacingL),
+              const SizedBox(height: AppDimensions.spaceL),
               Text(
                 l10n.passwordLength.toUpperCase(),
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
+                style: textTheme.labelLarge?.copyWith(
+                  color: colors.primary,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.1,
                 ),
               ),
-              const SizedBox(height: DesignSystem.spacingM),
+              const SizedBox(height: AppDimensions.spaceM),
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(DesignSystem.spacingM),
+                  padding: const EdgeInsets.all(AppDimensions.spaceM),
                   child: Column(
                     children: [
                       Row(
@@ -62,52 +65,50 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
+                              DecoratedBox(
                                 decoration: BoxDecoration(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.primaryContainer,
-                                  borderRadius: BorderRadius.circular(10),
+                                  color: colors.primary.withValues(alpha: 0.1),
+                                  borderRadius: AppDimensions.borderRadiusS,
                                 ),
-                                child: Icon(
-                                  LucideIcons.ruler,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onPrimaryContainer,
-                                  size: 18,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Icon(
+                                    LucideIcons.ruler,
+                                    color: colors.primary,
+                                    size: 18,
+                                  ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+
+                              const SizedBox(width: AppDimensions.radiusM),
                               Text(
                                 l10n.passwordLength,
-                                style: Theme.of(context).textTheme.titleMedium,
+                                style: textTheme.titleMedium,
                               ),
                             ],
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
+                          DecoratedBox(
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius: BorderRadius.circular(20),
+                              color: colors.primary,
+                              borderRadius: AppDimensions.borderRadiusXL,
                             ),
-                            child: Text(
-                              '${settings.length}',
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onPrimary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppDimensions.radiusM,
+                                vertical: 6,
+                              ),
+                              child: Text(
+                                '${settings.length}',
+                                style: textTheme.titleMedium?.copyWith(
+                                  color: colors.onPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: DesignSystem.spacingM),
+                      const SizedBox(height: AppDimensions.spaceM),
                       SliderTheme(
                         data: SliderTheme.of(context).copyWith(
                           trackHeight: 6,
@@ -133,27 +134,23 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppDimensions.radiusM,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               '8',
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.outline,
-                                  ),
+                              style: textTheme.bodySmall?.copyWith(
+                                color: context.colors.outline,
+                              ),
                             ),
                             Text(
                               '64',
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.outline,
-                                  ),
+                              style: textTheme.bodySmall?.copyWith(
+                                color: context.colors.outline,
+                              ),
                             ),
                           ],
                         ),
@@ -162,16 +159,16 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: DesignSystem.spacingXL),
+              const SizedBox(height: AppDimensions.spaceXL),
               Text(
                 l10n.characterSets.toUpperCase(),
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
+                style: textTheme.labelLarge?.copyWith(
+                  color: colors.primary,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.1,
                 ),
               ),
-              const SizedBox(height: DesignSystem.spacingM),
+              const SizedBox(height: AppDimensions.spaceM),
               Card(
                 child: Column(
                   children: [
@@ -310,30 +307,30 @@ class _PreviewCardState extends State<_PreviewCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer,
+      color: context.colors.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: DesignSystem.spacingL,
-          vertical: DesignSystem.spacingM,
+          horizontal: AppDimensions.spaceL,
+          vertical: AppDimensions.spaceM,
         ),
         child: Row(
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: AppDimensions.spaceS,
                 children: [
                   Text(
                     AppLocalizations.of(context)!.preview.toUpperCase(),
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    style: context.typography.labelSmall?.copyWith(
+                      color: context.colors.onPrimary,
                       letterSpacing: 1.5,
                     ),
                   ),
-                  const SizedBox(height: DesignSystem.spacingS),
                   Text(
                     _previewPassword,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    style: context.typography.titleMedium?.copyWith(
+                      color: context.colors.onPrimary,
                       fontFamily: 'Courier',
                       fontWeight: FontWeight.bold,
                     ),
@@ -344,7 +341,7 @@ class _PreviewCardState extends State<_PreviewCard> {
             IconButton(
               icon: Icon(
                 LucideIcons.refreshCw,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                color: context.colors.onPrimary,
               ),
               onPressed: _generatePreview,
               tooltip: AppLocalizations.of(context)!.refreshPreview,

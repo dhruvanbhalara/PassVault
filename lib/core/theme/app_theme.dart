@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
+import 'app_dimensions.dart';
+import 'app_theme_extension.dart';
 import 'bloc/theme_cubit.dart';
-import 'design_system.dart';
 
 class AppTheme {
   static ThemeData getTheme(ThemeType mode) {
@@ -38,11 +39,33 @@ class AppTheme {
       outline: AppColors.lightDivider,
     );
 
+    final extension = AppThemeExtension(
+      primary: AppColors.lightPrimary,
+      onPrimary: AppColors.lightOnPrimary,
+      secondary: AppColors.lightSecondary,
+      onSecondary: AppColors.lightOnSecondary,
+      surface: AppColors.lightSurface,
+      onSurface: AppColors.lightTextPrimary,
+      background: AppColors.lightBackground,
+      error: AppColors.error,
+      success: AppColors.success,
+      warning: AppColors.warning,
+      surfaceDim: AppColors.lightTextSecondary.withValues(alpha: 0.1),
+      strengthWeak: AppColors.strengthWeak,
+      strengthFair: AppColors.strengthFair,
+      strengthGood: AppColors.strengthGood,
+      strengthStrong: AppColors.strengthStrong,
+      outline: AppColors.lightDivider,
+      primaryContainer: scheme.primaryContainer,
+      onPrimaryContainer: scheme.onPrimaryContainer,
+    );
+
     return _buildTheme(
       scheme,
       AppColors.lightBackground,
       AppColors.lightSurface,
       false,
+      extension,
     );
   }
 
@@ -60,11 +83,33 @@ class AppTheme {
       outline: AppColors.darkDivider,
     );
 
+    final extension = AppThemeExtension(
+      primary: AppColors.darkPrimary,
+      onPrimary: AppColors.darkOnPrimary,
+      secondary: AppColors.darkSecondary,
+      onSecondary: AppColors.darkOnSecondary,
+      surface: AppColors.darkSurface,
+      onSurface: AppColors.darkTextPrimary,
+      background: AppColors.darkBackground,
+      error: AppColors.error,
+      success: AppColors.success,
+      warning: AppColors.warning,
+      surfaceDim: AppColors.darkTextSecondary.withValues(alpha: 0.1),
+      strengthWeak: AppColors.strengthWeak,
+      strengthFair: AppColors.strengthFair,
+      strengthGood: AppColors.strengthGood,
+      strengthStrong: AppColors.strengthStrong,
+      outline: AppColors.darkDivider,
+      primaryContainer: scheme.primaryContainer,
+      onPrimaryContainer: scheme.onPrimaryContainer,
+    );
+
     return _buildTheme(
       scheme,
       AppColors.darkBackground,
       AppColors.darkSurface,
       true,
+      extension,
     );
   }
 
@@ -82,11 +127,33 @@ class AppTheme {
       outline: AppColors.darkDivider,
     );
 
+    final extension = AppThemeExtension(
+      primary: AppColors.darkPrimary,
+      onPrimary: AppColors.darkOnPrimary,
+      secondary: AppColors.darkSecondary,
+      onSecondary: AppColors.darkOnSecondary,
+      surface: AppColors.amoledSurface,
+      onSurface: AppColors.darkTextPrimary,
+      background: AppColors.amoledBackground,
+      error: AppColors.error,
+      success: AppColors.success,
+      warning: AppColors.warning,
+      surfaceDim: AppColors.darkTextSecondary.withValues(alpha: 0.1),
+      strengthWeak: AppColors.strengthWeak,
+      strengthFair: AppColors.strengthFair,
+      strengthGood: AppColors.strengthGood,
+      strengthStrong: AppColors.strengthStrong,
+      outline: AppColors.darkDivider,
+      primaryContainer: scheme.primaryContainer,
+      onPrimaryContainer: scheme.onPrimaryContainer,
+    );
+
     return _buildTheme(
       scheme,
       AppColors.amoledBackground,
       AppColors.amoledSurface,
       true,
+      extension,
     );
   }
 
@@ -95,6 +162,7 @@ class AppTheme {
     Color bg,
     Color surface,
     bool isDark,
+    AppThemeExtension extension,
   ) {
     final textPrimary = isDark
         ? AppColors.darkTextPrimary
@@ -107,6 +175,7 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: scheme,
       scaffoldBackgroundColor: bg,
+      extensions: [extension],
       textTheme: GoogleFonts.outfitTextTheme().copyWith(
         headlineLarge: TextStyle(
           color: textPrimary,
@@ -123,8 +192,7 @@ class AppTheme {
         bodySmall: TextStyle(color: textSecondary),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor:
-            Colors.transparent, // Let Scaffold background show through
+        backgroundColor: Colors.transparent,
         foregroundColor: textPrimary,
         elevation: 0,
         centerTitle: true,
@@ -142,7 +210,7 @@ class AppTheme {
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: DesignSystem.borderRadiusL,
+          borderRadius: AppDimensions.borderRadiusM,
           side: BorderSide(color: scheme.outline.withValues(alpha: 0.1)),
         ),
       ),
@@ -152,21 +220,20 @@ class AppTheme {
         labelStyle: TextStyle(color: textSecondary),
         hintStyle: TextStyle(color: textSecondary.withValues(alpha: 0.5)),
         border: OutlineInputBorder(
-          borderRadius: DesignSystem.borderRadiusM,
-          borderSide: BorderSide
-              .none, // Usually use filled only or border, but let's make it cleaner
+          borderRadius: AppDimensions.borderRadiusM,
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: DesignSystem.borderRadiusM,
+          borderRadius: AppDimensions.borderRadiusM,
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: DesignSystem.borderRadiusM,
+          borderRadius: AppDimensions.borderRadiusM,
           borderSide: BorderSide(color: scheme.primary, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: DesignSystem.spacingM,
-          vertical: DesignSystem.spacingM,
+          horizontal: AppDimensions.spaceM,
+          vertical: AppDimensions.spaceM,
         ),
       ),
       switchTheme: SwitchThemeData(
@@ -174,28 +241,28 @@ class AppTheme {
           if (states.contains(WidgetState.selected)) {
             return scheme.onPrimary;
           }
-          return scheme.onSurfaceVariant; // Unselected thumb (high contrast)
+          return scheme.onSurfaceVariant;
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return scheme.primary;
           }
-          return scheme.onSurfaceVariant.withValues(
-            alpha: 0.1,
-          ); // Unselected track
+          return scheme.onSurfaceVariant.withValues(alpha: 0.1);
         }),
         trackOutlineColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return Colors.transparent;
           }
-          return scheme.onSurfaceVariant; // Unselected border
+          return scheme.onSurfaceVariant;
         }),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: scheme.primary,
         foregroundColor: scheme.onPrimary,
         elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: DesignSystem.borderRadiusL),
+        shape: RoundedRectangleBorder(
+          borderRadius: AppDimensions.borderRadiusL,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -203,11 +270,11 @@ class AppTheme {
           foregroundColor: scheme.onPrimary,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: DesignSystem.borderRadiusM,
+            borderRadius: AppDimensions.borderRadiusM,
           ),
           padding: const EdgeInsets.symmetric(
-            vertical: DesignSystem.spacingM,
-            horizontal: DesignSystem.spacingL,
+            vertical: AppDimensions.spaceM,
+            horizontal: AppDimensions.spaceL,
           ),
           textStyle: GoogleFonts.outfit(
             fontSize: 16,

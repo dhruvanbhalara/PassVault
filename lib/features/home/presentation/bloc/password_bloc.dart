@@ -29,7 +29,7 @@ class DeletePassword extends PasswordEvent {
 }
 
 // States
-abstract class PasswordState extends Equatable {
+sealed class PasswordState extends Equatable {
   const PasswordState();
   @override
   List<Object?> get props => [];

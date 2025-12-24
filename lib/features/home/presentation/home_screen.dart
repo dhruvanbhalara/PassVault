@@ -5,7 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/core/theme/design_system.dart';
+import 'package:passvault/core/theme/app_dimensions.dart';
+import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/l10n/app_localizations.dart';
@@ -65,34 +66,36 @@ class HomeView extends StatelessWidget {
                   return SliverFillRemaining(
                     child: Center(
                       child: Padding(
-                        padding: DesignSystem.paddingAllM,
+                        padding: const EdgeInsets.all(AppDimensions.spaceM),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(
-                                DesignSystem.spacingL,
-                              ),
+                            DecoratedBox(
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.primary.withValues(alpha: 0.1),
+                                color: context.colors.primary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(
-                                LucideIcons.shieldCheck,
-                                size: 64,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.primary.withValues(alpha: 0.4),
+                              child: Padding(
+                                padding: const EdgeInsets.all(
+                                  AppDimensions.spaceL,
+                                ),
+                                child: Icon(
+                                  LucideIcons.shieldCheck,
+                                  size: 64,
+                                  color: context.colors.primary.withValues(
+                                    alpha: 0.4,
+                                  ),
+                                ),
                               ),
                             ),
-                            const SizedBox(height: DesignSystem.spacingL),
+                            const SizedBox(height: AppDimensions.spaceL),
                             Text(
                               l10n.noPasswords,
                               key: const Key('home_empty_text'),
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              style: context.typography.bodyMedium,
                             ),
                           ],
                         ),
@@ -102,13 +105,13 @@ class HomeView extends StatelessWidget {
                 }
                 return SliverPadding(
                   key: const Key('home_password_list'),
-                  padding: DesignSystem.paddingPage,
+                  padding: const EdgeInsets.all(AppDimensions.spaceL),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final entry = state.passwords[index];
                       return Padding(
                         padding: const EdgeInsets.only(
-                          bottom: DesignSystem.spacingM,
+                          bottom: AppDimensions.spaceM,
                         ),
                         child: FadeInUp(
                           duration: Duration(milliseconds: 400 + (index * 50)),
@@ -119,11 +122,11 @@ class HomeView extends StatelessWidget {
                                 color: Theme.of(
                                   context,
                                 ).colorScheme.errorContainer,
-                                borderRadius: DesignSystem.borderRadiusL,
+                                borderRadius: AppDimensions.borderRadiusL,
                               ),
                               alignment: Alignment.centerRight,
                               padding: const EdgeInsets.only(
-                                right: DesignSystem.spacingL,
+                                right: AppDimensions.spaceL,
                               ),
                               child: Icon(
                                 LucideIcons.trash2,
@@ -167,48 +170,47 @@ class PasswordListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
+    final textTheme = context.typography;
     return Card(
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: DesignSystem.spacingM,
-          vertical: DesignSystem.spacingS,
+          horizontal: AppDimensions.spaceM,
+          vertical: AppDimensions.spaceS,
         ),
-        leading: Container(
+        leading: SizedBox(
           width: 48,
           height: 48,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withValues(alpha: 0.1),
-            borderRadius: DesignSystem.borderRadiusM,
-          ),
-          child: Center(
-            child: Text(
-              entry.appName.isNotEmpty ? entry.appName[0].toUpperCase() : "?",
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: colors.primary.withValues(alpha: 0.1),
+              borderRadius: AppDimensions.borderRadiusM,
+            ),
+            child: Center(
+              child: Text(
+                entry.appName.isNotEmpty ? entry.appName[0].toUpperCase() : "?",
+                style: textTheme.titleMedium?.copyWith(color: colors.primary),
               ),
             ),
           ),
         ),
-        title: Text(entry.appName, style: theme.textTheme.titleMedium),
-        subtitle: Text(entry.username, style: theme.textTheme.bodyMedium),
-        trailing: Container(
+        title: Text(entry.appName, style: textTheme.titleMedium),
+        subtitle: Text(entry.username, style: textTheme.bodyMedium),
+        trailing: DecoratedBox(
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHighest.withValues(
-              alpha: 0.3,
-            ),
-            borderRadius: DesignSystem.borderRadiusS,
+            color: colors.surfaceDim,
+            borderRadius: AppDimensions.borderRadiusS,
           ),
           child: IconButton(
-            icon: Icon(LucideIcons.copy, size: 20),
+            icon: const Icon(LucideIcons.copy, size: 20),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: entry.password));
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
-                    borderRadius: DesignSystem.borderRadiusM,
+                    borderRadius: AppDimensions.borderRadiusM,
                   ),
                   content: Text(l10n.passwordCopied),
                   duration: const Duration(seconds: 1),

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/core/theme/app_theme.dart';
 import 'package:passvault/features/auth/presentation/auth_screen.dart';
 import 'package:passvault/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:passvault/l10n/app_localizations.dart';
@@ -30,6 +31,7 @@ void main() {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
+      theme: AppTheme.lightTheme,
       home: BlocProvider<AuthBloc>.value(
         value: mockAuthBloc,
         child: const AuthView(),
