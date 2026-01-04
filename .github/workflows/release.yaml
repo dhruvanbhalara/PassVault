@@ -2,8 +2,14 @@ name: Build and Release
 
 on:
   push:
+    branches:
+      - main
     tags:
-      - "v*"
+      - "*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -33,18 +39,10 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
-      - name: Cache Pub dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
-
       - name: Disable Flutter analytics
         run: flutter config --no-analytics
 
-      - name: Install dependencies
+      - name: Install pub dependencies
         run: flutter pub get
 
       - name: Generate code
