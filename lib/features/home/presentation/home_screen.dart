@@ -151,7 +151,7 @@ class HomeView extends StatelessWidget {
               } else if (state is PasswordError) {
                 return SliverFillRemaining(
                   child: Center(
-                    child: Text("${l10n.errorOccurred}: ${state.message}"),
+                    child: Text('${l10n.errorOccurred}: ${state.message}'),
                   ),
                 );
               }
@@ -189,7 +189,7 @@ class PasswordListTile extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                entry.appName.isNotEmpty ? entry.appName[0].toUpperCase() : "?",
+                entry.appName.isNotEmpty ? entry.appName[0].toUpperCase() : '?',
                 style: textTheme.titleMedium?.copyWith(color: colors.primary),
               ),
             ),

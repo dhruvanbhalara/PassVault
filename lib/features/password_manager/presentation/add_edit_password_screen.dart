@@ -229,7 +229,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
 
                               const SizedBox(width: AppDimensions.spaceS),
                               Text(
-                                "${(strength * 100).toInt()}%",
+                                '${(strength * 100).toInt()}%',
                                 style: textTheme.bodySmall?.copyWith(
                                   color: _getStrengthColor(context, strength),
                                   fontWeight: FontWeight.bold,
