@@ -31,7 +31,6 @@
 
 | Package | Purpose |
 |---------|---------|
-| `google_fonts` | Custom typography |
 | `lucide_icons_flutter` | Modern icon set |
 | `lottie` | Vector animations |
 | `animate_do` | Micro-animations |
