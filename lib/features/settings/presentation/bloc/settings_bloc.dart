@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
@@ -43,10 +44,33 @@ class ImportData extends SettingsEvent {
   const ImportData({required this.isJson});
 }
 
+/// Event for exporting data with password protection.
+class ExportEncryptedData extends SettingsEvent {
+  final String password;
+  const ExportEncryptedData({required this.password});
+  @override
+  List<Object> get props => [password];
+}
+
+/// Event for importing password-protected data.
+class ImportEncryptedData extends SettingsEvent {
+  final String password;
+  final String? filePath;
+  const ImportEncryptedData({required this.password, this.filePath});
+  @override
+  List<Object> get props => [password, filePath ?? ''];
+}
+
 // States
 enum SettingsStatus { initial, loading, success, failure }
 
-enum SettingsError { none, noDataToExport, importFailed, unknown }
+enum SettingsError {
+  none,
+  noDataToExport,
+  importFailed,
+  wrongPassword,
+  unknown,
+}
 
 enum SettingsSuccess { none, exportSuccess, importSuccess }
 
@@ -104,6 +128,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<UpdatePasswordSettings>(_onUpdatePasswordSettings);
     on<ExportData>(_onExportData);
     on<ImportData>(_onImportData);
+    on<ExportEncryptedData>(_onExportEncryptedData);
+    on<ImportEncryptedData>(_onImportEncryptedData);
   }
 
   void _onLoadSettings(LoadSettings event, Emitter<SettingsState> emit) {
@@ -226,6 +252,90 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       } else {
         emit(state.copyWith(status: SettingsStatus.initial)); // Cancelled
       }
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: SettingsStatus.failure,
+          error: SettingsError.importFailed,
+        ),
+      );
+    }
+  }
+
+  /// Handles encrypted export with password protection.
+  Future<void> _onExportEncryptedData(
+    ExportEncryptedData event,
+    Emitter<SettingsState> emit,
+  ) async {
+    emit(state.copyWith(status: SettingsStatus.loading));
+    try {
+      final passwords = await _passwordRepository.getPasswords();
+      if (passwords.isEmpty) {
+        emit(
+          state.copyWith(
+            status: SettingsStatus.failure,
+            error: SettingsError.noDataToExport,
+          ),
+        );
+        return;
+      }
+
+      await _dataService.exportToEncryptedJson(passwords, event.password);
+      emit(
+        state.copyWith(
+          status: SettingsStatus.success,
+          success: SettingsSuccess.exportSuccess,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: SettingsStatus.failure,
+          error: SettingsError.unknown,
+        ),
+      );
+    }
+  }
+
+  /// Handles encrypted import with password verification.
+  Future<void> _onImportEncryptedData(
+    ImportEncryptedData event,
+    Emitter<SettingsState> emit,
+  ) async {
+    emit(state.copyWith(status: SettingsStatus.loading));
+    try {
+      // File path is passed from UI after file picker
+      if (event.filePath == null) {
+        emit(state.copyWith(status: SettingsStatus.initial));
+        return;
+      }
+
+      final file = File(event.filePath!);
+      final encryptedData = await file.readAsBytes();
+
+      final entries = _dataService.importFromEncrypted(
+        Uint8List.fromList(encryptedData),
+        event.password,
+      );
+
+      for (var entry in entries) {
+        await _passwordRepository.savePassword(entry);
+      }
+
+      emit(
+        state.copyWith(
+          status: SettingsStatus.success,
+          success: SettingsSuccess.importSuccess,
+        ),
+      );
+    } on StateError {
+      // Wrong password or corrupted data
+      emit(
+        state.copyWith(
+          status: SettingsStatus.failure,
+          error: SettingsError.wrongPassword,
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(

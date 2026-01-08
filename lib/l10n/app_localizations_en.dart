@@ -232,4 +232,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get specialCharsHint => '!@#\$%^&*';
+
+  @override
+  String get wrongPassword => 'Incorrect password. Please try again.';
+
+  @override
+  String get exportEncrypted => 'Export Encrypted (.pvault)';
+
+  @override
+  String get encryptedPasswordProtected => 'Password-protected secure backup';
+
+  @override
+  String get importEncrypted => 'Import from Encrypted (.pvault)';
+
+  @override
+  String get importFromEncryptedBackup => 'Import password-protected backup';
+
+  @override
+  String get enterExportPassword => 'Enter a password to protect your backup';
+
+  @override
+  String get enterImportPassword => 'Enter the backup password';
+
+  @override
+  String get passwordRequired => 'Password is required';
+
+  @override
+  String get export => 'Export';
+
+  @override
+  String get import => 'Import';
 }

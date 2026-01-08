@@ -41,8 +41,10 @@ import '../../features/password_manager/presentation/bloc/add_edit_password_bloc
     as _i683;
 import '../../features/settings/presentation/bloc/settings_bloc.dart' as _i585;
 import '../services/biometric_service.dart' as _i374;
+import '../services/crypto_service.dart' as _i1024;
 import '../services/data_service.dart' as _i636;
 import '../services/database_service.dart' as _i665;
+import '../services/encrypted_storage_service.dart' as _i311;
 import '../services/storage_service.dart' as _i306;
 import '../theme/bloc/theme_cubit.dart' as _i735;
 
@@ -58,21 +60,58 @@ extension GetItInjectableX on _i174.GetIt {
       () => storageModule.secureStorage,
       preResolve: true,
     );
-    await gh.singletonAsync<_i919.Box<dynamic>>(
-      () => storageModule.openBox(),
-      preResolve: true,
-    );
     gh.lazySingleton<_i374.BiometricService>(() => _i374.BiometricService());
-    gh.lazySingleton<_i636.DataService>(() => _i636.DataService());
-    gh.lazySingleton<_i665.DatabaseService>(() => _i665.DatabaseService());
+    gh.lazySingleton<_i1024.CryptoService>(() => _i1024.CryptoService());
     gh.lazySingleton<_i371.EstimatePasswordStrengthUseCase>(
       () => _i371.EstimatePasswordStrengthUseCase(),
     );
     gh.lazySingleton<_i16.GeneratePasswordUseCase>(
       () => _i16.GeneratePasswordUseCase(),
     );
+    gh.lazySingleton<_i311.EncryptedStorageService>(
+      () => _i311.EncryptedStorageService(gh<_i558.FlutterSecureStorage>()),
+    );
+    await gh.singletonAsync<_i919.Box<dynamic>>(
+      () => storageModule.openPasswordBox(gh<_i311.EncryptedStorageService>()),
+      instanceName: 'passwordBox',
+      preResolve: true,
+    );
+    gh.lazySingleton<_i636.DataService>(
+      () => _i636.DataService(gh<_i1024.CryptoService>()),
+    );
+    await gh.singletonAsync<_i919.Box<dynamic>>(
+      () => storageModule.openSettingsBox(
+        gh<_i311.EncryptedStorageService>(),
+        gh<_i919.Box<dynamic>>(instanceName: 'passwordBox'),
+      ),
+      instanceName: 'settingsBox',
+      preResolve: true,
+    );
+    gh.lazySingleton<_i787.AuthRepository>(
+      () => _i153.AuthRepositoryImpl(gh<_i374.BiometricService>()),
+    );
     gh.lazySingleton<_i385.PasswordLocalDataSource>(
-      () => _i385.PasswordLocalDataSourceImpl(gh<_i919.Box<dynamic>>()),
+      () => _i385.PasswordLocalDataSourceImpl(
+        gh<_i919.Box<dynamic>>(instanceName: 'passwordBox'),
+      ),
+    );
+    gh.lazySingleton<_i665.DatabaseService>(
+      () => _i665.DatabaseService(
+        gh<_i919.Box<dynamic>>(instanceName: 'settingsBox'),
+      ),
+    );
+    gh.lazySingleton<_i1045.AuthenticateUseCase>(
+      () => _i1045.AuthenticateUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.lazySingleton<_i458.CheckBiometricsUseCase>(
+      () => _i458.CheckBiometricsUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.factory<_i797.AuthBloc>(
+      () => _i797.AuthBloc(
+        gh<_i1045.AuthenticateUseCase>(),
+        gh<_i787.AuthRepository>(),
+        gh<_i665.DatabaseService>(),
+      ),
     );
     gh.factory<_i683.AddEditPasswordBloc>(
       () => _i683.AddEditPasswordBloc(
@@ -90,21 +129,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i735.ThemeCubit>(
       () => _i735.ThemeCubit(gh<_i665.DatabaseService>()),
     );
-    gh.lazySingleton<_i787.AuthRepository>(
-      () => _i153.AuthRepositoryImpl(gh<_i374.BiometricService>()),
-    );
     gh.factory<_i585.SettingsBloc>(
       () => _i585.SettingsBloc(
         gh<_i665.DatabaseService>(),
         gh<_i636.DataService>(),
         gh<_i580.PasswordRepository>(),
       ),
-    );
-    gh.lazySingleton<_i1045.AuthenticateUseCase>(
-      () => _i1045.AuthenticateUseCase(gh<_i787.AuthRepository>()),
-    );
-    gh.lazySingleton<_i458.CheckBiometricsUseCase>(
-      () => _i458.CheckBiometricsUseCase(gh<_i787.AuthRepository>()),
     );
     gh.lazySingleton<_i969.GetPasswordsUseCase>(
       () => _i969.GetPasswordsUseCase(gh<_i580.PasswordRepository>()),
@@ -114,13 +144,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i969.DeletePasswordUseCase>(
       () => _i969.DeletePasswordUseCase(gh<_i580.PasswordRepository>()),
-    );
-    gh.factory<_i797.AuthBloc>(
-      () => _i797.AuthBloc(
-        gh<_i1045.AuthenticateUseCase>(),
-        gh<_i787.AuthRepository>(),
-        gh<_i665.DatabaseService>(),
-      ),
     );
     gh.lazySingleton<_i552.PasswordBloc>(
       () => _i552.PasswordBloc(

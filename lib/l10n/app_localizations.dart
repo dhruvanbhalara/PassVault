@@ -537,6 +537,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'!@#\$%^&*'**
   String get specialCharsHint;
+
+  /// No description provided for @wrongPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect password. Please try again.'**
+  String get wrongPassword;
+
+  /// No description provided for @exportEncrypted.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Encrypted (.pvault)'**
+  String get exportEncrypted;
+
+  /// No description provided for @encryptedPasswordProtected.
+  ///
+  /// In en, this message translates to:
+  /// **'Password-protected secure backup'**
+  String get encryptedPasswordProtected;
+
+  /// No description provided for @importEncrypted.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from Encrypted (.pvault)'**
+  String get importEncrypted;
+
+  /// No description provided for @importFromEncryptedBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Import password-protected backup'**
+  String get importFromEncryptedBackup;
+
+  /// No description provided for @enterExportPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a password to protect your backup'**
+  String get enterExportPassword;
+
+  /// No description provided for @enterImportPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the backup password'**
+  String get enterImportPassword;
+
+  /// No description provided for @passwordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get passwordRequired;
+
+  /// No description provided for @export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get export;
+
+  /// No description provided for @import.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get import;
 }
 
 class _AppLocalizationsDelegate

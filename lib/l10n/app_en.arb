@@ -73,5 +73,15 @@
   "uppercaseHint": "A-Z",
   "lowercaseHint": "a-z",
   "numbersHint": "0-9",
-  "specialCharsHint": "!@#$%^&*"
+  "specialCharsHint": "!@#$%^&*",
+  "wrongPassword": "Incorrect password. Please try again.",
+  "exportEncrypted": "Export Encrypted (.pvault)",
+  "encryptedPasswordProtected": "Password-protected secure backup",
+  "importEncrypted": "Import from Encrypted (.pvault)",
+  "importFromEncryptedBackup": "Import password-protected backup",
+  "enterExportPassword": "Enter a password to protect your backup",
+  "enterImportPassword": "Enter the backup password",
+  "passwordRequired": "Password is required",
+  "export": "Export",
+  "import": "Import"
 }
