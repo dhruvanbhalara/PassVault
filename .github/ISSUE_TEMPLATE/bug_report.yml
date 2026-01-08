@@ -1,6 +1,7 @@
 name: "🐛 Bug Report"
 description: "Report a bug to help improve PassVault."
 labels: ["bug"]
+assignees: ["dhruvanbhalara"]
 body:
   - type: markdown
     attributes:
