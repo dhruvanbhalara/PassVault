@@ -28,9 +28,12 @@ class DataService {
     final file = File('${tempDir.path}/passvault_export.json');
     await file.writeAsString(jsonString);
 
-    await Share.shareXFiles([
-      XFile(file.path),
-    ], text: 'PassVault Data Export (JSON)');
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile(file.path)],
+        text: 'PassVault Data Export (JSON)',
+      ),
+    );
   }
 
   /// Exports password entries as a CSV file.
@@ -55,9 +58,12 @@ class DataService {
     final file = File('${tempDir.path}/passvault_export.csv');
     await file.writeAsString(csvData);
 
-    await Share.shareXFiles([
-      XFile(file.path),
-    ], text: 'PassVault Data Export (CSV)');
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile(file.path)],
+        text: 'PassVault Data Export (CSV)',
+      ),
+    );
   }
 
   /// Exports password entries as an encrypted file.
@@ -81,9 +87,12 @@ class DataService {
     final file = File('${tempDir.path}/passvault_export.pvault');
     await file.writeAsBytes(encrypted);
 
-    await Share.shareXFiles([
-      XFile(file.path),
-    ], text: 'PassVault Encrypted Export');
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile(file.path)],
+        text: 'PassVault Encrypted Export',
+      ),
+    );
   }
 
   /// Imports password entries from a JSON string.
