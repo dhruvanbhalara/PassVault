@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 import 'app_dimensions.dart';
@@ -8,6 +7,8 @@ import 'app_theme_extension.dart';
 import 'bloc/theme_cubit.dart';
 
 class AppTheme {
+  static const String _fontFamily = 'Outfit';
+
   static ThemeData getTheme(ThemeType mode) {
     switch (mode) {
       case ThemeType.system:
@@ -171,25 +172,42 @@ class AppTheme {
         ? AppColors.darkTextSecondary
         : AppColors.lightTextSecondary;
 
+    final baseTextTheme = Typography.material2021().black.apply(
+      fontFamily: _fontFamily,
+      displayColor: textPrimary,
+      bodyColor: textPrimary,
+    );
+
     return ThemeData(
       useMaterial3: true,
+      fontFamily: _fontFamily,
       colorScheme: scheme,
       scaffoldBackgroundColor: bg,
       extensions: [extension],
-      textTheme: GoogleFonts.outfitTextTheme().copyWith(
+      textTheme: baseTextTheme.copyWith(
         headlineLarge: TextStyle(
           color: textPrimary,
           fontWeight: FontWeight.bold,
+          fontFamily: _fontFamily,
         ),
         headlineMedium: TextStyle(
           color: textPrimary,
           fontWeight: FontWeight.bold,
+          fontFamily: _fontFamily,
         ),
-        titleLarge: TextStyle(color: textPrimary, fontWeight: FontWeight.bold),
-        titleMedium: TextStyle(color: textPrimary, fontWeight: FontWeight.w600),
-        bodyLarge: TextStyle(color: textPrimary),
-        bodyMedium: TextStyle(color: textSecondary),
-        bodySmall: TextStyle(color: textSecondary),
+        titleLarge: TextStyle(
+          color: textPrimary,
+          fontWeight: FontWeight.bold,
+          fontFamily: _fontFamily,
+        ),
+        titleMedium: TextStyle(
+          color: textPrimary,
+          fontWeight: FontWeight.w600,
+          fontFamily: _fontFamily,
+        ),
+        bodyLarge: TextStyle(color: textPrimary, fontFamily: _fontFamily),
+        bodyMedium: TextStyle(color: textSecondary, fontFamily: _fontFamily),
+        bodySmall: TextStyle(color: textSecondary, fontFamily: _fontFamily),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
@@ -199,7 +217,8 @@ class AppTheme {
         systemOverlayStyle: isDark
             ? SystemUiOverlayStyle.light
             : SystemUiOverlayStyle.dark,
-        titleTextStyle: GoogleFonts.outfit(
+        titleTextStyle: TextStyle(
+          fontFamily: _fontFamily,
           fontSize: 20,
           fontWeight: FontWeight.bold,
           color: textPrimary,
@@ -217,8 +236,11 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surface,
-        labelStyle: TextStyle(color: textSecondary),
-        hintStyle: TextStyle(color: textSecondary.withValues(alpha: 0.5)),
+        labelStyle: TextStyle(color: textSecondary, fontFamily: _fontFamily),
+        hintStyle: TextStyle(
+          color: textSecondary.withValues(alpha: 0.5),
+          fontFamily: _fontFamily,
+        ),
         border: OutlineInputBorder(
           borderRadius: AppDimensions.borderRadiusM,
           borderSide: BorderSide.none,
@@ -276,7 +298,8 @@ class AppTheme {
             vertical: AppDimensions.spaceM,
             horizontal: AppDimensions.spaceL,
           ),
-          textStyle: GoogleFonts.outfit(
+          textStyle: const TextStyle(
+            fontFamily: _fontFamily,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
