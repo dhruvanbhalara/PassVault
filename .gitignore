@@ -50,3 +50,6 @@ android/*.jks
 android/*.keystore
 *.jks
 *.keystore
+
+# PR docs
+PR_*.md
