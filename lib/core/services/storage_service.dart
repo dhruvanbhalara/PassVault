@@ -18,9 +18,7 @@ abstract class StorageModule {
   @preResolve
   @singleton
   Future<FlutterSecureStorage> get secureStorage async {
-    return const FlutterSecureStorage(
-      aOptions: AndroidOptions(encryptedSharedPreferences: true),
-    );
+    return const FlutterSecureStorage(aOptions: AndroidOptions());
   }
 
   /// Opens the encrypted password box.
