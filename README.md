@@ -36,7 +36,7 @@
   - Uppercase, lowercase, numbers, special characters
   - Exclude ambiguous characters (I, l, 1, O, 0)
 - **Password Strength Indicator** - Real-time strength estimation
-- **Import/Export** - Backup and restore data in JSON or CSV format
+- **Import/Export** - Backup and restore data in JSON, CSV, or encrypted `.pvault` format
 - **Quick Copy** - One-tap copy to clipboard
 - **Search & Filter** - Quickly find your credentials
 
@@ -150,8 +150,9 @@ Presentation → Domain ← Data
 |---------|---------|
 | `hive_ce` | Local NoSQL database with encryption |
 | `hive_ce_flutter` | Flutter bindings for Hive |
-| `flutter_secure_storage` | Secure key storage |
+| `flutter_secure_storage` | Secure key storage (encryption keys) |
 | `local_auth` | Biometric authentication |
+| `pointycastle` | AES-256-GCM encryption for exports |
 
 ### UI & Design
 | Package | Purpose |
@@ -243,7 +244,10 @@ The app uses flavor-based configuration:
 | Zero Network Access | ✅ Implemented |
 | Biometric Gating | ✅ Implemented |
 | Secure Key Storage | ✅ Implemented |
-| Encrypted Storage | 🔄 Planned |
+| Encrypted Storage (AES-256) | ✅ Implemented |
+| Password-Protected Exports | ✅ Implemented |
+
+> See [docs/ENCRYPTED_STORAGE.md](docs/ENCRYPTED_STORAGE.md) for technical details.
 
 ---
 
@@ -258,7 +262,7 @@ PassVault supports internationalization via Flutter's `intl` package.
 
 ## 🧪 Testing
 
-**79 tests** covering unit, BLoC, and widget layers.
+**128 tests** covering unit, BLoC, and widget layers.
 
 ```bash
 # Run all tests

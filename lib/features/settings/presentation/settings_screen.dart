@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -41,7 +42,8 @@ class SettingsView extends StatelessWidget {
               message = l10n.exportSuccess;
             case SettingsSuccess.importSuccess:
               message = l10n.importSuccess;
-              context.read<PasswordBloc>().add(LoadPasswords());
+              // Refresh passwords list after import
+              getIt<PasswordBloc>().add(LoadPasswords());
             case SettingsSuccess.none:
               break;
           }
@@ -59,6 +61,8 @@ class SettingsView extends StatelessWidget {
               message = l10n.noDataToExport;
             case SettingsError.importFailed:
               message = l10n.importFailed;
+            case SettingsError.wrongPassword:
+              message = l10n.wrongPassword;
             case SettingsError.unknown:
               message = l10n.errorOccurred;
             case SettingsError.none:
@@ -173,20 +177,14 @@ class SettingsView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Drag handle
-              Expanded(
-                child: SizedBox(
+              Center(
+                child: Container(
                   width: 40,
                   height: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      bottom: AppDimensions.spaceM,
-                    ),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: colors.surfaceDim,
-                        borderRadius: AppDimensions.borderRadiusS,
-                      ),
-                    ),
+                  margin: const EdgeInsets.only(bottom: AppDimensions.spaceM),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceDim,
+                    borderRadius: AppDimensions.borderRadiusS,
                   ),
                 ),
               ),
@@ -263,6 +261,40 @@ class SettingsView extends StatelessWidget {
                   Navigator.pop(context);
                 },
               ),
+              Divider(
+                indent: 72,
+                endIndent: 16,
+                color: theme.colorScheme.outline.withValues(alpha: 0.2),
+              ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.tertiaryContainer,
+                    borderRadius: AppDimensions.borderRadiusM,
+                  ),
+                  child: Icon(
+                    LucideIcons.lock,
+                    color: theme.colorScheme.onTertiaryContainer,
+                    size: 20,
+                  ),
+                ),
+                title: Text(l10n.exportEncrypted),
+                subtitle: Text(
+                  l10n.encryptedPasswordProtected,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                trailing: Icon(
+                  LucideIcons.chevronRight,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showPasswordDialog(context, bloc, isExport: true);
+                },
+              ),
               const SizedBox(height: AppDimensions.spaceS),
             ],
           ),
@@ -276,6 +308,7 @@ class SettingsView extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = context.colors;
     final textTheme = context.typography;
+    final outerContext = context; // Capture for use after pop
 
     showModalBottomSheet(
       context: context,
@@ -285,25 +318,21 @@ class SettingsView extends StatelessWidget {
           top: Radius.circular(AppDimensions.radiusXL),
         ),
       ),
-      builder: (context) => SafeArea(
+      builder: (_) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // Drag handle
-              Expanded(
-                child: SizedBox(
+              Center(
+                child: Container(
                   width: 40,
                   height: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: colors.surfaceDim,
-                        borderRadius: AppDimensions.borderRadiusS,
-                      ),
-                    ),
+                  margin: const EdgeInsets.only(bottom: AppDimensions.spaceM),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceDim,
+                    borderRadius: AppDimensions.borderRadiusS,
                   ),
                 ),
               ),
@@ -378,6 +407,40 @@ class SettingsView extends StatelessWidget {
                 onTap: () {
                   bloc.add(const ImportData(isJson: false));
                   Navigator.pop(context);
+                },
+              ),
+              Divider(
+                indent: 72,
+                endIndent: 16,
+                color: theme.colorScheme.outline.withValues(alpha: 0.2),
+              ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.tertiaryContainer,
+                    borderRadius: AppDimensions.borderRadiusM,
+                  ),
+                  child: Icon(
+                    LucideIcons.lock,
+                    color: theme.colorScheme.onTertiaryContainer,
+                    size: 20,
+                  ),
+                ),
+                title: Text(l10n.importEncrypted),
+                subtitle: Text(
+                  l10n.importFromEncryptedBackup,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                trailing: Icon(
+                  LucideIcons.chevronRight,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                onTap: () {
+                  Navigator.pop(outerContext);
+                  _handleEncryptedImport(outerContext, bloc);
                 },
               ),
               const SizedBox(height: AppDimensions.spaceS),
@@ -466,6 +529,127 @@ class SettingsView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showPasswordDialog(
+    BuildContext context,
+    SettingsBloc bloc, {
+    required bool isExport,
+    String? filePath,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final passwordController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: colors.surface,
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          isExport ? l10n.exportEncrypted : l10n.importEncrypted,
+          style: TextStyle(color: colors.onSurface),
+        ),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: passwordController,
+            obscureText: true,
+            autofocus: true,
+            style: TextStyle(color: colors.onSurface),
+            decoration: InputDecoration(
+              labelText: l10n.passwordLabel,
+              labelStyle: TextStyle(color: colors.onSurfaceVariant),
+              hintText: isExport
+                  ? l10n.enterExportPassword
+                  : l10n.enterImportPassword,
+              hintStyle: TextStyle(color: colors.onSurfaceVariant),
+              prefixIcon: Icon(LucideIcons.lock, color: colors.primary),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: colors.outline),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: colors.primary, width: 2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: colors.error),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: colors.error, width: 2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return l10n.passwordRequired;
+              }
+              return null;
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(dialogContext);
+                if (isExport) {
+                  bloc.add(
+                    ExportEncryptedData(password: passwordController.text),
+                  );
+                } else {
+                  bloc.add(
+                    ImportEncryptedData(
+                      password: passwordController.text,
+                      filePath: filePath,
+                    ),
+                  );
+                }
+              }
+            },
+            child: Text(isExport ? l10n.export : l10n.import),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Handles encrypted import: pick file first, then show password dialog
+  Future<void> _handleEncryptedImport(
+    BuildContext context,
+    SettingsBloc bloc,
+  ) async {
+    // Pick file first using FileType.any to support custom extensions on iOS
+    final result = await FilePicker.platform.pickFiles(type: FileType.any);
+
+    if (result != null && result.files.single.path != null) {
+      final filePath = result.files.single.path!;
+      // Only accept .pvault files
+      if (filePath.endsWith('.pvault')) {
+        if (context.mounted) {
+          _showPasswordDialog(
+            context,
+            bloc,
+            isExport: false,
+            filePath: filePath,
+          );
+        }
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context)!.importFailed)),
+          );
+        }
+      }
+    }
   }
 }
 

@@ -2,7 +2,7 @@
 // Do not modify
 // Check in to version control
 
-import 'package:hive_ce/hive_ce.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:passvault/features/password_manager/data/models/password_entry_model.dart';
 
 extension HiveRegistrar on HiveInterface {

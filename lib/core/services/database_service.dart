@@ -1,39 +1,39 @@
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:injectable/injectable.dart';
 
+/// Service for reading and writing to Hive storage boxes.
+///
+/// This service provides a simple interface for CRUD operations on
+/// Hive boxes. The actual boxes are injected from [StorageModule]
+/// and are encrypted for security.
 @lazySingleton
 class DatabaseService {
-  static const String _settingsBoxName = 'settings';
+  final Box<dynamic> _settingsBox;
 
-  Future<void> init() async {
-    // initFlutter is provided by the hive_ce_flutter package
-    await Hive.initFlutter();
-    await Hive.openBox(_settingsBoxName);
-  }
+  DatabaseService(@Named('settingsBox') this._settingsBox);
 
-  Box getBox(String name) {
-    return Hive.box(name);
-  }
+  /// Returns the settings box for direct access if needed.
+  Box<dynamic> get settingsBox => _settingsBox;
 
-  Box get settingsBox => Hive.box(_settingsBoxName);
-
+  /// Writes a value to the settings box.
   Future<void> write(String boxName, String key, dynamic value) async {
-    final box = Hive.box(boxName);
-    await box.put(key, value);
+    // For now, all settings go to the settings box
+    // In the future, we could support multiple boxes
+    await _settingsBox.put(key, value);
   }
 
+  /// Reads a value from the settings box.
   dynamic read(String boxName, String key, {dynamic defaultValue}) {
-    final box = Hive.box(boxName);
-    return box.get(key, defaultValue: defaultValue);
+    return _settingsBox.get(key, defaultValue: defaultValue);
   }
 
+  /// Deletes a value from the settings box.
   Future<void> delete(String boxName, String key) async {
-    final box = Hive.box(boxName);
-    await box.delete(key);
+    await _settingsBox.delete(key);
   }
 
+  /// Clears all values from the settings box.
   Future<void> clear(String boxName) async {
-    final box = Hive.box(boxName);
-    await box.clear();
+    await _settingsBox.clear();
   }
 }
