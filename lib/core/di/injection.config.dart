@@ -39,14 +39,28 @@ import '../../features/password_manager/domain/usecases/password_usecases.dart'
     as _i969;
 import '../../features/password_manager/presentation/bloc/add_edit_password_bloc.dart'
     as _i683;
+import '../../features/settings/data/repositories/settings_repository_impl.dart'
+    as _i955;
+import '../../features/settings/domain/repositories/settings_repository.dart'
+    as _i674;
+import '../../features/settings/domain/usecases/biometrics_usecases.dart'
+    as _i360;
+import '../../features/settings/domain/usecases/get_theme_usecase.dart' as _i6;
+import '../../features/settings/domain/usecases/onboarding_usecases.dart'
+    as _i830;
+import '../../features/settings/domain/usecases/password_settings_usecases.dart'
+    as _i739;
+import '../../features/settings/domain/usecases/set_theme_usecase.dart'
+    as _i986;
 import '../../features/settings/presentation/bloc/settings_bloc.dart' as _i585;
+import '../../features/settings/presentation/bloc/theme/theme_cubit.dart'
+    as _i10;
 import '../services/biometric_service.dart' as _i374;
 import '../services/crypto_service.dart' as _i1024;
 import '../services/data_service.dart' as _i636;
 import '../services/database_service.dart' as _i665;
 import '../services/encrypted_storage_service.dart' as _i311;
 import '../services/storage_service.dart' as _i306;
-import '../theme/bloc/theme_cubit.dart' as _i735;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -106,32 +120,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i458.CheckBiometricsUseCase>(
       () => _i458.CheckBiometricsUseCase(gh<_i787.AuthRepository>()),
     );
-    gh.factory<_i797.AuthBloc>(
-      () => _i797.AuthBloc(
-        gh<_i1045.AuthenticateUseCase>(),
-        gh<_i787.AuthRepository>(),
-        gh<_i665.DatabaseService>(),
-      ),
-    );
-    gh.factory<_i683.AddEditPasswordBloc>(
-      () => _i683.AddEditPasswordBloc(
-        gh<_i16.GeneratePasswordUseCase>(),
-        gh<_i371.EstimatePasswordStrengthUseCase>(),
-        gh<_i665.DatabaseService>(),
-      ),
-    );
     gh.lazySingleton<_i580.PasswordRepository>(
       () => _i826.PasswordRepositoryImpl(gh<_i385.PasswordLocalDataSource>()),
     );
-    gh.factory<_i792.OnboardingBloc>(
-      () => _i792.OnboardingBloc(gh<_i665.DatabaseService>()),
-    );
-    gh.lazySingleton<_i735.ThemeCubit>(
-      () => _i735.ThemeCubit(gh<_i665.DatabaseService>()),
+    gh.lazySingleton<_i674.SettingsRepository>(
+      () => _i955.SettingsRepositoryImpl(gh<_i665.DatabaseService>()),
     );
     gh.factory<_i585.SettingsBloc>(
       () => _i585.SettingsBloc(
-        gh<_i665.DatabaseService>(),
+        gh<_i674.SettingsRepository>(),
         gh<_i636.DataService>(),
         gh<_i580.PasswordRepository>(),
       ),
@@ -144,6 +141,57 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i969.DeletePasswordUseCase>(
       () => _i969.DeletePasswordUseCase(gh<_i580.PasswordRepository>()),
+    );
+    gh.lazySingleton<_i360.GetBiometricsEnabledUseCase>(
+      () => _i360.GetBiometricsEnabledUseCase(gh<_i674.SettingsRepository>()),
+    );
+    gh.lazySingleton<_i360.SetBiometricsEnabledUseCase>(
+      () => _i360.SetBiometricsEnabledUseCase(gh<_i674.SettingsRepository>()),
+    );
+    gh.lazySingleton<_i6.GetThemeUseCase>(
+      () => _i6.GetThemeUseCase(gh<_i674.SettingsRepository>()),
+    );
+    gh.lazySingleton<_i830.GetOnboardingCompleteUseCase>(
+      () => _i830.GetOnboardingCompleteUseCase(gh<_i674.SettingsRepository>()),
+    );
+    gh.lazySingleton<_i830.SetOnboardingCompleteUseCase>(
+      () => _i830.SetOnboardingCompleteUseCase(gh<_i674.SettingsRepository>()),
+    );
+    gh.lazySingleton<_i739.GetPasswordGenerationSettingsUseCase>(
+      () => _i739.GetPasswordGenerationSettingsUseCase(
+        gh<_i674.SettingsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i739.SavePasswordGenerationSettingsUseCase>(
+      () => _i739.SavePasswordGenerationSettingsUseCase(
+        gh<_i674.SettingsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i986.SetThemeUseCase>(
+      () => _i986.SetThemeUseCase(gh<_i674.SettingsRepository>()),
+    );
+    gh.factory<_i683.AddEditPasswordBloc>(
+      () => _i683.AddEditPasswordBloc(
+        gh<_i16.GeneratePasswordUseCase>(),
+        gh<_i371.EstimatePasswordStrengthUseCase>(),
+        gh<_i739.GetPasswordGenerationSettingsUseCase>(),
+      ),
+    );
+    gh.lazySingleton<_i10.ThemeCubit>(
+      () => _i10.ThemeCubit(
+        gh<_i6.GetThemeUseCase>(),
+        gh<_i986.SetThemeUseCase>(),
+      ),
+    );
+    gh.factory<_i797.AuthBloc>(
+      () => _i797.AuthBloc(
+        gh<_i1045.AuthenticateUseCase>(),
+        gh<_i787.AuthRepository>(),
+        gh<_i360.GetBiometricsEnabledUseCase>(),
+      ),
+    );
+    gh.factory<_i792.OnboardingBloc>(
+      () => _i792.OnboardingBloc(gh<_i830.SetOnboardingCompleteUseCase>()),
     );
     gh.lazySingleton<_i552.PasswordBloc>(
       () => _i552.PasswordBloc(

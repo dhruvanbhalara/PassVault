@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/core/error/result.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/domain/repositories/password_repository.dart';
 import 'package:passvault/features/password_manager/domain/usecases/password_usecases.dart';
@@ -36,19 +37,21 @@ void main() {
       // Arrange
       when(
         () => mockRepository.getPasswords(),
-      ).thenAnswer((_) async => [tEntry]);
+      ).thenAnswer((_) async => Success([tEntry]));
 
       // Act
       final result = await getPasswordsUseCase();
 
       // Assert
-      expect(result, [tEntry]);
+      expect(result, Success([tEntry]));
       verify(() => mockRepository.getPasswords()).called(1);
     });
 
     test('SavePasswordUseCase should call repository.savePassword', () async {
       // Arrange
-      when(() => mockRepository.savePassword(any())).thenAnswer((_) async {});
+      when(
+        () => mockRepository.savePassword(any()),
+      ).thenAnswer((_) async => const Success(null));
 
       // Act
       await savePasswordUseCase(tEntry);
@@ -63,7 +66,7 @@ void main() {
         // Arrange
         when(
           () => mockRepository.deletePassword(any()),
-        ).thenAnswer((_) async {});
+        ).thenAnswer((_) async => const Success(null));
 
         // Act
         await deletePasswordUseCase('1');

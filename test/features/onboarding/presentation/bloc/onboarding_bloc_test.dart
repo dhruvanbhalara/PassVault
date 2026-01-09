@@ -1,17 +1,19 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/services/database_service.dart';
+import 'package:passvault/core/error/result.dart';
 import 'package:passvault/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:passvault/features/settings/domain/usecases/onboarding_usecases.dart';
 
-class MockDatabaseService extends Mock implements DatabaseService {}
+class MockSetOnboardingCompleteUseCase extends Mock
+    implements SetOnboardingCompleteUseCase {}
 
 void main() {
   late OnboardingBloc bloc;
-  late MockDatabaseService mockDatabaseService;
+  late MockSetOnboardingCompleteUseCase mockSetOnboardingCompleteUseCase;
 
   setUp(() {
-    mockDatabaseService = MockDatabaseService();
-    bloc = OnboardingBloc(mockDatabaseService);
+    mockSetOnboardingCompleteUseCase = MockSetOnboardingCompleteUseCase();
+    bloc = OnboardingBloc(mockSetOnboardingCompleteUseCase);
   });
 
   tearDown(() {
@@ -24,10 +26,10 @@ void main() {
     });
 
     group('CompleteOnboarding', () {
-      test('emits OnboardingSuccess and saves to database', () async {
+      test('emits OnboardingSuccess and calls use case', () async {
         when(
-          () => mockDatabaseService.write(any(), any(), any()),
-        ).thenAnswer((_) async {});
+          () => mockSetOnboardingCompleteUseCase(any()),
+        ).thenAnswer((_) async => const Success(null));
 
         final states = <OnboardingState>[];
         final subscription = bloc.stream.listen(states.add);
@@ -40,13 +42,7 @@ void main() {
         expect(states.length, 1);
         expect(states.last, isA<OnboardingSuccess>());
 
-        verify(
-          () => mockDatabaseService.write(
-            'settings',
-            'onboarding_complete',
-            true,
-          ),
-        ).called(1);
+        verify(() => mockSetOnboardingCompleteUseCase(true)).called(1);
       });
     });
   });

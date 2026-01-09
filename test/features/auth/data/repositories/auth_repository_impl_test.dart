@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/core/error/result.dart';
 import 'package:passvault/core/services/biometric_service.dart';
 import 'package:passvault/features/auth/data/repositories/auth_repository_impl.dart';
 
@@ -25,7 +26,7 @@ void main() {
       final result = await repository.authenticate();
 
       // Assert
-      expect(result, true);
+      expect(result, const Success(true));
       verify(() => mockBiometricService.authenticate()).called(1);
     });
 
@@ -39,7 +40,7 @@ void main() {
       final result = await repository.isBiometricAvailable();
 
       // Assert
-      expect(result, true);
+      expect(result, const Success(true));
       verify(() => mockBiometricService.isBiometricAvailable).called(1);
     });
   });

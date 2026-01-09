@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:passvault/features/settings/presentation/bloc/theme/theme_cubit.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
 import 'config/routes/app_router.dart';
+import 'core/design_system/theme/theme.dart';
 import 'core/di/injection.dart';
-import 'core/theme/app_theme.dart';
-import 'core/theme/bloc/theme_cubit.dart';
 
 class PassVaultApp extends StatelessWidget {
   const PassVaultApp({super.key});

@@ -5,11 +5,10 @@ import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:passvault/core/constants/storage_keys.dart';
 import 'package:passvault/core/services/data_service.dart';
-import 'package:passvault/core/services/database_service.dart';
 import 'package:passvault/features/password_manager/domain/repositories/password_repository.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
+import 'package:passvault/features/settings/domain/repositories/settings_repository.dart';
 
 // Events
 abstract class SettingsEvent extends Equatable {
@@ -117,12 +116,15 @@ class SettingsState extends Equatable {
 
 @injectable
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
-  final DatabaseService _dbService;
+  final SettingsRepository _settingsRepository;
   final DataService _dataService;
   final PasswordRepository _passwordRepository;
 
-  SettingsBloc(this._dbService, this._dataService, this._passwordRepository)
-    : super(const SettingsState()) {
+  SettingsBloc(
+    this._settingsRepository,
+    this._dataService,
+    this._passwordRepository,
+  ) : super(const SettingsState()) {
     on<LoadSettings>(_onLoadSettings);
     on<ToggleBiometrics>(_onToggleBiometrics);
     on<UpdatePasswordSettings>(_onUpdatePasswordSettings);
@@ -133,23 +135,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   }
 
   void _onLoadSettings(LoadSettings event, Emitter<SettingsState> emit) {
-    final useBiometrics = _dbService.read(
-      StorageKeys.settingsBox,
-      StorageKeys.useBiometrics,
-      defaultValue: false,
+    final biometricsResult = _settingsRepository.getBiometricsEnabled();
+    final useBiometrics = biometricsResult.fold(
+      (failure) => false,
+      (enabled) => enabled,
     );
 
-    final passwordSettingsJson = _dbService.read(
-      StorageKeys.settingsBox,
-      StorageKeys.passwordSettings,
-      defaultValue: null,
+    final settingsResult = _settingsRepository.getPasswordGenerationSettings();
+    final passwordSettings = settingsResult.fold(
+      (failure) => const PasswordGenerationSettings(),
+      (settings) => settings,
     );
-
-    final passwordSettings = passwordSettingsJson != null
-        ? PasswordGenerationSettings.fromJson(
-            Map<String, dynamic>.from(passwordSettingsJson),
-          )
-        : const PasswordGenerationSettings();
 
     emit(
       state.copyWith(
@@ -163,11 +159,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     ToggleBiometrics event,
     Emitter<SettingsState> emit,
   ) async {
-    await _dbService.write(
-      StorageKeys.settingsBox,
-      StorageKeys.useBiometrics,
-      event.value,
-    );
+    await _settingsRepository.setBiometricsEnabled(event.value);
     emit(state.copyWith(useBiometrics: event.value));
   }
 
@@ -175,11 +167,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     UpdatePasswordSettings event,
     Emitter<SettingsState> emit,
   ) async {
-    await _dbService.write(
-      StorageKeys.settingsBox,
-      StorageKeys.passwordSettings,
-      event.settings.toJson(),
-    );
+    await _settingsRepository.savePasswordGenerationSettings(event.settings);
     emit(state.copyWith(passwordSettings: event.settings));
   }
 
@@ -189,27 +177,39 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     emit(state.copyWith(status: SettingsStatus.loading));
     try {
-      final passwords = await _passwordRepository.getPasswords();
-      if (passwords.isEmpty) {
-        emit(
-          state.copyWith(
-            status: SettingsStatus.failure,
-            error: SettingsError.noDataToExport,
-          ),
-        );
-        return;
-      }
+      final result = await _passwordRepository.getPasswords();
+      await result.fold(
+        (failure) async {
+          emit(
+            state.copyWith(
+              status: SettingsStatus.failure,
+              error: SettingsError.unknown,
+            ),
+          );
+        },
+        (passwords) async {
+          if (passwords.isEmpty) {
+            emit(
+              state.copyWith(
+                status: SettingsStatus.failure,
+                error: SettingsError.noDataToExport,
+              ),
+            );
+            return;
+          }
 
-      if (event.isJson) {
-        await _dataService.exportToJson(passwords);
-      } else {
-        await _dataService.exportToCsv(passwords);
-      }
-      emit(
-        state.copyWith(
-          status: SettingsStatus.success,
-          success: SettingsSuccess.exportSuccess,
-        ),
+          if (event.isJson) {
+            await _dataService.exportToJson(passwords);
+          } else {
+            await _dataService.exportToCsv(passwords);
+          }
+          emit(
+            state.copyWith(
+              status: SettingsStatus.success,
+              success: SettingsSuccess.exportSuccess,
+            ),
+          );
+        },
       );
     } catch (e) {
       emit(
@@ -269,23 +269,35 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     emit(state.copyWith(status: SettingsStatus.loading));
     try {
-      final passwords = await _passwordRepository.getPasswords();
-      if (passwords.isEmpty) {
-        emit(
-          state.copyWith(
-            status: SettingsStatus.failure,
-            error: SettingsError.noDataToExport,
-          ),
-        );
-        return;
-      }
+      final result = await _passwordRepository.getPasswords();
+      await result.fold(
+        (failure) async {
+          emit(
+            state.copyWith(
+              status: SettingsStatus.failure,
+              error: SettingsError.unknown,
+            ),
+          );
+        },
+        (passwords) async {
+          if (passwords.isEmpty) {
+            emit(
+              state.copyWith(
+                status: SettingsStatus.failure,
+                error: SettingsError.noDataToExport,
+              ),
+            );
+            return;
+          }
 
-      await _dataService.exportToEncryptedJson(passwords, event.password);
-      emit(
-        state.copyWith(
-          status: SettingsStatus.success,
-          success: SettingsSuccess.exportSuccess,
-        ),
+          await _dataService.exportToEncryptedJson(passwords, event.password);
+          emit(
+            state.copyWith(
+              status: SettingsStatus.success,
+              success: SettingsSuccess.exportSuccess,
+            ),
+          );
+        },
       );
     } catch (e) {
       emit(
