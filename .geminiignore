@@ -1,0 +1,9 @@
+build/
+.dart_tool/
+.env
+*.lock
+ios/Pods/
+macos/Pods/
+android/.gradle/
+coverage/
+doc/api/
