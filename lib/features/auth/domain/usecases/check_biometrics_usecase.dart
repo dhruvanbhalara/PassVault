@@ -1,5 +1,5 @@
 import 'package:injectable/injectable.dart';
-import 'package:passvault/core/error/result.dart';
+import 'package:passvault/core/error/error.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 
 @lazySingleton

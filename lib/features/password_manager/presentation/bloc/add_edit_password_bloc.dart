@@ -1,11 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:passvault/core/constants/storage_keys.dart';
-import 'package:passvault/core/services/database_service.dart';
 import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
+import 'package:passvault/features/settings/domain/usecases/password_settings_usecases.dart';
 
 /// Events for the [AddEditPasswordBloc].
 sealed class AddEditPasswordEvent extends Equatable {
@@ -76,12 +75,12 @@ class AddEditPasswordBloc
     extends Bloc<AddEditPasswordEvent, AddEditPasswordState> {
   final GeneratePasswordUseCase _generatePasswordUseCase;
   final EstimatePasswordStrengthUseCase _estimateStrengthUseCase;
-  final DatabaseService _dbService;
+  final GetPasswordGenerationSettingsUseCase _getSettingsUseCase;
 
   AddEditPasswordBloc(
     this._generatePasswordUseCase,
     this._estimateStrengthUseCase,
-    this._dbService,
+    this._getSettingsUseCase,
   ) : super(const AddEditPasswordState()) {
     on<GenerateStrongPassword>(_onGenerateStrongPassword);
     on<PasswordChanged>(_onPasswordChanged);
@@ -91,18 +90,13 @@ class AddEditPasswordBloc
     GenerateStrongPassword event,
     Emitter<AddEditPasswordState> emit,
   ) {
-    // Read generation settings from database
-    final passwordSettingsJson = _dbService.read(
-      StorageKeys.settingsBox,
-      StorageKeys.passwordSettings,
-      defaultValue: null,
-    );
+    // Read generation settings using use case
+    final result = _getSettingsUseCase();
 
-    final settings = passwordSettingsJson != null
-        ? PasswordGenerationSettings.fromJson(
-            Map<String, dynamic>.from(passwordSettingsJson),
-          )
-        : const PasswordGenerationSettings();
+    final settings = result.fold(
+      (failure) => const PasswordGenerationSettings(),
+      (settings) => settings,
+    );
 
     // Generate password using use case
     final password = _generatePasswordUseCase(

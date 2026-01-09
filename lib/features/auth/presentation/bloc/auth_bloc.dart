@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:passvault/core/services/database_service.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 import 'package:passvault/features/auth/domain/usecases/authenticate_usecase.dart';
+import 'package:passvault/features/settings/domain/usecases/biometrics_usecases.dart';
 
 // Events
 abstract class AuthEvent extends Equatable {
@@ -43,10 +43,13 @@ class AuthUnauthenticated extends AuthState {
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthenticateUseCase _authenticateUseCase;
   final AuthRepository _authRepository;
-  final DatabaseService _dbService;
+  final GetBiometricsEnabledUseCase _getBiometricsEnabledUseCase;
 
-  AuthBloc(this._authenticateUseCase, this._authRepository, this._dbService)
-    : super(AuthInitial()) {
+  AuthBloc(
+    this._authenticateUseCase,
+    this._authRepository,
+    this._getBiometricsEnabledUseCase,
+  ) : super(AuthInitial()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<AuthLoginRequested>(_onAuthLoginRequested);
   }
@@ -55,19 +58,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthCheckRequested event,
     Emitter<AuthState> emit,
   ) async {
-    final useBiometrics = _dbService.read(
-      'settings',
-      'use_biometrics',
-      defaultValue: false,
-    );
+    final result = _getBiometricsEnabledUseCase();
+    final useBiometrics = result.fold((failure) => false, (enabled) => enabled);
 
     if (!useBiometrics) {
       emit(AuthAuthenticated());
       return;
     }
 
-    final result = await _authRepository.isBiometricAvailable();
-    result.fold(
+    final bioResult = await _authRepository.isBiometricAvailable();
+    bioResult.fold(
       (failure) => emit(const AuthUnauthenticated(error: AuthError.authFailed)),
       (available) {
         if (!available) {

@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:passvault/core/constants/storage_keys.dart';
-import 'package:passvault/core/services/database_service.dart';
+import 'package:passvault/features/settings/domain/usecases/onboarding_usecases.dart';
 
 // Events
 abstract class OnboardingEvent extends Equatable {
@@ -26,15 +25,12 @@ class OnboardingSuccess extends OnboardingState {}
 
 @injectable
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
-  final DatabaseService _dbService;
+  final SetOnboardingCompleteUseCase _setOnboardingCompleteUseCase;
 
-  OnboardingBloc(this._dbService) : super(OnboardingInitial()) {
+  OnboardingBloc(this._setOnboardingCompleteUseCase)
+    : super(OnboardingInitial()) {
     on<CompleteOnboarding>((event, emit) async {
-      await _dbService.write(
-        StorageKeys.settingsBox,
-        StorageKeys.onboardingComplete,
-        true,
-      );
+      await _setOnboardingCompleteUseCase(true);
       emit(OnboardingSuccess());
     });
   }

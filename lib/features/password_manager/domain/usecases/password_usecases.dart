@@ -1,5 +1,5 @@
 import 'package:injectable/injectable.dart';
-import 'package:passvault/core/error/result.dart';
+import 'package:passvault/core/error/error.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/domain/repositories/password_repository.dart';
 

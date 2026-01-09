@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/core/design_system/components/components.dart';
+import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/core/theme/app_dimensions.dart';
-import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_bloc.dart';
@@ -146,105 +146,88 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    LabeledInputField(
-                      title: l10n.appNameLabel,
-                      child: TextFormField(
-                        key: const Key('add_edit_app_name_field'),
-                        controller: _appNameController,
-                        textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                          hintText: l10n.hintAppName,
-                          prefixIcon: const Icon(LucideIcons.globe),
-                        ),
-                        validator: (v) =>
-                            v?.isEmpty == true ? l10n.errorOccurred : null,
-                      ),
+                    AppTextField(
+                      key: const Key('add_edit_app_name_field'),
+                      label: l10n.appNameLabel,
+                      hint: l10n.hintAppName,
+                      controller: _appNameController,
+                      textInputAction: TextInputAction.next,
+                      prefixIcon: LucideIcons.globe,
+                      validator: (v) =>
+                          v?.isEmpty == true ? l10n.errorOccurred : null,
                     ),
                     const SizedBox(height: AppSpacing.l),
-                    LabeledInputField(
-                      title: l10n.usernameLabel,
-                      child: TextFormField(
-                        key: const Key('add_edit_username_field'),
-                        controller: _usernameController,
-                        textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                          hintText: l10n.hintUsername,
-                          prefixIcon: const Icon(LucideIcons.atSign),
-                        ),
-                      ),
+                    AppTextField(
+                      key: const Key('add_edit_username_field'),
+                      label: l10n.usernameLabel,
+                      hint: l10n.hintUsername,
+                      controller: _usernameController,
+                      textInputAction: TextInputAction.next,
+                      prefixIcon: LucideIcons.atSign,
                     ),
                     const SizedBox(height: AppSpacing.l),
-                    LabeledInputField(
-                      title: l10n.passwordLabel,
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            key: const Key('add_edit_password_field'),
-                            controller: _passwordController,
-                            obscureText: _obscurePassword,
-                            style: _obscurePassword
-                                ? null
-                                : context.theme.passwordText,
-                            decoration: InputDecoration(
-                              hintText: l10n.hintPassword,
-                              prefixIcon: const Icon(LucideIcons.lock),
-                              suffixIcon: IconButton(
-                                key: const Key('add_edit_visibility_toggle'),
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? LucideIcons.eye
-                                      : LucideIcons.eyeOff,
-                                ),
-                                onPressed: () => setState(
-                                  () => _obscurePassword = !_obscurePassword,
-                                ),
-                              ),
+                    Column(
+                      children: [
+                        AppTextField(
+                          key: const Key('add_edit_password_field'),
+                          label: l10n.passwordLabel,
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          prefixIcon: LucideIcons.lock,
+                          hint: l10n.hintPassword,
+                          suffixIcon: IconButton(
+                            key: const Key('add_edit_visibility_toggle'),
+                            icon: Icon(
+                              _obscurePassword
+                                  ? LucideIcons.eye
+                                  : LucideIcons.eyeOff,
                             ),
-                            validator: (v) =>
-                                v?.isEmpty == true ? l10n.errorOccurred : null,
-                          ),
-                          const SizedBox(height: AppSpacing.m),
-
-                          // Extracted UI component for strength indication
-                          if (_passwordController.text.isNotEmpty)
-                            _PasswordStrengthIndicator(
-                              strength: state.strength,
-                            ),
-
-                          const SizedBox(height: AppSpacing.l),
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton.icon(
-                              key: const Key('add_edit_generate_button'),
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: AppSpacing.m,
-                                ),
-                                side: BorderSide(
-                                  color: theme.colorScheme.primary.withValues(
-                                    alpha: 0.5,
-                                  ),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    AppRadius.m,
-                                  ),
-                                ),
-                              ),
-                              onPressed: () {
-                                context.read<AddEditPasswordBloc>().add(
-                                  GenerateStrongPassword(),
-                                );
-                              },
-                              icon: const Icon(
-                                LucideIcons.sparkles,
-                                size: AppIconSize.s,
-                              ),
-                              label: Text(l10n.generate),
+                            onPressed: () => setState(
+                              () => _obscurePassword = !_obscurePassword,
                             ),
                           ),
-                        ],
-                      ),
+                          validator: (v) =>
+                              v?.isEmpty == true ? l10n.errorOccurred : null,
+                        ),
+                        const SizedBox(height: AppSpacing.m),
+
+                        // Extracted UI component for strength indication
+                        if (_passwordController.text.isNotEmpty)
+                          _PasswordStrengthIndicator(strength: state.strength),
+
+                        const SizedBox(height: AppSpacing.l),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            key: const Key('add_edit_generate_button'),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: AppSpacing.m,
+                              ),
+                              side: BorderSide(
+                                color: theme.colorScheme.primary.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.m,
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              context.read<AddEditPasswordBloc>().add(
+                                GenerateStrongPassword(),
+                              );
+                            },
+                            icon: const Icon(
+                              LucideIcons.sparkles,
+                              size: AppIconSize.s,
+                            ),
+                            label: Text(l10n.generate),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: AppSpacing.x4xl), // Fab spacing
                   ],
@@ -298,42 +281,6 @@ class _PasswordStrengthIndicator extends StatelessWidget {
             fontFamily: context.theme.passwordText.fontFamily,
           ),
         ),
-      ],
-    );
-  }
-}
-
-/// A labeled input field widget that displays a title above the child widget.
-///
-/// Standardizes form field labeling across the app.
-class LabeledInputField extends StatelessWidget {
-  final String title;
-  final Widget child;
-
-  const LabeledInputField({
-    super.key,
-    required this.title,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppSpacing.s,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: AppSpacing.xs),
-          child: Text(
-            title.toUpperCase(),
-            style: context.typography.labelSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.0,
-              color: context.theme.primary,
-            ),
-          ),
-        ),
-        child,
       ],
     );
   }

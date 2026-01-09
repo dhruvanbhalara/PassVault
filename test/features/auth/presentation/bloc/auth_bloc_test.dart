@@ -1,32 +1,33 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/error/result.dart';
-import 'package:passvault/core/services/database_service.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 import 'package:passvault/features/auth/domain/usecases/authenticate_usecase.dart';
 import 'package:passvault/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:passvault/features/settings/domain/usecases/biometrics_usecases.dart';
 
 class MockAuthenticateUseCase extends Mock implements AuthenticateUseCase {}
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 
-class MockDatabaseService extends Mock implements DatabaseService {}
+class MockGetBiometricsEnabledUseCase extends Mock
+    implements GetBiometricsEnabledUseCase {}
 
 void main() {
   late AuthBloc bloc;
   late MockAuthenticateUseCase mockAuthenticateUseCase;
   late MockAuthRepository mockAuthRepository;
-  late MockDatabaseService mockDatabaseService;
+  late MockGetBiometricsEnabledUseCase mockGetBiometricsEnabledUseCase;
 
   setUp(() {
     mockAuthenticateUseCase = MockAuthenticateUseCase();
     mockAuthRepository = MockAuthRepository();
-    mockDatabaseService = MockDatabaseService();
+    mockGetBiometricsEnabledUseCase = MockGetBiometricsEnabledUseCase();
 
     bloc = AuthBloc(
       mockAuthenticateUseCase,
       mockAuthRepository,
-      mockDatabaseService,
+      mockGetBiometricsEnabledUseCase,
     );
   });
 
@@ -42,12 +43,8 @@ void main() {
     group('AuthCheckRequested', () {
       test('emits AuthAuthenticated when biometrics disabled', () async {
         when(
-          () => mockDatabaseService.read(
-            any(),
-            any(),
-            defaultValue: any(named: 'defaultValue'),
-          ),
-        ).thenReturn(false);
+          () => mockGetBiometricsEnabledUseCase(),
+        ).thenReturn(const Success(false));
 
         final states = <AuthState>[];
         final subscription = bloc.stream.listen(states.add);
@@ -61,15 +58,40 @@ void main() {
       });
 
       test(
+        'emits AuthAuthenticated when available but user disabled',
+        () async {
+          when(
+            () => mockGetBiometricsEnabledUseCase(),
+          ).thenReturn(const Success(false));
+
+          bloc.add(AuthCheckRequested());
+          await Future.delayed(const Duration(milliseconds: 100));
+
+          expect(bloc.state, isA<AuthAuthenticated>());
+        },
+      );
+
+      test('checks biometric availability when enabled', () async {
+        when(
+          () => mockGetBiometricsEnabledUseCase(),
+        ).thenReturn(const Success(true));
+        when(
+          () => mockAuthRepository.isBiometricAvailable(),
+        ).thenAnswer((_) async => const Success(true));
+
+        bloc.add(AuthCheckRequested());
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        verify(() => mockAuthRepository.isBiometricAvailable()).called(1);
+        expect(bloc.state, isA<AuthInitial>());
+      });
+
+      test(
         'emits AuthUnauthenticated when biometrics enabled but unavailable',
         () async {
           when(
-            () => mockDatabaseService.read(
-              any(),
-              any(),
-              defaultValue: any(named: 'defaultValue'),
-            ),
-          ).thenReturn(true);
+            () => mockGetBiometricsEnabledUseCase(),
+          ).thenReturn(const Success(true));
           when(
             () => mockAuthRepository.isBiometricAvailable(),
           ).thenAnswer((_) async => const Success(false));
@@ -89,15 +111,10 @@ void main() {
           );
         },
       );
-
       test('emits AuthInitial when biometrics enabled and available', () async {
         when(
-          () => mockDatabaseService.read(
-            any(),
-            any(),
-            defaultValue: any(named: 'defaultValue'),
-          ),
-        ).thenReturn(true);
+          () => mockGetBiometricsEnabledUseCase(),
+        ).thenReturn(const Success(true));
         when(
           () => mockAuthRepository.isBiometricAvailable(),
         ).thenAnswer((_) async => const Success(true));

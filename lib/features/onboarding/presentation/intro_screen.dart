@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:passvault/core/design_system/theme/app_animations.dart';
+import 'package:passvault/core/design_system/theme/app_dimensions.dart';
+import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/core/theme/app_animations.dart';
-import 'package:passvault/core/theme/app_dimensions.dart';
-import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 

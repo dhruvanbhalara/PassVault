@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:passvault/core/design_system/components/components.dart';
+import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/core/theme/app_animations.dart';
-import 'package:passvault/core/theme/app_dimensions.dart';
-import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
@@ -69,7 +68,7 @@ class AuthView extends StatelessWidget {
               child: BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
                   if (state is AuthLoading) {
-                    return CircularProgressIndicator(
+                    return AppLoader(
                       key: const Key('auth_loading'),
                       color: theme.onVaultGradient,
                     );
@@ -130,22 +129,18 @@ class AuthView extends StatelessWidget {
                             double.infinity,
                             tablet: AppDimensions.maxContentWidthTablet,
                           ),
-                          child: ElevatedButton(
+                          child: AppButton(
                             key: const Key('auth_unlock_button'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: theme.onVaultGradient,
-                              foregroundColor: theme.primary,
-                            ),
+                            text: AppLocalizations.of(
+                              context,
+                            )!.unlockWithBiometrics,
+                            backgroundColor: theme.onVaultGradient,
+                            foregroundColor: theme.primary,
                             onPressed: () {
                               context.read<AuthBloc>().add(
                                 AuthLoginRequested(),
                               );
                             },
-                            child: Text(
-                              AppLocalizations.of(
-                                context,
-                              )!.unlockWithBiometrics,
-                            ),
                           ),
                         ),
                       ),

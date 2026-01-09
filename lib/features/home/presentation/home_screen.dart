@@ -4,10 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/core/design_system/components/components.dart';
+import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/core/theme/app_animations.dart';
-import 'package:passvault/core/theme/app_dimensions.dart';
-import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/l10n/app_localizations.dart';
@@ -78,9 +77,7 @@ class HomeView extends StatelessWidget {
             builder: (context, state) {
               if (state is PasswordLoading) {
                 return const SliverFillRemaining(
-                  child: Center(
-                    child: CircularProgressIndicator(key: Key('home_loading')),
-                  ),
+                  child: Center(child: AppLoader(key: Key('home_loading'))),
                 );
               } else if (state is PasswordLoaded) {
                 if (state.passwords.isEmpty) {
@@ -227,7 +224,7 @@ class PasswordListTile extends StatelessWidget {
     final theme = context.theme;
     final textTheme = context.typography;
 
-    return Card(
+    return AppCard(
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.m,
