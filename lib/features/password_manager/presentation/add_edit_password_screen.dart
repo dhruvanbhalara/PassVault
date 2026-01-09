@@ -10,7 +10,12 @@ import 'package:passvault/features/password_manager/presentation/bloc/add_edit_p
 import 'package:passvault/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 
+/// Screen for adding or editing a password entry.
+///
+/// Provides a form for app name, username, and password,
+/// with integrated password generation and strength estimation.
 class AddEditPasswordScreen extends StatelessWidget {
+  /// Optional entry to edit. If null, a new entry will be created.
   final PasswordEntry? entry;
 
   const AddEditPasswordScreen({super.key, this.entry});
@@ -24,8 +29,9 @@ class AddEditPasswordScreen extends StatelessWidget {
   }
 }
 
-/// Internal view widget for AddEditPasswordScreen.
-/// Exposed for testing purposes only.
+/// Internal view widget for [AddEditPasswordScreen].
+///
+/// Separated to decouple [BlocProvider] setup from UI code.
 @visibleForTesting
 class AddEditPasswordView extends StatefulWidget {
   final PasswordEntry? entry;
@@ -43,8 +49,8 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
   late TextEditingController _passwordController;
   bool _obscurePassword = true;
 
-  // Track the last applied generated password to prevent re-application
-  // This fixes the bug where editing after generating would revert to generated password
+  /// Track the last applied generated password to prevent repeated application
+  /// in the listener which could overwrite manual edits.
   String? _lastAppliedGeneratedPassword;
 
   @override
@@ -61,7 +67,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
     );
     _passwordController.addListener(_onPasswordChanged);
 
-    // Initial strength check
+    // Initial strength check for existing passwords
     if (_passwordController.text.isNotEmpty) {
       context.read<AddEditPasswordBloc>().add(
         PasswordChanged(_passwordController.text),
@@ -83,19 +89,18 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
     super.dispose();
   }
 
-  void _save(BuildContext context) {
+  /// Validates and saves the current form data.
+  void _handleSave(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       final entry = PasswordEntry(
-        id:
-            widget.entry?.id ??
-            const Uuid().v4(), // Need uuid package or unique generation
+        id: widget.entry?.id ?? const Uuid().v4(),
         appName: _appNameController.text,
         username: _usernameController.text,
         password: _passwordController.text,
         lastUpdated: DateTime.now(),
       );
 
-      // Use getIt instead of context.read since PasswordBloc is on a different route
+      // Trigger the global PasswordBloc to persist changes.
       getIt<PasswordBloc>().add(
         widget.entry == null ? AddPassword(entry) : UpdatePassword(entry),
       );
@@ -103,26 +108,14 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
     }
   }
 
-  Color _getStrengthColor(BuildContext context, double strength) {
-    final colors = context.colors;
-    if (strength <= 0.25) return colors.strengthWeak;
-    if (strength <= 0.5) return colors.strengthFair;
-    if (strength <= 0.75) return colors.strengthGood;
-    return colors.strengthStrong;
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final textTheme = context.typography;
 
     return BlocConsumer<AddEditPasswordBloc, AddEditPasswordState>(
       listener: (context, state) {
-        // Only apply the generated password if:
-        // 1. Status is 'generated'
-        // 2. We haven't already applied this specific generated password
-        // This prevents overwriting user's manual edits
+        // Auto-apply generated password to the controller.
         if (state.status == AddEditStatus.generated &&
             state.generatedPassword != _lastAppliedGeneratedPassword) {
           _lastAppliedGeneratedPassword = state.generatedPassword;
@@ -133,7 +126,6 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
         }
       },
       builder: (context, state) {
-        final strength = state.strength;
         return Scaffold(
           appBar: AppBar(
             title: Text(
@@ -142,131 +134,121 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
           ),
           floatingActionButton: FloatingActionButton.extended(
             key: const Key('add_edit_save_button'),
-            onPressed: () => _save(context),
+            onPressed: () => _handleSave(context),
             icon: const Icon(LucideIcons.save),
             label: Text(l10n.save),
           ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppDimensions.spaceM),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  LabeledInputField(
-                    title: l10n.appNameLabel,
-                    child: TextFormField(
-                      key: const Key('add_edit_app_name_field'),
-                      controller: _appNameController,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        hintText: l10n.hintAppName,
-                        prefixIcon: const Icon(LucideIcons.globe),
-                      ),
-                      validator: (v) =>
-                          v?.isEmpty == true ? l10n.errorOccurred : null,
-                    ),
-                  ),
-                  const SizedBox(height: AppDimensions.spaceL),
-                  LabeledInputField(
-                    title: l10n.usernameLabel,
-                    child: TextFormField(
-                      key: const Key('add_edit_username_field'),
-                      controller: _usernameController,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        hintText: l10n.hintUsername,
-                        prefixIcon: const Icon(LucideIcons.atSign),
+          body: RepaintBoundary(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.m),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    LabeledInputField(
+                      title: l10n.appNameLabel,
+                      child: TextFormField(
+                        key: const Key('add_edit_app_name_field'),
+                        controller: _appNameController,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          hintText: l10n.hintAppName,
+                          prefixIcon: const Icon(LucideIcons.globe),
+                        ),
+                        validator: (v) =>
+                            v?.isEmpty == true ? l10n.errorOccurred : null,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: AppDimensions.spaceL),
-                  LabeledInputField(
-                    title: l10n.passwordLabel,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          key: const Key('add_edit_password_field'),
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          decoration: InputDecoration(
-                            hintText: l10n.hintPassword,
-                            prefixIcon: const Icon(LucideIcons.lock),
-                            suffixIcon: IconButton(
-                              key: const Key('add_edit_visibility_toggle'),
-                              icon: Icon(
-                                _obscurePassword
-                                    ? LucideIcons.eye
-                                    : LucideIcons.eyeOff,
-                              ),
-                              onPressed: () => setState(
-                                () => _obscurePassword = !_obscurePassword,
+                    const SizedBox(height: AppSpacing.l),
+                    LabeledInputField(
+                      title: l10n.usernameLabel,
+                      child: TextFormField(
+                        key: const Key('add_edit_username_field'),
+                        controller: _usernameController,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          hintText: l10n.hintUsername,
+                          prefixIcon: const Icon(LucideIcons.atSign),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.l),
+                    LabeledInputField(
+                      title: l10n.passwordLabel,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            key: const Key('add_edit_password_field'),
+                            controller: _passwordController,
+                            obscureText: _obscurePassword,
+                            style: _obscurePassword
+                                ? null
+                                : context.theme.passwordText,
+                            decoration: InputDecoration(
+                              hintText: l10n.hintPassword,
+                              prefixIcon: const Icon(LucideIcons.lock),
+                              suffixIcon: IconButton(
+                                key: const Key('add_edit_visibility_toggle'),
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? LucideIcons.eye
+                                      : LucideIcons.eyeOff,
+                                ),
+                                onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword,
+                                ),
                               ),
                             ),
+                            validator: (v) =>
+                                v?.isEmpty == true ? l10n.errorOccurred : null,
                           ),
-                          validator: (v) =>
-                              v?.isEmpty == true ? l10n.errorOccurred : null,
-                        ),
-                        const SizedBox(height: AppDimensions.spaceM),
-                        // Strength Indicator from BLoC state
-                        if (_passwordController.text.isNotEmpty)
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(2),
-                                  child: LinearProgressIndicator(
-                                    value: strength,
-                                    backgroundColor: theme
-                                        .colorScheme
-                                        .outlineVariant
-                                        .withValues(alpha: 0.2),
-                                    color: _getStrengthColor(context, strength),
-                                    minHeight: 4,
+                          const SizedBox(height: AppSpacing.m),
+
+                          // Extracted UI component for strength indication
+                          if (_passwordController.text.isNotEmpty)
+                            _PasswordStrengthIndicator(
+                              strength: state.strength,
+                            ),
+
+                          const SizedBox(height: AppSpacing.l),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              key: const Key('add_edit_generate_button'),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: AppSpacing.m,
+                                ),
+                                side: BorderSide(
+                                  color: theme.colorScheme.primary.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.m,
                                   ),
                                 ),
                               ),
-
-                              const SizedBox(width: AppDimensions.spaceS),
-                              Text(
-                                '${(strength * 100).toInt()}%',
-                                style: textTheme.bodySmall?.copyWith(
-                                  color: _getStrengthColor(context, strength),
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              onPressed: () {
+                                context.read<AddEditPasswordBloc>().add(
+                                  GenerateStrongPassword(),
+                                );
+                              },
+                              icon: const Icon(
+                                LucideIcons.sparkles,
+                                size: AppIconSize.s,
                               ),
-                            ],
-                          ),
-                        const SizedBox(height: AppDimensions.spaceL),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            key: const Key('add_edit_generate_button'),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              side: BorderSide(
-                                color: theme.colorScheme.primary.withValues(
-                                  alpha: 0.5,
-                                ),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: AppDimensions.borderRadiusM,
-                              ),
+                              label: Text(l10n.generate),
                             ),
-                            onPressed: () {
-                              context.read<AddEditPasswordBloc>().add(
-                                GenerateStrongPassword(),
-                              );
-                            },
-                            icon: const Icon(LucideIcons.sparkles, size: 18),
-                            label: Text(l10n.generate),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: AppDimensions.space4XL), // Fab spacing
-                ],
+                    const SizedBox(height: AppSpacing.x4xl), // Fab spacing
+                  ],
+                ),
               ),
             ),
           ),
@@ -276,8 +258,54 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
   }
 }
 
+/// Extracted widget for displaying password strength with semantic colors.
+class _PasswordStrengthIndicator extends StatelessWidget {
+  final double strength;
+
+  const _PasswordStrengthIndicator({required this.strength});
+
+  Color _getStrengthColor(BuildContext context) {
+    final theme = context.theme;
+    if (strength <= 0.25) return theme.strengthWeak;
+    if (strength <= 0.5) return theme.strengthFair;
+    if (strength <= 0.75) return theme.strengthGood;
+    return theme.strengthStrong;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _getStrengthColor(context);
+
+    return Row(
+      children: [
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.xxs),
+            child: LinearProgressIndicator(
+              value: strength,
+              backgroundColor: context.theme.securitySurface,
+              color: color,
+              minHeight: AppDimensions.passwordStrengthHeight,
+            ),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.s),
+        Text(
+          '${(strength * 100).toInt()}%',
+          style: context.typography.bodySmall?.copyWith(
+            color: color,
+            fontWeight: FontWeight.bold,
+            fontFamily: context.theme.passwordText.fontFamily,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 /// A labeled input field widget that displays a title above the child widget.
-/// Used for form fields with consistent styling across the app.
+///
+/// Standardizes form field labeling across the app.
 class LabeledInputField extends StatelessWidget {
   final String title;
   final Widget child;
@@ -292,16 +320,16 @@ class LabeledInputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppDimensions.spaceS,
+      spacing: AppSpacing.s,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4),
+          padding: const EdgeInsets.only(left: AppSpacing.xs),
           child: Text(
             title.toUpperCase(),
             style: context.typography.labelSmall?.copyWith(
               fontWeight: FontWeight.bold,
               letterSpacing: 1.0,
-              color: context.colors.primary,
+              color: context.theme.primary,
             ),
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/di/injection.dart';
+import 'package:passvault/core/theme/app_animations.dart';
 import 'package:passvault/core/theme/app_dimensions.dart';
 import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/core/theme/bloc/theme_cubit.dart';
@@ -11,6 +12,7 @@ import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart
 import 'package:passvault/features/settings/presentation/screens/password_generation_settings_screen.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
+/// Screen for managing application settings, security, and data.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -23,6 +25,7 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
+/// The stateful UI for the settings screen.
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
 
@@ -31,6 +34,7 @@ class SettingsView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final themeCubit = context.watch<ThemeCubit>();
     final settingsBloc = context.read<SettingsBloc>();
+    final theme = context.theme;
 
     return BlocListener<SettingsBloc, SettingsState>(
       listener: (context, state) {
@@ -42,16 +46,19 @@ class SettingsView extends StatelessWidget {
               message = l10n.exportSuccess;
             case SettingsSuccess.importSuccess:
               message = l10n.importSuccess;
-              // Refresh passwords list after import
               getIt<PasswordBloc>().add(LoadPasswords());
             case SettingsSuccess.none:
               break;
           }
 
           if (message.isNotEmpty) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(message)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(message),
+                behavior: SnackBarBehavior.floating,
+                duration: AppDuration.normal,
+              ),
+            );
           }
         } else if (state.status == SettingsStatus.failure &&
             state.error != SettingsError.none) {
@@ -68,15 +75,20 @@ class SettingsView extends StatelessWidget {
             case SettingsError.none:
               break;
           }
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(message)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: theme.error,
+              duration: AppDuration.normal,
+            ),
+          );
         }
       },
       child: Scaffold(
         appBar: AppBar(title: Text(l10n.settings)),
         body: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spaceM),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m),
           children: [
             _SectionHeader(title: l10n.appearance),
             Card(
@@ -89,7 +101,7 @@ class SettingsView extends StatelessWidget {
                 onTap: () => _showThemePicker(context, themeCubit, l10n),
               ),
             ),
-            const SizedBox(height: AppDimensions.spaceXL),
+            const SizedBox(height: AppSpacing.xl),
             _SectionHeader(title: l10n.security),
             Card(
               child: Column(
@@ -109,7 +121,10 @@ class SettingsView extends StatelessWidget {
                       );
                     },
                   ),
-                  const Divider(indent: 56, height: 1),
+                  const Divider(
+                    indent: AppDimensions.listTileDividerIndent,
+                    height: 1,
+                  ),
                   BlocBuilder<SettingsBloc, SettingsState>(
                     builder: (context, state) {
                       return SwitchListTile(
@@ -126,7 +141,7 @@ class SettingsView extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: AppDimensions.spaceXL),
+            const SizedBox(height: AppSpacing.xl),
             _SectionHeader(title: l10n.dataManagement),
             Card(
               child: Column(
@@ -138,7 +153,11 @@ class SettingsView extends StatelessWidget {
                     trailing: const Icon(LucideIcons.chevronRight),
                     onTap: () => _showExportPicker(context, settingsBloc),
                   ),
-                  const Divider(indent: 56, endIndent: 16, height: 1),
+                  const Divider(
+                    indent: AppDimensions.listTileDividerIndent,
+                    endIndent: AppSpacing.m,
+                    height: 1,
+                  ),
                   ListTile(
                     key: const Key('settings_import_tile'),
                     leading: const Icon(LucideIcons.download),
@@ -149,7 +168,7 @@ class SettingsView extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: AppDimensions.spaceXXL),
+            const SizedBox(height: AppSpacing.xxl),
           ],
         ),
       ),
@@ -158,21 +177,21 @@ class SettingsView extends StatelessWidget {
 
   void _showExportPicker(BuildContext context, SettingsBloc bloc) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final colors = context.colors;
+    final theme = context.theme;
     final textTheme = context.typography;
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: colors.surface,
+      backgroundColor: theme.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppDimensions.radiusXL),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
       builder: (context) => SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.only(
+            top: AppSpacing.s,
+            bottom: context.responsive(AppSpacing.s, tablet: AppSpacing.m),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -181,15 +200,20 @@ class SettingsView extends StatelessWidget {
                 child: Container(
                   width: 40,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: AppDimensions.spaceM),
+                  margin: const EdgeInsets.only(bottom: AppSpacing.m),
                   decoration: BoxDecoration(
-                    color: colors.surfaceDim,
-                    borderRadius: AppDimensions.borderRadiusS,
+                    color: theme.surfaceDim,
+                    borderRadius: BorderRadius.circular(AppRadius.s),
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.m,
+                  0,
+                  AppSpacing.m,
+                  AppSpacing.m,
+                ),
                 child: Text(
                   l10n.exportData,
                   style: textTheme.titleMedium?.copyWith(
@@ -197,105 +221,96 @@ class SettingsView extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: AppDimensions.spaceM),
+              const SizedBox(height: AppSpacing.m),
               ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
+                leading: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: colors.primary.withValues(alpha: 0.1),
-                    borderRadius: AppDimensions.borderRadiusM,
+                    color: theme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.m),
                   ),
-                  child: Icon(
-                    LucideIcons.braces,
-                    color: colors.primary,
-                    size: 20,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.s),
+                    child: Icon(
+                      LucideIcons.braces,
+                      color: theme.primary,
+                      size: AppIconSize.m,
+                    ),
                   ),
                 ),
                 title: Text(l10n.exportJson),
                 subtitle: Text(
                   l10n.jsonBackupFormat,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: textTheme.bodySmall,
                 ),
-                trailing: Icon(
-                  LucideIcons.chevronRight,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                trailing: const Icon(LucideIcons.chevronRight),
                 onTap: () {
                   bloc.add(const ExportData(isJson: true));
                   Navigator.pop(context);
                 },
               ),
               Divider(
-                indent: 72,
-                endIndent: 16,
-                color: theme.colorScheme.outline.withValues(alpha: 0.2),
+                indent: AppDimensions.listTileDividerIndent,
+                endIndent: AppSpacing.m,
+                color: theme.outline.withValues(alpha: 0.1),
               ),
               ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
+                leading: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.secondaryContainer,
-                    borderRadius: AppDimensions.borderRadiusM,
+                    color: theme.secondary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.m),
                   ),
-                  child: Icon(
-                    LucideIcons.table,
-                    color: theme.colorScheme.onSecondaryContainer,
-                    size: 20,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.s),
+                    child: Icon(
+                      LucideIcons.table,
+                      color: theme.secondary,
+                      size: AppIconSize.m,
+                    ),
                   ),
                 ),
                 title: Text(l10n.exportCsv),
                 subtitle: Text(
                   l10n.csvSpreadsheetFormat,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: textTheme.bodySmall,
                 ),
-                trailing: Icon(
-                  LucideIcons.chevronRight,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                trailing: const Icon(LucideIcons.chevronRight),
                 onTap: () {
                   bloc.add(const ExportData(isJson: false));
                   Navigator.pop(context);
                 },
               ),
               Divider(
-                indent: 72,
-                endIndent: 16,
-                color: theme.colorScheme.outline.withValues(alpha: 0.2),
+                indent: AppDimensions.listTileDividerIndent,
+                endIndent: AppSpacing.m,
+                color: theme.outline.withValues(alpha: 0.1),
               ),
               ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
+                leading: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.tertiaryContainer,
-                    borderRadius: AppDimensions.borderRadiusM,
+                    color: theme.warning.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.m),
                   ),
-                  child: Icon(
-                    LucideIcons.lock,
-                    color: theme.colorScheme.onTertiaryContainer,
-                    size: 20,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.s),
+                    child: Icon(
+                      LucideIcons.lock,
+                      color: theme.warning,
+                      size: AppIconSize.m,
+                    ),
                   ),
                 ),
                 title: Text(l10n.exportEncrypted),
                 subtitle: Text(
                   l10n.encryptedPasswordProtected,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: textTheme.bodySmall,
                 ),
-                trailing: Icon(
-                  LucideIcons.chevronRight,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                trailing: const Icon(LucideIcons.chevronRight),
                 onTap: () {
                   Navigator.pop(context);
                   _showPasswordDialog(context, bloc, isExport: true);
                 },
               ),
-              const SizedBox(height: AppDimensions.spaceS),
+              const SizedBox(height: AppSpacing.s),
             ],
           ),
         ),
@@ -305,22 +320,22 @@ class SettingsView extends StatelessWidget {
 
   void _showImportPicker(BuildContext context, SettingsBloc bloc) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final colors = context.colors;
+    final theme = context.theme;
     final textTheme = context.typography;
-    final outerContext = context; // Capture for use after pop
+    final outerContext = context;
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: colors.surface,
+      backgroundColor: theme.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppDimensions.radiusXL),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
       builder: (_) => SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.only(
+            top: AppSpacing.s,
+            bottom: context.responsive(AppSpacing.s, tablet: AppSpacing.m),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -329,15 +344,20 @@ class SettingsView extends StatelessWidget {
                 child: Container(
                   width: 40,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: AppDimensions.spaceM),
+                  margin: const EdgeInsets.only(bottom: AppSpacing.m),
                   decoration: BoxDecoration(
-                    color: colors.surfaceDim,
-                    borderRadius: AppDimensions.borderRadiusS,
+                    color: theme.surfaceDim,
+                    borderRadius: BorderRadius.circular(AppRadius.s),
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.m,
+                  AppSpacing.m,
+                  AppSpacing.m,
+                  AppSpacing.m,
+                ),
                 child: Text(
                   l10n.importData,
                   style: textTheme.titleMedium?.copyWith(
@@ -345,65 +365,59 @@ class SettingsView extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: AppDimensions.spaceM),
+              const SizedBox(height: AppSpacing.m),
               ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
+                leading: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: colors.primary.withValues(alpha: 0.1),
-                    borderRadius: AppDimensions.borderRadiusM,
+                    color: theme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.m),
                   ),
-                  child: Icon(
-                    LucideIcons.braces,
-                    color: colors.primary,
-                    size: 20,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.s),
+                    child: Icon(
+                      LucideIcons.braces,
+                      color: theme.primary,
+                      size: AppIconSize.m,
+                    ),
                   ),
                 ),
                 title: Text(l10n.importJson),
                 subtitle: Text(
                   l10n.importFromJsonBackup,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: textTheme.bodySmall,
                 ),
-                trailing: Icon(
-                  LucideIcons.chevronRight,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                trailing: const Icon(LucideIcons.chevronRight),
                 onTap: () {
                   bloc.add(const ImportData(isJson: true));
                   Navigator.pop(context);
                 },
               ),
               Divider(
-                indent: 72,
-                endIndent: 16,
-                color: theme.colorScheme.outline.withValues(alpha: 0.2),
+                indent: AppDimensions.listTileDividerIndent,
+                endIndent: AppSpacing.m,
+                color: theme.outline.withValues(alpha: 0.1),
               ),
               ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
+                leading: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.secondaryContainer,
-                    borderRadius: AppDimensions.borderRadiusM,
+                    color: theme.secondary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.m),
                   ),
-                  child: Icon(
-                    LucideIcons.table,
-                    color: theme.colorScheme.onSecondaryContainer,
-                    size: 20,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.s),
+                    child: Icon(
+                      LucideIcons.table,
+                      color: theme.secondary,
+                      size: AppIconSize.m,
+                    ),
                   ),
                 ),
                 title: Text(l10n.importCsv),
                 subtitle: Text(
                   l10n.importFromSpreadsheet,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: textTheme.bodySmall,
                 ),
-                trailing: Icon(
-                  LucideIcons.chevronRight,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                trailing: const Icon(LucideIcons.chevronRight),
                 onTap: () {
                   bloc.add(const ImportData(isJson: false));
                   Navigator.pop(context);
@@ -411,39 +425,36 @@ class SettingsView extends StatelessWidget {
               ),
               Divider(
                 indent: 72,
-                endIndent: 16,
-                color: theme.colorScheme.outline.withValues(alpha: 0.2),
+                endIndent: AppSpacing.m,
+                color: theme.outline.withValues(alpha: 0.1),
               ),
               ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
+                leading: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.tertiaryContainer,
-                    borderRadius: AppDimensions.borderRadiusM,
+                    color: theme.warning.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.m),
                   ),
-                  child: Icon(
-                    LucideIcons.lock,
-                    color: theme.colorScheme.onTertiaryContainer,
-                    size: 20,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.s),
+                    child: Icon(
+                      LucideIcons.lock,
+                      color: theme.warning,
+                      size: AppIconSize.m,
+                    ),
                   ),
                 ),
                 title: Text(l10n.importEncrypted),
                 subtitle: Text(
                   l10n.importFromEncryptedBackup,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: textTheme.bodySmall,
                 ),
-                trailing: Icon(
-                  LucideIcons.chevronRight,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                trailing: const Icon(LucideIcons.chevronRight),
                 onTap: () {
                   Navigator.pop(outerContext);
                   _handleEncryptedImport(outerContext, bloc);
                 },
               ),
-              const SizedBox(height: AppDimensions.spaceS),
+              const SizedBox(height: AppSpacing.s),
             ],
           ),
         ),
@@ -472,26 +483,24 @@ class SettingsView extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppDimensions.radiusXL),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
       builder: (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: AppDimensions.spaceS),
+            const SizedBox(height: AppSpacing.s),
             SizedBox(
-              width: 40,
-              height: 4,
+              width: AppDimensions.dragHandleWidth,
+              height: AppDimensions.dragHandleHeight,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: context.colors.surfaceDim,
-                  borderRadius: AppDimensions.borderRadiusS,
+                  color: context.theme.surfaceDim,
+                  borderRadius: BorderRadius.circular(AppRadius.s),
                 ),
               ),
             ),
-            const SizedBox(height: AppDimensions.spaceM),
+            const SizedBox(height: AppSpacing.m),
             ListTile(
               leading: const Icon(LucideIcons.monitor),
               title: Text(l10n.system),
@@ -524,7 +533,7 @@ class SettingsView extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-            const SizedBox(height: AppDimensions.spaceM),
+            const SizedBox(height: AppSpacing.m),
           ],
         ),
       ),
@@ -538,51 +547,30 @@ class SettingsView extends StatelessWidget {
     String? filePath,
   }) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final theme = context.theme;
     final passwordController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: colors.surface,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          isExport ? l10n.exportEncrypted : l10n.importEncrypted,
-          style: TextStyle(color: colors.onSurface),
+        backgroundColor: theme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
         ),
+        title: Text(isExport ? l10n.exportEncrypted : l10n.importEncrypted),
         content: Form(
           key: formKey,
           child: TextFormField(
             controller: passwordController,
             obscureText: true,
             autofocus: true,
-            style: TextStyle(color: colors.onSurface),
             decoration: InputDecoration(
               labelText: l10n.passwordLabel,
-              labelStyle: TextStyle(color: colors.onSurfaceVariant),
               hintText: isExport
                   ? l10n.enterExportPassword
                   : l10n.enterImportPassword,
-              hintStyle: TextStyle(color: colors.onSurfaceVariant),
-              prefixIcon: Icon(LucideIcons.lock, color: colors.primary),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: colors.outline),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: colors.primary, width: 2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: colors.error),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: colors.error, width: 2),
-                borderRadius: BorderRadius.circular(12),
-              ),
+              prefixIcon: Icon(LucideIcons.lock, color: theme.primary),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -597,7 +585,7 @@ class SettingsView extends StatelessWidget {
             onPressed: () => Navigator.pop(dialogContext),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
+          ElevatedButton(
             onPressed: () {
               if (formKey.currentState!.validate()) {
                 Navigator.pop(dialogContext);
@@ -622,17 +610,14 @@ class SettingsView extends StatelessWidget {
     );
   }
 
-  /// Handles encrypted import: pick file first, then show password dialog
   Future<void> _handleEncryptedImport(
     BuildContext context,
     SettingsBloc bloc,
   ) async {
-    // Pick file first using FileType.any to support custom extensions on iOS
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
 
     if (result != null && result.files.single.path != null) {
       final filePath = result.files.single.path!;
-      // Only accept .pvault files
       if (filePath.endsWith('.pvault')) {
         if (context.mounted) {
           _showPasswordDialog(
@@ -645,7 +630,10 @@ class SettingsView extends StatelessWidget {
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.importFailed)),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.importFailed),
+              backgroundColor: context.theme.error,
+            ),
           );
         }
       }
@@ -653,6 +641,7 @@ class SettingsView extends StatelessWidget {
   }
 }
 
+/// A header widget for group settings sections with premium typography.
 class _SectionHeader extends StatelessWidget {
   final String title;
   const _SectionHeader({required this.title});
@@ -660,14 +649,30 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 24, 8, 12),
-      child: Text(
-        title.toUpperCase(),
-        style: context.typography.labelLarge?.copyWith(
-          color: context.colors.primary,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.1,
-        ),
+      padding: EdgeInsets.only(
+        left: AppSpacing.s,
+        top: context.responsive(AppSpacing.l, tablet: AppSpacing.xl),
+        right: AppSpacing.s,
+        bottom: AppSpacing.m,
+      ),
+      child: Row(
+        children: [
+          Text(
+            title.toUpperCase(),
+            style: context.typography.labelLarge?.copyWith(
+              color: context.theme.primary,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 2.0,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.m),
+          Expanded(
+            child: Divider(
+              color: context.theme.primary.withValues(alpha: 0.1),
+              thickness: 1,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -9,6 +9,7 @@ import 'package:passvault/features/settings/domain/entities/password_generation_
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
+/// Screen to configure password generation preferences.
 class PasswordGenerationSettingsScreen extends StatelessWidget {
   const PasswordGenerationSettingsScreen({super.key});
 
@@ -27,37 +28,32 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = context.colors;
+    final theme = context.theme;
     final textTheme = context.typography;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          l10n.passwordGeneration,
-        ), // Ensure this key exists or use generic text for now
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text(l10n.passwordGeneration), centerTitle: true),
       body: BlocBuilder<SettingsBloc, SettingsState>(
         builder: (context, state) {
           final settings = state.passwordSettings;
 
           return ListView(
-            padding: const EdgeInsets.all(AppDimensions.spaceL),
+            padding: const EdgeInsets.all(AppSpacing.l),
             children: [
               _PreviewCard(settings: settings),
-              const SizedBox(height: AppDimensions.spaceL),
+              const SizedBox(height: AppSpacing.l),
               Text(
                 l10n.passwordLength.toUpperCase(),
                 style: textTheme.labelLarge?.copyWith(
-                  color: colors.primary,
+                  color: theme.primary,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.1,
                 ),
               ),
-              const SizedBox(height: AppDimensions.spaceM),
+              const SizedBox(height: AppSpacing.m),
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(AppDimensions.spaceM),
+                  padding: const EdgeInsets.all(AppSpacing.m),
                   child: Column(
                     children: [
                       Row(
@@ -67,20 +63,21 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                             children: [
                               DecoratedBox(
                                 decoration: BoxDecoration(
-                                  color: colors.primary.withValues(alpha: 0.1),
-                                  borderRadius: AppDimensions.borderRadiusS,
+                                  color: theme.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.s,
+                                  ),
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: const EdgeInsets.all(AppSpacing.s),
                                   child: Icon(
                                     LucideIcons.ruler,
-                                    color: colors.primary,
-                                    size: 18,
+                                    color: theme.primary,
+                                    size: AppIconSize.s,
                                   ),
                                 ),
                               ),
-
-                              const SizedBox(width: AppDimensions.radiusM),
+                              const SizedBox(width: AppSpacing.m),
                               Text(
                                 l10n.passwordLength,
                                 style: textTheme.titleMedium,
@@ -89,18 +86,18 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                           ),
                           DecoratedBox(
                             decoration: BoxDecoration(
-                              color: colors.primary,
-                              borderRadius: AppDimensions.borderRadiusXL,
+                              color: theme.primary,
+                              borderRadius: BorderRadius.circular(AppRadius.xl),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: AppDimensions.radiusM,
-                                vertical: 6,
+                                horizontal: AppSpacing.m,
+                                vertical: AppSpacing.xs,
                               ),
                               child: Text(
                                 '${settings.length}',
                                 style: textTheme.titleMedium?.copyWith(
-                                  color: colors.onPrimary,
+                                  color: theme.onPrimary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -108,15 +105,15 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: AppDimensions.spaceM),
+                      const SizedBox(height: AppSpacing.m),
                       SliderTheme(
                         data: SliderTheme.of(context).copyWith(
-                          trackHeight: 6,
+                          trackHeight: AppDimensions.sliderTrackHeight,
                           thumbShape: const RoundSliderThumbShape(
-                            enabledThumbRadius: 10,
+                            enabledThumbRadius: AppDimensions.sliderThumbRadius,
                           ),
                           overlayShape: const RoundSliderOverlayShape(
-                            overlayRadius: 20,
+                            overlayRadius: AppDimensions.sliderOverlayRadius,
                           ),
                         ),
                         child: Slider(
@@ -135,7 +132,7 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: AppDimensions.radiusM,
+                          horizontal: AppSpacing.m,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -143,13 +140,13 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                             Text(
                               '8',
                               style: textTheme.bodySmall?.copyWith(
-                                color: context.colors.outline,
+                                color: theme.outline,
                               ),
                             ),
                             Text(
                               '64',
                               style: textTheme.bodySmall?.copyWith(
-                                color: context.colors.outline,
+                                color: theme.outline,
                               ),
                             ),
                           ],
@@ -159,16 +156,16 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: AppDimensions.spaceXL),
+              const SizedBox(height: AppSpacing.xl),
               Text(
                 l10n.characterSets.toUpperCase(),
                 style: textTheme.labelLarge?.copyWith(
-                  color: colors.primary,
+                  color: theme.primary,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.1,
                 ),
               ),
-              const SizedBox(height: AppDimensions.spaceM),
+              const SizedBox(height: AppSpacing.m),
               Card(
                 child: Column(
                   children: [
@@ -185,7 +182,10 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                         );
                       },
                     ),
-                    const Divider(indent: 56, height: 1),
+                    const Divider(
+                      indent: AppDimensions.listTileDividerIndent,
+                      height: 1,
+                    ),
                     SwitchListTile(
                       secondary: const Icon(LucideIcons.caseLower),
                       title: Text(l10n.lowercase),
@@ -199,7 +199,10 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                         );
                       },
                     ),
-                    const Divider(indent: 56, height: 1),
+                    const Divider(
+                      indent: AppDimensions.listTileDividerIndent,
+                      height: 1,
+                    ),
                     SwitchListTile(
                       secondary: const Icon(LucideIcons.hash),
                       title: Text(l10n.numbers),
@@ -213,7 +216,10 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                         );
                       },
                     ),
-                    const Divider(indent: 56, height: 1),
+                    const Divider(
+                      indent: AppDimensions.listTileDividerIndent,
+                      height: 1,
+                    ),
                     SwitchListTile(
                       secondary: const Icon(LucideIcons.asterisk),
                       title: Text(l10n.specialCharacters),
@@ -279,8 +285,6 @@ class _PreviewCardState extends State<_PreviewCard> {
   }
 
   void _generatePreview() {
-    // Safety check: ensure at least one set is selected to prevent crashes
-    // If all are false, we force lowercase
     var safeSettings = widget.settings;
     if (!widget.settings.useUppercase &&
         !widget.settings.useNumbers &&
@@ -306,33 +310,33 @@ class _PreviewCardState extends State<_PreviewCard> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+
     return Card(
-      color: context.colors.primaryContainer,
+      color: theme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: AppDimensions.spaceL,
-          vertical: AppDimensions.spaceM,
+          horizontal: AppSpacing.l,
+          vertical: AppSpacing.m,
         ),
         child: Row(
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: AppDimensions.spaceS,
+                spacing: AppSpacing.s,
                 children: [
                   Text(
                     AppLocalizations.of(context)!.preview.toUpperCase(),
                     style: context.typography.labelSmall?.copyWith(
-                      color: context.colors.onPrimary,
+                      color: theme.onPrimaryContainer,
                       letterSpacing: 1.5,
                     ),
                   ),
                   Text(
                     _previewPassword,
-                    style: context.typography.titleMedium?.copyWith(
-                      color: context.colors.onPrimary,
-                      fontFamily: 'Courier',
-                      fontWeight: FontWeight.bold,
+                    style: theme.passwordText.copyWith(
+                      color: theme.onPrimaryContainer,
                     ),
                   ),
                 ],
@@ -341,7 +345,8 @@ class _PreviewCardState extends State<_PreviewCard> {
             IconButton(
               icon: Icon(
                 LucideIcons.refreshCw,
-                color: context.colors.onPrimary,
+                color: theme.onPrimaryContainer,
+                size: AppIconSize.m,
               ),
               onPressed: _generatePreview,
               tooltip: AppLocalizations.of(context)!.refreshPreview,
