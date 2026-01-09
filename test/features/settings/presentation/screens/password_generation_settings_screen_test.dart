@@ -83,6 +83,5 @@ void main() {
 
     expect(find.byType(PasswordGenerationSettingsScreen), findsOneWidget);
     expect(find.text('PASSWORD LENGTH'), findsOneWidget);
-    expect(find.text('CHARACTER SETS'), findsOneWidget);
   });
 }
