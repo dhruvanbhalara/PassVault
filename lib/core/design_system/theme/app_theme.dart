@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:passvault/features/settings/presentation/bloc/theme/theme_cubit.dart';
 
 import 'app_colors.dart';
 import 'app_dimensions.dart';
 import 'app_theme_extension.dart';
-import 'bloc/theme_cubit.dart';
 
 /// The central theme management class for the PassVault application.
 class AppTheme {

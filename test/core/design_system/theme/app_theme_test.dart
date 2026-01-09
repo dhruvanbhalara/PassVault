@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:passvault/core/theme/app_colors.dart';
-import 'package:passvault/core/theme/app_dimensions.dart';
-import 'package:passvault/core/theme/app_theme.dart';
-import 'package:passvault/core/theme/app_theme_extension.dart';
+import 'package:passvault/core/design_system/theme/app_colors.dart';
+import 'package:passvault/core/design_system/theme/app_dimensions.dart';
+import 'package:passvault/core/design_system/theme/app_theme.dart';
+import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 
 void main() {
   group('Design System Tokens', () {

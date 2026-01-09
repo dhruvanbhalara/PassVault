@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:passvault/core/theme/app_dimensions.dart';
+import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 
 /// Custom theme extension to expose semantic colors, styles and effects
 /// tailored for a secure password manager.
