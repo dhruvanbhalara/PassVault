@@ -2,13 +2,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/core/theme/app_animations.dart';
-import 'package:passvault/core/theme/app_dimensions.dart';
-import 'package:passvault/core/theme/app_theme_extension.dart';
-import 'package:passvault/core/theme/bloc/theme_cubit.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/theme/theme_cubit.dart';
 import 'package:passvault/features/settings/presentation/screens/password_generation_settings_screen.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 

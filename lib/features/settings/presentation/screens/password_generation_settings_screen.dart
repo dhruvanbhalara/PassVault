@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/core/design_system/theme/app_dimensions.dart';
+import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/core/theme/app_dimensions.dart';
-import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';

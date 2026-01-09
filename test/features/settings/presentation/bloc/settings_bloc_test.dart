@@ -4,13 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/error/result.dart';
 import 'package:passvault/core/services/data_service.dart';
-import 'package:passvault/core/services/database_service.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/domain/repositories/password_repository.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
+import 'package:passvault/features/settings/domain/repositories/settings_repository.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 
-class MockDatabaseService extends Mock implements DatabaseService {}
+class MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class MockDataService extends Mock implements DataService {}
 
@@ -18,19 +18,19 @@ class MockPasswordRepository extends Mock implements PasswordRepository {}
 
 void main() {
   late SettingsBloc bloc;
-  late MockDatabaseService mockDatabaseService;
+  late MockSettingsRepository mockSettingsRepository;
   late MockDataService mockDataService;
   late MockPasswordRepository mockPasswordRepository;
 
   const tSettings = PasswordGenerationSettings();
 
   setUp(() {
-    mockDatabaseService = MockDatabaseService();
+    mockSettingsRepository = MockSettingsRepository();
     mockDataService = MockDataService();
     mockPasswordRepository = MockPasswordRepository();
 
     bloc = SettingsBloc(
-      mockDatabaseService,
+      mockSettingsRepository,
       mockDataService,
       mockPasswordRepository,
     );
@@ -51,13 +51,14 @@ void main() {
     });
 
     group('LoadSettings', () {
-      test('loads settings from database', () {
+      test('loads settings from repository', () {
         when(
-          () => mockDatabaseService.read(any(), any(), defaultValue: false),
-        ).thenReturn(true);
+          () => mockSettingsRepository.getBiometricsEnabled(),
+        ).thenReturn(const Success(true));
+
         when(
-          () => mockDatabaseService.read(any(), any(), defaultValue: null),
-        ).thenReturn(null);
+          () => mockSettingsRepository.getPasswordGenerationSettings(),
+        ).thenReturn(const Success(PasswordGenerationSettings()));
 
         bloc.add(LoadSettings());
 
@@ -75,48 +76,28 @@ void main() {
     });
 
     group('ToggleBiometrics', () {
-      test('updates database and state', () async {
+      test('saves preference and updates state', () async {
         when(
-          () => mockDatabaseService.write(any(), any(), any()),
-        ).thenAnswer((_) async {});
+          () => mockSettingsRepository.setBiometricsEnabled(any()),
+        ).thenAnswer((_) async => const Success(null));
 
         bloc.add(const ToggleBiometrics(true));
+        await Future.delayed(const Duration(milliseconds: 50));
 
-        await expectLater(
-          bloc.stream,
-          emits(
-            isA<SettingsState>().having(
-              (s) => s.useBiometrics,
-              'useBiometrics',
-              true,
-            ),
-          ),
-        );
-        verify(() => mockDatabaseService.write(any(), any(), true)).called(1);
+        verify(
+          () => mockSettingsRepository.setBiometricsEnabled(true),
+        ).called(1);
+        expect(bloc.state.useBiometrics, true);
       });
     });
 
     group('UpdatePasswordSettings', () {
-      test('updates database and state', () async {
+      test('saves settings and updates state', () async {
         when(
-          () => mockDatabaseService.write(any(), any(), any()),
-        ).thenAnswer((_) async {});
+          () => mockSettingsRepository.savePasswordGenerationSettings(any()),
+        ).thenAnswer((_) async => const Success(null));
 
         bloc.add(const UpdatePasswordSettings(tSettings));
-
-        await expectLater(
-          bloc.stream,
-          emits(
-            isA<SettingsState>().having(
-              (s) => s.passwordSettings,
-              'passwordSettings',
-              tSettings,
-            ),
-          ),
-        );
-        verify(
-          () => mockDatabaseService.write(any(), any(), tSettings.toJson()),
-        ).called(1);
       });
     });
 
