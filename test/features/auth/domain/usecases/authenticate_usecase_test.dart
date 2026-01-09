@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/core/error/result.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 import 'package:passvault/features/auth/domain/usecases/authenticate_usecase.dart';
 
@@ -16,13 +17,15 @@ void main() {
 
   test('should call repository.authenticate', () async {
     // Arrange
-    when(() => mockRepository.authenticate()).thenAnswer((_) async => true);
+    when(
+      () => mockRepository.authenticate(),
+    ).thenAnswer((_) async => const Success(true));
 
     // Act
     final result = await useCase();
 
     // Assert
-    expect(result, true);
+    expect(result, const Success(true));
     verify(() => mockRepository.authenticate()).called(1);
   });
 }

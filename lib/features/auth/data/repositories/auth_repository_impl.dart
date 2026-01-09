@@ -1,4 +1,6 @@
 import 'package:injectable/injectable.dart';
+import 'package:passvault/core/error/failures.dart';
+import 'package:passvault/core/error/result.dart';
 import 'package:passvault/core/services/biometric_service.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 
@@ -9,8 +11,22 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._biometricService);
 
   @override
-  Future<bool> authenticate() => _biometricService.authenticate();
+  Future<Result<bool>> authenticate() async {
+    try {
+      final success = await _biometricService.authenticate();
+      return Success(success);
+    } catch (e) {
+      return Error(AuthFailure(e.toString()));
+    }
+  }
 
   @override
-  Future<bool> isBiometricAvailable() => _biometricService.isBiometricAvailable;
+  Future<Result<bool>> isBiometricAvailable() async {
+    try {
+      final available = await _biometricService.isBiometricAvailable;
+      return Success(available);
+    } catch (e) {
+      return Error(AuthFailure(e.toString()));
+    }
+  }
 }

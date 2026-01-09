@@ -1,4 +1,6 @@
 import 'package:injectable/injectable.dart';
+import 'package:passvault/core/error/failures.dart';
+import 'package:passvault/core/error/result.dart';
 import 'package:passvault/features/password_manager/data/datasources/password_local_data_source.dart';
 import 'package:passvault/features/password_manager/data/models/password_entry_model.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
@@ -11,19 +13,33 @@ class PasswordRepositoryImpl implements PasswordRepository {
   PasswordRepositoryImpl(this._localDataSource);
 
   @override
-  Future<List<PasswordEntry>> getPasswords() async {
-    final models = await _localDataSource.getPasswords();
-    return models.map((e) => e.toEntity()).toList();
+  Future<Result<List<PasswordEntry>>> getPasswords() async {
+    try {
+      final models = await _localDataSource.getPasswords();
+      return Success(models.map((e) => e.toEntity()).toList());
+    } catch (e) {
+      return Error(DatabaseFailure(e.toString()));
+    }
   }
 
   @override
-  Future<void> savePassword(PasswordEntry entry) async {
-    final model = PasswordEntryModel.fromEntity(entry);
-    await _localDataSource.savePassword(model);
+  Future<Result<void>> savePassword(PasswordEntry entry) async {
+    try {
+      final model = PasswordEntryModel.fromEntity(entry);
+      await _localDataSource.savePassword(model);
+      return const Success(null);
+    } catch (e) {
+      return Error(DatabaseFailure(e.toString()));
+    }
   }
 
   @override
-  Future<void> deletePassword(String id) async {
-    await _localDataSource.deletePassword(id);
+  Future<Result<void>> deletePassword(String id) async {
+    try {
+      await _localDataSource.deletePassword(id);
+      return const Success(null);
+    } catch (e) {
+      return Error(DatabaseFailure(e.toString()));
+    }
   }
 }

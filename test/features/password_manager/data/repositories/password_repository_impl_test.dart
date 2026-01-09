@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/core/error/result.dart';
 import 'package:passvault/features/password_manager/data/datasources/password_local_data_source.dart';
 import 'package:passvault/features/password_manager/data/models/password_entry_model.dart';
 import 'package:passvault/features/password_manager/data/repositories/password_repository_impl.dart';
@@ -45,7 +46,7 @@ void main() {
         final result = await repository.getPasswords();
 
         // Assert
-        expect(result, contains(tEntry));
+        expect(result, Success([tEntry]));
         verify(() => mockDataSource.getPasswords()).called(1);
       },
     );

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/core/error/result.dart';
 import 'package:passvault/core/services/data_service.dart';
 import 'package:passvault/core/services/database_service.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
@@ -122,7 +123,7 @@ void main() {
     group('ExportData', () {
       test('emits success when export succeeds', () async {
         when(() => mockPasswordRepository.getPasswords()).thenAnswer(
-          (_) async => [
+          (_) async => Success([
             PasswordEntry(
               id: '1',
               appName: 'app',
@@ -130,7 +131,7 @@ void main() {
               password: 'pass',
               lastUpdated: DateTime.now(),
             ),
-          ],
+          ]),
         );
         when(
           () => mockDataService.exportToJson(any()),
@@ -160,7 +161,7 @@ void main() {
       test('emits failure when no data to export', () async {
         when(
           () => mockPasswordRepository.getPasswords(),
-        ).thenAnswer((_) async => []);
+        ).thenAnswer((_) async => const Success([]));
 
         bloc.add(const ExportData(isJson: true));
 
@@ -192,7 +193,7 @@ void main() {
       test('emits success when encrypted export succeeds', () async {
         when(
           () => mockPasswordRepository.getPasswords(),
-        ).thenAnswer((_) async => [testPassword]);
+        ).thenAnswer((_) async => Success([testPassword]));
         when(
           () => mockDataService.exportToEncryptedJson(any(), any()),
         ).thenAnswer((_) async {});
@@ -228,7 +229,7 @@ void main() {
       test('emits failure when no passwords to export', () async {
         when(
           () => mockPasswordRepository.getPasswords(),
-        ).thenAnswer((_) async => []);
+        ).thenAnswer((_) async => const Success([]));
 
         bloc.add(const ExportEncryptedData(password: 'secretPassword'));
 
@@ -250,7 +251,7 @@ void main() {
       test('emits failure when export throws exception', () async {
         when(
           () => mockPasswordRepository.getPasswords(),
-        ).thenAnswer((_) async => [testPassword]);
+        ).thenAnswer((_) async => Success([testPassword]));
         when(
           () => mockDataService.exportToEncryptedJson(any(), any()),
         ).thenThrow(Exception('Export failed'));

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/core/error/result.dart';
 import 'package:passvault/core/services/database_service.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 import 'package:passvault/features/auth/domain/usecases/authenticate_usecase.dart';
@@ -71,7 +72,7 @@ void main() {
           ).thenReturn(true);
           when(
             () => mockAuthRepository.isBiometricAvailable(),
-          ).thenAnswer((_) async => false);
+          ).thenAnswer((_) async => const Success(false));
 
           final states = <AuthState>[];
           final subscription = bloc.stream.listen(states.add);
@@ -99,7 +100,7 @@ void main() {
         ).thenReturn(true);
         when(
           () => mockAuthRepository.isBiometricAvailable(),
-        ).thenAnswer((_) async => true);
+        ).thenAnswer((_) async => const Success(true));
 
         final states = <AuthState>[];
         final subscription = bloc.stream.listen(states.add);
@@ -115,7 +116,9 @@ void main() {
 
     group('AuthLoginRequested', () {
       test('emits AuthLoading then AuthAuthenticated on success', () async {
-        when(() => mockAuthenticateUseCase()).thenAnswer((_) async => true);
+        when(
+          () => mockAuthenticateUseCase(),
+        ).thenAnswer((_) async => const Success(true));
 
         final states = <AuthState>[];
         final subscription = bloc.stream.listen(states.add);
@@ -131,7 +134,9 @@ void main() {
       });
 
       test('emits AuthLoading then AuthUnauthenticated on failure', () async {
-        when(() => mockAuthenticateUseCase()).thenAnswer((_) async => false);
+        when(
+          () => mockAuthenticateUseCase(),
+        ).thenAnswer((_) async => const Success(false));
 
         final states = <AuthState>[];
         final subscription = bloc.stream.listen(states.add);

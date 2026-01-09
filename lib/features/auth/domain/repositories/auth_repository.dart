@@ -1,4 +1,6 @@
+import 'package:passvault/core/error/result.dart';
+
 abstract class AuthRepository {
-  Future<bool> authenticate();
-  Future<bool> isBiometricAvailable();
+  Future<Result<bool>> authenticate();
+  Future<Result<bool>> isBiometricAvailable();
 }

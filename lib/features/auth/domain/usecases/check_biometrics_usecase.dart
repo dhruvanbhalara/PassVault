@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:passvault/core/error/result.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 
 @lazySingleton
@@ -7,5 +8,5 @@ class CheckBiometricsUseCase {
 
   CheckBiometricsUseCase(this._repository);
 
-  Future<bool> call() => _repository.isBiometricAvailable();
+  Future<Result<bool>> call() => _repository.isBiometricAvailable();
 }

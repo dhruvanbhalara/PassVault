@@ -189,27 +189,39 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     emit(state.copyWith(status: SettingsStatus.loading));
     try {
-      final passwords = await _passwordRepository.getPasswords();
-      if (passwords.isEmpty) {
-        emit(
-          state.copyWith(
-            status: SettingsStatus.failure,
-            error: SettingsError.noDataToExport,
-          ),
-        );
-        return;
-      }
+      final result = await _passwordRepository.getPasswords();
+      await result.fold(
+        (failure) async {
+          emit(
+            state.copyWith(
+              status: SettingsStatus.failure,
+              error: SettingsError.unknown,
+            ),
+          );
+        },
+        (passwords) async {
+          if (passwords.isEmpty) {
+            emit(
+              state.copyWith(
+                status: SettingsStatus.failure,
+                error: SettingsError.noDataToExport,
+              ),
+            );
+            return;
+          }
 
-      if (event.isJson) {
-        await _dataService.exportToJson(passwords);
-      } else {
-        await _dataService.exportToCsv(passwords);
-      }
-      emit(
-        state.copyWith(
-          status: SettingsStatus.success,
-          success: SettingsSuccess.exportSuccess,
-        ),
+          if (event.isJson) {
+            await _dataService.exportToJson(passwords);
+          } else {
+            await _dataService.exportToCsv(passwords);
+          }
+          emit(
+            state.copyWith(
+              status: SettingsStatus.success,
+              success: SettingsSuccess.exportSuccess,
+            ),
+          );
+        },
       );
     } catch (e) {
       emit(
@@ -269,23 +281,35 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     emit(state.copyWith(status: SettingsStatus.loading));
     try {
-      final passwords = await _passwordRepository.getPasswords();
-      if (passwords.isEmpty) {
-        emit(
-          state.copyWith(
-            status: SettingsStatus.failure,
-            error: SettingsError.noDataToExport,
-          ),
-        );
-        return;
-      }
+      final result = await _passwordRepository.getPasswords();
+      await result.fold(
+        (failure) async {
+          emit(
+            state.copyWith(
+              status: SettingsStatus.failure,
+              error: SettingsError.unknown,
+            ),
+          );
+        },
+        (passwords) async {
+          if (passwords.isEmpty) {
+            emit(
+              state.copyWith(
+                status: SettingsStatus.failure,
+                error: SettingsError.noDataToExport,
+              ),
+            );
+            return;
+          }
 
-      await _dataService.exportToEncryptedJson(passwords, event.password);
-      emit(
-        state.copyWith(
-          status: SettingsStatus.success,
-          success: SettingsSuccess.exportSuccess,
-        ),
+          await _dataService.exportToEncryptedJson(passwords, event.password);
+          emit(
+            state.copyWith(
+              status: SettingsStatus.success,
+              success: SettingsSuccess.exportSuccess,
+            ),
+          );
+        },
       );
     } catch (e) {
       emit(

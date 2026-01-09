@@ -66,12 +66,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return;
     }
 
-    final available = await _authRepository.isBiometricAvailable();
-    if (!available) {
-      emit(const AuthUnauthenticated(error: AuthError.biometricsNotAvailable));
-    } else {
-      emit(AuthInitial());
-    }
+    final result = await _authRepository.isBiometricAvailable();
+    result.fold(
+      (failure) => emit(const AuthUnauthenticated(error: AuthError.authFailed)),
+      (available) {
+        if (!available) {
+          emit(
+            const AuthUnauthenticated(error: AuthError.biometricsNotAvailable),
+          );
+        } else {
+          emit(AuthInitial());
+        }
+      },
+    );
   }
 
   Future<void> _onAuthLoginRequested(
@@ -79,11 +86,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    final success = await _authenticateUseCase();
-    if (success) {
-      emit(AuthAuthenticated());
-    } else {
-      emit(const AuthUnauthenticated(error: AuthError.authFailed));
-    }
+    final result = await _authenticateUseCase();
+    result.fold(
+      (failure) => emit(const AuthUnauthenticated(error: AuthError.authFailed)),
+      (success) {
+        if (success) {
+          emit(AuthAuthenticated());
+        } else {
+          emit(const AuthUnauthenticated(error: AuthError.authFailed));
+        }
+      },
+    );
   }
 }
