@@ -1,5 +1,10 @@
-import 'package:flutter/material.dart';
+import 'dart:ui';
 
+import 'package:flutter/material.dart';
+import 'package:passvault/core/theme/app_dimensions.dart';
+
+/// Custom theme extension to expose semantic colors, styles and effects
+/// tailored for a secure password manager.
 @immutable
 class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   const AppThemeExtension({
@@ -14,6 +19,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.success,
     required this.warning,
     required this.surfaceDim,
+    required this.surfaceHighlight,
+    required this.securitySurface,
     required this.strengthWeak,
     required this.strengthFair,
     required this.strengthGood,
@@ -21,6 +28,14 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.outline,
     required this.primaryContainer,
     required this.onPrimaryContainer,
+    required this.cardShadow,
+    required this.glassBlur,
+    required this.glassOpacity,
+    required this.passwordText,
+    required this.bodyRelaxed,
+    required this.vaultGradient, // NEW: Standardized secure surface gradient
+    required this.onVaultGradient, // NEW: Foreground color for text on vaultGradient
+    required this.inputFocusedBorder, // NEW: Semantic component token
   });
 
   final Color primary;
@@ -34,8 +49,9 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   final Color success;
   final Color warning;
 
-  // Custom Semantic Colors
-  final Color surfaceDim; // For tracks, placeholders
+  final Color surfaceDim;
+  final Color surfaceHighlight;
+  final Color securitySurface;
   final Color strengthWeak;
   final Color strengthFair;
   final Color strengthGood;
@@ -44,8 +60,28 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   final Color primaryContainer;
   final Color onPrimaryContainer;
 
+  final BoxShadow cardShadow;
+  final double glassBlur;
+  final double glassOpacity;
+
+  /// Monospaced style for clear, unambiguous password reading.
+  ///
+  /// Optimized for semantic dynamic scaling.
+  final TextStyle passwordText;
+
+  final TextStyle bodyRelaxed;
+
+  /// Secure surface gradient for high-priority cards and headers.
+  final LinearGradient vaultGradient;
+
+  /// Foreground color for text and icons displayed over vaultGradient.
+  final Color onVaultGradient;
+
+  /// Specialized color for focused input states.
+  final Color inputFocusedBorder;
+
   @override
-  ThemeExtension<AppThemeExtension> copyWith({
+  AppThemeExtension copyWith({
     Color? primary,
     Color? onPrimary,
     Color? secondary,
@@ -57,6 +93,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     Color? success,
     Color? warning,
     Color? surfaceDim,
+    Color? surfaceHighlight,
+    Color? securitySurface,
     Color? strengthWeak,
     Color? strengthFair,
     Color? strengthGood,
@@ -64,6 +102,14 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     Color? outline,
     Color? primaryContainer,
     Color? onPrimaryContainer,
+    BoxShadow? cardShadow,
+    double? glassBlur,
+    double? glassOpacity,
+    TextStyle? passwordText,
+    TextStyle? bodyRelaxed,
+    LinearGradient? vaultGradient,
+    Color? onVaultGradient,
+    Color? inputFocusedBorder,
   }) {
     return AppThemeExtension(
       primary: primary ?? this.primary,
@@ -77,6 +123,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       success: success ?? this.success,
       warning: warning ?? this.warning,
       surfaceDim: surfaceDim ?? this.surfaceDim,
+      surfaceHighlight: surfaceHighlight ?? this.surfaceHighlight,
+      securitySurface: securitySurface ?? this.securitySurface,
       strengthWeak: strengthWeak ?? this.strengthWeak,
       strengthFair: strengthFair ?? this.strengthFair,
       strengthGood: strengthGood ?? this.strengthGood,
@@ -84,17 +132,20 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       outline: outline ?? this.outline,
       primaryContainer: primaryContainer ?? this.primaryContainer,
       onPrimaryContainer: onPrimaryContainer ?? this.onPrimaryContainer,
+      cardShadow: cardShadow ?? this.cardShadow,
+      glassBlur: glassBlur ?? this.glassBlur,
+      glassOpacity: glassOpacity ?? this.glassOpacity,
+      passwordText: passwordText ?? this.passwordText,
+      bodyRelaxed: bodyRelaxed ?? this.bodyRelaxed,
+      vaultGradient: vaultGradient ?? this.vaultGradient,
+      onVaultGradient: onVaultGradient ?? this.onVaultGradient,
+      inputFocusedBorder: inputFocusedBorder ?? this.inputFocusedBorder,
     );
   }
 
   @override
-  ThemeExtension<AppThemeExtension> lerp(
-    ThemeExtension<AppThemeExtension>? other,
-    double t,
-  ) {
-    if (other is! AppThemeExtension) {
-      return this;
-    }
+  AppThemeExtension lerp(ThemeExtension<AppThemeExtension>? other, double t) {
+    if (other is! AppThemeExtension) return this;
     return AppThemeExtension(
       primary: Color.lerp(primary, other.primary, t)!,
       onPrimary: Color.lerp(onPrimary, other.onPrimary, t)!,
@@ -107,6 +158,12 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       success: Color.lerp(success, other.success, t)!,
       warning: Color.lerp(warning, other.warning, t)!,
       surfaceDim: Color.lerp(surfaceDim, other.surfaceDim, t)!,
+      surfaceHighlight: Color.lerp(
+        surfaceHighlight,
+        other.surfaceHighlight,
+        t,
+      )!,
+      securitySurface: Color.lerp(securitySurface, other.securitySurface, t)!,
       strengthWeak: Color.lerp(strengthWeak, other.strengthWeak, t)!,
       strengthFair: Color.lerp(strengthFair, other.strengthFair, t)!,
       strengthGood: Color.lerp(strengthGood, other.strengthGood, t)!,
@@ -122,13 +179,49 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         other.onPrimaryContainer,
         t,
       )!,
+      cardShadow: BoxShadow.lerp(cardShadow, other.cardShadow, t)!,
+      glassBlur: lerpDouble(glassBlur, other.glassBlur, t)!,
+      glassOpacity: lerpDouble(glassOpacity, other.glassOpacity, t)!,
+      passwordText: TextStyle.lerp(passwordText, other.passwordText, t)!,
+      bodyRelaxed: TextStyle.lerp(bodyRelaxed, other.bodyRelaxed, t)!,
+      vaultGradient: LinearGradient.lerp(
+        vaultGradient,
+        other.vaultGradient,
+        t,
+      )!,
+      onVaultGradient: Color.lerp(onVaultGradient, other.onVaultGradient, t)!,
+      inputFocusedBorder: Color.lerp(
+        inputFocusedBorder,
+        other.inputFocusedBorder,
+        t,
+      )!,
     );
   }
 }
 
-// Extension to access custom theme colors via context
 extension AppThemeExtensionContext on BuildContext {
-  AppThemeExtension get colors =>
-      Theme.of(this).extension<AppThemeExtension>()!;
+  AppThemeExtension get theme => Theme.of(this).extension<AppThemeExtension>()!;
+  AppThemeExtension get colors => theme;
+  ColorScheme get colorScheme => Theme.of(this).colorScheme;
   TextTheme get typography => Theme.of(this).textTheme;
+  bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
+
+  /// Returns whether the current device is considered a mobile/handheld device.
+  bool get isMobile => MediaQuery.sizeOf(this).width < AppBreakpoints.mobile;
+
+  /// Returns whether the current device is considered a tablet.
+  bool get isTablet =>
+      MediaQuery.sizeOf(this).width >= AppBreakpoints.mobile &&
+      MediaQuery.sizeOf(this).width < AppBreakpoints.tablet;
+
+  /// Returns whether the current device is considered a desktop.
+  bool get isDesktop => MediaQuery.sizeOf(this).width >= AppBreakpoints.tablet;
+
+  /// Responsive value helper that selects a value based on the current breakpoint.
+  T responsive<T>(T mobile, {T? tablet, T? desktop}) {
+    final width = MediaQuery.sizeOf(this).width;
+    if (width >= AppBreakpoints.tablet) return desktop ?? tablet ?? mobile;
+    if (width >= AppBreakpoints.mobile) return tablet ?? mobile;
+    return mobile;
+  }
 }

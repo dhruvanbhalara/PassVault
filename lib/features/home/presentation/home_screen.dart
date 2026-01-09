@@ -5,12 +5,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/di/injection.dart';
+import 'package:passvault/core/theme/app_animations.dart';
 import 'package:passvault/core/theme/app_dimensions.dart';
 import 'package:passvault/core/theme/app_theme_extension.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
+/// Main landing screen of the application after authentication.
+///
+/// Displays a list of stored passwords and provides access to settings
+/// and the password creation flow.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -23,12 +28,15 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+/// The stateful UI for the home screen, handling scroll behavior and list display.
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = context.theme;
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         key: const Key('home_fab'),
@@ -40,13 +48,26 @@ class HomeView extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            title: Text(l10n.appName),
+            expandedHeight: AppDimensions.sliverAppBarExpandedHeight,
             floating: true,
             pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                l10n.appName,
+                style: TextStyle(
+                  color: theme.onVaultGradient,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              centerTitle: true,
+              background: DecoratedBox(
+                decoration: BoxDecoration(gradient: theme.vaultGradient),
+              ),
+            ),
             actions: [
               IconButton(
                 key: const Key('home_settings_button'),
-                icon: const Icon(LucideIcons.settings),
+                icon: Icon(LucideIcons.settings, color: theme.onVaultGradient),
                 onPressed: () {
                   context.push('/settings');
                 },
@@ -66,31 +87,29 @@ class HomeView extends StatelessWidget {
                   return SliverFillRemaining(
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(AppDimensions.spaceM),
+                        padding: const EdgeInsets.all(AppSpacing.m),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             DecoratedBox(
                               decoration: BoxDecoration(
-                                color: context.colors.primary.withValues(
-                                  alpha: 0.1,
-                                ),
+                                color: theme.primary.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.all(
-                                  AppDimensions.spaceL,
-                                ),
+                                padding: const EdgeInsets.all(AppSpacing.l),
                                 child: Icon(
                                   LucideIcons.shieldCheck,
-                                  size: 64,
-                                  color: context.colors.primary.withValues(
-                                    alpha: 0.4,
+                                  size: context.responsive(
+                                    AppDimensions.emptyStateIconSize,
+                                    tablet:
+                                        AppDimensions.emptyStateIconSizeTablet,
                                   ),
+                                  color: theme.primary.withValues(alpha: 0.4),
                                 ),
                               ),
                             ),
-                            const SizedBox(height: AppDimensions.spaceL),
+                            const SizedBox(height: AppSpacing.l),
                             Text(
                               l10n.noPasswords,
                               key: const Key('home_empty_text'),
@@ -103,36 +122,69 @@ class HomeView extends StatelessWidget {
                     ),
                   );
                 }
+
+                final isDesktop = context.isDesktop;
+                final isTablet = context.isTablet;
+
+                if (isDesktop || isTablet) {
+                  return SliverPadding(
+                    key: const Key('home_password_list'),
+                    padding: EdgeInsets.all(
+                      context.responsive(AppSpacing.m, tablet: AppSpacing.l),
+                    ),
+                    sliver: SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: isDesktop ? 3 : 2,
+                        mainAxisSpacing: AppSpacing.m,
+                        crossAxisSpacing: AppSpacing.m,
+                        childAspectRatio: AppDimensions.gridAspectRatio,
+                      ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final entry = state.passwords[index];
+                        return FadeInUp(
+                          duration:
+                              AppDuration.normal +
+                              Duration(milliseconds: index * 50),
+                          child: PasswordListTile(entry: entry),
+                        );
+                      }, childCount: state.passwords.length),
+                    ),
+                  );
+                }
+
                 return SliverPadding(
                   key: const Key('home_password_list'),
-                  padding: const EdgeInsets.all(AppDimensions.spaceL),
+                  padding: const EdgeInsets.all(AppSpacing.l),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final entry = state.passwords[index];
                       return Padding(
-                        padding: const EdgeInsets.only(
-                          bottom: AppDimensions.spaceM,
-                        ),
+                        padding: const EdgeInsets.only(bottom: AppSpacing.m),
                         child: FadeInUp(
-                          duration: Duration(milliseconds: 400 + (index * 50)),
+                          // Staggered entry animation using base normal duration
+                          duration:
+                              AppDuration.normal +
+                              Duration(milliseconds: index * 50),
                           child: Dismissible(
                             key: Key(entry.id),
-                            background: Container(
+                            background: DecoratedBox(
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.errorContainer,
-                                borderRadius: AppDimensions.borderRadiusL,
+                                color: context.colorScheme.errorContainer,
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.l,
+                                ),
                               ),
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(
-                                right: AppDimensions.spaceL,
-                              ),
-                              child: Icon(
-                                LucideIcons.trash2,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onErrorContainer,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  right: AppSpacing.l,
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Icon(
+                                    LucideIcons.trash2,
+                                    color: context.colorScheme.onErrorContainer,
+                                  ),
+                                ),
                               ),
                             ),
                             direction: DismissDirection.endToStart,
@@ -164,6 +216,7 @@ class HomeView extends StatelessWidget {
   }
 }
 
+/// A list tile representing a single password entry in the vault.
 class PasswordListTile extends StatelessWidget {
   final PasswordEntry entry;
   const PasswordListTile({super.key, required this.entry});
@@ -171,26 +224,27 @@ class PasswordListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = context.colors;
+    final theme = context.theme;
     final textTheme = context.typography;
+
     return Card(
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppDimensions.spaceM,
-          vertical: AppDimensions.spaceS,
+          horizontal: AppSpacing.m,
+          vertical: AppSpacing.s,
         ),
         leading: SizedBox(
-          width: 48,
-          height: 48,
+          width: AppDimensions.listTileIconSize,
+          height: AppDimensions.listTileIconSize,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.1),
-              borderRadius: AppDimensions.borderRadiusM,
+              color: theme.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppRadius.m),
             ),
             child: Center(
               child: Text(
                 entry.appName.isNotEmpty ? entry.appName[0].toUpperCase() : '?',
-                style: textTheme.titleMedium?.copyWith(color: colors.primary),
+                style: textTheme.titleMedium?.copyWith(color: theme.primary),
               ),
             ),
           ),
@@ -199,21 +253,22 @@ class PasswordListTile extends StatelessWidget {
         subtitle: Text(entry.username, style: textTheme.bodyMedium),
         trailing: DecoratedBox(
           decoration: BoxDecoration(
-            color: colors.surfaceDim,
-            borderRadius: AppDimensions.borderRadiusS,
+            color: theme.surfaceDim,
+            borderRadius: BorderRadius.circular(AppRadius.s),
           ),
           child: IconButton(
-            icon: const Icon(LucideIcons.copy, size: 20),
+            icon: const Icon(LucideIcons.copy, size: AppIconSize.m),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: entry.password));
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
-                    borderRadius: AppDimensions.borderRadiusM,
+                    borderRadius: BorderRadius.circular(AppRadius.m),
                   ),
                   content: Text(l10n.passwordCopied),
-                  duration: const Duration(seconds: 1),
+                  // Short duration for quick confirmation feedback
+                  duration: AppDuration.slow,
                 ),
               );
             },

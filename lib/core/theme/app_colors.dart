@@ -1,61 +1,115 @@
 import 'package:flutter/material.dart';
 
-class AppColors {
+/// Raw color palette for the PassVault application.
+///
+/// These colors are organized to support a secure and efficient user experience.
+/// **DO NOT** use these raw colors directly in the UI.
+/// Instead, access semantic colors via `context.theme` or `context.colors`
+/// provided by [AppThemeExtension].
+abstract class AppColors {
   // ─────────────────────────────────────────────────────────────
-  // Brand / Seed
+  // Brand / Core
   // ─────────────────────────────────────────────────────────────
-  static const Color seed = Color(0xFF3F51B5); // Indigo
+  /// Primary brand color for light theme (Indigo).
+  static const Color primaryLight = Color(0xFF3F51B5);
 
-  // ─────────────────────────────────────────────────────────────
-  // Light Mode
-  // ─────────────────────────────────────────────────────────────
-  static const Color lightBackground = Color(0xFFF7F8FA);
-  static const Color lightSurface = Color(0xFFFFFFFF);
+  /// Primary brand color for dark/AMOLED themes (Softer Indigo).
+  static const Color primaryDark = Color(0xFF8C9EFF);
 
-  static const Color lightPrimary = Color(0xFF3F51B5);
-  static const Color lightOnPrimary = Color(0xFFFFFFFF);
+  /// Secondary brand color for light theme.
+  static const Color secondaryLight = Color(0xFF2CB9B0);
 
-  static const Color lightSecondary = Color(0xFF2CB9B0);
-  static const Color lightOnSecondary = Color(0xFFFFFFFF);
-
-  static const Color lightTextPrimary = Color(0xFF1C1C1E);
-  static const Color lightTextSecondary = Color(0xFF5F6368);
-
-  static const Color lightDivider = Color(0xFFE0E3EB);
-
-  // ─────────────────────────────────────────────────────────────
-  // Dark Mode
-  // ─────────────────────────────────────────────────────────────
-  static const Color darkBackground = Color(0xFF121212);
-  static const Color darkSurface = Color(0xFF1E1E1E);
-
-  static const Color darkPrimary = Color(0xFF8C9EFF); // Softer Indigo
-  static const Color darkOnPrimary = Color(0xFF0F172A);
-
-  static const Color darkSecondary = Color(0xFF64D8CB);
-  static const Color darkOnSecondary = Color(0xFF00332F);
-
-  static const Color darkTextPrimary = Color(0xFFFFFFFF);
-  static const Color darkTextSecondary = Color(0xFFB0B3B8);
-
-  static const Color darkDivider = Color(0xFF2C2C2E);
+  /// Secondary brand color for dark/AMOLED themes.
+  static const Color secondaryDark = Color(0xFF64D8CB);
 
   // ─────────────────────────────────────────────────────────────
-  // AMOLED (Opt-in)
+  // Background & Surface (Vault Atmosphere)
   // ─────────────────────────────────────────────────────────────
-  static const Color amoledBackground = Colors.black;
-  static const Color amoledSurface = Color(0xFF121212);
+  /// Main scaffold background for light theme.
+  static const Color bgLight = Color(0xFFF8FAFC); // Slate 50
+
+  /// Main scaffold background for dark theme (Slate).
+  static const Color bgDark = Color(0xFF0F172A);
+
+  /// Pure black background for AMOLED support.
+  static const Color bgAmoled = Colors.black;
+
+  /// Default surface color (cards, sheets) for light theme.
+  static const Color surfaceLight = Color(0xFFFFFFFF);
+
+  /// Default surface color for dark theme.
+  static const Color surfaceDark = Color(0xFF1E293B);
+
+  /// Elevated surface color for dark theme (ensures visibility on Slate 900).
+  static const Color surfaceElevatedDark = Color(0xFF334155);
+
+  /// Surface color optimized for AMOLED dark mode.
+  static const Color surfaceAmoled = Color(0xFF0F172A);
+
+  /// Subdued surface color for light theme.
+  static const Color surfaceDimLight = Color(0xFFF1F5F9);
+
+  /// Subdued surface color for dark theme.
+  static const Color surfaceDimDark = Color(0xFF334155);
 
   // ─────────────────────────────────────────────────────────────
-  // Semantic Colors
+  // Text Colors
   // ─────────────────────────────────────────────────────────────
-  static const Color error = Color(0xFFD32F2F);
-  static const Color success = Color(0xFF2E7D32);
-  static const Color warning = Color(0xFFF9A825);
+  /// High contrast text for light theme.
+  static const Color textLightPrimary = Color(0xFF0F172A);
 
-  // Password strength
+  /// Subdued / hint text for light theme.
+  static const Color textLightSecondary = Color(0xFF64748B);
+
+  /// High contrast text for dark theme.
+  static const Color textDarkPrimary = Color(0xFFF8FAFC);
+
+  /// Subdued / hint text for dark theme.
+  static const Color textDarkSecondary = Color(0xFF94A3B8);
+
+  // ─────────────────────────────────────────────────────────────
+  // Borders & Dividers
+  // ─────────────────────────────────────────────────────────────
+  /// Standard border/divider color for light theme.
+  static const Color borderLight = Color(0xFFE2E8F0);
+
+  /// Standard border/divider color for dark theme.
+  static const Color borderDark = Color(0xFF334155);
+
+  // ─────────────────────────────────────────────────────────────
+  // Accessibility Helpers
+  // ─────────────────────────────────────────────────────────────
+  /// Returns a high-contrast variation of the primary color for interactive states.
+  static Color getPrimaryFocus(Brightness brightness) {
+    return brightness == Brightness.light
+        ? const Color(0xFF303F9F) // Indigo 700
+        : const Color(0xFFC5CAE9); // Indigo 100
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // Security Semantic Colors
+  // ─────────────────────────────────────────────────────────────
+  /// Color used for critical errors and dangerously weak items.
+  static const Color error = Color(0xFFEF4444);
+
+  /// Color used for successful actions and strong security items.
+  static const Color success = Color(0xFF10B981);
+
+  /// Color used for warnings and moderate security items.
+  static const Color warning = Color(0xFFF59E0B);
+
+  /// Level 1 password strength (Weak).
   static const Color strengthWeak = error;
-  static const Color strengthFair = Color(0xFFF57C00); // Orange
+
+  /// Level 2 password strength (Fair).
+  static const Color strengthFair = Color(0xFFF97316);
+
+  /// Level 3 password strength (Good).
   static const Color strengthGood = warning;
+
+  /// Level 4 password strength (Strong).
   static const Color strengthStrong = success;
+
+  /// Default seed color for theme generation.
+  static const Color seed = primaryLight;
 }
