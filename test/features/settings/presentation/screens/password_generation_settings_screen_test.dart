@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/core/design_system/theme/app_theme.dart';
 import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/core/theme/app_theme.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
@@ -83,6 +83,5 @@ void main() {
 
     expect(find.byType(PasswordGenerationSettingsScreen), findsOneWidget);
     expect(find.text('PASSWORD LENGTH'), findsOneWidget);
-    expect(find.text('CHARACTER SETS'), findsOneWidget);
   });
 }

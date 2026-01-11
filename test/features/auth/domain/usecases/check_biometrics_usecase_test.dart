@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/core/error/result.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 import 'package:passvault/features/auth/domain/usecases/check_biometrics_usecase.dart';
 
@@ -18,13 +19,13 @@ void main() {
     // Arrange
     when(
       () => mockRepository.isBiometricAvailable(),
-    ).thenAnswer((_) async => true);
+    ).thenAnswer((_) async => const Success(true));
 
     // Act
     final result = await useCase();
 
     // Assert
-    expect(result, true);
+    expect(result, const Success(true));
     verify(() => mockRepository.isBiometricAvailable()).called(1);
   });
 }

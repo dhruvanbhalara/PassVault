@@ -72,47 +72,43 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
     Emitter<PasswordState> emit,
   ) async {
     emit(PasswordLoading());
-    try {
-      final passwords = await _getPasswords();
-      emit(PasswordLoaded(passwords));
-    } catch (e) {
-      emit(PasswordError(e.toString()));
-    }
+    final result = await _getPasswords();
+    result.fold(
+      (failure) => emit(PasswordError(failure.message)),
+      (passwords) => emit(PasswordLoaded(passwords)),
+    );
   }
 
   Future<void> _onAddPassword(
     AddPassword event,
     Emitter<PasswordState> emit,
   ) async {
-    try {
-      await _savePassword(event.entry);
-      add(LoadPasswords());
-    } catch (e) {
-      emit(PasswordError(e.toString()));
-    }
+    final result = await _savePassword(event.entry);
+    result.fold(
+      (failure) => emit(PasswordError(failure.message)),
+      (_) => add(LoadPasswords()),
+    );
   }
 
   Future<void> _onUpdatePassword(
     UpdatePassword event,
     Emitter<PasswordState> emit,
   ) async {
-    try {
-      await _savePassword(event.entry);
-      add(LoadPasswords());
-    } catch (e) {
-      emit(PasswordError(e.toString()));
-    }
+    final result = await _savePassword(event.entry);
+    result.fold(
+      (failure) => emit(PasswordError(failure.message)),
+      (_) => add(LoadPasswords()),
+    );
   }
 
   Future<void> _onDeletePassword(
     DeletePassword event,
     Emitter<PasswordState> emit,
   ) async {
-    try {
-      await _deletePassword(event.id);
-      add(LoadPasswords());
-    } catch (e) {
-      emit(PasswordError(e.toString()));
-    }
+    final result = await _deletePassword(event.id);
+    result.fold(
+      (failure) => emit(PasswordError(failure.message)),
+      (_) => add(LoadPasswords()),
+    );
   }
 }

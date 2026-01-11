@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/theme/app_theme.dart';
+import 'package:passvault/core/design_system/components/components.dart';
+import 'package:passvault/core/design_system/theme/app_theme.dart';
 import 'package:passvault/features/auth/presentation/auth_screen.dart';
 import 'package:passvault/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:passvault/l10n/app_localizations.dart';
@@ -45,19 +46,25 @@ void main() {
       await tester.pump();
 
       expect(find.byKey(const Key('auth_loading')), findsOneWidget);
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(AppLoader), findsOneWidget);
     });
 
-    testWidgets('Loading indicator is CircularProgressIndicator', (
-      tester,
-    ) async {
+    testWidgets('Loading indicator is AppLoader', (tester) async {
       await tester.pumpWidget(createTestWidget(AuthLoading()));
       await tester.pump();
 
-      final indicator = tester.widget<CircularProgressIndicator>(
+      final indicator = tester.widget<AppLoader>(
         find.byKey(const Key('auth_loading')),
       );
-      expect(indicator, isA<CircularProgressIndicator>());
+      expect(indicator, isA<AppLoader>());
+    });
+
+    testWidgets('Shows AppButton when not loading', (tester) async {
+      await tester.pumpWidget(createTestWidget(AuthInitial()));
+      await tester.pump();
+
+      expect(find.byType(AppButton), findsOneWidget);
+      expect(find.byKey(const Key('auth_unlock_button')), findsOneWidget);
     });
   });
 }

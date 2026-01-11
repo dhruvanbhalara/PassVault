@@ -2,7 +2,9 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:passvault/core/services/database_service.dart';
+import 'package:passvault/core/error/result.dart';
+import 'package:passvault/features/settings/domain/usecases/get_theme_usecase.dart';
+import 'package:passvault/features/settings/domain/usecases/set_theme_usecase.dart';
 
 enum ThemeType { system, light, dark, amoled }
 
@@ -23,25 +25,25 @@ class ThemeState extends Equatable {
 
 @lazySingleton
 class ThemeCubit extends Cubit<ThemeState> {
-  static const String _themeBoxName = 'settings';
-  static const String _themeKey = 'theme_type';
-  final DatabaseService _dbService;
+  final GetThemeUseCase _getThemeUseCase;
+  final SetThemeUseCase _setThemeUseCase;
 
-  ThemeCubit(this._dbService) : super(ThemeState.initial()) {
+  ThemeCubit(this._getThemeUseCase, this._setThemeUseCase)
+    : super(ThemeState.initial()) {
     _loadTheme();
   }
 
   void _loadTheme() {
-    final themeIndex = _dbService.read(
-      _themeBoxName,
-      _themeKey,
-      defaultValue: ThemeType.system.index,
-    );
-    final themeType = ThemeType.values[themeIndex];
-    setTheme(themeType);
+    final result = _getThemeUseCase();
+
+    if (result is Success<ThemeType>) {
+      setTheme(result.data);
+    } else {
+      setTheme(ThemeType.system);
+    }
   }
 
-  void setTheme(ThemeType themeType) {
+  Future<void> setTheme(ThemeType themeType) async {
     ThemeMode mode;
     switch (themeType) {
       case ThemeType.system:
@@ -57,6 +59,6 @@ class ThemeCubit extends Cubit<ThemeState> {
     }
 
     emit(ThemeState(themeType: themeType, themeMode: mode));
-    _dbService.write(_themeBoxName, _themeKey, themeType.index);
+    await _setThemeUseCase(themeType);
   }
 }

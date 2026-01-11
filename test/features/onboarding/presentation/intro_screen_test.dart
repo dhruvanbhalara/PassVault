@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/theme/app_theme.dart';
+import 'package:passvault/core/design_system/theme/app_theme.dart';
 import 'package:passvault/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:passvault/features/onboarding/presentation/intro_screen.dart';
 import 'package:passvault/l10n/app_localizations.dart';

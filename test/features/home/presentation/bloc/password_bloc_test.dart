@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/core/error/failures.dart';
+import 'package:passvault/core/error/result.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/domain/usecases/password_usecases.dart';
@@ -61,7 +63,7 @@ void main() {
       test('emits PasswordLoading then PasswordLoaded on success', () async {
         when(
           () => mockGetPasswordsUseCase(),
-        ).thenAnswer((_) async => [testPassword, testPassword2]);
+        ).thenAnswer((_) async => Success([testPassword, testPassword2]));
 
         final states = <PasswordState>[];
         final subscription = bloc.stream.listen(states.add);
@@ -81,9 +83,9 @@ void main() {
       });
 
       test('emits PasswordLoading then PasswordError on failure', () async {
-        when(
-          () => mockGetPasswordsUseCase(),
-        ).thenThrow(Exception('Failed to load'));
+        when(() => mockGetPasswordsUseCase()).thenAnswer(
+          (_) async => const Error(DatabaseFailure('Failed to load')),
+        );
 
         final states = <PasswordState>[];
         final subscription = bloc.stream.listen(states.add);
@@ -99,7 +101,9 @@ void main() {
       });
 
       test('calls getPasswordsUseCase', () async {
-        when(() => mockGetPasswordsUseCase()).thenAnswer((_) async => []);
+        when(
+          () => mockGetPasswordsUseCase(),
+        ).thenAnswer((_) async => const Success([]));
 
         bloc.add(LoadPasswords());
         await Future.delayed(const Duration(milliseconds: 100));
@@ -110,10 +114,12 @@ void main() {
 
     group('AddPassword', () {
       test('calls savePasswordUseCase and reloads', () async {
-        when(() => mockSavePasswordUseCase(any())).thenAnswer((_) async {});
+        when(
+          () => mockSavePasswordUseCase(any()),
+        ).thenAnswer((_) async => const Success(null));
         when(
           () => mockGetPasswordsUseCase(),
-        ).thenAnswer((_) async => [testPassword]);
+        ).thenAnswer((_) async => Success([testPassword]));
 
         bloc.add(AddPassword(testPassword));
         await Future.delayed(const Duration(milliseconds: 100));
@@ -125,8 +131,12 @@ void main() {
 
     group('UpdatePassword', () {
       test('calls savePasswordUseCase with updated entry', () async {
-        when(() => mockSavePasswordUseCase(any())).thenAnswer((_) async {});
-        when(() => mockGetPasswordsUseCase()).thenAnswer((_) async => []);
+        when(
+          () => mockSavePasswordUseCase(any()),
+        ).thenAnswer((_) async => const Success(null));
+        when(
+          () => mockGetPasswordsUseCase(),
+        ).thenAnswer((_) async => const Success([]));
 
         bloc.add(UpdatePassword(testPassword));
         await Future.delayed(const Duration(milliseconds: 100));
@@ -137,8 +147,12 @@ void main() {
 
     group('DeletePassword', () {
       test('calls deletePasswordUseCase and reloads', () async {
-        when(() => mockDeletePasswordUseCase(any())).thenAnswer((_) async {});
-        when(() => mockGetPasswordsUseCase()).thenAnswer((_) async => []);
+        when(
+          () => mockDeletePasswordUseCase(any()),
+        ).thenAnswer((_) async => const Success(null));
+        when(
+          () => mockGetPasswordsUseCase(),
+        ).thenAnswer((_) async => const Success([]));
 
         bloc.add(const DeletePassword('test-id-1'));
         await Future.delayed(const Duration(milliseconds: 100));
