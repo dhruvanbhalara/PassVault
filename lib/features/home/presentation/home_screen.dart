@@ -21,7 +21,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: getIt<PasswordBloc>()..add(LoadPasswords()),
+      value: getIt<PasswordBloc>()..add(const LoadPasswords()),
       child: const HomeView(),
     );
   }

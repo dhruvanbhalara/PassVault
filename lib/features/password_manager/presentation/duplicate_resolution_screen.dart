@@ -278,36 +278,34 @@ class _ResolutionChoiceButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Choose action:', style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: AppSpacing.xs),
-        RadioListTile<DuplicateResolutionChoice>(
-          title: const Text('Keep Existing'),
-          subtitle: const Text('Ignore imported entry'),
-          value: DuplicateResolutionChoice.keepExisting,
-          groupValue: selectedChoice,
-          onChanged: (value) => onChoiceChanged(value!),
-          contentPadding: EdgeInsets.zero,
-        ),
-        RadioListTile<DuplicateResolutionChoice>(
-          title: const Text('Replace with New'),
-          subtitle: const Text('Update with imported data'),
-          value: DuplicateResolutionChoice.replaceWithNew,
-          groupValue: selectedChoice,
-          onChanged: (value) => onChoiceChanged(value!),
-          contentPadding: EdgeInsets.zero,
-        ),
-        RadioListTile<DuplicateResolutionChoice>(
-          title: const Text('Keep Both'),
-          subtitle: const Text('Save both entries'),
-          value: DuplicateResolutionChoice.keepBoth,
-          groupValue: selectedChoice,
-          onChanged: (value) => onChoiceChanged(value!),
-          contentPadding: EdgeInsets.zero,
-        ),
-      ],
+    return RadioGroup<DuplicateResolutionChoice>(
+      groupValue: selectedChoice,
+      onChanged: (value) => onChoiceChanged(value!),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Choose action:', style: Theme.of(context).textTheme.labelLarge),
+          const SizedBox(height: AppSpacing.xs),
+          const RadioListTile<DuplicateResolutionChoice>(
+            title: Text('Keep Existing'),
+            subtitle: Text('Ignore imported entry'),
+            value: DuplicateResolutionChoice.keepExisting,
+            contentPadding: EdgeInsets.zero,
+          ),
+          const RadioListTile<DuplicateResolutionChoice>(
+            title: Text('Replace with New'),
+            subtitle: Text('Update with imported data'),
+            value: DuplicateResolutionChoice.replaceWithNew,
+            contentPadding: EdgeInsets.zero,
+          ),
+          const RadioListTile<DuplicateResolutionChoice>(
+            title: Text('Keep Both'),
+            subtitle: Text('Save both entries'),
+            value: DuplicateResolutionChoice.keepBoth,
+            contentPadding: EdgeInsets.zero,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -22,7 +22,7 @@ void main() {
     registerFallbackValue(const PasswordGenerationSettings());
   });
 
-  final tSettings = PasswordGenerationSettings();
+  final tSettings = const PasswordGenerationSettings();
 
   test('GetPasswordGenerationSettingsUseCase should call repository', () {
     when(

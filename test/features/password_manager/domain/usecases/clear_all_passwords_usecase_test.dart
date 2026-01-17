@@ -44,7 +44,7 @@ void main() {
 
     test('should return Error when repository fails', () async {
       // Arrange
-      final failure = DatabaseFailure('Clear failed');
+      final failure = const DatabaseFailure('Clear failed');
       when(
         () => mockRepository.clearAllPasswords(),
       ).thenAnswer((_) async => Error(failure));

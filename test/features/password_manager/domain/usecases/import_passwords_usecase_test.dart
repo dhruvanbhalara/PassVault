@@ -25,7 +25,7 @@ void main() {
     lastUpdated: DateTime(2024, 1, 1),
   );
 
-  final tImportResult = ImportResult(
+  final tImportResult = const ImportResult(
     totalRecords: 1,
     successfulImports: 1,
     failedImports: 0,

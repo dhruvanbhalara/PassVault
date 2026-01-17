@@ -271,7 +271,7 @@ void main() {
             () => mockDataService.importFromEncrypted(any(), any()),
           ).thenReturn([testEntries.first]);
           when(() => mockImportUseCase(any())).thenAnswer(
-            (_) async => Success(
+            (_) async => const Success(
               ImportResult(
                 totalRecords: 1,
                 successfulImports: 1,

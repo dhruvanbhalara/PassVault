@@ -128,7 +128,7 @@ void main() {
       },
       seed: () => PasswordLoaded([tEntry]),
       act: (bloc) => bloc.add(const DeletePassword('1')),
-      expect: () => [PasswordLoaded(const [])],
+      expect: () => [const PasswordLoaded([])],
       verify: (_) {
         verify(() => mockDeletePassword('1')).called(1);
         verifyNever(() => mockGetPasswords());

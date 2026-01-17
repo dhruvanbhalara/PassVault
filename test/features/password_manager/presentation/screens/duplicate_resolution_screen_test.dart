@@ -184,10 +184,15 @@ void main() {
       expect(replaceRadios, findsNWidgets(2));
 
       for (final radioFinder in replaceRadios.evaluate()) {
-        final radio = tester.widget<RadioListTile<DuplicateResolutionChoice>>(
-          find.byWidget(radioFinder.widget),
+        final radioGroup = tester.widget<RadioGroup<DuplicateResolutionChoice>>(
+          find
+              .ancestor(
+                of: find.byWidget(radioFinder.widget),
+                matching: find.byType(RadioGroup<DuplicateResolutionChoice>),
+              )
+              .first,
         );
-        expect(radio.groupValue, DuplicateResolutionChoice.replaceWithNew);
+        expect(radioGroup.groupValue, DuplicateResolutionChoice.replaceWithNew);
       }
 
       // Final resolution button should now be enabled

@@ -127,7 +127,10 @@ void main() {
   });
 
   group('PasswordGenerationSettings', () {
-    final tSettings = PasswordGenerationSettings(length: 12, useNumbers: true);
+    final tSettings = const PasswordGenerationSettings(
+      length: 12,
+      useNumbers: true,
+    );
 
     test('getPasswordGenerationSettings should return value', () {
       when(

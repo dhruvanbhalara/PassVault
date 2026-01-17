@@ -66,7 +66,7 @@ void main() {
 
     test('should return Error when repository fails', () async {
       // Arrange
-      final failure = DatabaseFailure('Save failed');
+      final failure = const DatabaseFailure('Save failed');
       when(
         () => mockRepository.saveBulkPasswords(any()),
       ).thenAnswer((_) async => Error(failure));
