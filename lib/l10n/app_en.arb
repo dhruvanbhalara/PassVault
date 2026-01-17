@@ -83,5 +83,13 @@
   "enterImportPassword": "Enter the backup password",
   "passwordRequired": "Password is required",
   "export": "Export",
-  "import": "Import"
+  "import": "Import",
+  "processing": "Processing...",
+  "databaseCleared": "Database cleared successfully",
+  "fileNotFound": "File not found",
+  "clearDatabase": "Clear Database",
+  "debugDeleteAllPasswords": "Debug: Delete all passwords",
+  "clearDatabaseTitle": "Clear Database?",
+  "clearDatabaseMessage": "This will permanently delete ALL passwords from the database. This action cannot be undone.\\n\\nThis is a DEBUG feature for testing.",
+  "clearAll": "Clear All"
 }
