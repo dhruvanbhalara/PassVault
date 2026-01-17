@@ -1,11 +1,14 @@
-# PassVault 🔐
-
-<!-- COVERAGE_BADGE_START -->
-![Coverage](https://img.shields.io/badge/coverage-57.81%25-blue)
-<!-- COVERAGE_BADGE_END -->
+<h1 align="center">PassVault 🔐</h1>
 
 <p align="center">
   <img src="assets/icons/logo.png" width="120" alt="PassVault Logo"/>
+</p>
+
+<p align="center">
+  <!-- Dynamic Badges -->
+  <!-- COVERAGE_BADGE_START -->
+  <img src="https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/dhruvanbhalara/e0553dda62f15dd6ee3e7d3d65721bdd/raw/passvault-coverage.json" alt="Coverage" />
+  <!-- COVERAGE_BADGE_END -->
 </p>
 
 <p align="center">
@@ -90,6 +93,19 @@ See [Development Guide](docs/DEVELOPMENT.md) for detailed setup.
 | Secure Key Storage | ✅ |
 | AES-256 Encrypted Storage | ✅ |
 | Password-Protected Exports | ✅ |
+
+---
+
+## 🚀 CI/CD & Quality Control
+
+The project uses GitHub Actions for continuous integration and quality assurance:
+
+- **Quality Gate**: Validates code formatting, linting (`flutter analyze`), and unit tests on every Pull Request.
+- **Coverage Reporting**: Automatically generates and appends code coverage summaries to Pull Request descriptions.
+- **Release Automation**: Automates version validation and Android APK builds on tag releases.
+- **Dynamic Badges**: Supports real-time code coverage badges via GitHub Gists to keep the repository history clean.
+
+See [Testing Guide](docs/TESTING.md) and [Development Guide](docs/DEVELOPMENT.md) for more details.
 
 ---
 
