@@ -597,6 +597,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import'**
   String get import;
+
+  /// No description provided for @processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing...'**
+  String get processing;
+
+  /// No description provided for @databaseCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Database cleared successfully'**
+  String get databaseCleared;
+
+  /// No description provided for @fileNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'File not found'**
+  String get fileNotFound;
+
+  /// No description provided for @clearDatabase.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Database'**
+  String get clearDatabase;
+
+  /// No description provided for @debugDeleteAllPasswords.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug: Delete all passwords'**
+  String get debugDeleteAllPasswords;
+
+  /// No description provided for @clearDatabaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Database?'**
+  String get clearDatabaseTitle;
+
+  /// No description provided for @clearDatabaseMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete ALL passwords from the database. This action cannot be undone.\\n\\nThis is a DEBUG feature for testing.'**
+  String get clearDatabaseMessage;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get clearAll;
 }
 
 class _AppLocalizationsDelegate

@@ -262,4 +262,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get import => 'Import';
+
+  @override
+  String get processing => 'Processing...';
+
+  @override
+  String get databaseCleared => 'Database cleared successfully';
+
+  @override
+  String get fileNotFound => 'File not found';
+
+  @override
+  String get clearDatabase => 'Clear Database';
+
+  @override
+  String get debugDeleteAllPasswords => 'Debug: Delete all passwords';
+
+  @override
+  String get clearDatabaseTitle => 'Clear Database?';
+
+  @override
+  String get clearDatabaseMessage =>
+      'This will permanently delete ALL passwords from the database. This action cannot be undone.\\n\\nThis is a DEBUG feature for testing.';
+
+  @override
+  String get clearAll => 'Clear All';
 }
