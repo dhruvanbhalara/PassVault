@@ -60,12 +60,23 @@ class DataService {
   String generateCsv(List<PasswordEntry> entries) {
     List<List<dynamic>> rows = [];
     // Header
-    rows.add(['App Name', 'Username', 'Password', 'Last Updated']);
+    rows.add([
+      'App Name',
+      'Username',
+      'Password',
+      'URL',
+      'Notes',
+      'Folder',
+      'Last Updated',
+    ]);
     for (var entry in entries) {
       rows.add([
         entry.appName,
         entry.username,
         entry.password,
+        entry.url ?? '',
+        entry.notes ?? '',
+        entry.folder ?? '',
         entry.lastUpdated.toIso8601String(),
       ]);
     }
@@ -190,6 +201,12 @@ class DataService {
       'comment',
       'extra',
     ]);
+    final folderIdx = _findHeaderIdx(headers, [
+      'folder',
+      'group',
+      'category',
+      'collection',
+    ]);
     final favIdx = _findHeaderIdx(headers, ['favorite', 'starred', 'fav']);
 
     // Use microseconds + counter for guaranteed unique IDs within this import
@@ -216,6 +233,9 @@ class DataService {
       final notes = notesIdx != -1 && notesIdx < row.length
           ? row[notesIdx].toString()
           : null;
+      final folder = folderIdx != -1 && folderIdx < row.length
+          ? row[folderIdx].toString()
+          : null;
       final favorite = favIdx != -1 && favIdx < row.length
           ? (row[favIdx].toString().toLowerCase() == 'true' ||
                 row[favIdx].toString() == '1')
@@ -230,6 +250,7 @@ class DataService {
           lastUpdated: DateTime.now(),
           url: url,
           notes: notes,
+          folder: folder,
           favorite: favorite,
         ),
       );

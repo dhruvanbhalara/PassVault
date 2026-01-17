@@ -80,6 +80,33 @@ void main() {
         expect(result.length, 1);
         expect(result[0].appName, 'AppMinimal');
       });
+
+      test('should parse folders/groups from header synonyms', () {
+        const csv =
+            'name,username,password,folder\nMy App,me,secret,Personal'
+            '\nWork App,boss,safe,Work';
+        final result = dataService.importFromCsv(csv);
+
+        expect(result.length, 2);
+
+        expect(result[0].appName, 'My App');
+        expect(result[0].folder, 'Personal');
+
+        expect(result[1].appName, 'Work App');
+        expect(result[1].folder, 'Work');
+      });
+
+      test('should parse URL and Notes correctly', () {
+        const csv =
+            'name,username,password,url,notes\n'
+            'FullApp,user,pass,https://app.com,My secrets';
+        final result = dataService.importFromCsv(csv);
+
+        expect(result.length, 1);
+        expect(result[0].appName, 'FullApp');
+        expect(result[0].url, 'https://app.com');
+        expect(result[0].notes, 'My secrets');
+      });
     });
 
     group('CSV Generation', () {
@@ -88,6 +115,9 @@ void main() {
         appName: 'Test CSV',
         username: 'csvuser',
         password: 'csvpassword',
+        url: 'https://example.com',
+        notes: 'Some notes',
+        folder: 'Work',
         lastUpdated: DateTime(2024, 1, 1),
       );
 
@@ -97,6 +127,9 @@ void main() {
         expect(csv, contains('Test CSV'));
         expect(csv, contains('csvuser'));
         expect(csv, contains('csvpassword'));
+        expect(csv, contains('https://example.com'));
+        expect(csv, contains('Some notes'));
+        expect(csv, contains('Work'));
       });
     });
 
