@@ -27,26 +27,26 @@ class UnknownFailure extends Failure {
 }
 
 /// Failure during password import/export operations.
-class ImportExportFailure extends Failure {
-  const ImportExportFailure(super.message);
+class DataMigrationFailure extends Failure {
+  const DataMigrationFailure(super.message);
 }
 
 /// Failure when reading import file.
-class FileReadFailure extends ImportExportFailure {
+class FileReadFailure extends DataMigrationFailure {
   const FileReadFailure(super.message);
 }
 
 /// Failure when CSV format is invalid.
-class InvalidFormatFailure extends ImportExportFailure {
+class InvalidFormatFailure extends DataMigrationFailure {
   const InvalidFormatFailure(super.message);
 }
 
 /// Failure during CSV parsing.
-class ParsingFailure extends ImportExportFailure {
+class ParsingFailure extends DataMigrationFailure {
   const ParsingFailure(super.message);
 }
 
 /// No valid data found in import file.
-class NoDataFoundFailure extends ImportExportFailure {
+class NoDataFoundFailure extends DataMigrationFailure {
   const NoDataFoundFailure(super.message);
 }

@@ -47,8 +47,14 @@ void main() {
       final result = await useCase([tDuplicateUnresolved]);
 
       // Assert
-      expect(result, isA<Error<void>>());
-      expect((result as Error).failure, isA<ImportExportFailure>());
+      expect(
+        result,
+        isA<Error<void>>().having(
+          (e) => e.failure,
+          'failure',
+          isA<DataMigrationFailure>(),
+        ),
+      );
     },
   );
 
@@ -63,6 +69,21 @@ void main() {
 
     // Assert
     expect(result, const Success<void>(null));
+    verify(() => mockRepository.resolveDuplicates([tDuplicate])).called(1);
+  });
+
+  test('should return Error when repository fails', () async {
+    // Arrange
+    const tFailure = DataMigrationFailure('Repository failed');
+    when(
+      () => mockRepository.resolveDuplicates(any()),
+    ).thenAnswer((_) async => const Error(tFailure));
+
+    // Act
+    final result = await useCase([tDuplicate]);
+
+    // Assert
+    expect(result, const Error<void>(tFailure));
     verify(() => mockRepository.resolveDuplicates([tDuplicate])).called(1);
   });
 }

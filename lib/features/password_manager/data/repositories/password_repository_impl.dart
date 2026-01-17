@@ -197,7 +197,7 @@ class PasswordRepositoryImpl implements PasswordRepository {
           case null:
             // Should not happen if validation in use case works
             return const Error(
-              ImportExportFailure('Unresolved duplicate found'),
+              DataMigrationFailure('Unresolved duplicate found'),
             );
         }
       }

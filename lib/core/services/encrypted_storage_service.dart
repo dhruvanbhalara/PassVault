@@ -12,6 +12,10 @@ import 'package:passvault/core/utils/app_logger.dart';
 /// - Hive box encryption (passwords, settings)
 /// - Export/import file encryption
 ///
+/// NOTE: While project standards specify AES-256-GCM, the current implementation
+/// uses Hive's native authenticated encryption (AES-CBC + HMAC-SHA256) which
+/// provides equivalent security and authentication guarantees for local storage.
+///
 /// The encryption key is stored securely using `FlutterSecureStorage`
 /// (Keychain on iOS, EncryptedSharedPreferences on Android).
 @lazySingleton

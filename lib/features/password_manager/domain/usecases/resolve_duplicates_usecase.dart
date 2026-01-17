@@ -26,7 +26,7 @@ class ResolveDuplicatesUseCase {
     if (unresolved.isNotEmpty) {
       return Future.value(
         Error(
-          ImportExportFailure('${unresolved.length} duplicates not resolved'),
+          DataMigrationFailure('${unresolved.length} duplicates not resolved'),
         ),
       );
     }

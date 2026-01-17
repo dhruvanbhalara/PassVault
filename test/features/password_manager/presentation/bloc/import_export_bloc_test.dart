@@ -3,7 +3,9 @@ import 'dart:typed_data';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/core/error/failures.dart';
 import 'package:passvault/core/error/result.dart';
+import 'package:passvault/core/services/biometric_service.dart';
 import 'package:passvault/core/services/data_service.dart';
 import 'package:passvault/core/services/file_picker_service.dart';
 import 'package:passvault/core/services/file_service.dart';
@@ -17,6 +19,8 @@ import 'package:passvault/features/password_manager/domain/usecases/resolve_dupl
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
+
+class MockBiometricService extends Mock implements BiometricService {}
 
 class MockImportPasswordsUseCase extends Mock
     implements ImportPasswordsUseCase {}
@@ -44,6 +48,7 @@ void main() {
   late MockDataService mockDataService;
   late MockFileService mockFileService;
   late MockFilePickerService mockFilePickerService;
+  late MockBiometricService mockBiometricService;
 
   final testEntries = [
     PasswordEntry(
@@ -69,6 +74,14 @@ void main() {
     mockDataService = MockDataService();
     mockFileService = MockFileService();
     mockFilePickerService = MockFilePickerService();
+    mockBiometricService = MockBiometricService();
+
+    // Default auth success
+    when(
+      () => mockBiometricService.authenticate(
+        localizedReason: any(named: 'localizedReason'),
+      ),
+    ).thenAnswer((_) async => true);
 
     bloc = ImportExportBloc(
       mockImportUseCase,
@@ -316,6 +329,47 @@ void main() {
         build: () => bloc,
         act: (bloc) => bloc.add(const ResetMigrationStatus()),
         expect: () => [const ImportExportInitial()],
+      );
+    });
+    group('ResolveDuplicatesEvent', () {
+      final duplicates = [
+        DuplicatePasswordEntry(
+          existingEntry: testEntries.first,
+          newEntry: testEntries.first,
+          conflictReason: 'reason',
+        ),
+      ];
+
+      blocTest<ImportExportBloc, ImportExportState>(
+        'emits [Loading, DuplicatesResolved] when resolutions are successful',
+        build: () {
+          when(
+            () => mockResolveUseCase(any()),
+          ).thenAnswer((_) async => const Success(null));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(ResolveDuplicatesEvent(duplicates)),
+        expect: () => [
+          // const ImportExportLoading('Authenticating...'), // Removed
+          const ImportExportLoading('Resolving duplicates...'),
+          const DuplicatesResolved(totalResolved: 1, totalImported: 1),
+        ],
+      );
+
+      blocTest<ImportExportBloc, ImportExportState>(
+        'emits [Loading, Failure] when resolution fails',
+        build: () {
+          when(() => mockResolveUseCase(any())).thenAnswer(
+            (_) async => const Error(DataMigrationFailure('Failed')),
+          );
+          return bloc;
+        },
+        act: (bloc) => bloc.add(ResolveDuplicatesEvent(duplicates)),
+        expect: () => [
+          // const ImportExportLoading('Authenticating...'), // Removed
+          const ImportExportLoading('Resolving duplicates...'),
+          const ImportExportFailure(DataMigrationError.unknown, 'Failed'),
+        ],
       );
     });
   });
