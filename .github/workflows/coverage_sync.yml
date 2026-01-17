@@ -1,0 +1,54 @@
+name: Sync Code Coverage
+
+# Updates the README.md with the latest code coverage on main branch merge
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lib/**"
+      - "test/**"
+      - "pubspec.yaml"
+
+# Prevent concurrent README writes
+concurrency:
+  group: coverage-sync
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: ${{ secrets.FLUTTER_VERSION }}
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Use composite action for consistent Flutter setup
+      - uses: ./.github/actions/flutter-setup
+
+      - name: Execute unit tests
+        run: flutter test --coverage
+
+      - name: Update README Badge
+        run: |
+          BADGE=$(dart scripts/coverage_report.dart --badge)
+
+          # Replace content between markers in README.md
+          # Uses sed to replace lines between start and end markers with the new badge
+          sed -i "/<!-- COVERAGE_BADGE_START -->/,/<!-- COVERAGE_BADGE_END -->/{ /<!-- COVERAGE_BADGE_START -->/! { /<!-- COVERAGE_BADGE_END -->/! d } }" README.md
+          sed -i "/<!-- COVERAGE_BADGE_START -->/a $BADGE" README.md
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || (git commit -m "docs(readme): update code coverage badge [skip ci]" && git push)

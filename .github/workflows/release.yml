@@ -1,0 +1,117 @@
+name: Build and Release
+
+# Automated deployment triggered by version tags
+# Validates version, runs tests, and builds Android APKs
+on:
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least-privilege permissions for release workflow
+permissions:
+  contents: write # Required for creating GitHub releases
+
+env:
+  FLUTTER_VERSION: ${{ secrets.FLUTTER_VERSION }}
+
+jobs:
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      # Ensure version follows semantic versioning
+      - name: Validate version format
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          if [[ ! $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
+            echo "❌ Invalid version format: $VERSION"
+            echo "Expected format: v1.2.3 or v1.2.3-beta"
+            exit 1
+          fi
+          echo "✅ Valid version: $VERSION"
+
+  build-android:
+    name: Build Android APKs
+    runs-on: ubuntu-latest
+    needs: validate
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      # Use composite action for consistent Flutter setup
+      - uses: ./.github/actions/flutter-setup
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/release.jks
+          echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 --decode > android/Project-debug.jks
+
+      - name: Create keystore.properties
+        run: |
+          cat > android/keystore.properties << EOF
+          debugKeyAlias=${{ secrets.DEBUG_KEY_ALIAS }}
+          debugKeyPassword=${{ secrets.DEBUG_KEY_PASSWORD }}
+          debugKeyStore=Project-debug.jks
+          debugStorePassword=${{ secrets.DEBUG_STORE_PASSWORD }}
+          releaseKeyAlias=${{ secrets.RELEASE_KEY_ALIAS }}
+          releaseKeyPassword=${{ secrets.RELEASE_KEY_PASSWORD }}
+          releaseKeyStore=release.jks
+          releaseStorePassword=${{ secrets.RELEASE_STORE_PASSWORD }}
+          EOF
+
+      - name: Build Production APKs
+        run: |
+          flutter build apk --flavor prod -t lib/main.dart \
+            --release \
+            --split-per-abi \
+            --obfuscate \
+            --split-debug-info=build/symbols/prod \
+            --tree-shake-icons
+
+      - name: Prepare release artifacts
+        run: |
+          VERSION=${{ needs.validate.outputs.version }}
+          mkdir -p release-artifacts
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-prod-release.apk release-artifacts/passvault-${VERSION}-arm64.apk
+          cp build/app/outputs/flutter-apk/app-x86_64-prod-release.apk release-artifacts/passvault-${VERSION}-x86_64.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release-artifacts/*.apk
+          body: |
+            ## PassVault ${{ needs.validate.outputs.version }}
+
+            ### Downloads
+            | File | Description |
+            |------|-------------|
+            | `passvault-${{ needs.validate.outputs.version }}-arm64.apk` | For most Android devices |
+            | `passvault-${{ needs.validate.outputs.version }}-x86_64.apk` | For emulators & Chromebooks |
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

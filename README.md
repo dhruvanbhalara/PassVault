@@ -1,5 +1,9 @@
 # PassVault 🔐
 
+<!-- COVERAGE_BADGE_START -->
+![Coverage](https://img.shields.io/badge/coverage-57.81%25-blue)
+<!-- COVERAGE_BADGE_END -->
+
 <p align="center">
   <img src="assets/icons/logo.png" width="120" alt="PassVault Logo"/>
 </p>

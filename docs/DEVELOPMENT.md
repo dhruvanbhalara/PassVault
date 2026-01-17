@@ -62,7 +62,7 @@ Hooks are stored in `.github/hooks/` and enforce code quality.
 
 | Hook | Trigger | Checks |
 |------|---------|--------|
-| **pre-commit** | Before each commit | `dart format` + `dart analyze` |
+| **pre-commit** | Before each commit | `dart format` + `flutter analyze` |
 | **pre-push** | Before each push | `flutter test` |
 
 > If a hook fails, the git operation is aborted. Fix the issues and retry.
