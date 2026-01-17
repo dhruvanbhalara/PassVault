@@ -43,6 +43,27 @@ void main(List<String> arguments) async {
     return;
   }
 
+  if (arguments.contains('--json')) {
+    String color = 'blue';
+    if (coveragePercent < 50) {
+      color = 'red';
+    } else if (coveragePercent < 80) {
+      color = 'yellow';
+    } else {
+      color = 'brightgreen';
+    }
+
+    stdout.writeln('''
+{
+  "schemaVersion": 1,
+  "label": "coverage",
+  "message": "$formattedPercent%",
+  "color": "$color"
+}
+''');
+    return;
+  }
+
   final report =
       '''
 <!-- COVERAGE_START -->
