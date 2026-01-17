@@ -85,7 +85,6 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
   ) async {
     final result = await _savePassword(event.entry);
     result.fold((failure) => emit(PasswordError(failure.message)), (_) {
-      // Optimized: Add to existing list instead of reloading all
       if (state is PasswordLoaded) {
         final currentPasswords = (state as PasswordLoaded).passwords;
         emit(PasswordLoaded([...currentPasswords, event.entry]));
@@ -102,7 +101,6 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
   ) async {
     final result = await _savePassword(event.entry);
     result.fold((failure) => emit(PasswordError(failure.message)), (_) {
-      // Optimized: Update specific entry instead of reloading all
       if (state is PasswordLoaded) {
         final currentPasswords = (state as PasswordLoaded).passwords;
         final updatedList = currentPasswords.map((p) {
@@ -122,7 +120,6 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
   ) async {
     final result = await _deletePassword(event.id);
     result.fold((failure) => emit(PasswordError(failure.message)), (_) {
-      // Optimized: Remove from existing list instead of reloading all
       if (state is PasswordLoaded) {
         final currentPasswords = (state as PasswordLoaded).passwords;
         final filteredList = currentPasswords

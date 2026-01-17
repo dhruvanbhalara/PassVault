@@ -100,14 +100,12 @@ class _SettingsViewState extends State<SettingsView> {
     // Handle each state type
     if (state is ImportSuccess) {
       _showSnackBar(context, l10n.importSuccess);
-      // Note: PasswordBloc will auto-reload when navigating back to HomeScreen
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
     } else if (state is ExportSuccess) {
       _showSnackBar(context, l10n.exportSuccess);
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
     } else if (state is ClearDatabaseSuccess) {
       _showSnackBar(context, l10n.databaseCleared);
-      // Note: PasswordBloc will auto-reload when navigating back to HomeScreen
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
     } else if (state is ImportExportFailure) {
       if (state.error != DataMigrationError.cancelled) {

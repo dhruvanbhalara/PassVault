@@ -122,7 +122,6 @@ class PasswordRepositoryImpl implements PasswordRepository {
         }
       }
 
-      // Note: saveBulkPasswords already emitted dataChanges event
       // No need to emit again here
 
       AppLogger.info(
