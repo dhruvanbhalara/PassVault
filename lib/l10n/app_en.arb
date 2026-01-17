@@ -91,5 +91,42 @@
   "debugDeleteAllPasswords": "Debug: Delete all passwords",
   "clearDatabaseTitle": "Clear Database?",
   "clearDatabaseMessage": "This will permanently delete ALL passwords from the database. This action cannot be undone.\\n\\nThis is a DEBUG feature for testing.",
-  "clearAll": "Clear All"
+  "clearAll": "Clear All",
+  "resolveDuplicatesTitle": "Resolve Duplicates",
+  "resolveRemainingDuplicates": "Please resolve all {count} remaining duplicates",
+  "@resolveRemainingDuplicates": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resolveCountDuplicates": "Resolve {count} Duplicates",
+  "@resolveCountDuplicates": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duplicatesFoundCount": "{count} duplicate(s) found",
+  "@duplicatesFoundCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chooseResolutionAction": "Choose action:",
+  "keepExistingTitle": "Keep Existing",
+  "keepExistingSubtitle": "Ignore imported entry",
+  "replaceWithNewTitle": "Replace with New",
+  "replaceWithNewSubtitle": "Update with imported data",
+  "keepBothTitle": "Keep Both",
+  "keepBothSubtitle": "Save both entries",
+  "bulkActionsTitle": "Bulk Actions",
+  "bulkActionsSubtitle": "Apply a single decision to all remaining conflicts:",
+  "keepAllExisting": "Keep All Existing",
+  "replaceAll": "Replace All",
+  "keepAllBothAction": "Keep All Both"
 }

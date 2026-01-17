@@ -7,6 +7,7 @@ import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_resolution_choice.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/duplicate_resolution/duplicate_resolution_cubit.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
@@ -32,47 +33,17 @@ class DuplicateResolutionScreen extends StatelessWidget {
 }
 
 @visibleForTesting
-class DuplicateResolutionView extends StatefulWidget {
+class DuplicateResolutionView extends StatelessWidget {
   final List<DuplicatePasswordEntry> duplicates;
 
   const DuplicateResolutionView({super.key, required this.duplicates});
 
-  @override
-  State<DuplicateResolutionView> createState() =>
-      _DuplicateResolutionViewState();
-}
-
-class _DuplicateResolutionViewState extends State<DuplicateResolutionView> {
-  late List<DuplicatePasswordEntry> _resolutions;
-
-  @override
-  void initState() {
-    super.initState();
-    _resolutions = widget.duplicates;
-  }
-
-  void _updateChoice(int index, DuplicateResolutionChoice choice) {
-    setState(() {
-      _resolutions[index] = _resolutions[index].copyWith(userChoice: choice);
-    });
-  }
-
-  void _setAllChoices(DuplicateResolutionChoice choice) {
-    setState(() {
-      _resolutions = _resolutions
-          .map((r) => r.copyWith(userChoice: choice))
-          .toList();
-    });
-  }
-
-  void _handleResolve(BuildContext context) {
-    final unresolved = _resolutions.where((r) => !r.isResolved).toList();
-
-    if (unresolved.isNotEmpty) {
+  void _handleResolve(BuildContext context, DuplicateResolutionState state) {
+    if (state.hasUnresolved) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Please resolve all ${unresolved.length} remaining duplicates',
+            context.l10n.resolveRemainingDuplicates(state.unresolved.length),
           ),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
@@ -80,107 +51,135 @@ class _DuplicateResolutionViewState extends State<DuplicateResolutionView> {
       return;
     }
 
-    context.read<ImportExportBloc>().add(ResolveDuplicatesEvent(_resolutions));
+    context.read<ImportExportBloc>().add(
+      ResolveDuplicatesEvent(state.resolutions),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    return BlocProvider(
+      create: (_) => DuplicateResolutionCubit(duplicates),
+      child: Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
 
-    return BlocConsumer<ImportExportBloc, ImportExportState>(
-      listener: (context, state) {
-        if (state is DuplicatesResolved) {
-          // Pop back to Settings screen
-          context.pop();
-        } else if (state is ImportExportFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: theme.colorScheme.error,
-            ),
-          );
-        }
-      },
-      builder: (context, state) {
-        final isLoading = state is ImportExportLoading;
+          return BlocConsumer<ImportExportBloc, ImportExportState>(
+            listener: (context, state) {
+              if (state is DuplicatesResolved) {
+                // Pop back to Settings screen
+                context.pop();
+              } else if (state is ImportExportFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: theme.colorScheme.error,
+                  ),
+                );
+              }
+            },
+            builder: (context, importState) {
+              final isLoading = importState is ImportExportLoading;
 
-        return Scaffold(
-          appBar: AppBar(title: const Text('Resolve Duplicates')),
-          bottomNavigationBar: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.m),
-              child: AppButton(
-                key: const Key('resolve_duplicates_button'),
-                text: 'Resolve ${_resolutions.length} Duplicates',
-                isLoading: isLoading,
-                onPressed: (_resolutions.any((r) => !r.isResolved))
-                    ? null
-                    : () => _handleResolve(context),
-                icon: LucideIcons.circleCheck,
-              ),
-            ),
-          ),
-          body: Column(
-            children: [
-              // Info banner
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(AppSpacing.m),
-                color: context.theme.surfaceDim,
-                child: Row(
-                  children: [
-                    Icon(
-                      LucideIcons.triangleAlert,
-                      color: context.theme.onSurface,
+              return BlocBuilder<
+                DuplicateResolutionCubit,
+                DuplicateResolutionState
+              >(
+                builder: (context, resolutionState) {
+                  return Scaffold(
+                    appBar: AppBar(
+                      title: Text(context.l10n.resolveDuplicatesTitle),
                     ),
-                    const SizedBox(width: AppSpacing.m),
-                    Expanded(
-                      child: Text(
-                        '${_resolutions.length} duplicate(s) found',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: context.theme.onSurface,
+                    bottomNavigationBar: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.m),
+                        child: AppButton(
+                          key: const Key('resolve_duplicates_button'),
+                          text: context.l10n.resolveCountDuplicates(
+                            resolutionState.resolutions.length,
+                          ),
+                          isLoading: isLoading,
+                          onPressed: (resolutionState.hasUnresolved)
+                              ? null
+                              : () => _handleResolve(context, resolutionState),
+                          icon: LucideIcons.circleCheck,
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ),
+                    body: Column(
+                      children: [
+                        // Info banner
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(AppSpacing.m),
+                          color: context.theme.surfaceDim,
+                          child: Row(
+                            children: [
+                              Icon(
+                                LucideIcons.triangleAlert,
+                                color: context.theme.onSurface,
+                              ),
+                              const SizedBox(width: AppSpacing.m),
+                              Expanded(
+                                child: Text(
+                                  context.l10n.duplicatesFoundCount(
+                                    resolutionState.resolutions.length,
+                                  ),
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    color: context.theme.onSurface,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
-              // Loading indicator
-              if (isLoading)
-                const Padding(
-                  padding: EdgeInsets.all(AppSpacing.l),
-                  child: AppLoader(size: 40),
-                ),
+                        // Loading indicator
+                        if (isLoading)
+                          const Padding(
+                            padding: EdgeInsets.all(AppSpacing.l),
+                            child: AppLoader(size: 40),
+                          ),
 
-              // Duplicates list
-              if (!isLoading)
-                Expanded(
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(AppSpacing.m),
-                    itemCount: _resolutions.length + 1, // +1 for bulk header
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: AppSpacing.m),
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return _BulkActionHeader(
-                          onChoiceSelected: _setAllChoices,
-                        );
-                      }
-                      final duplicate = _resolutions[index - 1];
-                      return _DuplicateCard(
-                        key: Key('duplicate_card_${index - 1}'),
-                        duplicate: duplicate,
-                        onChoiceChanged: (choice) =>
-                            _updateChoice(index - 1, choice),
-                      );
-                    },
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
+                        // Duplicates list
+                        if (!isLoading)
+                          Expanded(
+                            child: ListView.separated(
+                              padding: const EdgeInsets.all(AppSpacing.m),
+                              itemCount:
+                                  resolutionState.resolutions.length +
+                                  1, // +1 for bulk header
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: AppSpacing.m),
+                              itemBuilder: (context, index) {
+                                if (index == 0) {
+                                  return _BulkActionHeader(
+                                    onChoiceSelected: (choice) => context
+                                        .read<DuplicateResolutionCubit>()
+                                        .setAllChoices(choice),
+                                  );
+                                }
+                                final duplicate =
+                                    resolutionState.resolutions[index - 1];
+                                return _DuplicateCard(
+                                  key: Key('duplicate_card_${index - 1}'),
+                                  duplicate: duplicate,
+                                  onChoiceChanged: (choice) => context
+                                      .read<DuplicateResolutionCubit>()
+                                      .updateChoice(index - 1, choice),
+                                );
+                              },
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
@@ -220,7 +219,7 @@ class _DuplicateCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            'Username: ${duplicate.existingEntry.username}',
+            '${context.l10n.usernameLabel}: ${duplicate.existingEntry.username}',
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -284,23 +283,26 @@ class _ResolutionChoiceButtons extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Choose action:', style: Theme.of(context).textTheme.labelLarge),
+          Text(
+            context.l10n.chooseResolutionAction,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
           const SizedBox(height: AppSpacing.xs),
-          const RadioListTile<DuplicateResolutionChoice>(
-            title: Text('Keep Existing'),
-            subtitle: Text('Ignore imported entry'),
+          RadioListTile<DuplicateResolutionChoice>(
+            title: Text(context.l10n.keepExistingTitle),
+            subtitle: Text(context.l10n.keepExistingSubtitle),
             value: DuplicateResolutionChoice.keepExisting,
             contentPadding: EdgeInsets.zero,
           ),
-          const RadioListTile<DuplicateResolutionChoice>(
-            title: Text('Replace with New'),
-            subtitle: Text('Update with imported data'),
+          RadioListTile<DuplicateResolutionChoice>(
+            title: Text(context.l10n.replaceWithNewTitle),
+            subtitle: Text(context.l10n.replaceWithNewSubtitle),
             value: DuplicateResolutionChoice.replaceWithNew,
             contentPadding: EdgeInsets.zero,
           ),
-          const RadioListTile<DuplicateResolutionChoice>(
-            title: Text('Keep Both'),
-            subtitle: Text('Save both entries'),
+          RadioListTile<DuplicateResolutionChoice>(
+            title: Text(context.l10n.keepBothTitle),
+            subtitle: Text(context.l10n.keepBothSubtitle),
             value: DuplicateResolutionChoice.keepBoth,
             contentPadding: EdgeInsets.zero,
           ),
@@ -333,7 +335,7 @@ class _BulkActionHeader extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.s),
               Text(
-                'Bulk Actions',
+                context.l10n.bulkActionsTitle,
                 style: context.typography.titleSmall?.copyWith(
                   color: context.theme.primary,
                   fontWeight: FontWeight.bold,
@@ -343,7 +345,7 @@ class _BulkActionHeader extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s),
           Text(
-            'Apply a single decision to all remaining conflicts:',
+            context.l10n.bulkActionsSubtitle,
             style: context.typography.bodySmall,
           ),
           const SizedBox(height: AppSpacing.m),
@@ -352,17 +354,17 @@ class _BulkActionHeader extends StatelessWidget {
             runSpacing: AppSpacing.s,
             children: [
               _BulkActionButton(
-                label: 'Keep All Existing',
+                label: context.l10n.keepAllExisting,
                 onPressed: () =>
                     onChoiceSelected(DuplicateResolutionChoice.keepExisting),
               ),
               _BulkActionButton(
-                label: 'Replace All',
+                label: context.l10n.replaceAll,
                 onPressed: () =>
                     onChoiceSelected(DuplicateResolutionChoice.replaceWithNew),
               ),
               _BulkActionButton(
-                label: 'Keep All Both',
+                label: context.l10n.keepAllBothAction,
                 onPressed: () =>
                     onChoiceSelected(DuplicateResolutionChoice.keepBoth),
               ),

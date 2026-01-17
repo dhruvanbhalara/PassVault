@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/app_theme.dart';
@@ -200,6 +201,46 @@ void main() {
         find.byKey(const Key('resolve_duplicates_button')),
       );
       expect(button.onPressed, isNotNull);
+    });
+
+    testWidgets('shows loading indicator when resolving', (tester) async {
+      when(
+        () => mockBloc.state,
+      ).thenReturn(const ImportExportLoading('Resolving...'));
+
+      await tester.pumpWidget(createTestWidget([testDuplicate]));
+      await tester.pump(); // Allow build
+
+      expect(find.byType(AppLoader), findsOneWidget);
+      expect(
+        tester
+            .widget<AppButton>(
+              find.byKey(const Key('resolve_duplicates_button')),
+            )
+            .isLoading,
+        isTrue,
+      );
+    });
+
+    testWidgets('shows error SnackBar on failure', (tester) async {
+      whenListen(
+        mockBloc,
+        Stream.fromIterable([
+          const ImportExportInitial(),
+          const ImportExportFailure(DataMigrationError.unknown, 'Test Error'),
+        ]),
+        initialState: const ImportExportInitial(),
+      );
+
+      await tester.pumpWidget(createTestWidget([testDuplicate]));
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Test Error'), findsOneWidget);
+      expect(
+        find.byIcon(LucideIcons.circleCheck),
+        findsOneWidget,
+      ); // Button reset
     });
   });
 }
