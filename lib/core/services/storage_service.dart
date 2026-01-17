@@ -5,6 +5,7 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/core/constants/storage_keys.dart';
 import 'package:passvault/core/services/encrypted_storage_service.dart';
+import 'package:passvault/core/utils/app_logger.dart';
 import 'package:passvault/features/password_manager/data/models/password_entry_model.dart';
 
 /// Injectable module for platform-specific and async-initialized dependencies.
@@ -29,20 +30,37 @@ abstract class StorageModule {
   Future<Box<dynamic>> openPasswordBox(
     EncryptedStorageService encryptedStorageService,
   ) async {
+    AppLogger.info(
+      'Initializing Hive and opening password box',
+      tag: 'StorageModule',
+    );
     // Initialize Hive first
     await Hive.initFlutter();
 
     if (!Hive.isAdapterRegistered(PasswordEntryModelAdapter().typeId)) {
+      AppLogger.debug(
+        'Registering PasswordEntryModelAdapter (ID: ${PasswordEntryModelAdapter().typeId})',
+        tag: 'StorageModule',
+      );
       Hive.registerAdapter(PasswordEntryModelAdapter());
     }
 
     final encryptionKey = await encryptedStorageService
         .getOrCreateEncryptionKey();
 
-    return Hive.openBox(
+    AppLogger.debug(
+      'Opening Hive box: ${StorageKeys.passwordBox}',
+      tag: 'StorageModule',
+    );
+    final box = await Hive.openBox(
       StorageKeys.passwordBox,
       encryptionCipher: HiveAesCipher(Uint8List.fromList(encryptionKey)),
     );
+    AppLogger.info(
+      'Hive box "${box.name}" opened with ${box.length} entries',
+      tag: 'StorageModule',
+    );
+    return box;
   }
 
   /// Opens the encrypted settings box.

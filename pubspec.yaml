@@ -57,7 +57,9 @@ dependencies:
   animate_do: ^4.2.0
   share_plus: ^12.0.1
   file_picker: ^10.3.8
+  file_saver: ^0.3.1
   csv: ^6.0.0
+  path: ^1.9.0
   path_provider: ^2.1.5
 
   # Password Logic (Git)
@@ -79,6 +81,7 @@ dev_dependencies:
   hive_ce_generator: ^1.10.0
   mocktail: ^1.0.4
   bloc_test: ^10.0.0
+  plugin_platform_interface: ^2.1.8
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
