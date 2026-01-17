@@ -43,3 +43,4 @@ trigger: always_on
 -   **Conventional Commits**: Follow `type(scope): message` pattern.
 -   **Atomic Commits**: One commit = one logical change.
 -   **PR Checklist**: Ensure `checklist.md` is reviewed before marking a task as complete.
+-   **PR Labeling**: Categorize PRs using labels (e.g., `enhancement`, `bug`, `security`) and priority (e.g., `priority:high`).
