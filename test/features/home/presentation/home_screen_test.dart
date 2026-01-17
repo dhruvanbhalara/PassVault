@@ -73,7 +73,7 @@ void main() {
     });
 
     testWidgets('Shows loading indicator with correct key', (tester) async {
-      await tester.pumpWidget(createTestWidget(PasswordLoading()));
+      await tester.pumpWidget(createTestWidget(const PasswordLoading()));
 
       expect(find.byKey(const Key('home_loading')), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);

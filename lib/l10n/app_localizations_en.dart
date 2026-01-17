@@ -262,4 +262,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get import => 'Import';
+
+  @override
+  String get processing => 'Processing...';
+
+  @override
+  String get databaseCleared => 'Database cleared successfully';
+
+  @override
+  String get fileNotFound => 'File not found';
+
+  @override
+  String get clearDatabase => 'Clear Database';
+
+  @override
+  String get debugDeleteAllPasswords => 'Debug: Delete all passwords';
+
+  @override
+  String get clearDatabaseTitle => 'Clear Database?';
+
+  @override
+  String get clearDatabaseMessage =>
+      'This will permanently delete ALL passwords from the database. This action cannot be undone.\\n\\nThis is a DEBUG feature for testing.';
+
+  @override
+  String get clearAll => 'Clear All';
+
+  @override
+  String get resolveDuplicatesTitle => 'Resolve Duplicates';
+
+  @override
+  String resolveRemainingDuplicates(int count) {
+    return 'Please resolve all $count remaining duplicates';
+  }
+
+  @override
+  String resolveCountDuplicates(int count) {
+    return 'Resolve $count Duplicates';
+  }
+
+  @override
+  String duplicatesFoundCount(int count) {
+    return '$count duplicate(s) found';
+  }
+
+  @override
+  String get chooseResolutionAction => 'Choose action:';
+
+  @override
+  String get keepExistingTitle => 'Keep Existing';
+
+  @override
+  String get keepExistingSubtitle => 'Ignore imported entry';
+
+  @override
+  String get replaceWithNewTitle => 'Replace with New';
+
+  @override
+  String get replaceWithNewSubtitle => 'Update with imported data';
+
+  @override
+  String get keepBothTitle => 'Keep Both';
+
+  @override
+  String get keepBothSubtitle => 'Save both entries';
+
+  @override
+  String get bulkActionsTitle => 'Bulk Actions';
+
+  @override
+  String get bulkActionsSubtitle =>
+      'Apply a single decision to all remaining conflicts:';
+
+  @override
+  String get keepAllExisting => 'Keep All Existing';
+
+  @override
+  String get replaceAll => 'Replace All';
+
+  @override
+  String get keepAllBothAction => 'Keep All Both';
 }

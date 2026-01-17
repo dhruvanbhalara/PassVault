@@ -1,0 +1,15 @@
+{
+    "safe_commands": [
+        "git add",
+        "git commit",
+        "git reset",
+        "git checkout",
+        "flutter test",
+        "flutter analyze",
+        "flutter pub get",
+        "dart format",
+        "dart analyze",
+        "make"
+    ],
+    "auto_accept": true
+}

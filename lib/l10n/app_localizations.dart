@@ -597,6 +597,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import'**
   String get import;
+
+  /// No description provided for @processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing...'**
+  String get processing;
+
+  /// No description provided for @databaseCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Database cleared successfully'**
+  String get databaseCleared;
+
+  /// No description provided for @fileNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'File not found'**
+  String get fileNotFound;
+
+  /// No description provided for @clearDatabase.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Database'**
+  String get clearDatabase;
+
+  /// No description provided for @debugDeleteAllPasswords.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug: Delete all passwords'**
+  String get debugDeleteAllPasswords;
+
+  /// No description provided for @clearDatabaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Database?'**
+  String get clearDatabaseTitle;
+
+  /// No description provided for @clearDatabaseMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete ALL passwords from the database. This action cannot be undone.\\n\\nThis is a DEBUG feature for testing.'**
+  String get clearDatabaseMessage;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get clearAll;
+
+  /// No description provided for @resolveDuplicatesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve Duplicates'**
+  String get resolveDuplicatesTitle;
+
+  /// No description provided for @resolveRemainingDuplicates.
+  ///
+  /// In en, this message translates to:
+  /// **'Please resolve all {count} remaining duplicates'**
+  String resolveRemainingDuplicates(int count);
+
+  /// No description provided for @resolveCountDuplicates.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve {count} Duplicates'**
+  String resolveCountDuplicates(int count);
+
+  /// No description provided for @duplicatesFoundCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} duplicate(s) found'**
+  String duplicatesFoundCount(int count);
+
+  /// No description provided for @chooseResolutionAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose action:'**
+  String get chooseResolutionAction;
+
+  /// No description provided for @keepExistingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Existing'**
+  String get keepExistingTitle;
+
+  /// No description provided for @keepExistingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ignore imported entry'**
+  String get keepExistingSubtitle;
+
+  /// No description provided for @replaceWithNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace with New'**
+  String get replaceWithNewTitle;
+
+  /// No description provided for @replaceWithNewSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update with imported data'**
+  String get replaceWithNewSubtitle;
+
+  /// No description provided for @keepBothTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Both'**
+  String get keepBothTitle;
+
+  /// No description provided for @keepBothSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save both entries'**
+  String get keepBothSubtitle;
+
+  /// No description provided for @bulkActionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk Actions'**
+  String get bulkActionsTitle;
+
+  /// No description provided for @bulkActionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply a single decision to all remaining conflicts:'**
+  String get bulkActionsSubtitle;
+
+  /// No description provided for @keepAllExisting.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep All Existing'**
+  String get keepAllExisting;
+
+  /// No description provided for @replaceAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace All'**
+  String get replaceAll;
+
+  /// No description provided for @keepAllBothAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep All Both'**
+  String get keepAllBothAction;
 }
 
 class _AppLocalizationsDelegate

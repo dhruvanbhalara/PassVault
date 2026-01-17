@@ -29,7 +29,7 @@ void main() {
     when(() => mockAddEditBloc.close()).thenAnswer((_) async {});
     when(() => mockPasswordBloc.close()).thenAnswer((_) async {});
     when(() => mockAddEditBloc.state).thenReturn(const AddEditPasswordState());
-    when(() => mockPasswordBloc.state).thenReturn(PasswordInitial());
+    when(() => mockPasswordBloc.state).thenReturn(const PasswordInitial());
   });
 
   Widget createTestWidget() {

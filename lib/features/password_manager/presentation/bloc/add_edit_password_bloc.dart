@@ -1,71 +1,16 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
+
+/// Events for the [AddEditPasswordBloc].
+import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_event.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_state.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/domain/usecases/password_settings_usecases.dart';
 
-/// Events for the [AddEditPasswordBloc].
-sealed class AddEditPasswordEvent extends Equatable {
-  const AddEditPasswordEvent();
-  @override
-  List<Object?> get props => [];
-}
-
-/// Triggered when the user wants to generate a new strong password.
-final class GenerateStrongPassword extends AddEditPasswordEvent {}
-
-/// Triggered when the password text field's value changes.
-final class PasswordChanged extends AddEditPasswordEvent {
-  final String password;
-  const PasswordChanged(this.password);
-  @override
-  List<Object?> get props => [password];
-}
-
-/// Status indicating the state of the password entry form.
-enum AddEditStatus {
-  /// The initial state or when the user is manually typing.
-  initial,
-
-  /// The state after a password has been automatically generated.
-  generated,
-}
-
-/// Represents the current state of the [AddEditPasswordBloc].
-class AddEditPasswordState extends Equatable {
-  /// The current status of the form.
-  final AddEditStatus status;
-
-  /// The last generated password string.
-  final String generatedPassword;
-
-  /// The estimated strength of the current password (0.0 to 1.0).
-  final double strength;
-
-  const AddEditPasswordState({
-    this.status = AddEditStatus.initial,
-    this.generatedPassword = '',
-    this.strength = 0.0,
-  });
-
-  /// Creates a copy of the state with updated values.
-  AddEditPasswordState copyWith({
-    AddEditStatus? status,
-    String? generatedPassword,
-    double? strength,
-  }) {
-    return AddEditPasswordState(
-      status: status ?? this.status,
-      generatedPassword: generatedPassword ?? this.generatedPassword,
-      strength: strength ?? this.strength,
-    );
-  }
-
-  @override
-  List<Object?> get props => [status, generatedPassword, strength];
-}
+export 'add_edit_password_event.dart';
+export 'add_edit_password_state.dart';
 
 /// BLoC responsible for managing the logic of adding or editing password entries.
 ///

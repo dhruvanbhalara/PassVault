@@ -1,27 +1,12 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/core/error/result.dart';
 import 'package:passvault/features/settings/domain/usecases/get_theme_usecase.dart';
 import 'package:passvault/features/settings/domain/usecases/set_theme_usecase.dart';
+import 'package:passvault/features/settings/presentation/bloc/theme/theme_state.dart';
 
-enum ThemeType { system, light, dark, amoled }
-
-class ThemeState extends Equatable {
-  final ThemeType themeType;
-  final ThemeMode themeMode;
-
-  const ThemeState({required this.themeType, required this.themeMode});
-
-  factory ThemeState.initial() => const ThemeState(
-    themeType: ThemeType.system,
-    themeMode: ThemeMode.system,
-  );
-
-  @override
-  List<Object> get props => [themeType, themeMode];
-}
+export 'theme_state.dart';
 
 @lazySingleton
 class ThemeCubit extends Cubit<ThemeState> {

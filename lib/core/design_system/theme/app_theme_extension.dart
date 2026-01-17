@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
+import 'package:passvault/l10n/app_localizations.dart';
 
 /// Custom theme extension to expose semantic colors, styles and effects
 /// tailored for a secure password manager.
@@ -205,6 +206,9 @@ extension AppThemeExtensionContext on BuildContext {
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
   TextTheme get typography => Theme.of(this).textTheme;
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
+
+  /// Shortcut for accessing the current localizations.
+  AppLocalizations get l10n => AppLocalizations.of(this)!;
 
   /// Returns whether the current device is considered a mobile/handheld device.
   bool get isMobile => MediaQuery.sizeOf(this).width < AppBreakpoints.mobile;
