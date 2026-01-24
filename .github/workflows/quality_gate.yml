@@ -18,9 +18,9 @@ concurrency:
 
 # Least-privilege permissions for security
 permissions:
-  contents: read # Required for actions/checkout
-  pull-requests: read # Required for paths-filter
-  checks: write # Required for test reporting
+  contents: read
+  pull-requests: read
+  checks: write
 
 env:
   FLUTTER_VERSION: ${{ secrets.FLUTTER_VERSION }}
@@ -62,8 +62,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Use composite action for consistent Flutter setup
-      - uses: ./.github/actions/flutter-setup
+      - name: Set up Flutter
+        uses: ./.github/actions/flutter-setup
 
       - name: Format code check
         run: dart format --output=none --set-exit-if-changed .
@@ -82,11 +82,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Use composite action for consistent Flutter setup
-      - uses: ./.github/actions/flutter-setup
+      - name: Set up Flutter
+        uses: ./.github/actions/flutter-setup
 
-      - name: Execute unit tests
-        run: flutter test --coverage
+      - name: Run Tests & Clean Coverage
+        uses: ./.github/actions/test-coverage
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
@@ -95,14 +95,6 @@ jobs:
           path: coverage/lcov.info
         if: success()
 
-      # Upload coverage (optional, based on requirement)
-      # - name: Report code coverage
-      #   uses: codecov/codecov-action@v3
-      #   with:
-      #     files: ./coverage/lcov.info
-      #     flags: unittests
-      #     fail_ci_if_error: false
-
   summary:
     name: Quality Gate Summary
     runs-on: ubuntu-latest
@@ -110,7 +102,7 @@ jobs:
     if: always()
     timeout-minutes: 10
     permissions:
-      pull-requests: write # Required to update PR description
+      pull-requests: write
       contents: read
 
     steps:
@@ -130,7 +122,6 @@ jobs:
           fi
           echo "✅ All quality checks passed"
 
-      # Download coverage artifact from tests job
       - name: Download coverage
         uses: actions/download-artifact@v4
         with:
@@ -151,11 +142,7 @@ jobs:
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
           CURRENT_BODY=$(gh pr view $PR_NUMBER --json body -q .body)
-
-          # Remove old coverage block if exists
           NEW_BODY=$(echo "$CURRENT_BODY" | sed '/<!-- COVERAGE_START -->/,/<!-- COVERAGE_END -->/d')
-
-          # Append new coverage summary
           echo -e "$NEW_BODY\n\n$SUMMARY" > pr_body.txt
           gh pr edit $PR_NUMBER --body-file pr_body.txt
         env:

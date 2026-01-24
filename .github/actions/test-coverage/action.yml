@@ -1,0 +1,17 @@
+name: Run Tests & Clean Coverage
+description: Runs Flutter unit tests and removes generated files from coverage report.
+
+runs:
+  using: composite
+  steps:
+    - name: Install lcov
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y lcov
+
+    - name: Execute unit tests
+      shell: bash
+      run: flutter test --coverage
+
+    - name: Remove generated files
+      shell: bash
+      run: lcov --remove coverage/lcov.info 'lib/**/*.g.dart' 'lib/**/*.freezed.dart' 'lib/**/*.config.dart' -o coverage/lcov.info
