@@ -1,81 +1,81 @@
-import 'package:equatable/equatable.dart';
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
+import 'package:passvault/core/utils/app_logger.dart';
+import 'package:passvault/features/home/presentation/bloc/password_event.dart';
+import 'package:passvault/features/home/presentation/bloc/password_state.dart';
+import 'package:passvault/features/password_manager/domain/repositories/password_repository.dart';
 import 'package:passvault/features/password_manager/domain/usecases/password_usecases.dart';
 
-// Events
-abstract class PasswordEvent extends Equatable {
-  const PasswordEvent();
-  @override
-  List<Object?> get props => [];
-}
-
-class LoadPasswords extends PasswordEvent {}
-
-class AddPassword extends PasswordEvent {
-  final PasswordEntry entry;
-  const AddPassword(this.entry);
-}
-
-class UpdatePassword extends PasswordEvent {
-  final PasswordEntry entry;
-  const UpdatePassword(this.entry);
-}
-
-class DeletePassword extends PasswordEvent {
-  final String id;
-  const DeletePassword(this.id);
-}
-
-// States
-sealed class PasswordState extends Equatable {
-  const PasswordState();
-  @override
-  List<Object?> get props => [];
-}
-
-class PasswordInitial extends PasswordState {}
-
-class PasswordLoading extends PasswordState {}
-
-class PasswordLoaded extends PasswordState {
-  final List<PasswordEntry> passwords;
-  const PasswordLoaded(this.passwords);
-  @override
-  List<Object?> get props => [passwords];
-}
-
-class PasswordError extends PasswordState {
-  final String message;
-  const PasswordError(this.message);
-  @override
-  List<Object?> get props => [message];
-}
+export 'password_event.dart';
+export 'password_state.dart';
 
 @lazySingleton
 class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
   final GetPasswordsUseCase _getPasswords;
   final SavePasswordUseCase _savePassword;
   final DeletePasswordUseCase _deletePassword;
+  final PasswordRepository _repository;
 
-  PasswordBloc(this._getPasswords, this._savePassword, this._deletePassword)
-    : super(PasswordInitial()) {
+  // Stream subscription for external data changes
+  StreamSubscription<void>? _dataChangeSubscription;
+
+  PasswordBloc(
+    this._getPasswords,
+    this._savePassword,
+    this._deletePassword,
+    this._repository,
+  ) : super(const PasswordInitial()) {
     on<LoadPasswords>(_onLoadPasswords);
     on<AddPassword>(_onAddPassword);
     on<UpdatePassword>(_onUpdatePassword);
     on<DeletePassword>(_onDeletePassword);
+
+    // Subscribe to repository data changes for cross-screen sync
+    _dataChangeSubscription = _repository.dataChanges.listen((_) {
+      AppLogger.debug(
+        'External data change detected, reloading passwords',
+        tag: 'PasswordBloc',
+      );
+      add(const LoadPasswords());
+    });
+
+    AppLogger.debug(
+      'PasswordBloc initialized with stream subscription',
+      tag: 'PasswordBloc',
+    );
+  }
+
+  @override
+  Future<void> close() {
+    AppLogger.debug('Canceling data change subscription', tag: 'PasswordBloc');
+    _dataChangeSubscription?.cancel();
+    return super.close();
   }
 
   Future<void> _onLoadPasswords(
     LoadPasswords event,
     Emitter<PasswordState> emit,
   ) async {
-    emit(PasswordLoading());
+    AppLogger.info('Loading passwords from repository', tag: 'PasswordBloc');
+    emit(const PasswordLoading());
     final result = await _getPasswords();
     result.fold(
-      (failure) => emit(PasswordError(failure.message)),
-      (passwords) => emit(PasswordLoaded(passwords)),
+      (failure) {
+        AppLogger.error(
+          'Failed to load passwords: ${failure.message}',
+          tag: 'PasswordBloc',
+        );
+        emit(PasswordError(failure.message));
+      },
+      (passwords) {
+        AppLogger.info(
+          'Loaded ${passwords.length} passwords',
+          tag: 'PasswordBloc',
+        );
+        emit(PasswordLoaded(passwords));
+      },
     );
   }
 
@@ -84,10 +84,15 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
     Emitter<PasswordState> emit,
   ) async {
     final result = await _savePassword(event.entry);
-    result.fold(
-      (failure) => emit(PasswordError(failure.message)),
-      (_) => add(LoadPasswords()),
-    );
+    result.fold((failure) => emit(PasswordError(failure.message)), (_) {
+      if (state is PasswordLoaded) {
+        final currentPasswords = (state as PasswordLoaded).passwords;
+        emit(PasswordLoaded([...currentPasswords, event.entry]));
+      } else {
+        // Fallback: load all if state is not loaded
+        add(const LoadPasswords());
+      }
+    });
   }
 
   Future<void> _onUpdatePassword(
@@ -95,10 +100,18 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
     Emitter<PasswordState> emit,
   ) async {
     final result = await _savePassword(event.entry);
-    result.fold(
-      (failure) => emit(PasswordError(failure.message)),
-      (_) => add(LoadPasswords()),
-    );
+    result.fold((failure) => emit(PasswordError(failure.message)), (_) {
+      if (state is PasswordLoaded) {
+        final currentPasswords = (state as PasswordLoaded).passwords;
+        final updatedList = currentPasswords.map((p) {
+          return p.id == event.entry.id ? event.entry : p;
+        }).toList();
+        emit(PasswordLoaded(updatedList));
+      } else {
+        // Fallback: load all if state is not loaded
+        add(const LoadPasswords());
+      }
+    });
   }
 
   Future<void> _onDeletePassword(
@@ -106,9 +119,17 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
     Emitter<PasswordState> emit,
   ) async {
     final result = await _deletePassword(event.id);
-    result.fold(
-      (failure) => emit(PasswordError(failure.message)),
-      (_) => add(LoadPasswords()),
-    );
+    result.fold((failure) => emit(PasswordError(failure.message)), (_) {
+      if (state is PasswordLoaded) {
+        final currentPasswords = (state as PasswordLoaded).passwords;
+        final filteredList = currentPasswords
+            .where((p) => p.id != event.id)
+            .toList();
+        emit(PasswordLoaded(filteredList));
+      } else {
+        // Fallback: load all if state is not loaded
+        add(const LoadPasswords());
+      }
+    });
   }
 }

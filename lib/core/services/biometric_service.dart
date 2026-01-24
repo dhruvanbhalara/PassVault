@@ -12,10 +12,12 @@ class BiometricService {
     return canAuthenticate;
   }
 
-  Future<bool> authenticate() async {
+  Future<bool> authenticate({
+    String localizedReason = 'Please authenticate to unlock PassVault',
+  }) async {
     try {
       return await _auth.authenticate(
-        localizedReason: 'Please authenticate to unlock PassVault',
+        localizedReason: localizedReason,
         biometricOnly: true,
         persistAcrossBackgrounding: true,
       );

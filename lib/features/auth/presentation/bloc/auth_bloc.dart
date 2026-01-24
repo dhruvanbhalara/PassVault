@@ -1,43 +1,13 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 import 'package:passvault/features/auth/domain/usecases/authenticate_usecase.dart';
+import 'package:passvault/features/auth/presentation/bloc/auth_event.dart';
+import 'package:passvault/features/auth/presentation/bloc/auth_state.dart';
 import 'package:passvault/features/settings/domain/usecases/biometrics_usecases.dart';
 
-// Events
-abstract class AuthEvent extends Equatable {
-  const AuthEvent();
-  @override
-  List<Object> get props => [];
-}
-
-class AuthCheckRequested extends AuthEvent {}
-
-class AuthLoginRequested extends AuthEvent {}
-
-// States
-sealed class AuthState extends Equatable {
-  const AuthState();
-  @override
-  List<Object> get props => [];
-}
-
-class AuthInitial extends AuthState {}
-
-class AuthLoading extends AuthState {}
-
-class AuthAuthenticated extends AuthState {}
-
-enum AuthError { none, biometricsNotAvailable, authFailed }
-
-class AuthUnauthenticated extends AuthState {
-  final AuthError error;
-  const AuthUnauthenticated({this.error = AuthError.none});
-
-  @override
-  List<Object> get props => [error];
-}
+export 'auth_event.dart';
+export 'auth_state.dart';
 
 @injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {

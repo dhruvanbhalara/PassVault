@@ -22,13 +22,17 @@ class PasswordEntryModelAdapter extends TypeAdapter<PasswordEntryModel> {
       username: fields[2] as String,
       password: fields[3] as String,
       lastUpdated: fields[4] as DateTime,
+      url: fields[5] as String?,
+      notes: fields[6] as String?,
+      folder: fields[7] as String?,
+      favorite: fields[8] == null ? false : fields[8] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, PasswordEntryModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +42,15 @@ class PasswordEntryModelAdapter extends TypeAdapter<PasswordEntryModel> {
       ..writeByte(3)
       ..write(obj.password)
       ..writeByte(4)
-      ..write(obj.lastUpdated);
+      ..write(obj.lastUpdated)
+      ..writeByte(5)
+      ..write(obj.url)
+      ..writeByte(6)
+      ..write(obj.notes)
+      ..writeByte(7)
+      ..write(obj.folder)
+      ..writeByte(8)
+      ..write(obj.favorite);
   }
 
   @override
