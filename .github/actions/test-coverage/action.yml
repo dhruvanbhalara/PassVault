@@ -14,4 +14,4 @@ runs:
 
     - name: Remove generated files
       shell: bash
-      run: lcov --remove coverage/lcov.info 'lib/**/*.g.dart' 'lib/**/*.freezed.dart' 'lib/**/*.config.dart' -o coverage/lcov.info
+      run: lcov --remove coverage/lcov.info 'lib/**/*.g.dart' 'lib/**/*.freezed.dart' 'lib/**/*.config.dart' -o coverage/lcov.info --ignore-errors unused
