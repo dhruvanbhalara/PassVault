@@ -48,6 +48,7 @@ trigger: always_on
 -   **Documentation**: Public APIs (Repositories/UseCases) MUST have `///` doc comments.
 -   **Contribution Ready**: Ensure new features are accompanied by appropriate test cases so contributors can't break them.
 -   **Zero Hardcoded Strings**: Every user-facing string MUST be in an `.arb` file for easy translation by the community.
+-   **No Redundant Comments**: Do not explain obvious code (e.g., `// Initialize variable`). Comments must explain **WHY**, not **WHAT**. Remove unused code immediately.
 
 ## 7. Git & Development Flow
 -   **Conventional Commits**: Follow `type(scope): message` pattern.

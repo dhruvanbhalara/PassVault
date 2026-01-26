@@ -33,5 +33,6 @@
 ## 5. 🤝 Open Source Excellence
 - [ ] **Public ARB**: If I added new strings, are they in `app_en.arb`?
 - [ ] **Auditability**: Is the code logic clear enough for a community member to audit for security?
+- [ ] **Cleanliness**: Did I remove all redundant comments and unused code?
 - [ ] **README Update**: Did I update the features list or setup instructions if they changed?
 - [ ] **Accessibility**: Do interactive elements have appropriate semantics/labels?

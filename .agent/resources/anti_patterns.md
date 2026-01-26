@@ -23,3 +23,4 @@
 -   **❌ Logic-less Tests**: Writing tests that only verify `1 == 1`.
 -   **❌ No Mocking**: Testing a Repository by opening a real Hive box. Use `mocktail` to mock the data source.
 -   **❌ Ignoring Coverage**: Submitting PRs that decrease overall code coverage.
+-   **❌ Redundant Comments**: Adding comments like `// Ignore docs` that add noise without value.
