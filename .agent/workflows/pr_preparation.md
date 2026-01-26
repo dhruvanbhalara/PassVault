@@ -10,7 +10,12 @@ This workflow ensures that a PR meets all quality gates before being submitted.
 
 ## Steps
 
-1.  **Sync with Master**:
+1.  **Compliance Check**:
+    -   Did I complete the "Agent Self-Check" in `checklist.md`?
+    -   Did I strictly follow `flutter_rules.md` (Agency Protocol)?
+    -   **Cleanliness**: Did I remove all redundant comments (`// Initialize variable`)?
+
+2.  **Sync with Main**:
     ```bash
     git fetch origin
     git rebase origin/master
@@ -33,7 +38,9 @@ This workflow ensures that a PR meets all quality gates before being submitted.
     ```
 
 5.  **Audit Code**:
-    Run `/audit` to trigger the [audit_code](file:///Users/dhruvanbhalara/Desktop/Github Projects/passvault/.agent/workflows/audit_code.md) workflow for a final compliance check.
+    Run `/audit` to trigger the [audit_code](file:///Users/dhruvanbhalara/Desktop/Github Projects/passvault/.agent/workflows/audit_code.md) workflow.
+    -   **Critical**: Verify "Atomic Testing" (every change has a test).
+    -   **Critical**: Check for "Redundant Comments" and "Massive Widgets".
 
 6.  **Create PR Description**:
     Construct a PR body that includes:

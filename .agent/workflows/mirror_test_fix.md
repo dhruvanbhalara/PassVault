@@ -4,7 +4,7 @@ description: Specialized workflow to resolve missing test coverage or broken mir
 
 # Mirror Test Fix Workflow
 
-Use this workflow to achieve 100% logic layer coverage as required by the "Mirror Test Rule".
+Use this workflow to achieve 100% logic layer coverage (Mirror Test Rule) and ensure Atomic Testing compliance.
 
 ## Steps
 
@@ -35,3 +35,4 @@ Use this workflow to achieve 100% logic layer coverage as required by the "Mirro
 
 6.  **Compliance Check**:
     Verify with `mirror_test_rule` skill.
+    Ensure strict case coverage (Failure, Boundary, Null) is met.
