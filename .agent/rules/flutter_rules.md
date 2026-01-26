@@ -38,6 +38,7 @@ trigger: always_on
 -   **Widget Organization**: 
     - Feature-specific widgets MUST be placed in `lib/features/<feature>/presentation/widgets/`.
     - Shared design system components MUST be placed in `lib/core/design_system/components/`.
+    - **One Public Widget Per File**: Each file must contain exactly ONE public widget class. The file name must match the widget name (snake_case). Private helper widgets (`_MyHelper`) are allowed in the same file if they are small and specific to that widget.
 -   **Theme Data Access**: ALWAYS use `BuildContext` extensions (e.g., `context.colorScheme`, `context.theme`, `context.l10n`) instead of direct `Theme.of(context)` calls for better readability and consistency.
 
 ## 5. Quality Assurance (The Mirror Rule)

@@ -4,7 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
-import 'package:passvault/features/settings/presentation/widgets/settings_shared_widgets.dart';
+import 'package:passvault/features/settings/presentation/widgets/settings_section_header.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
 /// Section for appearance settings like theme.

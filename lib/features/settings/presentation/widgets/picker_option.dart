@@ -2,25 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 
-class PickerDragHandle extends StatelessWidget {
-  const PickerDragHandle({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: 40,
-        height: 4,
-        margin: const EdgeInsets.only(bottom: AppSpacing.m),
-        decoration: BoxDecoration(
-          color: context.theme.surfaceDim,
-          borderRadius: BorderRadius.circular(AppRadius.s),
-        ),
-      ),
-    );
-  }
-}
-
 class PickerOption extends StatelessWidget {
   final IconData icon;
   final Color color;
@@ -66,19 +47,6 @@ class _PickerIcon extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.s),
         child: Icon(icon, color: color, size: AppIconSize.m),
       ),
-    );
-  }
-}
-
-class PickerDivider extends StatelessWidget {
-  const PickerDivider({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Divider(
-      indent: AppDimensions.listTileDividerIndent,
-      endIndent: AppSpacing.m,
-      color: context.theme.outline.withValues(alpha: 0.1),
     );
   }
 }

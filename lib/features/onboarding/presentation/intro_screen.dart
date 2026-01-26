@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:passvault/features/onboarding/presentation/widgets/onboarding_widgets.dart';
+import 'package:passvault/features/onboarding/presentation/widgets/intro_navigation_buttons.dart';
+import 'package:passvault/features/onboarding/presentation/widgets/intro_slide.dart';
 
 /// Onboarding introduction screen for new users.
 class IntroScreen extends StatelessWidget {

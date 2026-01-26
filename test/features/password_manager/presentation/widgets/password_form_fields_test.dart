@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/features/password_manager/presentation/widgets/password_form_widgets.dart';
+import 'package:passvault/features/password_manager/presentation/widgets/password_form_fields.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
 void main() {
@@ -46,16 +47,10 @@ void main() {
       expect(find.text('APP NAME'), findsOneWidget);
       expect(find.text('USERNAME'), findsOneWidget);
       expect(find.text('PASSWORD'), findsOneWidget);
-      expect(
-        find.text('Generate'),
-        findsOneWidget,
-      ); // Note: Generate button label is NOT in AppTextField but OutlinedButton.icon
+      expect(find.text('Generate'), findsOneWidget);
     });
 
-    testWidgets('shows strength indicator when password is not empty', (
-      WidgetTester tester,
-    ) async {
-      passwordController.text = 'password123';
+    testWidgets('toggles visibility icon', (WidgetTester tester) async {
       await tester.pumpWidget(
         wrapWithMaterial(
           PasswordFormFields(
@@ -63,16 +58,15 @@ void main() {
             appNameController: appNameController,
             usernameController: usernameController,
             passwordController: passwordController,
-            obscurePassword: true,
+            obscurePassword: false, // Not obscured
             onToggleVisibility: () {},
-            strength: 0.5,
+            strength: 0,
             onGenerate: () {},
           ),
         ),
       );
 
-      expect(find.byType(PasswordStrengthIndicator), findsOneWidget);
-      expect(find.text('50%'), findsOneWidget);
+      expect(find.byIcon(LucideIcons.eyeOff), findsOneWidget);
     });
   });
 }

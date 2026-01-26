@@ -5,7 +5,7 @@ import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_resolution_choice.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
-import 'package:passvault/features/password_manager/presentation/widgets/duplicate_resolution_widgets.dart';
+import 'package:passvault/features/password_manager/presentation/widgets/duplicate_card.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
 class MockOnChoiceChanged extends Mock {
@@ -81,34 +81,6 @@ void main() {
 
       verify(
         () => onChoiceChanged.call(DuplicateResolutionChoice.keepExisting),
-      ).called(1);
-    });
-  });
-
-  group('$BulkResolutionHeader', () {
-    testWidgets('calls onChoiceSelected for each bulk action', (
-      WidgetTester tester,
-    ) async {
-      final onChoiceSelected = MockOnChoiceChanged();
-      await tester.pumpWidget(
-        wrapWithMaterial(
-          BulkResolutionHeader(onChoiceSelected: onChoiceSelected.call),
-        ),
-      );
-
-      await tester.tap(find.text('Keep All Existing'));
-      verify(
-        () => onChoiceSelected.call(DuplicateResolutionChoice.keepExisting),
-      ).called(1);
-
-      await tester.tap(find.text('Replace All'));
-      verify(
-        () => onChoiceSelected.call(DuplicateResolutionChoice.replaceWithNew),
-      ).called(1);
-
-      await tester.tap(find.text('Keep All Both'));
-      verify(
-        () => onChoiceSelected.call(DuplicateResolutionChoice.keepBoth),
       ).called(1);
     });
   });

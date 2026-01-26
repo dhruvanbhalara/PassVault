@@ -37,6 +37,7 @@ class PasswordRepositoryImpl implements PasswordRepository {
     try {
       final model = PasswordEntryModel.fromEntity(entry);
       await _localDataSource.savePassword(model);
+      _dataChangeController.add(null);
       return const Success(null);
     } catch (e) {
       return Error(DatabaseFailure(e.toString()));
@@ -47,6 +48,7 @@ class PasswordRepositoryImpl implements PasswordRepository {
   Future<Result<void>> deletePassword(String id) async {
     try {
       await _localDataSource.deletePassword(id);
+      _dataChangeController.add(null);
       return const Success(null);
     } catch (e) {
       return Error(DatabaseFailure(e.toString()));

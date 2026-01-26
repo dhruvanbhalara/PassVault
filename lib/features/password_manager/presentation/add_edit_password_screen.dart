@@ -5,7 +5,7 @@ import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_bloc.dart';
-import 'package:passvault/features/password_manager/presentation/widgets/password_form_widgets.dart';
+import 'package:passvault/features/password_manager/presentation/widgets/password_form_fields.dart';
 import 'package:uuid/uuid.dart';
 
 /// Screen for adding or editing a password entry.

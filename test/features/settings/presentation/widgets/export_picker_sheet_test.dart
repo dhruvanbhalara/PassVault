@@ -6,8 +6,7 @@ import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
-import 'package:passvault/features/settings/presentation/widgets/import_export_dialogs.dart';
-import 'package:passvault/features/settings/presentation/widgets/password_protected_dialog.dart';
+import 'package:passvault/features/settings/presentation/widgets/export_picker_sheet.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
 class MockImportExportBloc
@@ -57,26 +56,6 @@ void main() {
 
       verify(
         () => mockBloc.add(const ExportDataEvent(isJson: false)),
-      ).called(1);
-    });
-  });
-
-  group('$PasswordProtectedDialog', () {
-    testWidgets('submitting password adds ExportEncryptedData event', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(
-        wrapWithMaterial(
-          PasswordProtectedDialog(bloc: mockBloc, isExport: true),
-        ),
-      );
-
-      await tester.enterText(find.byType(TextFormField), 'password123');
-      await tester.tap(find.text('Export'));
-      await tester.pumpAndSettle();
-
-      verify(
-        () => mockBloc.add(const ExportEncryptedEvent('password123')),
       ).called(1);
     });
   });

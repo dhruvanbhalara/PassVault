@@ -4,7 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/screens/password_generation_settings_screen.dart';
-import 'package:passvault/features/settings/presentation/widgets/settings_shared_widgets.dart';
+import 'package:passvault/features/settings/presentation/widgets/settings_section_header.dart';
 
 /// Section for security-related settings.
 class SecuritySection extends StatelessWidget {

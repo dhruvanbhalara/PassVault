@@ -5,8 +5,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
-import 'package:passvault/features/settings/presentation/widgets/import_export_dialogs.dart';
-import 'package:passvault/features/settings/presentation/widgets/settings_shared_widgets.dart';
+import 'package:passvault/features/settings/presentation/widgets/export_picker_sheet.dart';
+import 'package:passvault/features/settings/presentation/widgets/import_picker_sheet.dart';
+import 'package:passvault/features/settings/presentation/widgets/settings_section_header.dart';
 
 /// Section for data management settings.
 class DataManagementSection extends StatelessWidget {

@@ -284,5 +284,32 @@ void main() {
         expect(result.isFailure, true);
       });
     });
+    group('dataChanges stream', () {
+      test('should emit event when savePassword is successful', () async {
+        // Arrange
+        when(() => mockDataSource.savePassword(any())).thenAnswer((_) async {});
+
+        // Act & Assert
+        final future = expectLater(repository.dataChanges, emits(null));
+        final result = await repository.savePassword(tEntry);
+        await future;
+
+        expect(result.isSuccess, true);
+      });
+
+      test('should emit event when deletePassword is successful', () async {
+        // Arrange
+        when(
+          () => mockDataSource.deletePassword(any()),
+        ).thenAnswer((_) async {});
+
+        // Act & Assert
+        final future = expectLater(repository.dataChanges, emits(null));
+        final result = await repository.deletePassword('1');
+        await future;
+
+        expect(result.isSuccess, true);
+      });
+    });
   });
 }

@@ -10,7 +10,8 @@ import 'package:passvault/features/password_manager/presentation/bloc/duplicate_
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
-import 'package:passvault/features/password_manager/presentation/widgets/duplicate_resolution_widgets.dart';
+import 'package:passvault/features/password_manager/presentation/widgets/bulk_resolution_header.dart';
+import 'package:passvault/features/password_manager/presentation/widgets/duplicate_card.dart';
 
 /// Screen for resolving duplicate password entries detected during import.
 class DuplicateResolutionScreen extends StatelessWidget {

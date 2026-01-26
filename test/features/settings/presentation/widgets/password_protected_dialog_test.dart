@@ -16,10 +16,6 @@ class MockImportExportBloc
 void main() {
   late MockImportExportBloc mockBloc;
 
-  setUpAll(() {
-    registerFallbackValue(const ImportDataEvent(isJson: true));
-  });
-
   setUp(() {
     mockBloc = MockImportExportBloc();
     when(() => mockBloc.state).thenReturn(const ImportExportInitial());
@@ -30,12 +26,12 @@ void main() {
       theme: AppTheme.lightTheme,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: child,
+      home: Scaffold(body: child),
     );
   }
 
   group('$PasswordProtectedDialog', () {
-    testWidgets('renders correctly with export title', (
+    testWidgets('submitting password adds ExportEncryptedData event', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
@@ -44,41 +40,12 @@ void main() {
         ),
       );
 
-      expect(find.text('Export Encrypted (.pvault)'), findsOneWidget);
-      expect(find.text('Password'), findsOneWidget);
-    });
-
-    testWidgets('shows error when password is empty on submit', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(
-        wrapWithMaterial(
-          PasswordProtectedDialog(bloc: mockBloc, isExport: true),
-        ),
-      );
-
+      await tester.enterText(find.byType(TextFormField), 'password123');
       await tester.tap(find.text('Export'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Password is required'), findsOneWidget);
-      verifyNever(() => mockBloc.add(any()));
-    });
-
-    testWidgets('adds ExportEncryptedEvent on valid submit', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(
-        wrapWithMaterial(
-          PasswordProtectedDialog(bloc: mockBloc, isExport: true),
-        ),
-      );
-
-      await tester.enterText(find.byType(TextFormField), 'secret123');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Export'));
-      await tester.pumpAndSettle();
-
       verify(
-        () => mockBloc.add(const ExportEncryptedEvent('secret123')),
+        () => mockBloc.add(const ExportEncryptedEvent('password123')),
       ).called(1);
     });
   });

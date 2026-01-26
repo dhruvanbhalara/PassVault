@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/features/home/presentation/widgets/home_widgets.dart';
+import 'package:passvault/features/home/presentation/widgets/password_list_tile.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
@@ -59,13 +59,6 @@ void main() {
 
       await tester.tap(find.byType(ListTile));
       verify(() => onTap()).called(1);
-    });
-  });
-
-  group('$EmptyPasswordState', () {
-    testWidgets('renders empty message', (WidgetTester tester) async {
-      await tester.pumpWidget(wrapWithMaterial(const EmptyPasswordState()));
-      expect(find.text('No passwords yet.\nTap + to add one.'), findsOneWidget);
     });
   });
 }

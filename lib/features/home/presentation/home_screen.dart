@@ -7,7 +7,8 @@ import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
-import 'package:passvault/features/home/presentation/widgets/home_widgets.dart';
+import 'package:passvault/features/home/presentation/widgets/empty_password_state.dart';
+import 'package:passvault/features/home/presentation/widgets/password_list_tile.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 
 /// Main landing screen of the application after authentication.

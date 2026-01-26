@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/features/onboarding/presentation/widgets/onboarding_widgets.dart';
+import 'package:passvault/features/onboarding/presentation/widgets/intro_navigation_buttons.dart';
+import 'package:passvault/features/onboarding/presentation/widgets/intro_pagination_indicator.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
 void main() {
@@ -13,26 +14,6 @@ void main() {
       home: Scaffold(body: child),
     );
   }
-
-  group('$IntroSlide', () {
-    testWidgets('renders title, description and icon', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(
-        wrapWithMaterial(
-          const IntroSlide(
-            title: 'Welcome',
-            description: 'PassVault is secure',
-            icon: Icons.lock,
-          ),
-        ),
-      );
-
-      expect(find.text('Welcome'), findsOneWidget);
-      expect(find.text('PassVault is secure'), findsOneWidget);
-      expect(find.byIcon(Icons.lock), findsOneWidget);
-    });
-  });
 
   group('$IntroNavigationButtons', () {
     testWidgets('renders pagination and buttons', (WidgetTester tester) async {
