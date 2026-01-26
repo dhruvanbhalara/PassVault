@@ -445,7 +445,7 @@ abstract class AppLocalizations {
   /// No description provided for @excludeAmbiguousHint.
   ///
   /// In en, this message translates to:
-  /// **'I, l, 1, O, 0'**
+  /// **'Avoid i, l, 1, L, o, 0, O'**
   String get excludeAmbiguousHint;
 
   /// No description provided for @characterSets.
@@ -741,6 +741,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Keep All Both'**
   String get keepAllBothAction;
+
+  /// No description provided for @noStrategiesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No strategies found.'**
+  String get noStrategiesFound;
+
+  /// No description provided for @newStrategy.
+  ///
+  /// In en, this message translates to:
+  /// **'New Strategy'**
+  String get newStrategy;
+
+  /// No description provided for @editStrategy.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Strategy'**
+  String get editStrategy;
+
+  /// No description provided for @setAsDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as Default'**
+  String get setAsDefault;
+
+  /// No description provided for @generationStrategy.
+  ///
+  /// In en, this message translates to:
+  /// **'Generation Strategy'**
+  String get generationStrategy;
+
+  /// No description provided for @strategyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Strategy Name'**
+  String get strategyName;
+
+  /// No description provided for @hintStrategyName.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. High Security, PIN'**
+  String get hintStrategyName;
+
+  /// No description provided for @minLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'8'**
+  String get minLabel;
+
+  /// No description provided for @maxLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'64'**
+  String get maxLabel;
+
+  /// No description provided for @passwordGenerationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your custom presets used for generating secure passwords.'**
+  String get passwordGenerationSubtitle;
+
+  /// No description provided for @noStrategiesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first strategy to get started.'**
+  String get noStrategiesDescription;
+
+  /// No description provided for @onboardingTitle4.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Strategies'**
+  String get onboardingTitle4;
+
+  /// No description provided for @onboardingDesc4.
+  ///
+  /// In en, this message translates to:
+  /// **'Create custom password presets for different needs. PINs, high-security phrases, or legacy formats—managed your way.'**
+  String get onboardingDesc4;
+
+  /// No description provided for @activeDefaultLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Strategy'**
+  String get activeDefaultLabel;
+
+  /// No description provided for @activeConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Configuration'**
+  String get activeConfiguration;
+
+  /// No description provided for @savedStrategies.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Strategies'**
+  String get savedStrategies;
 }
 
 class _AppLocalizationsDelegate

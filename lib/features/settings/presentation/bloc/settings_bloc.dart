@@ -16,6 +16,10 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<LoadSettings>(_onLoadSettings);
     on<ToggleBiometrics>(_onToggleBiometrics);
     on<UpdatePasswordSettings>(_onUpdatePasswordSettings);
+    on<UpdateStrategy>(_onUpdateStrategy);
+    on<AddStrategy>(_onAddStrategy);
+    on<DeleteStrategy>(_onDeleteStrategy);
+    on<SetDefaultStrategy>(_onSetDefaultStrategy);
   }
 
   void _onLoadSettings(LoadSettings event, Emitter<SettingsState> emit) {
@@ -27,7 +31,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
     final settingsResult = _settingsRepository.getPasswordGenerationSettings();
     final passwordSettings = settingsResult.fold(
-      (failure) => const PasswordGenerationSettings(),
+      (failure) => PasswordGenerationSettings.initial(),
       (settings) => settings,
     );
 
@@ -53,5 +57,64 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     await _settingsRepository.savePasswordGenerationSettings(event.settings);
     emit(state.copyWith(passwordSettings: event.settings));
+  }
+
+  Future<void> _onUpdateStrategy(
+    UpdateStrategy event,
+    Emitter<SettingsState> emit,
+  ) async {
+    final strategies = state.passwordSettings.strategies.map((s) {
+      return s.id == event.strategy.id ? event.strategy : s;
+    }).toList();
+    final newSettings = state.passwordSettings.copyWith(strategies: strategies);
+    await _settingsRepository.savePasswordGenerationSettings(newSettings);
+    emit(state.copyWith(passwordSettings: newSettings));
+  }
+
+  Future<void> _onAddStrategy(
+    AddStrategy event,
+    Emitter<SettingsState> emit,
+  ) async {
+    final strategies = List<PasswordGenerationStrategy>.from(
+      state.passwordSettings.strategies,
+    )..add(event.strategy);
+    final newSettings = state.passwordSettings.copyWith(strategies: strategies);
+    await _settingsRepository.savePasswordGenerationSettings(newSettings);
+    emit(state.copyWith(passwordSettings: newSettings));
+  }
+
+  Future<void> _onDeleteStrategy(
+    DeleteStrategy event,
+    Emitter<SettingsState> emit,
+  ) async {
+    final strategies = state.passwordSettings.strategies
+        .where((s) => s.id != event.id)
+        .toList();
+
+    // Ensure we don't delete the last strategy or current default
+    if (strategies.isEmpty) return;
+
+    var newDefaultId = state.passwordSettings.defaultStrategyId;
+    if (event.id == newDefaultId) {
+      newDefaultId = strategies.first.id;
+    }
+
+    final newSettings = state.passwordSettings.copyWith(
+      strategies: strategies,
+      defaultStrategyId: newDefaultId,
+    );
+    await _settingsRepository.savePasswordGenerationSettings(newSettings);
+    emit(state.copyWith(passwordSettings: newSettings));
+  }
+
+  Future<void> _onSetDefaultStrategy(
+    SetDefaultStrategy event,
+    Emitter<SettingsState> emit,
+  ) async {
+    final newSettings = state.passwordSettings.copyWith(
+      defaultStrategyId: event.id,
+    );
+    await _settingsRepository.savePasswordGenerationSettings(newSettings);
+    emit(state.copyWith(passwordSettings: newSettings));
   }
 }

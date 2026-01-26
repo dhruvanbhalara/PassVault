@@ -186,7 +186,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get excludeAmbiguous => 'Exclude Ambiguous';
 
   @override
-  String get excludeAmbiguousHint => 'I, l, 1, O, 0';
+  String get excludeAmbiguousHint => 'Avoid i, l, 1, L, o, 0, O';
 
   @override
   String get characterSets => 'Character Sets';
@@ -342,4 +342,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get keepAllBothAction => 'Keep All Both';
+
+  @override
+  String get noStrategiesFound => 'No strategies found.';
+
+  @override
+  String get newStrategy => 'New Strategy';
+
+  @override
+  String get editStrategy => 'Edit Strategy';
+
+  @override
+  String get setAsDefault => 'Set as Default';
+
+  @override
+  String get generationStrategy => 'Generation Strategy';
+
+  @override
+  String get strategyName => 'Strategy Name';
+
+  @override
+  String get hintStrategyName => 'e.g. High Security, PIN';
+
+  @override
+  String get minLabel => '8';
+
+  @override
+  String get maxLabel => '64';
+
+  @override
+  String get passwordGenerationSubtitle =>
+      'Manage your custom presets used for generating secure passwords.';
+
+  @override
+  String get noStrategiesDescription =>
+      'Create your first strategy to get started.';
+
+  @override
+  String get onboardingTitle4 => 'Smart Strategies';
+
+  @override
+  String get onboardingDesc4 =>
+      'Create custom password presets for different needs. PINs, high-security phrases, or legacy formats—managed your way.';
+
+  @override
+  String get activeDefaultLabel => 'Active Strategy';
+
+  @override
+  String get activeConfiguration => 'Active Configuration';
+
+  @override
+  String get savedStrategies => 'Saved Strategies';
 }

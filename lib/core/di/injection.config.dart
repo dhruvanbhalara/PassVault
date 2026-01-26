@@ -69,6 +69,8 @@ import '../../features/settings/domain/usecases/password_settings_usecases.dart'
 import '../../features/settings/domain/usecases/set_theme_usecase.dart'
     as _i986;
 import '../../features/settings/presentation/bloc/settings_bloc.dart' as _i585;
+import '../../features/settings/presentation/bloc/strategy_preview/strategy_preview_bloc.dart'
+    as _i309;
 import '../../features/settings/presentation/bloc/theme/theme_bloc.dart'
     as _i242;
 import '../services/biometric_service.dart' as _i374;
@@ -118,6 +120,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i636.DataService>(
       () => _i636.DataService(gh<_i1024.CryptoService>()),
+    );
+    gh.factory<_i309.StrategyPreviewBloc>(
+      () => _i309.StrategyPreviewBloc(gh<_i16.GeneratePasswordUseCase>()),
     );
     await gh.singletonAsync<_i919.Box<dynamic>>(
       () => storageModule.openSettingsBox(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/onboarding/presentation/bloc/onboarding_bloc.dart';
@@ -46,24 +47,6 @@ class _IntroViewState extends State<IntroView> {
     final l10n = context.l10n;
     final theme = context.theme;
 
-    final slides = [
-      IntroSlide(
-        title: l10n.onboardingTitle1,
-        description: l10n.onboardingDesc1,
-        icon: Icons.security,
-      ),
-      IntroSlide(
-        title: l10n.onboardingTitle2,
-        description: l10n.onboardingDesc2,
-        icon: Icons.wifi_off,
-      ),
-      IntroSlide(
-        title: l10n.onboardingTitle3,
-        description: l10n.onboardingDesc3,
-        icon: Icons.fingerprint,
-      ),
-    ];
-
     return BlocListener<OnboardingBloc, OnboardingState>(
       listener: (context, state) {
         if (state is OnboardingSuccess) {
@@ -82,7 +65,28 @@ class _IntroViewState extends State<IntroView> {
                     controller: _pageController,
                     onPageChanged: (index) =>
                         setState(() => _currentPage = index),
-                    children: slides,
+                    children: [
+                      IntroSlide(
+                        title: l10n.onboardingTitle1,
+                        description: l10n.onboardingDesc1,
+                        icon: Icons.security,
+                      ),
+                      IntroSlide(
+                        title: l10n.onboardingTitle2,
+                        description: l10n.onboardingDesc2,
+                        icon: Icons.wifi_off,
+                      ),
+                      IntroSlide(
+                        title: l10n.onboardingTitle3,
+                        description: l10n.onboardingDesc3,
+                        icon: Icons.fingerprint,
+                      ),
+                      IntroSlide(
+                        title: l10n.onboardingTitle4,
+                        description: l10n.onboardingDesc4,
+                        icon: LucideIcons.sparkles,
+                      ),
+                    ],
                   ),
                 ),
                 Padding(
@@ -95,10 +99,10 @@ class _IntroViewState extends State<IntroView> {
                   ),
                   child: IntroNavigationButtons(
                     currentPage: _currentPage,
-                    totalPages: slides.length,
+                    totalPages: 4,
                     onSkip: () => _handleDone(context),
                     onNext: () {
-                      if (_currentPage < slides.length - 1) {
+                      if (_currentPage < 3) {
                         _pageController.nextPage(
                           duration: AppDuration.normal,
                           curve: AppCurves.standard,

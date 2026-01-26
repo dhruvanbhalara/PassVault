@@ -128,9 +128,14 @@ void main() {
     });
 
     group('PasswordGenerationSettings', () {
-      final tSettings = const PasswordGenerationSettings(
+      final tStrategy = PasswordGenerationStrategy.create(
+        name: 'Custom',
         length: 12,
         useNumbers: true,
+      );
+      final tSettings = PasswordGenerationSettings(
+        strategies: [tStrategy],
+        defaultStrategyId: tStrategy.id,
       );
 
       test('getPasswordGenerationSettings should return value', () {

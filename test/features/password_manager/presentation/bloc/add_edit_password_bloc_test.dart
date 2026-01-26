@@ -32,6 +32,22 @@ void main() {
     mockGetSettingsUseCase = MockGetPasswordGenerationSettingsUseCase();
     mockSavePasswordUseCase = MockSavePasswordUseCase();
 
+    // Stub default settings to avoid failures during Bloc initialization
+    when(() => mockGetSettingsUseCase()).thenReturn(
+      const Success(
+        PasswordGenerationSettings(
+          strategies: [
+            PasswordGenerationStrategy(
+              id: 'default',
+              name: 'Default',
+              length: 16,
+            ),
+          ],
+          defaultStrategyId: 'default',
+        ),
+      ),
+    );
+
     bloc = AddEditPasswordBloc(
       mockGeneratePasswordUseCase,
       mockEstimateStrengthUseCase,
@@ -62,14 +78,21 @@ void main() {
       });
 
       test('resets status to initial when password changes manually', () async {
-        // This is the bug fix test case:
-        // When user types manually after generating, status should reset to initial
-        // so that listener doesn't override user's input
-
         when(() => mockEstimateStrengthUseCase(any())).thenReturn(0.75);
-        when(
-          () => mockGetSettingsUseCase(),
-        ).thenReturn(const Success(PasswordGenerationSettings()));
+        when(() => mockGetSettingsUseCase()).thenReturn(
+          const Success(
+            PasswordGenerationSettings(
+              strategies: [
+                PasswordGenerationStrategy(
+                  id: 'default',
+                  name: 'Default',
+                  length: 16,
+                ),
+              ],
+              defaultStrategyId: 'default',
+            ),
+          ),
+        );
         when(
           () => mockGeneratePasswordUseCase(
             length: any(named: 'length'),
@@ -82,7 +105,7 @@ void main() {
         ).thenReturn('GeneratedPass123!');
 
         // First, generate a password
-        bloc.add(GenerateStrongPassword());
+        bloc.add(const GenerateStrongPassword());
         await Future.delayed(const Duration(milliseconds: 50));
 
         expect(bloc.state.status, AddEditStatus.generated);
@@ -116,9 +139,20 @@ void main() {
 
     group('$GenerateStrongPassword', () {
       test('generates password and updates state', () async {
-        when(
-          () => mockGetSettingsUseCase(),
-        ).thenReturn(const Success(PasswordGenerationSettings()));
+        when(() => mockGetSettingsUseCase()).thenReturn(
+          const Success(
+            PasswordGenerationSettings(
+              strategies: [
+                PasswordGenerationStrategy(
+                  id: 'default',
+                  name: 'Default',
+                  length: 16,
+                ),
+              ],
+              defaultStrategyId: 'default',
+            ),
+          ),
+        );
         when(
           () => mockGeneratePasswordUseCase(
             length: any(named: 'length'),
@@ -133,7 +167,7 @@ void main() {
           () => mockEstimateStrengthUseCase('SecurePassword123!'),
         ).thenReturn(0.9);
 
-        bloc.add(GenerateStrongPassword());
+        bloc.add(const GenerateStrongPassword());
         await Future.delayed(const Duration(milliseconds: 50));
 
         expect(bloc.state.status, AddEditStatus.generated);
@@ -142,9 +176,20 @@ void main() {
       });
 
       test('uses default settings when no saved settings', () async {
-        when(
-          () => mockGetSettingsUseCase(),
-        ).thenReturn(const Success(PasswordGenerationSettings()));
+        when(() => mockGetSettingsUseCase()).thenReturn(
+          const Success(
+            PasswordGenerationSettings(
+              strategies: [
+                PasswordGenerationStrategy(
+                  id: 'default',
+                  name: 'Default',
+                  length: 16,
+                ),
+              ],
+              defaultStrategyId: 'default',
+            ),
+          ),
+        );
         when(
           () => mockGeneratePasswordUseCase(
             length: 16, // default
@@ -159,7 +204,7 @@ void main() {
           () => mockEstimateStrengthUseCase('DefaultPassword!'),
         ).thenReturn(0.8);
 
-        bloc.add(GenerateStrongPassword());
+        bloc.add(const GenerateStrongPassword());
         await Future.delayed(const Duration(milliseconds: 50));
 
         verify(

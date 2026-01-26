@@ -16,7 +16,21 @@ class SettingsState extends Equatable {
 
   const SettingsState({
     this.useBiometrics = false,
-    this.passwordSettings = const PasswordGenerationSettings(),
+    this.passwordSettings = const PasswordGenerationSettings(
+      strategies: [
+        PasswordGenerationStrategy(
+          id: 'default',
+          name: 'Default',
+          length: 16,
+          useNumbers: true,
+          useSpecialChars: true,
+          useUppercase: true,
+          useLowercase: true,
+          excludeAmbiguousChars: false,
+        ),
+      ],
+      defaultStrategyId: 'default',
+    ),
     this.status = SettingsStatus.initial,
     this.error = SettingsError.none,
     this.success = SettingsSuccess.none,
