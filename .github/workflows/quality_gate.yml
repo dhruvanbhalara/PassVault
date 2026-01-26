@@ -11,6 +11,7 @@ on:
       - "docs/**"
       - "**.md"
       - ".gitignore"
+      - ".agent/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -116,6 +117,11 @@ jobs:
 
       - name: Check workflow status
         run: |
+          if [ "${{ needs.validate.outputs.should-run }}" != "true" ]; then
+            echo "✅ Docs only change - Checks skipped"
+            exit 0
+          fi
+          
           if [ "${{ needs.quality.result }}" != "success" ] || [ "${{ needs.tests.result }}" != "success" ]; then
             echo "❌ Quality gate failed"
             exit 1
