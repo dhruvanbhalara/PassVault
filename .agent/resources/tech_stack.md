@@ -8,7 +8,7 @@ As Sr. Architect, I have curated this stack for maximum security, performance, a
 - **Dependency Injection**: `injectable` + `get_it` (Type-safe and test-friendly).
 
 ### 🧠 State Management
-- **Bloc/Cubit**: `flutter_bloc`. Custom transformers for event control.
+- **Bloc**: `flutter_bloc` (Event-Driven only). Custom transformers for event control.
 - **Immutability**: `equatable` (Mandatory for States/Events).
 - **Navigation**: `go_router` (Declarative, URL-aware).
 

@@ -30,8 +30,18 @@ abstract class PasswordRepository {
 }
 ```
 
-### 3. Exhaustive State Management (lib/features/x/presentation/bloc)
+### 3. Exhaustive State Management (Bloc Event-State)
 ```dart
+// 1. Immutable Events
+sealed class PasswordEvent extends Equatable {
+  const PasswordEvent();
+  @override
+  List<Object?> get props => [];
+}
+
+final class PasswordSubscriptionRequested extends PasswordEvent {}
+
+// 2. Exhaustive States
 sealed class PasswordState extends Equatable {
   const PasswordState();
   @override

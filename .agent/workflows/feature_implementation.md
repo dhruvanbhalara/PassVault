@@ -24,7 +24,7 @@ This workflow guides you through the creation of a new feature from domain to pr
 
 ### 3. Presentation Layer (UI)
 -   Create Directory: `lib/features/[feature_name]/presentation/`.
--   Implement **BLoC/Cubit**: Follow `bloc_standardization` skill (sealed states, Equatable).
+-   Implement **BLoC**: Follow `bloc_standardization` skill (sealed states, Equatable).
 -   Build **Widgets**: Use `ui_standardization` skill (no magic spacing, widget extraction).
 -   Register dependencies in your DI container (e.g., `@injectable` or `GetIt`).
 

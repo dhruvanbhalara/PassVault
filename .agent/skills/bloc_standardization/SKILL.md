@@ -1,9 +1,9 @@
 ---
 name: bloc_standardization
-description: Standardize BLoC and Cubit implementations according to project standards.
+description: Standardize BLoC implementations strictly following the Event-State pattern.
 ---
 
-# BLoC Standardization Skill
+# BLoC Standardization Skill (Event-State Only)
 
 This skill enforces the "Advanced State Management" rules from `flutter_rules.md`.
 
@@ -12,7 +12,7 @@ This skill enforces the "Advanced State Management" rules from `flutter_rules.md
 1.  **Immutability**: All States and Events MUST be immutable and extend `Equatable`.
 2.  **Exhaustiveness**: Use `sealed class` for States to ensure the UI handles all cases (Loading, Success, Failure, Empty).
 3.  **Concurrency**: Use BLoC transformers for events that require debouncing (search) or dropping (repeated clicks).
-4.  **Zero-Logic UI**: Widgets should only call `bloc.add(Event)` or `cubit.method()`. No calculation or conditional logic in `build()`.
+4.  **Zero-Logic UI**: Widgets should only call `bloc.add(Event)`. Calling methods directly is strictly forbidden. No calculation or conditional logic in `build()`.
 
 ## Audit Checklist
 
@@ -24,7 +24,7 @@ This skill enforces the "Advanced State Management" rules from `flutter_rules.md
 ### 2. Logic Audit
 -   Are there any complex logic or calculations in the widget's `build` method?
 -   Are event transformers used where necessary?
--   Is business logic properly encapsulated in the BLoC/Cubit?
+-   Is business logic properly encapsulated in the BLoC?
 
 ## Implementation Examples
 
