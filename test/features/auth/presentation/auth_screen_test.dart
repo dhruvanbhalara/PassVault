@@ -40,7 +40,7 @@ void main() {
     );
   }
 
-  group('AuthScreen Widget Tests with Keys', () {
+  group('$AuthScreen', () {
     testWidgets('Shows loading indicator with correct key', (tester) async {
       await tester.pumpWidget(createTestWidget(AuthLoading()));
       await tester.pump();

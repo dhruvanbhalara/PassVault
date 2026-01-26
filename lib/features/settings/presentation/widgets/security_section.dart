@@ -5,7 +5,6 @@ import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/screens/password_generation_settings_screen.dart';
 import 'package:passvault/features/settings/presentation/widgets/settings_shared_widgets.dart';
-import 'package:passvault/l10n/app_localizations.dart';
 
 /// Section for security-related settings.
 class SecuritySection extends StatelessWidget {
@@ -13,7 +12,7 @@ class SecuritySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.l10n;
     final settingsBloc = context.read<SettingsBloc>();
 
     return Column(

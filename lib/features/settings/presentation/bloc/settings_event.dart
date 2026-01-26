@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 
-abstract class SettingsEvent extends Equatable {
+sealed class SettingsEvent extends Equatable {
   const SettingsEvent();
   @override
   List<Object> get props => [];

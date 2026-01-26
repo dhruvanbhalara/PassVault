@@ -15,7 +15,7 @@ void main() {
     useCase = ClearAllPasswordsUseCase(mockRepository);
   });
 
-  group('ClearAllPasswordsUseCase', () {
+  group('$ClearAllPasswordsUseCase', () {
     test('should call repository.clearAllPasswords()', () async {
       // Arrange
       when(

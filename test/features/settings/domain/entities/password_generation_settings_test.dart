@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 
 void main() {
-  group('PasswordGenerationSettings', () {
+  group('$PasswordGenerationSettings', () {
     test('creates with default values', () {
       const settings = PasswordGenerationSettings();
 

@@ -4,28 +4,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/features/settings/presentation/bloc/theme/theme_cubit.dart';
+import 'package:passvault/features/settings/domain/entities/theme_type.dart';
+import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:passvault/features/settings/presentation/widgets/appearance_section.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
-class MockThemeCubit extends MockCubit<ThemeState> implements ThemeCubit {}
+class MockThemeBloc extends MockBloc<ThemeEvent, ThemeState>
+    implements ThemeBloc {}
 
 void main() {
-  late MockThemeCubit mockThemeCubit;
+  late MockThemeBloc mockThemeBloc;
 
   setUpAll(() {
     registerFallbackValue(ThemeType.system);
   });
 
   setUp(() {
-    mockThemeCubit = MockThemeCubit();
-    when(() => mockThemeCubit.state).thenReturn(
+    mockThemeBloc = MockThemeBloc();
+    when(() => mockThemeBloc.state).thenReturn(
       const ThemeState(
         themeType: ThemeType.system,
         themeMode: ThemeMode.system,
       ),
     );
-    when(() => mockThemeCubit.setTheme(any())).thenAnswer((_) async {});
   });
 
   Widget createWidgetUnderTest() {
@@ -34,15 +35,15 @@ void main() {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        body: BlocProvider<ThemeCubit>.value(
-          value: mockThemeCubit,
+        body: BlocProvider<ThemeBloc>.value(
+          value: mockThemeBloc,
           child: const AppearanceSection(),
         ),
       ),
     );
   }
 
-  group('AppearanceSection', () {
+  group('$AppearanceSection', () {
     testWidgets('displays theme tile with current theme name', (
       WidgetTester tester,
     ) async {
@@ -79,7 +80,9 @@ void main() {
       await tester.tap(find.byKey(const Key('theme_option_light')));
       await tester.pumpAndSettle();
 
-      verify(() => mockThemeCubit.setTheme(ThemeType.light)).called(1);
+      verify(
+        () => mockThemeBloc.add(const ThemeChanged(ThemeType.light)),
+      ).called(1);
       expect(find.byKey(const Key('theme_option_light')), findsNothing);
     });
   });

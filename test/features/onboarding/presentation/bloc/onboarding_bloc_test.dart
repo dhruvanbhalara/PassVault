@@ -20,12 +20,12 @@ void main() {
     bloc.close();
   });
 
-  group('OnboardingBloc', () {
+  group('$OnboardingBloc', () {
     test('initial state is OnboardingInitial', () {
       expect(bloc.state, isA<OnboardingInitial>());
     });
 
-    group('CompleteOnboarding', () {
+    group('$CompleteOnboarding', () {
       test('emits OnboardingSuccess and calls use case', () async {
         when(
           () => mockSetOnboardingCompleteUseCase(any()),

@@ -24,30 +24,34 @@ void main() {
 
   final tSettings = const PasswordGenerationSettings();
 
-  test('GetPasswordGenerationSettingsUseCase should call repository', () {
-    when(
-      () => mockRepository.getPasswordGenerationSettings(),
-    ).thenReturn(Success(tSettings));
+  group('$GetPasswordGenerationSettingsUseCase', () {
+    test('GetPasswordGenerationSettingsUseCase should call repository', () {
+      when(
+        () => mockRepository.getPasswordGenerationSettings(),
+      ).thenReturn(Success(tSettings));
 
-    final result = getUseCase();
+      final result = getUseCase();
 
-    expect(result, Success(tSettings));
-    verify(() => mockRepository.getPasswordGenerationSettings()).called(1);
+      expect(result, Success(tSettings));
+      verify(() => mockRepository.getPasswordGenerationSettings()).called(1);
+    });
   });
 
-  test(
-    'SavePasswordGenerationSettingsUseCase should call repository',
-    () async {
-      when(
-        () => mockRepository.savePasswordGenerationSettings(any()),
-      ).thenAnswer((_) async => const Success(null));
+  group('$SavePasswordGenerationSettingsUseCase', () {
+    test(
+      'SavePasswordGenerationSettingsUseCase should call repository',
+      () async {
+        when(
+          () => mockRepository.savePasswordGenerationSettings(any()),
+        ).thenAnswer((_) async => const Success(null));
 
-      final result = await saveUseCase(tSettings);
+        final result = await saveUseCase(tSettings);
 
-      expect(result, const Success<void>(null));
-      verify(
-        () => mockRepository.savePasswordGenerationSettings(tSettings),
-      ).called(1);
-    },
-  );
+        expect(result, const Success<void>(null));
+        verify(
+          () => mockRepository.savePasswordGenerationSettings(tSettings),
+        ).called(1);
+      },
+    );
+  });
 }

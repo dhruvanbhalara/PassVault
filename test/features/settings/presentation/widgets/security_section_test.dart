@@ -35,7 +35,7 @@ void main() {
     );
   }
 
-  group('SecuritySection', () {
+  group('$SecuritySection', () {
     testWidgets('displays biometric switch with current state', (
       WidgetTester tester,
     ) async {

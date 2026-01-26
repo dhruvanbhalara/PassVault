@@ -10,7 +10,6 @@ import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart
 import 'package:passvault/features/settings/presentation/widgets/appearance_section.dart';
 import 'package:passvault/features/settings/presentation/widgets/data_management_section.dart';
 import 'package:passvault/features/settings/presentation/widgets/security_section.dart';
-import 'package:passvault/l10n/app_localizations.dart';
 
 /// Screen for managing application settings, security, and data.
 class SettingsScreen extends StatelessWidget {
@@ -41,19 +40,17 @@ class SettingsView extends StatefulWidget {
 class _SettingsViewState extends State<SettingsView> {
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = context.theme;
+    final l10n = context.l10n;
 
     return MultiBlocListener(
       listeners: [
         BlocListener<SettingsBloc, SettingsState>(
           listenWhen: (previous, current) => previous.status != current.status,
-          listener: (context, state) =>
-              _handleSettingsState(context, state, l10n, theme),
+          listener: (context, state) => _handleSettingsState(context, state),
         ),
         BlocListener<ImportExportBloc, ImportExportState>(
           listener: (context, state) =>
-              _handleImportExportState(context, state, l10n, theme),
+              _handleImportExportState(context, state),
         ),
       ],
       child: Scaffold(
@@ -73,47 +70,36 @@ class _SettingsViewState extends State<SettingsView> {
     );
   }
 
-  void _handleSettingsState(
-    BuildContext context,
-    SettingsState state,
-    AppLocalizations l10n,
-    AppThemeExtension theme,
-  ) {
+  void _handleSettingsState(BuildContext context, SettingsState state) {
     // Only show snackbar for errors
     if (state.status == SettingsStatus.failure) {
       final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
       if (isCurrent) {
-        _showSnackBar(context, l10n.errorOccurred, isError: true, theme: theme);
+        _showSnackBar(context, context.l10n.errorOccurred, isError: true);
       }
     }
   }
 
-  void _handleImportExportState(
-    BuildContext context,
-    ImportExportState state,
-    AppLocalizations l10n,
-    AppThemeExtension theme,
-  ) {
+  void _handleImportExportState(BuildContext context, ImportExportState state) {
     final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
     if (!isCurrent) return; // Don't handle if not current route
 
     // Handle each state type
     if (state is ImportSuccess) {
-      _showSnackBar(context, l10n.importSuccess);
+      _showSnackBar(context, context.l10n.importSuccess);
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
     } else if (state is ExportSuccess) {
-      _showSnackBar(context, l10n.exportSuccess);
+      _showSnackBar(context, context.l10n.exportSuccess);
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
     } else if (state is ClearDatabaseSuccess) {
-      _showSnackBar(context, l10n.databaseCleared);
+      _showSnackBar(context, context.l10n.databaseCleared);
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
     } else if (state is ImportExportFailure) {
       if (state.error != DataMigrationError.cancelled) {
         _showSnackBar(
           context,
-          _getMigrationErrorMessage(state.error, l10n),
+          _getMigrationErrorMessage(state.error, context),
           isError: true,
-          theme: theme,
         );
       }
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
@@ -121,15 +107,16 @@ class _SettingsViewState extends State<SettingsView> {
       context.push('/resolve-duplicates', extra: state.duplicates);
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
     } else if (state is DuplicatesResolved) {
-      _showSnackBar(context, l10n.importSuccess);
+      _showSnackBar(context, context.l10n.importSuccess);
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
     }
   }
 
   String _getMigrationErrorMessage(
     DataMigrationError error,
-    AppLocalizations l10n,
+    BuildContext context,
   ) {
+    final l10n = context.l10n;
     switch (error) {
       case DataMigrationError.noDataToExport:
         return l10n.noDataToExport;
@@ -150,13 +137,13 @@ class _SettingsViewState extends State<SettingsView> {
     BuildContext context,
     String message, {
     bool isError = false,
-    AppThemeExtension? theme,
   }) {
+    final theme = context.theme;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: isError ? theme?.error : null,
+        backgroundColor: isError ? theme.error : null,
       ),
     );
   }

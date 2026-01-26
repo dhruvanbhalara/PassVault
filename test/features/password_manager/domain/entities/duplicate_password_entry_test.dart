@@ -26,7 +26,7 @@ void main() {
     conflictReason: 'reason',
   );
 
-  group('DuplicatePasswordEntry', () {
+  group('$DuplicatePasswordEntry', () {
     test('isResolved should return false when userChoice is null', () {
       expect(tDuplicate.isResolved, isFalse);
     });

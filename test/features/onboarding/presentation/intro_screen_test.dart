@@ -39,7 +39,7 @@ void main() {
     );
   }
 
-  group('IntroScreen Widget Tests with Keys', () {
+  group('$IntroScreen', () {
     testWidgets('PageView has correct key', (tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();

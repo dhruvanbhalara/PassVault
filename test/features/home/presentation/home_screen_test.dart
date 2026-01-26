@@ -57,7 +57,7 @@ void main() {
     );
   }
 
-  group('HomeScreen Widget Tests with Keys', () {
+  group('$HomeScreen', () {
     testWidgets('FAB has correct key', (tester) async {
       await tester.pumpWidget(createTestWidget(const PasswordLoaded([])));
       await tester.pumpAndSettle();

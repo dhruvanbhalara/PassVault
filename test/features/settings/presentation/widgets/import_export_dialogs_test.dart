@@ -7,6 +7,7 @@ import 'package:passvault/features/password_manager/presentation/bloc/import_exp
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
 import 'package:passvault/features/settings/presentation/widgets/import_export_dialogs.dart';
+import 'package:passvault/features/settings/presentation/widgets/password_protected_dialog.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
 class MockImportExportBloc
@@ -30,7 +31,7 @@ void main() {
     );
   }
 
-  group('ExportPickerSheet', () {
+  group('$ExportPickerSheet', () {
     testWidgets('selecting JSON export adds event to bloc', (
       WidgetTester tester,
     ) async {
@@ -60,7 +61,7 @@ void main() {
     });
   });
 
-  group('PasswordProtectedDialog', () {
+  group('$PasswordProtectedDialog', () {
     testWidgets('submitting password adds ExportEncryptedData event', (
       WidgetTester tester,
     ) async {

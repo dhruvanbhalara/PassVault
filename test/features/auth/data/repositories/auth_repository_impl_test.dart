@@ -15,7 +15,7 @@ void main() {
     repository = AuthRepositoryImpl(mockBiometricService);
   });
 
-  group('AuthRepository', () {
+  group('$AuthRepositoryImpl', () {
     test('authenticate should delegate to BiometricService', () async {
       // Arrange
       when(

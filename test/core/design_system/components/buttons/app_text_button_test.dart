@@ -4,7 +4,7 @@ import 'package:passvault/core/design_system/components/buttons/app_text_button.
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
-  group('AppTextButton', () {
+  group('$AppTextButton', () {
     testWidgets('renders text correctly', (tester) async {
       await tester.pumpWidget(
         createTestWidget(

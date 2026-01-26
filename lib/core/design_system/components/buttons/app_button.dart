@@ -49,7 +49,26 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.theme;
 
-    final buttonStyle = ElevatedButton.styleFrom(
+    final button = ElevatedButton(
+      onPressed: isLoading ? null : onPressed,
+      style: _getButtonStyle(context, theme),
+      child: _ButtonContent(
+        isLoading: isLoading,
+        text: text,
+        icon: icon,
+        foregroundColor: foregroundColor,
+      ),
+    );
+
+    if (isFullWidth) {
+      return SizedBox(width: double.infinity, child: button);
+    }
+
+    return button;
+  }
+
+  ButtonStyle _getButtonStyle(BuildContext context, AppThemeExtension theme) {
+    return ElevatedButton.styleFrom(
       backgroundColor: backgroundColor ?? theme.primary,
       foregroundColor: foregroundColor ?? theme.onPrimary,
       disabledBackgroundColor: theme.primary.withValues(alpha: 0.5),
@@ -65,40 +84,49 @@ class AppButton extends StatelessWidget {
         fontWeight: FontWeight.bold,
       ),
     );
+  }
+}
 
-    final content = isLoading
-        ? SizedBox(
-            height: AppIconSize.m,
-            width: AppIconSize.m,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                foregroundColor ?? theme.onPrimary,
-              ),
-            ),
-          )
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (icon != null) ...[
-                Icon(icon, size: AppIconSize.s),
-                const SizedBox(width: AppSpacing.s),
-              ],
-              Text(text),
-            ],
-          );
+class _ButtonContent extends StatelessWidget {
+  final bool isLoading;
+  final String text;
+  final IconData? icon;
+  final Color? foregroundColor;
 
-    final button = ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
-      style: buttonStyle,
-      child: content,
-    );
+  const _ButtonContent({
+    required this.isLoading,
+    required this.text,
+    this.icon,
+    this.foregroundColor,
+  });
 
-    if (isFullWidth) {
-      return SizedBox(width: double.infinity, child: button);
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.theme;
+
+    if (isLoading) {
+      return SizedBox(
+        height: AppIconSize.m,
+        width: AppIconSize.m,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(
+            foregroundColor ?? theme.onPrimary,
+          ),
+        ),
+      );
     }
 
-    return button;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (icon != null) ...[
+          Icon(icon, size: AppIconSize.s),
+          const SizedBox(width: AppSpacing.s),
+        ],
+        Text(text),
+      ],
+    );
   }
 }

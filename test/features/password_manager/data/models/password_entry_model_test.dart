@@ -19,7 +19,7 @@ void main() {
     lastUpdated: tDate,
   );
 
-  group('PasswordEntryModel', () {
+  group('$PasswordEntryModel', () {
     test(
       'should be a subclass of PasswordEntry entity via conversion',
       () async {

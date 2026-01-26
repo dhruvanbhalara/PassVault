@@ -16,7 +16,7 @@ void main() {
     useCase = SaveBulkPasswordsUseCase(mockRepository);
   });
 
-  group('SaveBulkPasswordsUseCase', () {
+  group('$SaveBulkPasswordsUseCase', () {
     final tDate = DateTime(2024, 1, 1);
     final testEntries = <PasswordEntry>[
       PasswordEntry(

@@ -1,6 +1,6 @@
 import 'package:passvault/core/error/error.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
-import 'package:passvault/features/settings/presentation/bloc/theme/theme_cubit.dart';
+import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 
 /// Repository for managing application settings.
 abstract class SettingsRepository {

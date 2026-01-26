@@ -8,7 +8,7 @@ void main() {
     useCase = GeneratePasswordUseCase();
   });
 
-  group('GeneratePasswordUseCase', () {
+  group('$GeneratePasswordUseCase', () {
     test('generates password with default length of 12', () {
       final password = useCase();
       expect(password.length, equals(12));

@@ -96,281 +96,283 @@ void main() {
 
   tearDown(() => bloc.close());
 
-  group('ImportExportBloc - ExportDataEvent', () {
-    blocTest<ImportExportBloc, ImportExportState>(
-      'emits [Loading, ExportSuccess] when JSON export is successful',
-      build: () {
-        when(
-          () => mockPasswordRepository.getPasswords(),
-        ).thenAnswer((_) async => Success(testEntries));
-        when(() => mockDataService.generateJson(any())).thenReturn('{}');
-        when(
-          () => mockFilePickerService.pickSavePath(
-            fileName: any(named: 'fileName'),
-            bytes: any(named: 'bytes'),
-            allowedExtensions: any(named: 'allowedExtensions'),
-          ),
-        ).thenAnswer((_) async => '/path/to/save.json');
-        return bloc;
-      },
-      act: (bloc) => bloc.add(const ExportDataEvent(isJson: true)),
-      expect: () => [
-        const ImportExportLoading('Preparing export...'),
-        const ExportSuccess('/path/to/save.json'),
-      ],
-    );
-
-    blocTest<ImportExportBloc, ImportExportState>(
-      'emits [Loading, Failure] when no data to export',
-      build: () {
-        when(
-          () => mockPasswordRepository.getPasswords(),
-        ).thenAnswer((_) async => const Success([]));
-        return bloc;
-      },
-      act: (bloc) => bloc.add(const ExportDataEvent(isJson: true)),
-      expect: () => [
-        const ImportExportLoading('Preparing export...'),
-        const ImportExportFailure(
-          DataMigrationError.noDataToExport,
-          'No passwords found to export',
-        ),
-      ],
-    );
-
-    blocTest<ImportExportBloc, ImportExportState>(
-      'emits [Loading, Initial] when export is cancelled by user',
-      build: () {
-        when(
-          () => mockPasswordRepository.getPasswords(),
-        ).thenAnswer((_) async => Success(testEntries));
-        when(() => mockDataService.generateJson(any())).thenReturn('{}');
-        when(
-          () => mockFilePickerService.pickSavePath(
-            fileName: any(named: 'fileName'),
-            bytes: any(named: 'bytes'),
-            allowedExtensions: any(named: 'allowedExtensions'),
-          ),
-        ).thenAnswer((_) async => null);
-        return bloc;
-      },
-      act: (bloc) => bloc.add(const ExportDataEvent(isJson: true)),
-      expect: () => [
-        const ImportExportLoading('Preparing export...'),
-        const ImportExportInitial(),
-      ],
-    );
-    group('ImportDataEvent', () {
+  group('$ImportExportBloc', () {
+    group('$ExportDataEvent', () {
       blocTest<ImportExportBloc, ImportExportState>(
-        'emits [Loading, ImportSuccess] when JSON import is successful',
-        build: () {
-          when(
-            () => mockFilePickerService.pickFile(
-              allowedExtensions: any(named: 'allowedExtensions'),
-            ),
-          ).thenAnswer((_) async => '/path/to/file.json');
-          when(
-            () => mockFileService.readAsString(any()),
-          ).thenAnswer((_) async => '{}');
-          when(
-            () => mockDataService.importFromJson(any()),
-          ).thenReturn(testEntries);
-          when(() => mockImportUseCase(any())).thenAnswer(
-            (_) async => const Success(
-              ImportResult(
-                totalRecords: 1,
-                successfulImports: 1,
-                failedImports: 0,
-                duplicateEntries: [],
-                errors: [],
-              ),
-            ),
-          );
-          return bloc;
-        },
-        act: (bloc) => bloc.add(const ImportDataEvent(isJson: true)),
-        expect: () => [
-          const ImportExportLoading('Reading file...'),
-          const ImportExportLoading('Importing passwords...'),
-          const ImportSuccess(1),
-        ],
-      );
-
-      blocTest<ImportExportBloc, ImportExportState>(
-        'emits [Loading, DuplicatesDetected] when duplicates exist in import',
-        build: () {
-          when(
-            () => mockFilePickerService.pickFile(
-              allowedExtensions: any(named: 'allowedExtensions'),
-            ),
-          ).thenAnswer((_) async => '/path/to/file.json');
-          when(
-            () => mockFileService.readAsString(any()),
-          ).thenAnswer((_) async => '{}');
-          when(
-            () => mockDataService.importFromJson(any()),
-          ).thenReturn(testEntries);
-          final duplicates = [
-            DuplicatePasswordEntry(
-              existingEntry: testEntries[0],
-              newEntry: testEntries[0],
-              conflictReason: 'reason',
-            ),
-          ];
-          when(() => mockImportUseCase(any())).thenAnswer(
-            (_) async => Success(
-              ImportResult(
-                totalRecords: 1,
-                successfulImports: 0,
-                failedImports: 0,
-                duplicateEntries: duplicates,
-                errors: [],
-              ),
-            ),
-          );
-          return bloc;
-        },
-        act: (bloc) => bloc.add(const ImportDataEvent(isJson: true)),
-        expect: () => [
-          const ImportExportLoading('Reading file...'),
-          const ImportExportLoading('Importing passwords...'),
-          isA<DuplicatesDetected>().having(
-            (s) => s.duplicates.length,
-            'duplicates count',
-            1,
-          ),
-        ],
-      );
-    });
-
-    group('Encrypted Operations', () {
-      blocTest<ImportExportBloc, ImportExportState>(
-        'emits [Loading, ExportSuccess] when encrypted export is successful',
+        'emits [Loading, ExportSuccess] when JSON export is successful',
         build: () {
           when(
             () => mockPasswordRepository.getPasswords(),
           ).thenAnswer((_) async => Success(testEntries));
-          when(
-            () => mockDataService.generateEncryptedJson(any(), any()),
-          ).thenReturn(Uint8List(0));
+          when(() => mockDataService.generateJson(any())).thenReturn('{}');
           when(
             () => mockFilePickerService.pickSavePath(
               fileName: any(named: 'fileName'),
               bytes: any(named: 'bytes'),
               allowedExtensions: any(named: 'allowedExtensions'),
             ),
-          ).thenAnswer((_) async => '/path/to/export.pvault');
+          ).thenAnswer((_) async => '/path/to/save.json');
           return bloc;
         },
-        act: (bloc) => bloc.add(const ExportEncryptedEvent('password')),
+        act: (bloc) => bloc.add(const ExportDataEvent(isJson: true)),
         expect: () => [
-          const ImportExportLoading('Encrypting data...'),
-          const ExportSuccess('/path/to/export.pvault'),
+          const ImportExportLoading('Preparing export...'),
+          const ExportSuccess('/path/to/save.json'),
         ],
       );
 
       blocTest<ImportExportBloc, ImportExportState>(
-        'emits [Loading, ImportSuccess] when encrypted import succeeds with valid password',
+        'emits [Loading, Failure] when no data to export',
         build: () {
           when(
-            () => mockFilePickerService.pickFile(
+            () => mockPasswordRepository.getPasswords(),
+          ).thenAnswer((_) async => const Success([]));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(const ExportDataEvent(isJson: true)),
+        expect: () => [
+          const ImportExportLoading('Preparing export...'),
+          const ImportExportFailure(
+            DataMigrationError.noDataToExport,
+            'No passwords found to export',
+          ),
+        ],
+      );
+
+      blocTest<ImportExportBloc, ImportExportState>(
+        'emits [Loading, Initial] when export is cancelled by user',
+        build: () {
+          when(
+            () => mockPasswordRepository.getPasswords(),
+          ).thenAnswer((_) async => Success(testEntries));
+          when(() => mockDataService.generateJson(any())).thenReturn('{}');
+          when(
+            () => mockFilePickerService.pickSavePath(
+              fileName: any(named: 'fileName'),
+              bytes: any(named: 'bytes'),
               allowedExtensions: any(named: 'allowedExtensions'),
             ),
-          ).thenAnswer((_) async => '/path/to/file.pvault');
-          when(
-            () => mockFileService.readAsBytes(any()),
-          ).thenAnswer((_) async => Uint8List(0));
-          when(
-            () => mockDataService.importFromEncrypted(any(), any()),
-          ).thenReturn([testEntries.first]);
-          when(() => mockImportUseCase(any())).thenAnswer(
-            (_) async => const Success(
-              ImportResult(
-                totalRecords: 1,
-                successfulImports: 1,
-                failedImports: 0,
-                duplicateEntries: [],
-                errors: [],
+          ).thenAnswer((_) async => null);
+          return bloc;
+        },
+        act: (bloc) => bloc.add(const ExportDataEvent(isJson: true)),
+        expect: () => [
+          const ImportExportLoading('Preparing export...'),
+          const ImportExportInitial(),
+        ],
+      );
+      group('$ImportDataEvent', () {
+        blocTest<ImportExportBloc, ImportExportState>(
+          'emits [Loading, ImportSuccess] when JSON import is successful',
+          build: () {
+            when(
+              () => mockFilePickerService.pickFile(
+                allowedExtensions: any(named: 'allowedExtensions'),
               ),
+            ).thenAnswer((_) async => '/path/to/file.json');
+            when(
+              () => mockFileService.readAsString(any()),
+            ).thenAnswer((_) async => '{}');
+            when(
+              () => mockDataService.importFromJson(any()),
+            ).thenReturn(testEntries);
+            when(() => mockImportUseCase(any())).thenAnswer(
+              (_) async => const Success(
+                ImportResult(
+                  totalRecords: 1,
+                  successfulImports: 1,
+                  failedImports: 0,
+                  duplicateEntries: [],
+                  errors: [],
+                ),
+              ),
+            );
+            return bloc;
+          },
+          act: (bloc) => bloc.add(const ImportDataEvent(isJson: true)),
+          expect: () => [
+            const ImportExportLoading('Reading file...'),
+            const ImportExportLoading('Importing passwords...'),
+            const ImportSuccess(1),
+          ],
+        );
+
+        blocTest<ImportExportBloc, ImportExportState>(
+          'emits [Loading, DuplicatesDetected] when duplicates exist in import',
+          build: () {
+            when(
+              () => mockFilePickerService.pickFile(
+                allowedExtensions: any(named: 'allowedExtensions'),
+              ),
+            ).thenAnswer((_) async => '/path/to/file.json');
+            when(
+              () => mockFileService.readAsString(any()),
+            ).thenAnswer((_) async => '{}');
+            when(
+              () => mockDataService.importFromJson(any()),
+            ).thenReturn(testEntries);
+            final duplicates = [
+              DuplicatePasswordEntry(
+                existingEntry: testEntries[0],
+                newEntry: testEntries[0],
+                conflictReason: 'reason',
+              ),
+            ];
+            when(() => mockImportUseCase(any())).thenAnswer(
+              (_) async => Success(
+                ImportResult(
+                  totalRecords: 1,
+                  successfulImports: 0,
+                  failedImports: 0,
+                  duplicateEntries: duplicates,
+                  errors: [],
+                ),
+              ),
+            );
+            return bloc;
+          },
+          act: (bloc) => bloc.add(const ImportDataEvent(isJson: true)),
+          expect: () => [
+            const ImportExportLoading('Reading file...'),
+            const ImportExportLoading('Importing passwords...'),
+            isA<DuplicatesDetected>().having(
+              (s) => s.duplicates.length,
+              'duplicates count',
+              1,
             ),
-          );
-          return bloc;
-        },
-        act: (bloc) =>
-            bloc.add(const ImportEncryptedEvent(password: 'correct')),
-        expect: () => [
-          const ImportExportLoading('Decrypting data...'),
-          const ImportExportLoading('Importing passwords...'),
-          const ImportSuccess(1),
-        ],
-      );
-    });
+          ],
+        );
+      });
 
-    group('ClearDatabaseEvent', () {
-      blocTest<ImportExportBloc, ImportExportState>(
-        'emits [Loading, ClearDatabaseSuccess] when successful',
-        build: () {
-          when(
-            () => mockClearAllUseCase(),
-          ).thenAnswer((_) async => const Success(null));
-          return bloc;
-        },
-        act: (bloc) => bloc.add(const ClearDatabaseEvent()),
-        expect: () => [
-          const ImportExportLoading('Clearing data...'),
-          const ClearDatabaseSuccess(),
-        ],
-      );
-    });
+      group('Encrypted Operations', () {
+        blocTest<ImportExportBloc, ImportExportState>(
+          'emits [Loading, ExportSuccess] when encrypted export is successful',
+          build: () {
+            when(
+              () => mockPasswordRepository.getPasswords(),
+            ).thenAnswer((_) async => Success(testEntries));
+            when(
+              () => mockDataService.generateEncryptedJson(any(), any()),
+            ).thenReturn(Uint8List(0));
+            when(
+              () => mockFilePickerService.pickSavePath(
+                fileName: any(named: 'fileName'),
+                bytes: any(named: 'bytes'),
+                allowedExtensions: any(named: 'allowedExtensions'),
+              ),
+            ).thenAnswer((_) async => '/path/to/export.pvault');
+            return bloc;
+          },
+          act: (bloc) => bloc.add(const ExportEncryptedEvent('password')),
+          expect: () => [
+            const ImportExportLoading('Encrypting data...'),
+            const ExportSuccess('/path/to/export.pvault'),
+          ],
+        );
 
-    group('ResetMigrationStatus', () {
-      blocTest<ImportExportBloc, ImportExportState>(
-        'emits [Initial]',
-        build: () => bloc,
-        act: (bloc) => bloc.add(const ResetMigrationStatus()),
-        expect: () => [const ImportExportInitial()],
-      );
-    });
-    group('ResolveDuplicatesEvent', () {
-      final duplicates = [
-        DuplicatePasswordEntry(
-          existingEntry: testEntries.first,
-          newEntry: testEntries.first,
-          conflictReason: 'reason',
-        ),
-      ];
+        blocTest<ImportExportBloc, ImportExportState>(
+          'emits [Loading, ImportSuccess] when encrypted import succeeds with valid password',
+          build: () {
+            when(
+              () => mockFilePickerService.pickFile(
+                allowedExtensions: any(named: 'allowedExtensions'),
+              ),
+            ).thenAnswer((_) async => '/path/to/file.pvault');
+            when(
+              () => mockFileService.readAsBytes(any()),
+            ).thenAnswer((_) async => Uint8List(0));
+            when(
+              () => mockDataService.importFromEncrypted(any(), any()),
+            ).thenReturn([testEntries.first]);
+            when(() => mockImportUseCase(any())).thenAnswer(
+              (_) async => const Success(
+                ImportResult(
+                  totalRecords: 1,
+                  successfulImports: 1,
+                  failedImports: 0,
+                  duplicateEntries: [],
+                  errors: [],
+                ),
+              ),
+            );
+            return bloc;
+          },
+          act: (bloc) =>
+              bloc.add(const ImportEncryptedEvent(password: 'correct')),
+          expect: () => [
+            const ImportExportLoading('Decrypting data...'),
+            const ImportExportLoading('Importing passwords...'),
+            const ImportSuccess(1),
+          ],
+        );
+      });
 
-      blocTest<ImportExportBloc, ImportExportState>(
-        'emits [Loading, DuplicatesResolved] when resolutions are successful',
-        build: () {
-          when(
-            () => mockResolveUseCase(any()),
-          ).thenAnswer((_) async => const Success(null));
-          return bloc;
-        },
-        act: (bloc) => bloc.add(ResolveDuplicatesEvent(duplicates)),
-        expect: () => [
-          // const ImportExportLoading('Authenticating...'), // Removed
-          const ImportExportLoading('Resolving duplicates...'),
-          const DuplicatesResolved(totalResolved: 1, totalImported: 1),
-        ],
-      );
+      group('$ClearDatabaseEvent', () {
+        blocTest<ImportExportBloc, ImportExportState>(
+          'emits [Loading, ClearDatabaseSuccess] when successful',
+          build: () {
+            when(
+              () => mockClearAllUseCase(),
+            ).thenAnswer((_) async => const Success(null));
+            return bloc;
+          },
+          act: (bloc) => bloc.add(const ClearDatabaseEvent()),
+          expect: () => [
+            const ImportExportLoading('Clearing data...'),
+            const ClearDatabaseSuccess(),
+          ],
+        );
+      });
 
-      blocTest<ImportExportBloc, ImportExportState>(
-        'emits [Loading, Failure] when resolution fails',
-        build: () {
-          when(() => mockResolveUseCase(any())).thenAnswer(
-            (_) async => const Error(DataMigrationFailure('Failed')),
-          );
-          return bloc;
-        },
-        act: (bloc) => bloc.add(ResolveDuplicatesEvent(duplicates)),
-        expect: () => [
-          // const ImportExportLoading('Authenticating...'), // Removed
-          const ImportExportLoading('Resolving duplicates...'),
-          const ImportExportFailure(DataMigrationError.unknown, 'Failed'),
-        ],
-      );
+      group('$ResetMigrationStatus', () {
+        blocTest<ImportExportBloc, ImportExportState>(
+          'emits [Initial]',
+          build: () => bloc,
+          act: (bloc) => bloc.add(const ResetMigrationStatus()),
+          expect: () => [const ImportExportInitial()],
+        );
+      });
+      group('$ResolveDuplicatesEvent', () {
+        final duplicates = [
+          DuplicatePasswordEntry(
+            existingEntry: testEntries.first,
+            newEntry: testEntries.first,
+            conflictReason: 'reason',
+          ),
+        ];
+
+        blocTest<ImportExportBloc, ImportExportState>(
+          'emits [Loading, DuplicatesResolved] when resolutions are successful',
+          build: () {
+            when(
+              () => mockResolveUseCase(any()),
+            ).thenAnswer((_) async => const Success(null));
+            return bloc;
+          },
+          act: (bloc) => bloc.add(ResolveDuplicatesEvent(duplicates)),
+          expect: () => [
+            // const ImportExportLoading('Authenticating...'), // Removed
+            const ImportExportLoading('Resolving duplicates...'),
+            const DuplicatesResolved(totalResolved: 1, totalImported: 1),
+          ],
+        );
+
+        blocTest<ImportExportBloc, ImportExportState>(
+          'emits [Loading, Failure] when resolution fails',
+          build: () {
+            when(() => mockResolveUseCase(any())).thenAnswer(
+              (_) async => const Error(DataMigrationFailure('Failed')),
+            );
+            return bloc;
+          },
+          act: (bloc) => bloc.add(ResolveDuplicatesEvent(duplicates)),
+          expect: () => [
+            // const ImportExportLoading('Authenticating...'), // Removed
+            const ImportExportLoading('Resolving duplicates...'),
+            const ImportExportFailure(DataMigrationError.unknown, 'Failed'),
+          ],
+        );
+      });
     });
   });
 }

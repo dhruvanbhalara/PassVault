@@ -4,10 +4,8 @@ import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/presentation/widgets/settings_shared_widgets.dart';
 
 void main() {
-  group('SettingsSharedWidgets', () {
-    testWidgets('SettingsSectionHeader displays title in uppercase', (
-      tester,
-    ) async {
+  group('$SettingsSectionHeader', () {
+    testWidgets('displays title in uppercase', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.lightTheme,
@@ -17,10 +15,10 @@ void main() {
 
       expect(find.text('SECURITY'), findsOneWidget);
     });
+  });
 
-    testWidgets('SettingsMetricIcon displays icon with correct color', (
-      tester,
-    ) async {
+  group('$SettingsMetricIcon', () {
+    testWidgets('displays icon with correct color', (tester) async {
       const testIcon = Icons.lock;
       const testColor = Colors.red;
 

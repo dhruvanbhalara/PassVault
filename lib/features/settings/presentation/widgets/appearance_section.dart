@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/features/settings/presentation/bloc/theme/theme_cubit.dart';
+import 'package:passvault/features/settings/domain/entities/theme_type.dart';
+import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:passvault/features/settings/presentation/widgets/settings_shared_widgets.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
@@ -12,8 +13,8 @@ class AppearanceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final themeCubit = context.watch<ThemeCubit>();
+    final l10n = context.l10n;
+    final themeBloc = context.watch<ThemeBloc>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,9 +25,9 @@ class AppearanceSection extends StatelessWidget {
             key: const Key('settings_theme_tile'),
             leading: const Icon(LucideIcons.palette),
             title: Text(l10n.theme),
-            subtitle: Text(_getThemeName(themeCubit.state.themeType, l10n)),
+            subtitle: Text(_getThemeName(themeBloc.state.themeType, l10n)),
             trailing: const Icon(LucideIcons.chevronRight),
-            onTap: () => _showThemePicker(context, themeCubit, l10n),
+            onTap: () => _showThemePicker(context, themeBloc, l10n),
           ),
         ),
       ],
@@ -48,7 +49,7 @@ class AppearanceSection extends StatelessWidget {
 
   void _showThemePicker(
     BuildContext context,
-    ThemeCubit cubit,
+    ThemeBloc bloc,
     AppLocalizations l10n,
   ) {
     showModalBottomSheet(
@@ -56,16 +57,16 @@ class AppearanceSection extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
-      builder: (context) => _ThemePickerSheet(cubit: cubit, l10n: l10n),
+      builder: (context) => _ThemePickerSheet(bloc: bloc, l10n: l10n),
     );
   }
 }
 
 class _ThemePickerSheet extends StatelessWidget {
-  final ThemeCubit cubit;
+  final ThemeBloc bloc;
   final AppLocalizations l10n;
 
-  const _ThemePickerSheet({required this.cubit, required this.l10n});
+  const _ThemePickerSheet({required this.bloc, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +91,7 @@ class _ThemePickerSheet extends StatelessWidget {
             leading: const Icon(LucideIcons.monitor),
             title: Text(l10n.system),
             onTap: () {
-              cubit.setTheme(ThemeType.system);
+              bloc.add(const ThemeChanged(ThemeType.system));
               Navigator.pop(context);
             },
           ),
@@ -99,7 +100,7 @@ class _ThemePickerSheet extends StatelessWidget {
             leading: const Icon(LucideIcons.sun),
             title: Text(l10n.light),
             onTap: () {
-              cubit.setTheme(ThemeType.light);
+              bloc.add(const ThemeChanged(ThemeType.light));
               Navigator.pop(context);
             },
           ),
@@ -108,7 +109,7 @@ class _ThemePickerSheet extends StatelessWidget {
             leading: const Icon(LucideIcons.moon),
             title: Text(l10n.dark),
             onTap: () {
-              cubit.setTheme(ThemeType.dark);
+              bloc.add(const ThemeChanged(ThemeType.dark));
               Navigator.pop(context);
             },
           ),
@@ -117,7 +118,7 @@ class _ThemePickerSheet extends StatelessWidget {
             leading: const Icon(LucideIcons.sparkles),
             title: Text(l10n.amoled),
             onTap: () {
-              cubit.setTheme(ThemeType.amoled);
+              bloc.add(const ThemeChanged(ThemeType.amoled));
               Navigator.pop(context);
             },
           ),

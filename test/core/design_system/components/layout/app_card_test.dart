@@ -5,7 +5,7 @@ import 'package:passvault/core/design_system/components/layout/app_card.dart';
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
-  group('AppCard', () {
+  group('$AppCard', () {
     testWidgets('renders child content', (tester) async {
       await tester.pumpWidget(
         createTestWidget(child: const AppCard(child: Text('Card Content'))),

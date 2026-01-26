@@ -48,7 +48,7 @@ void main() {
     );
   }
 
-  group('DataManagementSection', () {
+  group('$DataManagementSection', () {
     testWidgets('displays import and export tiles', (
       WidgetTester tester,
     ) async {

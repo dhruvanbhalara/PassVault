@@ -9,7 +9,7 @@ void main() {
     exporter = CsvExporter();
   });
 
-  group('CsvExporter', () {
+  group('$CsvExporter', () {
     test('exports empty list to CSV with headers only', () {
       final result = exporter.export([]);
 

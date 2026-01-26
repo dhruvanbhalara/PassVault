@@ -40,7 +40,7 @@ void main() {
     registerFallbackValue(tEntry);
   });
 
-  group('PasswordRepository', () {
+  group('$PasswordRepositoryImpl', () {
     test(
       'getPasswords should return list of entities from datasource',
       () async {
