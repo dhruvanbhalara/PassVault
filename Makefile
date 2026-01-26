@@ -45,6 +45,10 @@ run_dev:
 run_prod:
 	flutter run --flavor prod -t lib/main.dart
 
+# Aliases requested by user
+run_release: run_prod
+dev_release: run_dev
+
 build_apk_dev:
 	@echo "Building Dev APK (64-bit, split per ABI)..."
 	flutter build apk --flavor dev -t lib/main.dart \
