@@ -43,6 +43,7 @@ Get the PassVault development environment ready for work.
 
 6.  **Explore Standards**:
     Familiarize yourself with:
-    -   `flutter_rules.md`
+    -   `.agent/GEMINI.md`
+    -   `flutter_rules.md` (Agency Protocol)
     -   `.agent/skills/`
     -   `.agent/workflows/`

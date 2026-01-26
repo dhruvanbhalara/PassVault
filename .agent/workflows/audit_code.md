@@ -6,6 +6,14 @@
 
 ---
 
+## 🤖 Phase 0: Agent Compliance (Agency Protocol)
+1.  **Self-Correction**:
+    *   **Check**: Did I strictly follow `flutter_rules.md`?
+    *   **Verdict**: ❌ **STOP**: If any rule was violated ("shortcuts"), fix it immediately.
+2.  **Cleanliness**:
+    *   **Command**: `grep -r "//" lib/`
+    *   **Verdict**: ❌ **NOISE**: Remove redundant comments like `// Initialize controller`.
+
 ## 🛡️ Phase 1: Security Forensics
 Check for common security pitfalls in a password manager.
 
@@ -28,6 +36,9 @@ Ensure the "Feature-First Clean Architecture" is maintained.
 2.  **Dependency Injection**:
     *   **Command**: `grep -r "GetIt.I.get" lib/features/`
     *   **Verdict**: ⚠️ **WARNING**: Prefer constructor injection with `@injectable`. Avoid using the locator directly in UI.
+3.  **No Direct Bloc Access**:
+    *   **Command**: `grep -r "bloc.add" lib/` (Ensure ONLY events are added).
+    *   **Check**: Are there any calls to `bloc.method()`? -> ❌ **FORBIDDEN**.
 
 ## 🎨 Phase 3: Design & UX Security
 1.  **Clipboard Handling**:
@@ -57,5 +68,7 @@ Execute the local equivalent of the CI workflow.
 
 ### 🟢 Compliance Success
 * [x] AES-256 Encryption correctly applied to new feature box.
-* [x] Standard Design System used for all new widgets.
+* [x] Standard Design System used for all new widgets (Atoms Tokens).
+* [x] No redundant comments found.
+* [x] All widgets under 50 lines.
 ```

@@ -1,16 +1,18 @@
 name: Quality Gate
 
 # Validates code quality for pull requests
-# Skips execution if only documentation files are changed
+# Only runs for code changes (skipped entirely for docs)
 on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
-      - "README.md"
-      - "docs/**"
       - "**.md"
+      - "docs/**"
+      - ".agent/**"
       - ".gitignore"
+      - "LICENSE"
+      - "**.txt"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -26,36 +28,9 @@ env:
   FLUTTER_VERSION: ${{ secrets.FLUTTER_VERSION }}
 
 jobs:
-  validate:
-    name: Validate PR Changes
-    if: github.event.pull_request.draft == false
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      should-run: ${{ steps.filter.outputs.code == 'true' }}
-
-    steps:
-      # Use path filtering to skip workflow if only docs changed
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            code:
-              - 'lib/**'
-              - 'test/**'
-              - 'android/**'
-              - 'ios/**'
-              - 'pubspec.yaml'
-              - 'pubspec.lock'
-              - 'analysis_options.yaml'
-              - '.github/workflows/**'
-              - '.github/actions/**'
-
   quality:
     name: Code Quality Checks
     runs-on: ubuntu-latest
-    needs: validate
-    if: needs.validate.outputs.should-run == 'true'
     timeout-minutes: 10
 
     steps:
@@ -74,8 +49,7 @@ jobs:
   tests:
     name: Run Tests
     runs-on: ubuntu-latest
-    needs: validate
-    if: needs.validate.outputs.should-run == 'true'
+    needs: quality
     timeout-minutes: 15
 
     steps:

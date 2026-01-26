@@ -31,7 +31,7 @@ When auditing or implementing code, follow these checks:
 
 ### 3. Presentation Layer Check
 -   Ensure `lib/presentation/` only uses `domain` and `data` layers indirectly via DI/Repositories.
--   Verify BLoCs/Cubits only call UseCases or Repositories.
+-   Verify BLoCs only call UseCases or Repositories.
 -   Check for "Zero-Logic UI" (no logic in `build()` methods).
 
 ## Examples
