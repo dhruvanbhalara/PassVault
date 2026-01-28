@@ -787,7 +787,7 @@ abstract class AppLocalizations {
   /// No description provided for @minLabel.
   ///
   /// In en, this message translates to:
-  /// **'8'**
+  /// **'16'**
   String get minLabel;
 
   /// No description provided for @maxLabel.

@@ -224,7 +224,7 @@ class _LengthSlider extends StatelessWidget {
             ),
             child: Slider(
               value: length.toDouble(),
-              min: 8,
+              min: 16,
               max: 64,
               divisions: 56,
               onChanged: onChanged,
@@ -472,23 +472,6 @@ class _PreviewCardContent extends StatelessWidget {
       },
       child: BlocBuilder<StrategyPreviewBloc, StrategyPreviewState>(
         builder: (context, state) {
-          // Trigger generation if settings changed (handled by parent rebuilding this widget)
-          // Since this is a stateless widget created by parent's build, we rely on
-          // parent rebuilding to recreate/update. However, since we wrapped in BlocProvider
-          // inside build(), a rebuild of parent rebuilds this.
-          // Actually, creates a NEW BlocProvider each time if key not consistent?
-          // No, BlocProvider creates the bloc once. But if 'settings' change,
-          // we need to tell the cubit.
-          // Better approach: Use Key or hook into didUpdateWidget equivalent via
-          // a wrapper or side-effect.
-          // Given this is inside a StatelessWidget now, let's use a "Effect" widget
-          // or just rely on the fact the parent IS stateful and when it calls this,
-          // it passes ALL new settings.
-
-          // Wait, if _PreviewCard is Stateless and wrapped in BlocProvider in its build method,
-          // rebuilding _PreviewCard interacts with BlocProvider.
-          // If we want to update the cubit when settings change, we need to do it.
-          // Simple way: _PreviewCardContent can be StatefulWidget or we use a "Logic" wrapper.
           return _PreviewCardEffect(
             settings: settings,
             child: _PreviewCardView(
@@ -521,7 +504,22 @@ class _PreviewCardEffectState extends State<_PreviewCardEffect> {
   void didUpdateWidget(covariant _PreviewCardEffect oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.settings != widget.settings) {
-      context.read<StrategyPreviewBloc>().add(GeneratePreview(widget.settings));
+      // Only regenerate if generation parameters changed, ignore name/id changes
+      final oldS = oldWidget.settings;
+      final newS = widget.settings;
+      bool shouldRegenerate =
+          oldS.length != newS.length ||
+          oldS.useNumbers != newS.useNumbers ||
+          oldS.useSpecialChars != newS.useSpecialChars ||
+          oldS.useUppercase != newS.useUppercase ||
+          oldS.useLowercase != newS.useLowercase ||
+          oldS.excludeAmbiguousChars != newS.excludeAmbiguousChars;
+
+      if (shouldRegenerate) {
+        context.read<StrategyPreviewBloc>().add(
+          GeneratePreview(widget.settings),
+        );
+      }
     }
   }
 
@@ -545,12 +543,6 @@ class _PreviewCardView extends StatelessWidget {
     final l10n = context.l10n;
     final theme = context.theme;
     final colorScheme = context.colorScheme;
-
-    // Trigger update if needed.
-    // Since we can't easily do it in build without side effects,
-    // let's rely on the parent or a wrapper.
-    // NOTE: I will simplify the architecture by making _PreviewCard Stateful
-    // but using the Cubit from DI.
 
     return Container(
       width: double.infinity,

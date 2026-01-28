@@ -217,6 +217,7 @@ class _ActiveStrategyCard extends StatelessWidget {
                 const SizedBox(width: AppSpacing.l),
                 _StrategyInfo(strategy: strategy, theme: theme, l10n: l10n),
                 IconButton(
+                  key: Key('edit_strategy_${strategy.id}'),
                   icon: Icon(
                     LucideIcons.pencil,
                     color: theme.onVaultGradient,
@@ -484,6 +485,7 @@ class _ListItemActions extends StatelessWidget {
               context.read<SettingsBloc>().add(SetDefaultStrategy(strategy.id)),
         ),
         IconButton(
+          key: Key('edit_saved_strategy_${strategy.id}'),
           icon: Icon(
             LucideIcons.pencil,
             size: AppDimensions.strategyIconSmall,
