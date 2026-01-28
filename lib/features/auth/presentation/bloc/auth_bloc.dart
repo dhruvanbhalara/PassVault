@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:passvault/core/utils/app_logger.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 import 'package:passvault/features/auth/domain/usecases/authenticate_usecase.dart';
 import 'package:passvault/features/auth/presentation/bloc/auth_event.dart';
@@ -28,23 +29,41 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthCheckRequested event,
     Emitter<AuthState> emit,
   ) async {
+    AppLogger.info('Checking auth requirements', tag: 'AuthBloc');
     final result = _getBiometricsEnabledUseCase();
     final useBiometrics = result.fold((failure) => false, (enabled) => enabled);
 
     if (!useBiometrics) {
+      AppLogger.info('Biometrics disabled by user, skipping', tag: 'AuthBloc');
       emit(AuthAuthenticated());
       return;
     }
 
     final bioResult = await _authRepository.isBiometricAvailable();
     bioResult.fold(
-      (failure) => emit(const AuthUnauthenticated(error: AuthError.authFailed)),
+      (failure) {
+        AppLogger.error(
+          'Biometric availability check failed',
+          error: failure,
+          tag: 'AuthBloc',
+        );
+        emit(const AuthUnauthenticated(error: AuthError.authFailed));
+      },
       (available) {
         if (!available) {
+          AppLogger.warning(
+            'Biometrics enabled but not available on device',
+            tag: 'AuthBloc',
+          );
           emit(
             const AuthUnauthenticated(error: AuthError.biometricsNotAvailable),
           );
         } else {
+          AppLogger.info(
+            'Biometrics available, auto-triggering login',
+            tag: 'AuthBloc',
+          );
+          add(AuthLoginRequested());
           emit(AuthInitial());
         }
       },
@@ -55,14 +74,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLoginRequested event,
     Emitter<AuthState> emit,
   ) async {
+    AppLogger.info('Requesting biometric login', tag: 'AuthBloc');
     emit(AuthLoading());
     final result = await _authenticateUseCase();
     result.fold(
-      (failure) => emit(const AuthUnauthenticated(error: AuthError.authFailed)),
+      (failure) {
+        AppLogger.error(
+          'Authentication process failed',
+          error: failure,
+          tag: 'AuthBloc',
+        );
+        emit(const AuthUnauthenticated(error: AuthError.authFailed));
+      },
       (success) {
         if (success) {
+          AppLogger.info('Authentication successful', tag: 'AuthBloc');
           emit(AuthAuthenticated());
         } else {
+          AppLogger.warning(
+            'Authentication cancelled or failed by user',
+            tag: 'AuthBloc',
+          );
           emit(const AuthUnauthenticated(error: AuthError.authFailed));
         }
       },
