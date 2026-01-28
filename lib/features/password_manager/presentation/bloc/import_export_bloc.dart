@@ -47,7 +47,7 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     ExportDataEvent event,
     Emitter<ImportExportState> emit,
   ) async {
-    emit(const ImportExportLoading('Preparing export...'));
+    emit(const ImportExportLoading());
     try {
       final result = await _passwordRepository.getPasswords();
       await result.fold(
@@ -104,7 +104,7 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     ImportDataEvent event,
     Emitter<ImportExportState> emit,
   ) async {
-    emit(const ImportExportLoading('Reading file...'));
+    emit(const ImportExportLoading());
     try {
       final path = await _filePickerService.pickFile(
         allowedExtensions: event.isJson ? ['json'] : ['csv'],
@@ -120,7 +120,7 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
           ? _dataService.importFromJson(content)
           : _dataService.importFromCsv(content);
 
-      emit(const ImportExportLoading('Importing passwords...'));
+      emit(const ImportExportLoading());
       final result = await _importPasswordsUseCase(entries);
 
       result.fold(
@@ -150,7 +150,7 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     ExportEncryptedEvent event,
     Emitter<ImportExportState> emit,
   ) async {
-    emit(const ImportExportLoading('Encrypting data...'));
+    emit(const ImportExportLoading());
     try {
       final result = await _passwordRepository.getPasswords();
       await result.fold(
@@ -208,7 +208,7 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     ImportEncryptedEvent event,
     Emitter<ImportExportState> emit,
   ) async {
-    emit(const ImportExportLoading('Decrypting data...'));
+    emit(const ImportExportLoading());
 
     final path =
         event.filePath ??
@@ -238,7 +238,7 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
       return;
     }
 
-    emit(const ImportExportLoading('Importing passwords...'));
+    emit(const ImportExportLoading());
     final result = await _importPasswordsUseCase(entries);
 
     result.fold(
@@ -264,7 +264,7 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     ResolveDuplicatesEvent event,
     Emitter<ImportExportState> emit,
   ) async {
-    emit(const ImportExportLoading('Resolving duplicates...'));
+    emit(const ImportExportLoading());
     try {
       final result = await _resolveDuplicatesUseCase(event.resolutions);
       result.fold(
@@ -285,7 +285,7 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     ClearDatabaseEvent event,
     Emitter<ImportExportState> emit,
   ) async {
-    emit(const ImportExportLoading('Clearing data...'));
+    emit(const ImportExportLoading());
 
     AppLogger.info('Starting bulk clear operation', tag: 'ImportExportBloc');
 

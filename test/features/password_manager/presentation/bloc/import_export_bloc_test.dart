@@ -116,7 +116,7 @@ void main() {
         },
         act: (bloc) => bloc.add(const ExportDataEvent(isJson: true)),
         expect: () => [
-          const ImportExportLoading('Preparing export...'),
+          const ImportExportLoading(),
           const ExportSuccess('/path/to/save.json'),
         ],
       );
@@ -131,7 +131,7 @@ void main() {
         },
         act: (bloc) => bloc.add(const ExportDataEvent(isJson: true)),
         expect: () => [
-          const ImportExportLoading('Preparing export...'),
+          const ImportExportLoading(),
           const ImportExportFailure(
             DataMigrationError.noDataToExport,
             'No passwords found to export',
@@ -157,7 +157,7 @@ void main() {
         },
         act: (bloc) => bloc.add(const ExportDataEvent(isJson: true)),
         expect: () => [
-          const ImportExportLoading('Preparing export...'),
+          const ImportExportLoading(),
           const ImportExportInitial(),
         ],
       );
@@ -190,11 +190,7 @@ void main() {
             return bloc;
           },
           act: (bloc) => bloc.add(const ImportDataEvent(isJson: true)),
-          expect: () => [
-            const ImportExportLoading('Reading file...'),
-            const ImportExportLoading('Importing passwords...'),
-            const ImportSuccess(1),
-          ],
+          expect: () => [const ImportExportLoading(), const ImportSuccess(1)],
         );
 
         blocTest<ImportExportBloc, ImportExportState>(
@@ -233,8 +229,7 @@ void main() {
           },
           act: (bloc) => bloc.add(const ImportDataEvent(isJson: true)),
           expect: () => [
-            const ImportExportLoading('Reading file...'),
-            const ImportExportLoading('Importing passwords...'),
+            const ImportExportLoading(),
             isA<DuplicatesDetected>().having(
               (s) => s.duplicates.length,
               'duplicates count',
@@ -265,7 +260,7 @@ void main() {
           },
           act: (bloc) => bloc.add(const ExportEncryptedEvent('password')),
           expect: () => [
-            const ImportExportLoading('Encrypting data...'),
+            const ImportExportLoading(),
             const ExportSuccess('/path/to/export.pvault'),
           ],
         );
@@ -299,11 +294,7 @@ void main() {
           },
           act: (bloc) =>
               bloc.add(const ImportEncryptedEvent(password: 'correct')),
-          expect: () => [
-            const ImportExportLoading('Decrypting data...'),
-            const ImportExportLoading('Importing passwords...'),
-            const ImportSuccess(1),
-          ],
+          expect: () => [const ImportExportLoading(), const ImportSuccess(1)],
         );
       });
 
@@ -318,7 +309,7 @@ void main() {
           },
           act: (bloc) => bloc.add(const ClearDatabaseEvent()),
           expect: () => [
-            const ImportExportLoading('Clearing data...'),
+            const ImportExportLoading(),
             const ClearDatabaseSuccess(),
           ],
         );
@@ -352,7 +343,7 @@ void main() {
           act: (bloc) => bloc.add(ResolveDuplicatesEvent(duplicates)),
           expect: () => [
             // const ImportExportLoading('Authenticating...'), // Removed
-            const ImportExportLoading('Resolving duplicates...'),
+            const ImportExportLoading(),
             const DuplicatesResolved(totalResolved: 1, totalImported: 1),
           ],
         );
@@ -368,7 +359,7 @@ void main() {
           act: (bloc) => bloc.add(ResolveDuplicatesEvent(duplicates)),
           expect: () => [
             // const ImportExportLoading('Authenticating...'), // Removed
-            const ImportExportLoading('Resolving duplicates...'),
+            const ImportExportLoading(),
             const ImportExportFailure(DataMigrationError.unknown, 'Failed'),
           ],
         );

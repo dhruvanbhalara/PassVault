@@ -21,17 +21,17 @@ class DataService {
   DataService(this._cryptoService);
 
   /// Exports password entries as a JSON file using system share.
-  Future<void> exportToJson(List<PasswordEntry> entries) async {
+  Future<void> exportToJson(
+    List<PasswordEntry> entries, {
+    required String subject,
+  }) async {
     final jsonString = generateJson(entries);
     final tempDir = await getTemporaryDirectory();
     final file = File('${tempDir.path}/passvault_export.json');
     await file.writeAsString(jsonString);
 
     await SharePlus.instance.share(
-      ShareParams(
-        files: [XFile(file.path)],
-        text: 'PassVault Data Export (JSON)',
-      ),
+      ShareParams(files: [XFile(file.path)], text: subject),
     );
   }
 
@@ -42,17 +42,17 @@ class DataService {
   }
 
   /// Exports password entries as a CSV file using system share.
-  Future<void> exportToCsv(List<PasswordEntry> entries) async {
+  Future<void> exportToCsv(
+    List<PasswordEntry> entries, {
+    required String subject,
+  }) async {
     final csvData = generateCsv(entries);
     final tempDir = await getTemporaryDirectory();
     final file = File('${tempDir.path}/passvault_export.csv');
     await file.writeAsString(csvData);
 
     await SharePlus.instance.share(
-      ShareParams(
-        files: [XFile(file.path)],
-        text: 'PassVault Data Export (CSV)',
-      ),
+      ShareParams(files: [XFile(file.path)], text: subject),
     );
   }
 
@@ -86,18 +86,16 @@ class DataService {
   /// Exports password entries as an encrypted file using system share.
   Future<void> exportToEncryptedJson(
     List<PasswordEntry> entries,
-    String password,
-  ) async {
+    String password, {
+    required String subject,
+  }) async {
     final encrypted = generateEncryptedJson(entries, password);
     final tempDir = await getTemporaryDirectory();
     final file = File('${tempDir.path}/passvault_export.pvault');
     await file.writeAsBytes(encrypted);
 
     await SharePlus.instance.share(
-      ShareParams(
-        files: [XFile(file.path)],
-        text: 'PassVault Encrypted Export',
-      ),
+      ShareParams(files: [XFile(file.path)], text: subject),
     );
   }
 

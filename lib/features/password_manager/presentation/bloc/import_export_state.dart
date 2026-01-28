@@ -29,12 +29,10 @@ class ImportExportInitial extends ImportExportState {
 
 /// Operation in progress.
 class ImportExportLoading extends ImportExportState {
-  final String message;
-
-  const ImportExportLoading(this.message);
+  const ImportExportLoading();
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [];
 }
 
 /// Successful Import with no duplicates.
