@@ -10,8 +10,9 @@ import 'package:passvault/features/password_manager/domain/entities/duplicate_pa
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
+import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
-import 'package:passvault/features/settings/presentation/bloc/theme/theme_cubit.dart';
+import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:passvault/features/settings/presentation/settings_screen.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
@@ -20,7 +21,7 @@ class MockSettingsBloc extends Mock implements SettingsBloc {
   Stream<SettingsState> get stream => Stream.value(state);
 }
 
-class MockThemeCubit extends Mock implements ThemeCubit {
+class MockThemeBloc extends Mock implements ThemeBloc {
   @override
   Stream<ThemeState> get stream => Stream.value(state);
 }
@@ -42,7 +43,7 @@ class MockDuplicatePasswordEntry extends Mock
 
 void main() {
   late MockSettingsBloc mockSettingsBloc;
-  late MockThemeCubit mockThemeCubit;
+  late MockThemeBloc mockThemeBloc;
   late MockPasswordBloc mockPasswordBloc;
   late MockImportExportBloc mockImportExportBloc;
   late MockGoRouter mockGoRouter;
@@ -53,20 +54,20 @@ void main() {
 
   setUp(() {
     mockSettingsBloc = MockSettingsBloc();
-    mockThemeCubit = MockThemeCubit();
+    mockThemeBloc = MockThemeBloc();
     mockPasswordBloc = MockPasswordBloc();
     mockImportExportBloc = MockImportExportBloc();
     mockGoRouter = MockGoRouter();
 
     when(() => mockSettingsBloc.close()).thenAnswer((_) async {});
-    when(() => mockThemeCubit.close()).thenAnswer((_) async {});
+    when(() => mockThemeBloc.close()).thenAnswer((_) async {});
     when(() => mockPasswordBloc.close()).thenAnswer((_) async {});
     when(() => mockImportExportBloc.close()).thenAnswer((_) async {});
 
     when(
       () => mockSettingsBloc.state,
     ).thenReturn(const SettingsState(useBiometrics: false));
-    when(() => mockThemeCubit.state).thenReturn(
+    when(() => mockThemeBloc.state).thenReturn(
       const ThemeState(
         themeType: ThemeType.system,
         themeMode: ThemeMode.system,
@@ -93,7 +94,7 @@ void main() {
         home: MultiBlocProvider(
           providers: [
             BlocProvider<SettingsBloc>.value(value: mockSettingsBloc),
-            BlocProvider<ThemeCubit>.value(value: mockThemeCubit),
+            BlocProvider<ThemeBloc>.value(value: mockThemeBloc),
             BlocProvider<PasswordBloc>.value(value: mockPasswordBloc),
             BlocProvider<ImportExportBloc>.value(value: mockImportExportBloc),
           ],
@@ -103,7 +104,7 @@ void main() {
     );
   }
 
-  group('SettingsScreen Widget Tests - Consolidated Migration', () {
+  group('$SettingsScreen', () {
     testWidgets(
       'Tapping Export JSON dispatches correct event to ImportExportBloc',
       (tester) async {

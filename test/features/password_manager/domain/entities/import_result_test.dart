@@ -10,7 +10,7 @@ void main() {
     errors: ['error 1', 'error 2'],
   );
 
-  group('ImportResult', () {
+  group('$ImportResult', () {
     test('duplicateCount should return length of duplicateEntries', () {
       expect(tImportResult.duplicateCount, 0);
     });

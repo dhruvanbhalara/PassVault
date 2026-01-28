@@ -15,34 +15,39 @@ void main() {
     useCase = ExportPasswordsUseCase(mockRepository);
   });
 
-  test('should call repository.exportPasswords with default format', () async {
-    // Arrange
-    when(
-      () => mockRepository.exportPasswords(format: any(named: 'format')),
-    ).thenAnswer((_) async => const Success('csv_data'));
+  group('$ExportPasswordsUseCase', () {
+    test(
+      'should call repository.exportPasswords with default format',
+      () async {
+        // Arrange
+        when(
+          () => mockRepository.exportPasswords(format: any(named: 'format')),
+        ).thenAnswer((_) async => const Success('csv_data'));
 
-    // Act
-    final result = await useCase();
+        // Act
+        final result = await useCase();
 
-    // Assert
-    expect(result, const Success('csv_data'));
-    verify(() => mockRepository.exportPasswords(format: 'csv')).called(1);
+        // Assert
+        expect(result, const Success('csv_data'));
+        verify(() => mockRepository.exportPasswords(format: 'csv')).called(1);
+      },
+    );
+
+    test(
+      'should call repository.exportPasswords with specified format',
+      () async {
+        // Arrange
+        when(
+          () => mockRepository.exportPasswords(format: any(named: 'format')),
+        ).thenAnswer((_) async => const Success('json_data'));
+
+        // Act
+        final result = await useCase(format: 'json');
+
+        // Assert
+        expect(result, const Success('json_data'));
+        verify(() => mockRepository.exportPasswords(format: 'json')).called(1);
+      },
+    );
   });
-
-  test(
-    'should call repository.exportPasswords with specified format',
-    () async {
-      // Arrange
-      when(
-        () => mockRepository.exportPasswords(format: any(named: 'format')),
-      ).thenAnswer((_) async => const Success('json_data'));
-
-      // Act
-      final result = await useCase(format: 'json');
-
-      // Assert
-      expect(result, const Success('json_data'));
-      verify(() => mockRepository.exportPasswords(format: 'json')).called(1);
-    },
-  );
 }

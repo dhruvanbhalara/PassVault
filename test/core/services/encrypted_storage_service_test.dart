@@ -18,7 +18,7 @@ void main() {
     service = EncryptedStorageService(mockSecureStorage);
   });
 
-  group('EncryptedStorageService', () {
+  group('$EncryptedStorageService', () {
     group('getOrCreateEncryptionKey', () {
       test('returns existing key when present', () async {
         // Arrange

@@ -56,7 +56,7 @@ void main() {
 
   tearDown(() => bloc.close());
 
-  group('PasswordBloc', () {
+  group('$PasswordBloc', () {
     test('initial state is PasswordInitial', () {
       expect(bloc.state, const PasswordInitial());
     });

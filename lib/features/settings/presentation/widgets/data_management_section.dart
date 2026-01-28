@@ -5,9 +5,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
-import 'package:passvault/features/settings/presentation/widgets/import_export_dialogs.dart';
-import 'package:passvault/features/settings/presentation/widgets/settings_shared_widgets.dart';
-import 'package:passvault/l10n/app_localizations.dart';
+import 'package:passvault/features/settings/presentation/widgets/export_picker_sheet.dart';
+import 'package:passvault/features/settings/presentation/widgets/import_picker_sheet.dart';
+import 'package:passvault/features/settings/presentation/widgets/settings_section_header.dart';
 
 /// Section for data management settings.
 class DataManagementSection extends StatelessWidget {
@@ -15,7 +15,7 @@ class DataManagementSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.l10n;
     final theme = context.theme;
 
     return Column(
@@ -95,7 +95,7 @@ class DataManagementSection extends StatelessWidget {
 
   void _showClearDatabaseDialog(BuildContext context) {
     final bloc = context.read<ImportExportBloc>();
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.l10n;
     final theme = context.theme;
 
     showDialog(

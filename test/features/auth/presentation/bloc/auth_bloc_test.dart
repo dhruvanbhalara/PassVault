@@ -35,12 +35,12 @@ void main() {
     bloc.close();
   });
 
-  group('AuthBloc', () {
+  group('$AuthBloc', () {
     test('initial state is AuthInitial', () {
       expect(bloc.state, isA<AuthInitial>());
     });
 
-    group('AuthCheckRequested', () {
+    group('$AuthCheckRequested', () {
       test('emits AuthAuthenticated when biometrics disabled', () async {
         when(
           () => mockGetBiometricsEnabledUseCase(),
@@ -131,7 +131,7 @@ void main() {
       });
     });
 
-    group('AuthLoginRequested', () {
+    group('$AuthLoginRequested', () {
       test('emits AuthLoading then AuthAuthenticated on success', () async {
         when(
           () => mockAuthenticateUseCase(),

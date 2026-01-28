@@ -1,26 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/features/settings/presentation/widgets/settings_shared_widgets.dart';
+import 'package:passvault/features/settings/presentation/widgets/settings_metric_icon.dart';
 
 void main() {
-  group('SettingsSharedWidgets', () {
-    testWidgets('SettingsSectionHeader displays title in uppercase', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.lightTheme,
-          home: const Scaffold(body: SettingsSectionHeader(title: 'Security')),
-        ),
-      );
-
-      expect(find.text('SECURITY'), findsOneWidget);
-    });
-
-    testWidgets('SettingsMetricIcon displays icon with correct color', (
-      tester,
-    ) async {
+  group('$SettingsMetricIcon', () {
+    testWidgets('displays icon with correct color', (tester) async {
       const testIcon = Icons.lock;
       const testColor = Colors.red;
 

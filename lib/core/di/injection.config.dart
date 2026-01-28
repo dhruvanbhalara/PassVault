@@ -69,8 +69,8 @@ import '../../features/settings/domain/usecases/password_settings_usecases.dart'
 import '../../features/settings/domain/usecases/set_theme_usecase.dart'
     as _i986;
 import '../../features/settings/presentation/bloc/settings_bloc.dart' as _i585;
-import '../../features/settings/presentation/bloc/theme/theme_cubit.dart'
-    as _i10;
+import '../../features/settings/presentation/bloc/theme/theme_bloc.dart'
+    as _i242;
 import '../services/biometric_service.dart' as _i374;
 import '../services/crypto_service.dart' as _i1024;
 import '../services/data_service.dart' as _i636;
@@ -211,15 +211,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i986.SetThemeUseCase>(
       () => _i986.SetThemeUseCase(gh<_i674.SettingsRepository>()),
     );
-    gh.factory<_i683.AddEditPasswordBloc>(
-      () => _i683.AddEditPasswordBloc(
-        gh<_i16.GeneratePasswordUseCase>(),
-        gh<_i371.EstimatePasswordStrengthUseCase>(),
-        gh<_i739.GetPasswordGenerationSettingsUseCase>(),
-      ),
-    );
-    gh.lazySingleton<_i10.ThemeCubit>(
-      () => _i10.ThemeCubit(
+    gh.lazySingleton<_i242.ThemeBloc>(
+      () => _i242.ThemeBloc(
         gh<_i6.GetThemeUseCase>(),
         gh<_i986.SetThemeUseCase>(),
       ),
@@ -251,6 +244,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i969.SavePasswordUseCase>(),
         gh<_i969.DeletePasswordUseCase>(),
         gh<_i580.PasswordRepository>(),
+      ),
+    );
+    gh.factory<_i683.AddEditPasswordBloc>(
+      () => _i683.AddEditPasswordBloc(
+        gh<_i16.GeneratePasswordUseCase>(),
+        gh<_i371.EstimatePasswordStrengthUseCase>(),
+        gh<_i739.GetPasswordGenerationSettingsUseCase>(),
+        gh<_i969.SavePasswordUseCase>(),
       ),
     );
     return this;

@@ -33,17 +33,19 @@ void main() {
     errors: [],
   );
 
-  test('should call repository.importPasswords and return result', () async {
-    // Arrange
-    when(
-      () => mockRepository.importPasswords(any()),
-    ).thenAnswer((_) async => Success(tImportResult));
+  group('$ImportPasswordsUseCase', () {
+    test('should call repository.importPasswords and return result', () async {
+      // Arrange
+      when(
+        () => mockRepository.importPasswords(any()),
+      ).thenAnswer((_) async => Success(tImportResult));
 
-    // Act
-    final result = await useCase([tEntry]);
+      // Act
+      final result = await useCase([tEntry]);
 
-    // Assert
-    expect(result, Success(tImportResult));
-    verify(() => mockRepository.importPasswords([tEntry])).called(1);
+      // Assert
+      expect(result, Success(tImportResult));
+      verify(() => mockRepository.importPasswords([tEntry])).called(1);
+    });
   });
 }

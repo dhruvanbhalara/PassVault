@@ -52,7 +52,7 @@ void main() {
     );
   }
 
-  group('AddEditPasswordScreen Widget Tests with Keys', () {
+  group('$AddEditPasswordScreen', () {
     testWidgets('Save button has correct key', (tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();

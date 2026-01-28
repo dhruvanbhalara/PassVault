@@ -8,7 +8,7 @@ void main() {
     useCase = EstimatePasswordStrengthUseCase();
   });
 
-  group('EstimatePasswordStrengthUseCase', () {
+  group('$EstimatePasswordStrengthUseCase', () {
     test('returns 0.0 for empty password', () {
       final strength = useCase('');
       expect(strength, equals(0.0));

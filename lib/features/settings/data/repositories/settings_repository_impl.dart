@@ -3,8 +3,8 @@ import 'package:passvault/core/constants/storage_keys.dart';
 import 'package:passvault/core/error/error.dart';
 import 'package:passvault/core/services/database_service.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
+import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 import 'package:passvault/features/settings/domain/repositories/settings_repository.dart';
-import 'package:passvault/features/settings/presentation/bloc/theme/theme_cubit.dart';
 
 @LazySingleton(as: SettingsRepository)
 class SettingsRepositoryImpl implements SettingsRepository {

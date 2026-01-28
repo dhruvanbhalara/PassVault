@@ -7,8 +7,9 @@
 1.  **Rule Adherence**: You **MUST** read and follow [flutter_rules.md](.agent/rules/flutter_rules.md) for EVERY task.
 2.  **Architecture**: Strict `Presentation -> Domain <- Data` flow. Domain is PURE DART.
 3.  **State Management**: **Bloc Event-State ONLY**. No Cubits. No direct method calls.
-4.  **UI Quality**: "WOW" factor is mandatory. Use animations, gradients, and **Atoms Tokens** (`AppSpacing`, `AppRadius`).
-5.  **Test Coverage**: **100% Mirror Rule**. No logic file exists without a test file. No widget exists without a widget test.
+4.  **UI Quality**: "WOW" factor is mandatory. Use animations, gradients, and **Atoms Tokens** (`AppSpacing`, `AppRadius`). Always use `context` extensions for theme access.
+5.  **Widget Decomposition**: Strictly enforce sub-widget extraction for any widget exceeding 50 lines. Screens above 200 lines must be fully modularized into the feature's `widgets/` folder.
+6.  **Test Coverage**: **100% Mirror Rule**. No logic file exists without a test file. No widget exists without a widget test.
 
 ## 📂 Key Resources
 -   **Rules**: [.agent/rules/flutter_rules.md](.agent/rules/flutter_rules.md) (The Source of Truth)

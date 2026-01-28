@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-
-enum ThemeType { system, light, dark, amoled }
+import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 
 class ThemeState extends Equatable {
   final ThemeType themeType;

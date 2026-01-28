@@ -6,21 +6,21 @@ import 'package:passvault/core/design_system/theme/app_theme.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 
 void main() {
-  group('Design System Tokens', () {
-    test('AppSpacing should follow 4/8px grid', () {
+  group('Tokens', () {
+    test('$AppSpacing should follow 4/8px grid', () {
       expect(AppSpacing.xs, 4.0);
       expect(AppSpacing.s, 8.0);
       expect(AppSpacing.m, 16.0);
       expect(AppSpacing.l, 24.0);
     });
 
-    test('AppBreakpoints should be defined for responsive logic', () {
+    test('$AppBreakpoints should be defined for responsive logic', () {
       expect(AppBreakpoints.mobile, 600.0);
       expect(AppBreakpoints.tablet, 1024.0);
     });
   });
 
-  group('AppTheme Accessibility', () {
+  group('$AppColors', () {
     test('Light theme should have defined primary focus color', () {
       final focusColor = AppColors.getPrimaryFocus(Brightness.light);
       expect(focusColor, isA<Color>());

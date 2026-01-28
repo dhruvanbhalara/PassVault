@@ -37,7 +37,7 @@ void main() {
     service.fileSaver = mockFileSaver;
   });
 
-  group('FilePickerServiceImpl', () {
+  group('$FilePickerServiceImpl', () {
     test('pickSavePath calls fileSaver.saveAs', () async {
       when(
         () => mockFileSaver.saveAs(

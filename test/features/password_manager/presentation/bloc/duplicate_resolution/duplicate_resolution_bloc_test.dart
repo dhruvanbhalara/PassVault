@@ -3,10 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_resolution_choice.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/duplicate_resolution/duplicate_resolution_cubit.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/duplicate_resolution/duplicate_resolution_bloc.dart';
 
 void main() {
-  late DuplicateResolutionCubit cubit;
   final testDuplicate = DuplicatePasswordEntry(
     existingEntry: PasswordEntry(
       id: '1',
@@ -25,21 +24,22 @@ void main() {
     conflictReason: 'Reason',
   );
 
-  setUp(() {
-    cubit = DuplicateResolutionCubit([testDuplicate]);
-  });
-
-  group('DuplicateResolutionCubit', () {
+  group('$DuplicateResolutionBloc', () {
     test('initial state has correct resolutions', () {
-      expect(cubit.state.resolutions, [testDuplicate]);
-      expect(cubit.state.hasUnresolved, isTrue);
+      final bloc = DuplicateResolutionBloc([testDuplicate]);
+      expect(bloc.state.resolutions, [testDuplicate]);
+      expect(bloc.state.hasUnresolved, isTrue);
     });
 
-    blocTest<DuplicateResolutionCubit, DuplicateResolutionState>(
-      'updateChoice updates specific resolution',
-      build: () => cubit,
-      act: (cubit) =>
-          cubit.updateChoice(0, DuplicateResolutionChoice.keepExisting),
+    blocTest<DuplicateResolutionBloc, DuplicateResolutionState>(
+      'ResolutionOptionUpdated updates specific resolution',
+      build: () => DuplicateResolutionBloc([testDuplicate]),
+      act: (bloc) => bloc.add(
+        const ResolutionOptionUpdated(
+          0,
+          DuplicateResolutionChoice.keepExisting,
+        ),
+      ),
       expect: () => [
         isA<DuplicateResolutionState>().having(
           (s) => s.resolutions.first.userChoice,
@@ -49,11 +49,12 @@ void main() {
       ],
     );
 
-    blocTest<DuplicateResolutionCubit, DuplicateResolutionState>(
-      'setAllChoices updates all resolutions',
-      build: () => cubit,
-      act: (cubit) =>
-          cubit.setAllChoices(DuplicateResolutionChoice.replaceWithNew),
+    blocTest<DuplicateResolutionBloc, DuplicateResolutionState>(
+      'BulkResolutionOptionSet updates all resolutions',
+      build: () => DuplicateResolutionBloc([testDuplicate]),
+      act: (bloc) => bloc.add(
+        const BulkResolutionOptionSet(DuplicateResolutionChoice.replaceWithNew),
+      ),
       expect: () => [
         isA<DuplicateResolutionState>().having(
           (s) => s.resolutions.first.userChoice,

@@ -11,7 +11,7 @@ void main() {
     cryptoService = CryptoService();
   });
 
-  group('CryptoService', () {
+  group('$CryptoService', () {
     const testPassword = 'TestPassword123!';
     const testData = 'This is sensitive data to be encrypted';
 

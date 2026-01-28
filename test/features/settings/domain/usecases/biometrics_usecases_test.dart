@@ -17,25 +17,29 @@ void main() {
     setUseCase = SetBiometricsEnabledUseCase(mockRepository);
   });
 
-  test('GetBiometricsEnabledUseCase should call repository', () {
-    when(
-      () => mockRepository.getBiometricsEnabled(),
-    ).thenReturn(const Success(true));
+  group('$GetBiometricsEnabledUseCase', () {
+    test('GetBiometricsEnabledUseCase should call repository', () {
+      when(
+        () => mockRepository.getBiometricsEnabled(),
+      ).thenReturn(const Success(true));
 
-    final result = getUseCase();
+      final result = getUseCase();
 
-    expect(result, const Success(true));
-    verify(() => mockRepository.getBiometricsEnabled()).called(1);
+      expect(result, const Success(true));
+      verify(() => mockRepository.getBiometricsEnabled()).called(1);
+    });
   });
 
-  test('SetBiometricsEnabledUseCase should call repository', () async {
-    when(
-      () => mockRepository.setBiometricsEnabled(any()),
-    ).thenAnswer((_) async => const Success(null));
+  group('$SetBiometricsEnabledUseCase', () {
+    test('SetBiometricsEnabledUseCase should call repository', () async {
+      when(
+        () => mockRepository.setBiometricsEnabled(any()),
+      ).thenAnswer((_) async => const Success(null));
 
-    final result = await setUseCase(true);
+      final result = await setUseCase(true);
 
-    expect(result, const Success<void>(null));
-    verify(() => mockRepository.setBiometricsEnabled(true)).called(1);
+      expect(result, const Success<void>(null));
+      verify(() => mockRepository.setBiometricsEnabled(true)).called(1);
+    });
   });
 }

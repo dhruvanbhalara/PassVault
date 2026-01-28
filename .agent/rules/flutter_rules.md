@@ -34,10 +34,16 @@ trigger: always_on
 -   **Widget Extraction**: Extract complex sub-trees into separate `StatelessWidget` classes. Private `_buildX` methods are strictly forbidden.
 -   **Repaint Boundaries**: Wrap heavy animations or independent UI branches in `RepaintBoundary` to optimize frame budgets.
 -   **Theming**: Use `ThemeExtensions` for semantic colors. Raw Material colors (`Colors.red`) are prohibited.
--   **Small Widgets**: Widgets must not exceed 50 lines. If larger, extract sub-trees into new widgets with `Key`s for testing.
+-   **Small Widgets**: Widgets should ideally not exceed 50 lines. Large screens (200+ lines) MUST be broken down into sub-widgets.
+-   **Widget Organization**: 
+    - Feature-specific widgets MUST be placed in `lib/features/<feature>/presentation/widgets/`.
+    - Shared design system components MUST be placed in `lib/core/design_system/components/`.
+    - **One Public Widget Per File**: Each file must contain exactly ONE public widget class. The file name must match the widget name (snake_case). Private helper widgets (`_MyHelper`) are allowed in the same file if they are small and specific to that widget.
+-   **Theme Data Access**: ALWAYS use `BuildContext` extensions (e.g., `context.colorScheme`, `context.theme`, `context.l10n`) instead of direct `Theme.of(context)` calls for better readability and consistency.
 
 ## 5. Quality Assurance (The Mirror Rule)
 -   **Mirror Test Rule**: 100% file coverage for logic layers AND widgets. No valid code exists without a test.
+-   **Group Naming**: All test groups for classes/widgets MUST use the interpolation syntax for better refactoring support: `group('$ClassName', () { ... });`
 -   **Atomic Testing**: Every code modification MUST include corresponding test updates. New files MUST have new tests immediately.
 -   **Case Coverage**: Tests must cover ALL scenarios: Success, Failure, Boundaries, and Null states. Happy-path only tests are rejected.
 -   **Mocking**: Use `mocktail` for dependency injection in tests. Prefer constructor injection over global singletons.
@@ -48,7 +54,8 @@ trigger: always_on
 -   **Documentation**: Public APIs (Repositories/UseCases) MUST have `///` doc comments.
 -   **Contribution Ready**: Ensure new features are accompanied by appropriate test cases so contributors can't break them.
 -   **Zero Hardcoded Strings**: Every user-facing string MUST be in an `.arb` file for easy translation by the community.
--   **No Redundant Comments**: Do not explain obvious code (e.g., `// Initialize variable`). Comments must explain **WHY**, not **WHAT**. Remove unused code immediately.
+-   **No Redundant Comments**: Do not explain obvious code (e.g., `// Initialize variable`). 
+-   **No History Comments**: Prohibit "change-log" style comments (e.g., `// Added top padding to match previous structure`). Comments must explain **WHY** the current code exists (intent), not its history or **WHAT** it does. Remove unused code and history-explaining comments immediately.
 
 ## 7. Git & Development Flow
 -   **Conventional Commits**: Follow `type(scope): message` pattern.

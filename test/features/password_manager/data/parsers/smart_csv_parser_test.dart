@@ -9,7 +9,7 @@ void main() {
     parser = SmartCsvParser();
   });
 
-  group('SmartCsvParser', () {
+  group('$SmartCsvParser', () {
     group('Chrome format', () {
       test('parses Chrome CSV correctly', () async {
         const csvContent = '''name,url,username,password

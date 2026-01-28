@@ -25,7 +25,7 @@ void main() {
     lastUpdated: tDate,
   );
 
-  group('PasswordLocalDataSource', () {
+  group('$PasswordLocalDataSourceImpl', () {
     test('getPasswords should return list of models from box', () async {
       // Arrange
       when(() => mockBox.values).thenReturn([tModel]);

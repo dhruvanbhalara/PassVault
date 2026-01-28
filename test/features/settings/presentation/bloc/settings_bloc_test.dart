@@ -59,12 +59,12 @@ void main() {
     bloc.close();
   });
 
-  group('SettingsBloc', () {
+  group('$SettingsBloc', () {
     test('initial state is correct', () {
       expect(bloc.state, const SettingsState());
     });
 
-    group('LoadSettings', () {
+    group('$LoadSettings', () {
       test('loads settings from repository', () {
         when(
           () => mockSettingsRepository.getBiometricsEnabled(),
@@ -89,7 +89,7 @@ void main() {
       });
     });
 
-    group('ToggleBiometrics', () {
+    group('$ToggleBiometrics', () {
       test('saves preference and updates state', () async {
         when(
           () => mockSettingsRepository.setBiometricsEnabled(any()),
@@ -105,7 +105,7 @@ void main() {
       });
     });
 
-    group('UpdatePasswordSettings', () {
+    group('$UpdatePasswordSettings', () {
       test('saves settings and updates state', () async {
         when(
           () => mockSettingsRepository.savePasswordGenerationSettings(any()),

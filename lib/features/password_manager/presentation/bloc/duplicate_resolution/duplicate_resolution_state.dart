@@ -1,4 +1,5 @@
-part of 'duplicate_resolution_cubit.dart';
+import 'package:equatable/equatable.dart';
+import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 
 class DuplicateResolutionState extends Equatable {
   final List<DuplicatePasswordEntry> resolutions;

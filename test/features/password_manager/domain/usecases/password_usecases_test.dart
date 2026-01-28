@@ -32,8 +32,8 @@ void main() {
     registerFallbackValue(tEntry);
   });
 
-  group('PasswordUseCases', () {
-    test('GetPasswordsUseCase should call repository.getPasswords', () async {
+  group('$GetPasswordsUseCase', () {
+    test('should call repository.getPasswords', () async {
       // Arrange
       when(
         () => mockRepository.getPasswords(),
@@ -46,8 +46,10 @@ void main() {
       expect(result, Success([tEntry]));
       verify(() => mockRepository.getPasswords()).called(1);
     });
+  });
 
-    test('SavePasswordUseCase should call repository.savePassword', () async {
+  group('$SavePasswordUseCase', () {
+    test('should call repository.savePassword', () async {
       // Arrange
       when(
         () => mockRepository.savePassword(any()),
@@ -59,21 +61,20 @@ void main() {
       // Assert
       verify(() => mockRepository.savePassword(tEntry)).called(1);
     });
+  });
 
-    test(
-      'DeletePasswordUseCase should call repository.deletePassword',
-      () async {
-        // Arrange
-        when(
-          () => mockRepository.deletePassword(any()),
-        ).thenAnswer((_) async => const Success(null));
+  group('$DeletePasswordUseCase', () {
+    test('should call repository.deletePassword', () async {
+      // Arrange
+      when(
+        () => mockRepository.deletePassword(any()),
+      ).thenAnswer((_) async => const Success(null));
 
-        // Act
-        await deletePasswordUseCase('1');
+      // Act
+      await deletePasswordUseCase('1');
 
-        // Assert
-        verify(() => mockRepository.deletePassword('1')).called(1);
-      },
-    );
+      // Assert
+      verify(() => mockRepository.deletePassword('1')).called(1);
+    });
   });
 }

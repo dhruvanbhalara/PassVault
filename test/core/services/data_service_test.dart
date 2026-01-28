@@ -22,7 +22,7 @@ void main() {
     registerFallbackValue(Uint8List(0));
   });
 
-  group('DataService', () {
+  group('$DataService', () {
     group('CSV Import Edge Cases', () {
       test('should parse CSV with \n (Linux/macOS) line endings', () {
         const csv =

@@ -15,17 +15,19 @@ void main() {
     useCase = CheckBiometricsUseCase(mockRepository);
   });
 
-  test('should call repository.isBiometricAvailable', () async {
-    // Arrange
-    when(
-      () => mockRepository.isBiometricAvailable(),
-    ).thenAnswer((_) async => const Success(true));
+  group('$CheckBiometricsUseCase', () {
+    test('should call repository.isBiometricAvailable', () async {
+      // Arrange
+      when(
+        () => mockRepository.isBiometricAvailable(),
+      ).thenAnswer((_) async => const Success(true));
 
-    // Act
-    final result = await useCase();
+      // Act
+      final result = await useCase();
 
-    // Assert
-    expect(result, const Success(true));
-    verify(() => mockRepository.isBiometricAvailable()).called(1);
+      // Assert
+      expect(result, const Success(true));
+      verify(() => mockRepository.isBiometricAvailable()).called(1);
+    });
   });
 }

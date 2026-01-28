@@ -17,25 +17,29 @@ void main() {
     setUseCase = SetOnboardingCompleteUseCase(mockRepository);
   });
 
-  test('GetOnboardingCompleteUseCase should call repository', () {
-    when(
-      () => mockRepository.getOnboardingComplete(),
-    ).thenReturn(const Success(true));
+  group('$GetOnboardingCompleteUseCase', () {
+    test('GetOnboardingCompleteUseCase should call repository', () {
+      when(
+        () => mockRepository.getOnboardingComplete(),
+      ).thenReturn(const Success(true));
 
-    final result = getUseCase();
+      final result = getUseCase();
 
-    expect(result, const Success(true));
-    verify(() => mockRepository.getOnboardingComplete()).called(1);
+      expect(result, const Success(true));
+      verify(() => mockRepository.getOnboardingComplete()).called(1);
+    });
   });
 
-  test('SetOnboardingCompleteUseCase should call repository', () async {
-    when(
-      () => mockRepository.setOnboardingComplete(any()),
-    ).thenAnswer((_) async => const Success(null));
+  group('$SetOnboardingCompleteUseCase', () {
+    test('SetOnboardingCompleteUseCase should call repository', () async {
+      when(
+        () => mockRepository.setOnboardingComplete(any()),
+      ).thenAnswer((_) async => const Success(null));
 
-    final result = await setUseCase(true);
+      final result = await setUseCase(true);
 
-    expect(result, const Success<void>(null));
-    verify(() => mockRepository.setOnboardingComplete(true)).called(1);
+      expect(result, const Success<void>(null));
+      verify(() => mockRepository.setOnboardingComplete(true)).called(1);
+    });
   });
 }

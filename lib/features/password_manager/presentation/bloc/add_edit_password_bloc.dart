@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
+import 'package:passvault/features/password_manager/domain/usecases/password_usecases.dart';
 
 /// Events for the [AddEditPasswordBloc].
 import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_event.dart';
@@ -21,14 +22,17 @@ class AddEditPasswordBloc
   final GeneratePasswordUseCase _generatePasswordUseCase;
   final EstimatePasswordStrengthUseCase _estimateStrengthUseCase;
   final GetPasswordGenerationSettingsUseCase _getSettingsUseCase;
+  final SavePasswordUseCase _savePasswordUseCase;
 
   AddEditPasswordBloc(
     this._generatePasswordUseCase,
     this._estimateStrengthUseCase,
     this._getSettingsUseCase,
+    this._savePasswordUseCase,
   ) : super(const AddEditPasswordState()) {
     on<GenerateStrongPassword>(_onGenerateStrongPassword);
     on<PasswordChanged>(_onPasswordChanged);
+    on<SaveEntry>(_onSaveEntry);
   }
 
   void _onGenerateStrongPassword(
@@ -75,5 +79,24 @@ class AddEditPasswordBloc
     // Reset status to initial so the UI listener knows this isn't an auto-generation.
     // This allows the user to manually edit without the listener overwriting their text.
     emit(state.copyWith(status: AddEditStatus.initial, strength: strength));
+  }
+
+  Future<void> _onSaveEntry(
+    SaveEntry event,
+    Emitter<AddEditPasswordState> emit,
+  ) async {
+    emit(state.copyWith(status: AddEditStatus.saving));
+
+    final result = await _savePasswordUseCase(event.entry);
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(
+          status: AddEditStatus.failure,
+          errorMessage: failure.message,
+        ),
+      ),
+      (_) => emit(state.copyWith(status: AddEditStatus.success)),
+    );
   }
 }

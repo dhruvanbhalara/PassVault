@@ -5,7 +5,7 @@ import 'package:passvault/core/design_system/components/feedback/app_loader.dart
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
-  group('AppLoader', () {
+  group('$AppLoader', () {
     testWidgets('renders CircularProgressIndicator', (tester) async {
       await tester.pumpWidget(createTestWidget(child: const AppLoader()));
 

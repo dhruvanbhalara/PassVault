@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:passvault/features/settings/presentation/bloc/theme/theme_cubit.dart';
+import 'package:passvault/features/settings/domain/entities/theme_type.dart';
+import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
 import 'config/routes/app_router.dart';
@@ -14,8 +15,8 @@ class PassVaultApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<ThemeCubit>(),
-      child: BlocBuilder<ThemeCubit, ThemeState>(
+      create: (context) => getIt<ThemeBloc>(),
+      child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {
           ThemeData theme;
           ThemeData? darkThemeData;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:passvault/features/settings/presentation/bloc/theme/theme_cubit.dart';
+import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 
 import 'app_colors.dart';
 import 'app_dimensions.dart';

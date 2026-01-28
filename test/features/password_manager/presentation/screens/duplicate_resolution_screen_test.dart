@@ -74,7 +74,7 @@ void main() {
     );
   }
 
-  group('DuplicateResolutionScreen Widget Tests', () {
+  group('$DuplicateResolutionScreen', () {
     testWidgets('renders duplicates list accurately', (tester) async {
       when(() => mockBloc.state).thenReturn(const ImportExportInitial());
 
