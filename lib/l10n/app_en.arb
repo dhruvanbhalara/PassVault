@@ -136,7 +136,7 @@
   "generationStrategy": "Generation Strategy",
   "strategyName": "Strategy Name",
   "hintStrategyName": "e.g. High Security, PIN",
-  "minLabel": "8",
+  "minLabel": "16",
   "maxLabel": "64",
   "passwordGenerationSubtitle": "Manage your custom presets used for generating secure passwords.",
   "noStrategiesDescription": "Create your first strategy to get started.",

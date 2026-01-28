@@ -365,7 +365,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hintStrategyName => 'e.g. High Security, PIN';
 
   @override
-  String get minLabel => '8';
+  String get minLabel => '16';
 
   @override
   String get maxLabel => '64';
