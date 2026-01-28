@@ -4,22 +4,27 @@
 
 ## 📌 Primary Directives
 
-1.  **Rule Adherence**: You **MUST** read and follow [flutter_rules.md](.agent/rules/flutter_rules.md) for EVERY task.
+1.  **Rule Adherence**: You **MUST** read and follow [Rules](rules/flutter_rules.md) for EVERY task.
 2.  **Architecture**: Strict `Presentation -> Domain <- Data` flow. Domain is PURE DART.
 3.  **State Management**: **Bloc Event-State ONLY**. No Cubits. No direct method calls.
-4.  **UI Quality**: "WOW" factor is mandatory. Use animations, gradients, and **Atoms Tokens** (`AppSpacing`, `AppRadius`). Always use `context` extensions for theme access.
-5.  **Widget Decomposition**: Strictly enforce sub-widget extraction for any widget exceeding 50 lines. Screens above 200 lines must be fully modularized into the feature's `widgets/` folder.
-6.  **Test Coverage**: **100% Mirror Rule**. No logic file exists without a test file. No widget exists without a widget test.
+4.  **Workflow**: Use the **Plan-Act-Reflect** pattern. ALWAYS research first, then create a `task.md` (todo list) and `implementation_plan.md` before writing any code.
+5.  **UI Quality**: "WOW" factor is mandatory. Use animations, gradients, and **Atoms Tokens**.
+6.  **Test Coverage**: **100% Mirror Rule**. Logic files MUST have matching test files.
 
 ## 📂 Key Resources
--   **Rules**: [.agent/rules/flutter_rules.md](.agent/rules/flutter_rules.md) (The Source of Truth)
--   **Tech Stack**: [.agent/resources/tech_stack.md](.agent/resources/tech_stack.md)
--   **Checklist**: [.agent/resources/checklist.md](.agent/resources/checklist.md) (RUN THIS BEFORE SUBMITTING)
--   **Anti-Patterns**: [.agent/resources/anti_patterns.md](.agent/resources/anti_patterns.md) (WHAT NOT TO DO)
+-   **Rules**: [Rules](rules/flutter_rules.md) (The Source of Truth)
+-   **Tech Stack**: [Tech Stack](resources/tech_stack.md)
+-   **Checklist**: [Checklist](resources/checklist.md) (RUN THIS BEFORE SUBMITTING)
+-   **Anti-Patterns**: [Anti-Patterns](resources/anti_patterns.md) (WHAT NOT TO DO)
 
-## ⚡ Workflow
-For every task:
-1.  **Plan**: Create/Update `implementation_plan.md`.
-2.  **Execute**: Modify code, following the `50-line widget limit` and `Event-State` rules.
-3.  **Verify**: Run tests, check strict linting, and verify UI tokens.
-4.  **Reflect**: Consult `checklist.md` to ensure nothing was missed.
+## ⚡ Workflow Optimization
+-   **Explore**: Use `view_file_outline` or `grep_search` before reading entire multi-thousand-line files.
+-   **Plan**: Always start with a `implementation_plan.md`. Request user review for architectural shifts.
+-   **Verify**: Run relevant tests immediately after modifying code. Do not wait for the end of the task.
+-   **Formatting**: Atomic commits should be preceded by `dart format .`.
+
+## 🛡️ Guardrails
+-   **Always**: Run tests before marking a task as complete.
+-   **Always**: Use `AppLogger` for debugging; delete leftover prints.
+-   **Ask**: If requirements are ambiguous or conflict with [Rules](rules/flutter_rules.md).
+-   **Never**: Modify `.agent/` documentation without explicit instruction.
