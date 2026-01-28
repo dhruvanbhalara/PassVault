@@ -71,20 +71,27 @@ void main() {
         },
       );
 
-      test('checks biometric availability when enabled', () async {
-        when(
-          () => mockGetBiometricsEnabledUseCase(),
-        ).thenReturn(const Success(true));
-        when(
-          () => mockAuthRepository.isBiometricAvailable(),
-        ).thenAnswer((_) async => const Success(true));
+      test(
+        'checks biometric availability and triggers login when enabled',
+        () async {
+          when(
+            () => mockGetBiometricsEnabledUseCase(),
+          ).thenReturn(const Success(true));
+          when(
+            () => mockAuthRepository.isBiometricAvailable(),
+          ).thenAnswer((_) async => const Success(true));
+          when(
+            () => mockAuthenticateUseCase(),
+          ).thenAnswer((_) async => const Success(true));
 
-        bloc.add(AuthCheckRequested());
-        await Future.delayed(const Duration(milliseconds: 100));
+          bloc.add(AuthCheckRequested());
+          await Future.delayed(const Duration(milliseconds: 100));
 
-        verify(() => mockAuthRepository.isBiometricAvailable()).called(1);
-        expect(bloc.state, isA<AuthInitial>());
-      });
+          verify(() => mockAuthRepository.isBiometricAvailable()).called(1);
+          verify(() => mockAuthenticateUseCase()).called(1);
+          expect(bloc.state, isA<AuthAuthenticated>());
+        },
+      );
 
       test(
         'emits AuthUnauthenticated when biometrics enabled but unavailable',
@@ -111,24 +118,36 @@ void main() {
           );
         },
       );
-      test('emits AuthInitial when biometrics enabled and available', () async {
-        when(
-          () => mockGetBiometricsEnabledUseCase(),
-        ).thenReturn(const Success(true));
-        when(
-          () => mockAuthRepository.isBiometricAvailable(),
-        ).thenAnswer((_) async => const Success(true));
+      test(
+        'emits AuthInitial and triggers login when biometrics enabled and available',
+        () async {
+          when(
+            () => mockGetBiometricsEnabledUseCase(),
+          ).thenReturn(const Success(true));
+          when(
+            () => mockAuthRepository.isBiometricAvailable(),
+          ).thenAnswer((_) async => const Success(true));
+          when(
+            () => mockAuthenticateUseCase(),
+          ).thenAnswer((_) async => const Success(true));
 
-        final states = <AuthState>[];
-        final subscription = bloc.stream.listen(states.add);
+          final states = <AuthState>[];
+          final subscription = bloc.stream.listen(states.add);
 
-        bloc.add(AuthCheckRequested());
+          bloc.add(AuthCheckRequested());
 
-        await Future.delayed(const Duration(milliseconds: 100));
-        await subscription.cancel();
+          await Future.delayed(const Duration(milliseconds: 100));
+          await subscription.cancel();
 
-        expect(states.last, isA<AuthInitial>());
-      });
+          // 1. AuthInitial (from AuthCheckRequested)
+          // 2. AuthLoading (from AuthLoginRequested)
+          // 3. AuthAuthenticated (from AuthLoginRequested success)
+          expect(states, hasLength(3));
+          expect(states[0], isA<AuthInitial>());
+          expect(states[1], isA<AuthLoading>());
+          expect(states[2], isA<AuthAuthenticated>());
+        },
+      );
     });
 
     group('$AuthLoginRequested', () {
