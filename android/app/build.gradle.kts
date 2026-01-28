@@ -83,7 +83,7 @@ android {
             dimension = "env"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-            resValue("string", "app_name", "PassVault Dev")
+            resValue("string", "app_name", "PassVault - Dev")
         }
         create("prod") {
             dimension = "env"
