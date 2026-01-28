@@ -29,8 +29,6 @@ import '../../features/password_manager/data/datasources/password_local_data_sou
     as _i385;
 import '../../features/password_manager/data/exporters/csv_exporter.dart'
     as _i288;
-import '../../features/password_manager/data/parsers/smart_csv_parser.dart'
-    as _i526;
 import '../../features/password_manager/data/repositories/password_repository_impl.dart'
     as _i826;
 import '../../features/password_manager/domain/repositories/password_repository.dart'
@@ -97,7 +95,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i374.BiometricService>(() => _i374.BiometricService());
     gh.lazySingleton<_i1024.CryptoService>(() => _i1024.CryptoService());
     gh.lazySingleton<_i288.CsvExporter>(() => _i288.CsvExporter());
-    gh.lazySingleton<_i526.SmartCsvParser>(() => _i526.SmartCsvParser());
     gh.lazySingleton<_i371.EstimatePasswordStrengthUseCase>(
       () => _i371.EstimatePasswordStrengthUseCase(),
     );

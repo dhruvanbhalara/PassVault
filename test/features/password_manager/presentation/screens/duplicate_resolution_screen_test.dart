@@ -204,9 +204,7 @@ void main() {
     });
 
     testWidgets('shows loading indicator when resolving', (tester) async {
-      when(
-        () => mockBloc.state,
-      ).thenReturn(const ImportExportLoading('Resolving...'));
+      when(() => mockBloc.state).thenReturn(const ImportExportLoading());
 
       await tester.pumpWidget(createTestWidget([testDuplicate]));
       await tester.pump(); // Allow build
