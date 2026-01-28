@@ -81,22 +81,12 @@ class _HomeAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.theme;
     return SliverAppBar(
-      expandedHeight: AppDimensions.sliverAppBarExpandedHeight,
       floating: true,
       pinned: true,
-      flexibleSpace: FlexibleSpaceBar(
-        title: Text(
-          context.l10n.appName,
-          style: TextStyle(
-            color: theme.onVaultGradient,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        background: DecoratedBox(
-          decoration: BoxDecoration(gradient: theme.vaultGradient),
-        ),
-      ),
+      centerTitle: true,
+      scrolledUnderElevation: 0,
+      backgroundColor: Colors.transparent,
+      title: Text(context.l10n.appName),
       actions: [
         IconButton(
           key: const Key('home_settings_button'),
