@@ -2,68 +2,82 @@
 trigger: always_on
 ---
 
-# 🛡️ PassVault Enterprise Coding Standards (v3.1)
+# 🛡️ PassVault Enterprise Coding Standards (v1.0)
 
 ## 0. 🤖 Agency Protocol (CRITICAL)
 -   **Rule Supremacy**: These rules are NOT suggestions. They are requirements.
--   **Self-Correction**: Before confirming ANY task, verify your code against this file.
+-   **Plan-Act-Reflect**: For EVERY task, the agent MUST:
+    1.  **Research**: Explore the codebase, understand requirements, and identify dependencies BEFORE proposing any changes.
+    2.  **Plan**: Create/Update `task.md` (todo list) and `implementation_plan.md` (technical design).
+    3.  **Act**: Execute small, atomic, and verifiable steps.
+    4.  **Reflect**: Verify against tests, lints, and requirements before proceeding or finishing.
 -   **No Shortcuts**: Do not skip tests, do not use magic numbers, do not bypass strict architecture.
--   **Refusal**: If asked to violate these rules (e.g., "just put logic in UI for speed"), strictly REFUSE and explain why based on this document.
+-   **Self-Correction**: Before confirming ANY task, verify your code against this file.
 
 ## 1. Security & Data Integrity (Architect Level)
 -   **AES-256-GCM**: Use Authenticated Encryption for all sensitive storage.
--   **Key Management**: The Master Key must never be persisted in plaintext. Use `SecureStorage` for the derived encryption key.
--   **Memory Safety**: Erase sensitive data from memory when the app enters the background or the session expires.
--   **Biometric Gate**: Mandatory local authentication for any view/export/delete action.
+-   **Secret Storage**: Mandatory use of `flutter_secure_storage` for encryption keys and master-derived keys.
+-   **Key Derivation**: Mandate NIST-approved hashing (Argon2 or PBKDF2) for master password derivation before local storage encryption.
+-   **Memory Safety**: Strictly clear sensitive variables (passwords, keys) from memory when the operation finishes or the app enters the background. 
+-   **Clipboard Safety**: Mandate programmatic clearing of sensitive data (OTPs, Passwords) after a short duration (30-60s).
+-   **Biometric Gate**: Mandatory local authentication for any view, export, or destructive action.
+-   **Audit Log**: All security-sensitive actions should be logged via `AppLogger` (excluding raw secrets).
 
-## 2. Strict Clean Architecture
--   **Domain Purity**: The `domain` layer must be pure Dart. NO `package:flutter` imports are allowed. This ensures 100% testability.
--   **Reactive Repositories**: Prefer `Stream` based repository methods to allow the UI to react to database changes automatically.
--   **Functional Error Handling**: Use `Either<Failure, T>` or a sealed `Result<T>` for all Repository and UseCase returns. NEVER throw exceptions across layers.
--   **Layer Dependency**: `Presentation -> Domain <- Data`. Data layer must only depend on Domain interfaces, never on Presentation widgets.
+## 2. Strict Clean Architecture (Pattern-First)
+-   **Domain Purity**: The `domain` layer must be pure Dart. NO `package:flutter` imports.
+-   **Functional Error Handling**: Use `Either<Failure, T>` or `Result<T>` sealed classes. NEVER throw exceptions across layer boundaries.
+-   **Pattern Matching**: Exhaustively handle all sealed class states using Dart 3.x `switch` expressions in UI and BLoCs.
+-   **Layer Dependency**: `Presentation -> Domain <- Data`. Data layer implements Domain interfaces.
+-   **Feature-First 2.0**: Enforce strict separation of `DataSources` (External/Raw) vs `Repositories` (Domain abstraction).
 
 ## 3. Advanced State Management (Bloc Event-State)
--   **Immunity**: All States and Events MUST be immutable and extend `Equatable`.
--   **Exhaustiveness**: Always use `sealed class` for States to ensure the UI handles all cases (Loading, Success, Failure, Empty).
--   **Concurrency**: Use `transformers` for events that require debouncing (search) or dropping (buttons).
--   **Zero-Logic UI**: Widgets should only call `bloc.add(Event)`. Calling methods directly is forbidden. No calculation or conditional logic in `build()`.
+-   **Sealed States**: Always use `sealed class` for States to ensure exhaustive UI handling.
+-   **Immutability**: All States, Events, and Domain Entities MUST be immutable (using `final` and `Equatable` or `freezed`).
+-   **Concurrency**: Use `transformers` (e.g., `restartable()`, `droppable()`) for events requiring debouncing (search) or throttling (buttons).
+-   **Zero-Logic UI**: Widgets should ONLY call `bloc.add(Event)`. No logical branching in `build()`.
 
 ## 4. UI Performance & Design System
--   **Atoms Tokens**: Use `AppSpacing`, `AppRadius`, and `AppColors` tokens. NEVER hardcode pixel values.
--   **No Magic Spacing**: Use `spacing` parameter in Rows/Columns.
--   **Widget Extraction**: Extract complex sub-trees into separate `StatelessWidget` classes. Private `_buildX` methods are strictly forbidden.
--   **Repaint Boundaries**: Wrap heavy animations or independent UI branches in `RepaintBoundary` to optimize frame budgets.
--   **Theming**: Use `ThemeExtensions` for semantic colors. Raw Material colors (`Colors.red`) are prohibited.
--   **Small Widgets**: Widgets should ideally not exceed 50 lines. Large screens (200+ lines) MUST be broken down into sub-widgets.
--   **Widget Organization**: 
-    - Feature-specific widgets MUST be placed in `lib/features/<feature>/presentation/widgets/`.
-    - Shared design system components MUST be placed in `lib/core/design_system/components/`.
-    - **One Public Widget Per File**: Each file must contain exactly ONE public widget class. The file name must match the widget name (snake_case). Private helper widgets (`_MyHelper`) are allowed in the same file if they are small and specific to that widget.
--   **Theme Data Access**: ALWAYS use `BuildContext` extensions (e.g., `context.colorScheme`, `context.theme`, `context.l10n`) instead of direct `Theme.of(context)` calls for better readability and consistency.
+-   **Atoms Tokens**: Use `AppSpacing`, `AppRadius`, and `AppColors`. No hardcoded pixel values.
+-   **Const-First**: Every widget that can be `const` MUST be `const`.
+-   **Lazy Rendering**: Mandatory `ListView.builder` for any list exceedng 10 items.
+-   **Repaint Boundaries**: Wrap complex animations or heavy UI sections in `RepaintBoundary` to optimize Impeller frame budget.
+-   **Isolate Parsing**: Mandate `compute()` or `Isolate` for JSON parsing exceeding 1MB to avoid main-thread jank.
+-   **Theme Access**: ALWAYS use `context` extensions (e.g., `context.colorScheme`, `context.theme`).
 
-## 5. Quality Assurance (The Mirror Rule)
--   **Mirror Test Rule**: 100% file coverage for logic layers AND widgets. No valid code exists without a test.
--   **Group Naming**: All test groups for classes/widgets MUST use the interpolation syntax for better refactoring support: `group('$ClassName', () { ... });`
--   **Atomic Testing**: Every code modification MUST include corresponding test updates. New files MUST have new tests immediately.
--   **Case Coverage**: Tests must cover ALL scenarios: Success, Failure, Boundaries, and Null states. Happy-path only tests are rejected.
--   **Mocking**: Use `mocktail` for dependency injection in tests. Prefer constructor injection over global singletons.
--   **CI/CD**: PRs must pass the `quality_gate` which enforces formatting, analysis (0 warnings), and test suite success.
+## 5. Quality Assurance & Advanced Testing (The Mirror Rule)
+-   **Mirror Test Rule**: 100% logic and widget coverage. No code without a test.
+-   **Test Structure**: Mandate the `Given-When-Then` pattern within `test()` blocks for readability (e.g., `// Given`, `// When`, `// Then`).
+-   **Coverage Targets**: Target 100% logic coverage for `domain` and `bloc` layers.
+-   **Mocking Protocol**: Use `mocktail` for all dependency mocking. STRICTLY prohibit using real implementation dependencies in unit tests.
+-   **Mirror Organization**: Test files MUST strictly mirror the `lib/` directory structure and end with `_test.dart`.
+-   **Test Grouping**: Use `group()` to organize tests by feature, class, or state for clearer reporting.
+-   **Pure Logic**: Business logic inside BLoCs or UseCases should be extracted to static pure functions for 100% unit test coverage.
+-   **Widget Keys**: Assign distinctive `Key`s to interactive widgets using `Key('feature_action_id')` format.
+-   **CI/CD**: Analysis (0 warnings), Formatting, and Tests must pass before PR.
 
-## 6. Open Source Excellence
--   **Transparency**: Write code that is easy to audit. Avoid obfuscating logic unless required for security (e.g., encryption internals).
--   **Documentation**: Public APIs (Repositories/UseCases) MUST have `///` doc comments.
--   **Contribution Ready**: Ensure new features are accompanied by appropriate test cases so contributors can't break them.
--   **Zero Hardcoded Strings**: Every user-facing string MUST be in an `.arb` file for easy translation by the community.
--   **No Redundant Comments**: Do not explain obvious code (e.g., `// Initialize variable`). 
--   **No History Comments**: Prohibit "change-log" style comments (e.g., `// Added top padding to match previous structure`). Comments must explain **WHY** the current code exists (intent), not its history or **WHAT** it does. Remove unused code and history-explaining comments immediately.
+## 6. Open Source & Clean Code
+-   **No Redundant Comments**: Do not explain WHAT code does. Explain WHY (intent).
+-   **Simple & Informative**: Comments MUST be concise, informative, and understandable. Avoid "wall of text".
+-   **No History Comments**: STRICTLY prohibit comments like "fixed X" or "updated Y". Git history is the source of truth.
+-   **No Print Statements**: STRICTLY prohibit `print()`. Use `AppLogger`.
+-   **Localization**: Zero hardcoded strings. Use `.arb` and `context.l10n`.
 
 ## 7. Git & Development Flow
 -   **Conventional Commits**: Follow `type(scope): message` pattern.
 -   **Atomic Commits**: One commit = one logical change.
 -   **PR Checklist**: Ensure `checklist.md` is reviewed before marking a task as complete.
+-   **PR Metadata**: ALWAYS specify labels/tags (e.g., `bug`, `feature`) and at least one assignee when creating a Pull Request to ensure trackability.
 -   **PR Labeling**: Categorize PRs using labels (e.g., `enhancement`, `bug`, `security`) and priority (e.g., `priority:high`).
 
-## 8. Scalability & Reusability
--   **Extensions > Utils**: Use Dart `extension`s for helpers (e.g., `context.showSnackBar()`) instead of static Utility classes.
--   **Mixins**: Use `mixin` for shared behavior across unrelated classes (e.g., `ValidationMixin`).
--   **Lazy Loading**: Always use `ListView.builder` for lists. Never use `Column` for dynamic content to ensure performance scaling.
+## 8. Code Clarity & Maintenance
+-   **300-Line Limit**: Strictly flag any file exceeding 300 lines (excluding tests) for decomposition.
+-   **Guard Clauses**: Use early returns (e.g., `if (user == null) return;`) to reduce indentation.
+-   **Meaningful Naming**: Use intention-revealing names. Boolean variables MUST use prefixes like `is`, `has`, `should`.
+-   **Strong Typing**: Strictly prohibit `dynamic`. Use `Object?` or explicit types.
+-   **Cascade Pattern**: Use cascade notation (`..`) for cleaner initialization of complex objects where appropriate.
+
+## 9. Agent Guardrails
+-   **ALWAYS**: Run `flutter analyze` and `dart format` before committing.
+-   **ALWAYS**: Check `implementation_plan.md` status before completing a task.
+-   **ASK FIRST**: Before changing global themes, updating critical dependencies, or deleting files. 
+-   **NEVER**: Commit raw API keys, secrets, or hardcoded sensitive data.
