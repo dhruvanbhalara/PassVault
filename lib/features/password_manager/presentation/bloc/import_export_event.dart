@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
-import 'package:passvault/features/password_manager/domain/entities/import_source_type.dart';
 
 /// Unified Events for Data Migration (Import, Export, Maintenance).
 sealed class ImportExportEvent extends Equatable {
@@ -70,30 +69,4 @@ class ClearDatabaseEvent extends ImportExportEvent {
 /// Prevents re-triggering logic on subsequent state updates.
 class ResetMigrationStatus extends ImportExportEvent {
   const ResetMigrationStatus();
-}
-
-// Deprecated: Moving towards the unified events above.
-// Kept temporarily for backward compatibility during refactor.
-@Deprecated('Use ImportDataEvent(isJson: false) instead')
-class ImportPasswordsFromFileEvent extends ImportExportEvent {
-  final String filePath;
-  final ImportSourceType? forceFormat;
-
-  const ImportPasswordsFromFileEvent({
-    required this.filePath,
-    this.forceFormat,
-  });
-
-  @override
-  List<Object?> get props => [filePath, forceFormat];
-}
-
-@Deprecated('Use ExportDataEvent(isJson: false) instead')
-class ExportPasswordsEvent extends ImportExportEvent {
-  final String destinationPath;
-
-  const ExportPasswordsEvent(this.destinationPath);
-
-  @override
-  List<Object?> get props => [destinationPath];
 }
