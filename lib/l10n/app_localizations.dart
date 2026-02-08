@@ -256,6 +256,54 @@ abstract class AppLocalizations {
   /// **'An error occurred'**
   String get errorOccurred;
 
+  /// No description provided for @databaseError.
+  ///
+  /// In en, this message translates to:
+  /// **'Database error occurred'**
+  String get databaseError;
+
+  /// No description provided for @authError.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication error'**
+  String get authError;
+
+  /// No description provided for @securityError.
+  ///
+  /// In en, this message translates to:
+  /// **'Security violation or error'**
+  String get securityError;
+
+  /// No description provided for @migrationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Data migration failed'**
+  String get migrationError;
+
+  /// No description provided for @fileReadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the file'**
+  String get fileReadError;
+
+  /// No description provided for @invalidFormatError.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid file format'**
+  String get invalidFormatError;
+
+  /// No description provided for @parsingError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error parsing file content'**
+  String get parsingError;
+
+  /// No description provided for @noDataFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No valid data found'**
+  String get noDataFound;
+
   /// No description provided for @success.
   ///
   /// In en, this message translates to:

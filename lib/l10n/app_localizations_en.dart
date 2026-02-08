@@ -90,6 +90,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorOccurred => 'An error occurred';
 
   @override
+  String get databaseError => 'Database error occurred';
+
+  @override
+  String get authError => 'Authentication error';
+
+  @override
+  String get securityError => 'Security violation or error';
+
+  @override
+  String get migrationError => 'Data migration failed';
+
+  @override
+  String get fileReadError => 'Could not read the file';
+
+  @override
+  String get invalidFormatError => 'Invalid file format';
+
+  @override
+  String get parsingError => 'Error parsing file content';
+
+  @override
+  String get noDataFound => 'No valid data found';
+
+  @override
   String get success => 'Success';
 
   @override
