@@ -76,8 +76,8 @@ class _ThemePickerSheet extends StatelessWidget {
         children: [
           const SizedBox(height: AppSpacing.s),
           SizedBox(
-            width: AppDimensions.dragHandleWidth,
-            height: AppDimensions.dragHandleHeight,
+            width: AppSpacing.dragHandleWidth,
+            height: AppSpacing.dragHandleHeight,
             child: DecoratedBox(
               decoration: BoxDecoration(
                 color: context.theme.surfaceDim,

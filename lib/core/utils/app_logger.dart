@@ -85,3 +85,46 @@ class AppLogger {
     );
   }
 }
+
+/// Extension to provide easy logging on any Object.
+extension AppLoggerObjectX on Object {
+  /// Log debug info with the class name as tag.
+  void logDebug(String message, {Object? error, StackTrace? stackTrace}) {
+    AppLogger.debug(
+      message,
+      tag: runtimeType.toString(),
+      error: error,
+      stackTrace: stackTrace,
+    );
+  }
+
+  /// Log info with the class name as tag.
+  void logInfo(String message, {Object? error, StackTrace? stackTrace}) {
+    AppLogger.info(
+      message,
+      tag: runtimeType.toString(),
+      error: error,
+      stackTrace: stackTrace,
+    );
+  }
+
+  /// Log warning with the class name as tag.
+  void logWarning(String message, {Object? error, StackTrace? stackTrace}) {
+    AppLogger.warning(
+      message,
+      tag: runtimeType.toString(),
+      error: error,
+      stackTrace: stackTrace,
+    );
+  }
+
+  /// Log error with the class name as tag.
+  void logError(String message, {Object? error, StackTrace? stackTrace}) {
+    AppLogger.error(
+      message,
+      tag: runtimeType.toString(),
+      error: error,
+      stackTrace: stackTrace,
+    );
+  }
+}
