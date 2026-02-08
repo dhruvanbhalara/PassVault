@@ -33,28 +33,63 @@ class AddEditPasswordBloc
     on<GenerateStrongPassword>(_onGenerateStrongPassword);
     on<PasswordChanged>(_onPasswordChanged);
     on<SaveEntry>(_onSaveEntry);
+    on<LoadGenerationSettings>(_onLoadGenerationSettings);
+
+    add(LoadGenerationSettings());
+  }
+
+  Future<void> _onLoadGenerationSettings(
+    LoadGenerationSettings event,
+    Emitter<AddEditPasswordState> emit,
+  ) async {
+    final result = _getSettingsUseCase();
+    result.fold(
+      (failure) => null,
+      (settings) => emit(state.copyWith(settings: settings)),
+    );
   }
 
   void _onGenerateStrongPassword(
     GenerateStrongPassword event,
     Emitter<AddEditPasswordState> emit,
   ) {
-    // Read generation settings using use case
+    if (state.settings == null) {
+      // Fallback if settings haven't loaded yet?
+      // Or re-fetch.
+      // For simplicity let's re-use the fetched settings or fetch now.
+    }
+
+    // We can rely on state.settings being populated, OR better yet, fetch fresh settings
+    // to ensure we have the latest.
     final result = _getSettingsUseCase();
 
     final settings = result.fold(
-      (failure) => const PasswordGenerationSettings(),
+      (failure) => PasswordGenerationSettings.initial(),
       (settings) => settings,
     );
 
+    // Update state with fresh settings
+    // We emit later, so just use local var for calculation.
+
+    // Determine strategy
+    PasswordGenerationStrategy strategy;
+    if (event.strategyId != null) {
+      strategy = settings.strategies.firstWhere(
+        (s) => s.id == event.strategyId,
+        orElse: () => settings.defaultStrategy,
+      );
+    } else {
+      strategy = settings.defaultStrategy;
+    }
+
     // Generate password using use case
     final password = _generatePasswordUseCase(
-      length: settings.length,
-      useSpecialChars: settings.useSpecialChars,
-      useNumbers: settings.useNumbers,
-      useUppercase: settings.useUppercase,
-      useLowercase: settings.useLowercase,
-      excludeAmbiguousChars: settings.excludeAmbiguousChars,
+      length: strategy.length,
+      useSpecialChars: strategy.useSpecialChars,
+      useNumbers: strategy.useNumbers,
+      useUppercase: strategy.useUppercase,
+      useLowercase: strategy.useLowercase,
+      excludeAmbiguousChars: strategy.excludeAmbiguousChars,
     );
 
     // Calculate strength for the newly generated password
@@ -65,6 +100,7 @@ class AddEditPasswordBloc
         status: AddEditStatus.generated,
         generatedPassword: password,
         strength: strength,
+        settings: settings, // Update settings in state
       ),
     );
   }

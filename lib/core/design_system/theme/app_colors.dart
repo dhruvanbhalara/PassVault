@@ -110,6 +110,36 @@ abstract class AppColors {
   /// Level 4 password strength (Strong).
   static const Color strengthStrong = success;
 
+  // ─────────────────────────────────────────────────────────────
+  // Vault Gradient Colors
+  // ─────────────────────────────────────────────────────────────
+  /// Light theme vault gradient start color.
+  static const Color vaultGradientLightStart = Color(0xFF3F51B5);
+
+  /// Light theme vault gradient end color.
+  static const Color vaultGradientLightEnd = Color(0xFF5C6BC0);
+
+  /// Dark theme vault gradient start color.
+  static const Color vaultGradientDarkStart = Color(0xFF1E293B);
+
+  /// Dark theme vault gradient end color.
+  static const Color vaultGradientDarkEnd = Color(0xFF0F172A);
+
+  // ─────────────────────────────────────────────────────────────
+  // AMOLED Surface Containers (Neutral Grays)
+  // ─────────────────────────────────────────────────────────────
+  /// AMOLED surface container low.
+  static const Color amoledSurfaceContainerLow = Color(0xFF121212);
+
+  /// AMOLED surface container medium.
+  static const Color amoledSurfaceContainer = Color(0xFF1C1C1C);
+
+  /// AMOLED surface container high.
+  static const Color amoledSurfaceContainerHigh = Color(0xFF2C2C2C);
+
+  /// AMOLED surface container highest.
+  static const Color amoledSurfaceContainerHighest = Color(0xFF383838);
+
   /// Default seed color for theme generation.
   static const Color seed = primaryLight;
 }

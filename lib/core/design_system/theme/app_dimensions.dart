@@ -177,4 +177,32 @@ class AppDimensions {
   static const double spaceXXL = AppSpacing.xxl;
   static const double space3XL = AppSpacing.xxxl;
   static const double space4XL = AppSpacing.x4xl;
+
+  // ─────────────────────────────────────────────────────────────
+  // Strategy Editor Dimensions
+  // ─────────────────────────────────────────────────────────────
+
+  /// Slider track height for strategy editor (premium thick track).
+  static const double strategySliderTrackHeight = 12.0;
+
+  /// Slider thumb radius for strategy editor.
+  static const double strategySliderThumbRadius = 16.0;
+
+  /// Slider overlay radius for strategy editor.
+  static const double strategySliderOverlayRadius = 28.0;
+
+  /// Leading padding for strategy option tiles (aligns with icon).
+  static const double strategyTileLeadingPadding = 56.0;
+
+  /// Icon size for strategy option tiles.
+  static const double strategyOptionIconSize = 22.0;
+
+  /// Small icon size for strategy list actions.
+  static const double strategyIconSmall = 18.0;
+
+  /// Medium icon size for strategy cards.
+  static const double strategyIconMedium = 20.0;
+
+  /// FAB bottom padding for scrollable lists.
+  static const double fabBottomPadding = 80.0;
 }

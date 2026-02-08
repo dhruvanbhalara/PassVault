@@ -30,11 +30,13 @@ void main() {
   late SettingsBloc bloc;
   late MockSettingsRepository mockSettingsRepository;
 
-  const tSettings = PasswordGenerationSettings();
+  const tSettings = PasswordGenerationSettings(
+    strategies: [],
+    defaultStrategyId: '',
+  );
 
   setUp(() {
     mockSettingsRepository = MockSettingsRepository();
-    // unused mocks removed for clarity
 
     bloc = SettingsBloc(mockSettingsRepository);
   });
@@ -72,9 +74,13 @@ void main() {
 
         when(
           () => mockSettingsRepository.getPasswordGenerationSettings(),
-        ).thenReturn(const Success(PasswordGenerationSettings()));
+        ).thenReturn(
+          const Success(
+            PasswordGenerationSettings(strategies: [], defaultStrategyId: ''),
+          ),
+        );
 
-        bloc.add(LoadSettings());
+        bloc.add(const LoadSettings());
 
         expectLater(
           bloc.stream,
@@ -112,6 +118,132 @@ void main() {
         ).thenAnswer((_) async => const Success(null));
 
         bloc.add(const UpdatePasswordSettings(tSettings));
+      });
+    });
+
+    group('Strategy CRUD', () {
+      final tStrategy = PasswordGenerationStrategy.create(
+        name: 'New Strategy',
+        length: 20,
+      );
+
+      test('AddStrategy adds strategy and saves', () async {
+        when(
+          () => mockSettingsRepository.savePasswordGenerationSettings(any()),
+        ).thenAnswer((_) async => const Success(null));
+
+        bloc.add(AddStrategy(tStrategy));
+        await Future.delayed(const Duration(milliseconds: 50));
+
+        verify(
+          () => mockSettingsRepository.savePasswordGenerationSettings(
+            any(
+              that: isA<PasswordGenerationSettings>()
+                  .having((s) => s.strategies.length, 'strategies count', 2)
+                  .having((s) => s.strategies.last, 'last strategy', tStrategy),
+            ),
+          ),
+        ).called(1);
+      });
+
+      test('UpdateStrategy updates strategy and saves', () async {
+        // First add a strategy to update
+
+        // Allow multiple saves
+        when(
+          () => mockSettingsRepository.savePasswordGenerationSettings(any()),
+        ).thenAnswer((_) async => const Success(null));
+
+        // Use a bloc seeded with this strategy for this specific test would be better,
+        // but existing pattern re-uses the bloc instance.
+        // Given the 'setUp' creates a fresh bloc, we are starting with default state.
+
+        // Rely on the initial default strategy for update test.
+        final defaultStrategy = bloc.state.passwordSettings.strategies.first;
+        final updatedDefault = defaultStrategy.copyWith(
+          name: 'Updated Default',
+        );
+
+        bloc.add(UpdateStrategy(updatedDefault));
+        await Future.delayed(const Duration(milliseconds: 50));
+
+        verify(
+          () => mockSettingsRepository.savePasswordGenerationSettings(
+            any(
+              that: isA<PasswordGenerationSettings>().having(
+                (s) => s.strategies
+                    .firstWhere((st) => st.id == defaultStrategy.id)
+                    .name,
+                'strategy name',
+                'Updated Default',
+              ),
+            ),
+          ),
+        ).called(1);
+      });
+
+      test('DeleteStrategy removes strategy and saves', () async {
+        // Create a custom strategy to delete
+        final strategyToDelete = PasswordGenerationStrategy.create(
+          name: 'Delete Me',
+        );
+
+        // Mock repo to expect save calls
+        when(
+          () => mockSettingsRepository.savePasswordGenerationSettings(any()),
+        ).thenAnswer((_) async => const Success(null));
+
+        // Add it first
+        bloc.add(AddStrategy(strategyToDelete));
+        await Future.delayed(const Duration(milliseconds: 50));
+
+        // Now delete it
+        bloc.add(DeleteStrategy(strategyToDelete.id));
+        await Future.delayed(const Duration(milliseconds: 50));
+
+        verify(
+          () => mockSettingsRepository.savePasswordGenerationSettings(
+            any(
+              that: isA<PasswordGenerationSettings>().having(
+                (s) => s.strategies
+                    .where((st) => st.id == strategyToDelete.id)
+                    .isEmpty,
+                'strategy deleted',
+                true,
+              ),
+            ),
+          ),
+        ).called(greaterThanOrEqualTo(1)); // Once for add, once for delete
+      });
+
+      test('SetDefaultStrategy updates defaultId and saves', () async {
+        final newDefaultStrategy = PasswordGenerationStrategy.create(
+          name: 'New Default',
+        );
+
+        when(
+          () => mockSettingsRepository.savePasswordGenerationSettings(any()),
+        ).thenAnswer((_) async => const Success(null));
+
+        // Add it
+        bloc.add(AddStrategy(newDefaultStrategy));
+        await Future.delayed(const Duration(milliseconds: 50));
+
+        // Set as default
+        bloc.add(SetDefaultStrategy(newDefaultStrategy.id));
+        await Future.delayed(const Duration(milliseconds: 50));
+
+        verify(
+          () => mockSettingsRepository.savePasswordGenerationSettings(
+            any(
+              that: isA<PasswordGenerationSettings>().having(
+                (s) => s.defaultStrategyId,
+                'defaultId',
+                newDefaultStrategy.id,
+              ),
+            ),
+          ),
+        ).called(greaterThanOrEqualTo(1));
       });
     });
   });

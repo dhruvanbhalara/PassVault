@@ -6,6 +6,10 @@ import 'package:passvault/features/settings/domain/entities/password_generation_
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 import 'package:passvault/features/settings/domain/repositories/settings_repository.dart';
 
+/// Implementation of [SettingsRepository] using local database storage.
+///
+/// Handles persistence of user preferences including theme, biometrics,
+/// onboarding status, and password generation settings.
 @LazySingleton(as: SettingsRepository)
 class SettingsRepositoryImpl implements SettingsRepository {
   final DatabaseService _dbService;
@@ -107,12 +111,12 @@ class SettingsRepositoryImpl implements SettingsRepository {
 
       final settings = json != null
           ? PasswordGenerationSettings.fromJson(Map<String, dynamic>.from(json))
-          : const PasswordGenerationSettings();
+          : PasswordGenerationSettings.initial();
 
       return Success(settings);
     } catch (e) {
       // In case of parsing error, return default settings
-      return const Success(PasswordGenerationSettings());
+      return Success(PasswordGenerationSettings.initial());
     }
   }
 

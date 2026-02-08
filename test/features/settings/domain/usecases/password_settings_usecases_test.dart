@@ -19,10 +19,15 @@ void main() {
   });
 
   setUpAll(() {
-    registerFallbackValue(const PasswordGenerationSettings());
+    registerFallbackValue(
+      const PasswordGenerationSettings(strategies: [], defaultStrategyId: ''),
+    );
   });
 
-  final tSettings = const PasswordGenerationSettings();
+  final tSettings = const PasswordGenerationSettings(
+    strategies: [],
+    defaultStrategyId: '',
+  );
 
   group('$GetPasswordGenerationSettingsUseCase', () {
     test('GetPasswordGenerationSettingsUseCase should call repository', () {

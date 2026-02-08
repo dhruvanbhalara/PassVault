@@ -20,7 +20,7 @@ class SettingsScreen extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => getIt<SettingsBloc>()..add(LoadSettings()),
+          create: (context) => getIt<SettingsBloc>()..add(const LoadSettings()),
         ),
         BlocProvider(create: (context) => getIt<ImportExportBloc>()),
       ],
@@ -59,11 +59,11 @@ class _SettingsViewState extends State<SettingsView> {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m),
           children: const [
             AppearanceSection(),
-            SizedBox(height: AppSpacing.xl),
+            SizedBox(height: AppSpacing.l),
             SecuritySection(),
-            SizedBox(height: AppSpacing.xl),
+            SizedBox(height: AppSpacing.l),
             DataManagementSection(),
-            SizedBox(height: AppSpacing.xxl),
+            SizedBox(height: AppSpacing.xl),
           ],
         ),
       ),

@@ -79,7 +79,10 @@ class AppTheme {
       ),
       bodyRelaxed: const TextStyle(height: 1.6, letterSpacing: 0.2),
       vaultGradient: const LinearGradient(
-        colors: [Color(0xFF3F51B5), Color(0xFF5C6BC0)],
+        colors: [
+          AppColors.vaultGradientLightStart,
+          AppColors.vaultGradientLightEnd,
+        ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
@@ -101,9 +104,9 @@ class AppTheme {
       seedColor: AppColors.primaryLight,
       brightness: Brightness.dark,
       primary: AppColors.primaryDark,
-      onPrimary: const Color(0xFF0F172A),
+      onPrimary: AppColors.bgDark,
       secondary: AppColors.secondaryDark,
-      onSecondary: const Color(0xFF0F172A),
+      onSecondary: AppColors.bgDark,
       surface: AppColors.surfaceDark,
       onSurface: AppColors.textDarkPrimary,
       onSurfaceVariant: AppColors.textDarkSecondary,
@@ -113,9 +116,9 @@ class AppTheme {
 
     final extension = AppThemeExtension(
       primary: AppColors.primaryDark,
-      onPrimary: const Color(0xFF0F172A),
+      onPrimary: AppColors.bgDark,
       secondary: AppColors.secondaryDark,
-      onSecondary: const Color(0xFF0F172A),
+      onSecondary: AppColors.bgDark,
       surface: AppColors.surfaceDark,
       onSurface: AppColors.textDarkPrimary,
       background: AppColors.bgDark,
@@ -147,7 +150,10 @@ class AppTheme {
       ),
       bodyRelaxed: const TextStyle(height: 1.6, letterSpacing: 0.2),
       vaultGradient: const LinearGradient(
-        colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
+        colors: [
+          AppColors.vaultGradientDarkStart,
+          AppColors.vaultGradientDarkEnd,
+        ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
@@ -169,29 +175,36 @@ class AppTheme {
       seedColor: AppColors.primaryLight,
       brightness: Brightness.dark,
       primary: AppColors.primaryDark,
-      onPrimary: const Color(0xFF0F172A),
+      onPrimary: AppColors.bgDark,
       secondary: AppColors.secondaryDark,
-      onSecondary: const Color(0xFF0F172A),
-      surface: AppColors.surfaceAmoled,
+      onSecondary: AppColors.bgDark,
+      surface: AppColors.bgAmoled,
       onSurface: AppColors.textDarkPrimary,
+      surfaceDim: Colors.black,
+      // Containers - Neutral Grays (No Blue Tint)
+      surfaceContainerLowest: Colors.black,
+      surfaceContainerLow: AppColors.amoledSurfaceContainerLow,
+      surfaceContainer: AppColors.amoledSurfaceContainer,
+      surfaceContainerHigh: AppColors.amoledSurfaceContainerHigh,
+      surfaceContainerHighest: AppColors.amoledSurfaceContainerHighest,
       onSurfaceVariant: AppColors.textDarkSecondary,
       outline: AppColors.borderDark,
-      surfaceContainerHighest: AppColors.surfaceAmoled,
+      outlineVariant: AppColors.amoledSurfaceContainerHighest,
     );
 
     final extension = AppThemeExtension(
       primary: AppColors.primaryDark,
-      onPrimary: const Color(0xFF0F172A),
+      onPrimary: AppColors.bgDark,
       secondary: AppColors.secondaryDark,
-      onSecondary: const Color(0xFF0F172A),
-      surface: AppColors.surfaceAmoled,
+      onSecondary: AppColors.bgDark,
+      surface: AppColors.bgAmoled, // Use black as base surface
       onSurface: AppColors.textDarkPrimary,
       background: AppColors.bgAmoled,
       error: AppColors.error,
       success: AppColors.success,
       warning: AppColors.warning,
-      surfaceDim: AppColors.surfaceDimDark,
-      surfaceHighlight: AppColors.primaryDark.withValues(alpha: 0.1),
+      surfaceDim: AppColors.surfaceAmoled,
+      surfaceHighlight: AppColors.primaryDark.withValues(alpha: 0.15),
       securitySurface: AppColors.surfaceAmoled,
       strengthWeak: AppColors.strengthWeak,
       strengthFair: AppColors.strengthFair,
@@ -201,12 +214,14 @@ class AppTheme {
       primaryContainer: scheme.primaryContainer,
       onPrimaryContainer: scheme.onPrimaryContainer,
       cardShadow: BoxShadow(
-        color: Colors.black.withValues(alpha: 0.5),
+        color: Colors.white.withValues(
+          alpha: 0.05,
+        ), // Subtle white glow for visibility on black
         blurRadius: 15,
-        offset: const Offset(0, 4),
+        offset: const Offset(0, 0),
       ),
       glassBlur: 20,
-      glassOpacity: 0.15,
+      glassOpacity: 0.2,
       passwordText: const TextStyle(
         fontFamily: _monoFontFamily,
         fontSize: 16,
@@ -215,9 +230,9 @@ class AppTheme {
       ),
       bodyRelaxed: const TextStyle(height: 1.6, letterSpacing: 0.2),
       vaultGradient: const LinearGradient(
-        colors: [Colors.black, Color(0xFF0F172A)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
+        colors: [AppColors.vaultGradientDarkEnd, Colors.black],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
       ),
       onVaultGradient: Colors.white,
       inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.dark),
@@ -226,7 +241,7 @@ class AppTheme {
     return _buildTheme(
       scheme,
       AppColors.bgAmoled,
-      AppColors.surfaceAmoled,
+      AppColors.bgAmoled, // Use Pure Black for Surface/BottomSheet
       true,
       extension,
     );
@@ -278,6 +293,7 @@ class AppTheme {
         foregroundColor: textPrimary,
         elevation: 0,
         centerTitle: true,
+        surfaceTintColor: Colors.transparent, // Disable tint
         systemOverlayStyle: isDark
             ? SystemUiOverlayStyle.light
             : SystemUiOverlayStyle.dark,
@@ -292,9 +308,20 @@ class AppTheme {
         color: surface,
         elevation: 0,
         margin: EdgeInsets.zero,
+        surfaceTintColor: Colors.transparent, // Disable tint
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
           side: BorderSide(color: scheme.outline.withValues(alpha: 0.1)),
+        ),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: surface,
+        surfaceTintColor: Colors.transparent, // Disable tint
+        modalBackgroundColor: surface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppRadius.xl),
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -337,6 +364,26 @@ class AppTheme {
       dividerTheme: DividerThemeData(
         color: scheme.outline.withValues(alpha: 0.1),
         thickness: 1,
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return scheme.onPrimary;
+          }
+          return scheme.onSurfaceVariant;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return scheme.primary;
+          }
+          return scheme.surfaceContainerHighest;
+        }),
+        trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return Colors.transparent;
+          }
+          return scheme.outline;
+        }),
       ),
     );
   }
