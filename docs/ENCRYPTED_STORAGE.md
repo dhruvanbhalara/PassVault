@@ -18,7 +18,7 @@ PassVault uses AES-256-GCM encryption for all local storage and password-protect
 │                        Core Services                              │
 ├──────────────────┬─────────────────┬─────────────────────────────┤
 │ EncryptedStorage │  CryptoService  │  DatabaseService            │
-│ Service          │  (PBKDF2+GCM)   │  (Settings I/O)             │
+│ Service          │  (Argon2id+GCM) │  (Settings I/O)             │
 │ (Key Management) │                 │                             │
 └────────┬─────────┴────────┬────────┴──────────────┬──────────────┘
          │                  │                       │
@@ -58,7 +58,7 @@ Provides AES-256-GCM encryption for export/import operations.
 
 **Encryption Process:**
 1. Generate random 32-byte salt
-2. Derive key from password using PBKDF2 (100,000 iterations)
+2. Derive key from password using Argon2id
 3. Generate random 12-byte IV
 4. Encrypt data with AES-256-GCM
 5. Output: `[salt][iv][ciphertext + auth tag]`
@@ -99,7 +99,8 @@ PassVault uses a unified DI pattern with `injectable`:
 |------|----------------|
 | Key Storage | Platform-native secure storage |
 | Memory Safety | Keys loaded on-demand |
-| PBKDF2 Iterations | 100,000 |
+| Argon2id Memory   | 64MB |
+| Argon2id Iterations | 3 |
 | Encryption Mode | AES-256-GCM (authenticated) |
 
 ## Usage
