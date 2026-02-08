@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
@@ -104,7 +105,7 @@ class _SettingsViewState extends State<SettingsView> {
       }
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
     } else if (state is DuplicatesDetected) {
-      context.push('/resolve-duplicates', extra: state.duplicates);
+      context.push(AppRoutes.resolveDuplicates, extra: state.duplicates);
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
     } else if (state is DuplicatesResolved) {
       _showSnackBar(context, context.l10n.importSuccess);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/onboarding/presentation/bloc/onboarding_bloc.dart';
@@ -50,7 +51,7 @@ class _IntroViewState extends State<IntroView> {
     return BlocListener<OnboardingBloc, OnboardingState>(
       listener: (context, state) {
         if (state is OnboardingSuccess) {
-          context.go('/auth');
+          context.go(AppRoutes.auth);
         }
       },
       child: Scaffold(
