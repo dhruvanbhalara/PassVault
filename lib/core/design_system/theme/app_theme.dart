@@ -5,11 +5,13 @@ import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 import 'app_colors.dart';
 import 'app_dimensions.dart';
 import 'app_theme_extension.dart';
+import 'presets/amoled_theme_preset.dart';
+import 'presets/dark_theme_preset.dart';
+import 'presets/light_theme_preset.dart';
 
 /// The central theme management class for the PassVault application.
 class AppTheme {
   static const String _fontFamily = 'Outfit';
-  static const String _monoFontFamily = 'monospace';
 
   static ThemeData getTheme(ThemeType mode) {
     switch (mode) {
@@ -29,221 +31,32 @@ class AppTheme {
   static ThemeData get amoledTheme => _amoledTheme();
 
   static ThemeData _lightTheme() {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primaryLight,
-      brightness: Brightness.light,
-      primary: AppColors.primaryLight,
-      onPrimary: Colors.white,
-      secondary: AppColors.secondaryLight,
-      onSecondary: Colors.white,
-      surface: AppColors.surfaceLight,
-      onSurface: AppColors.textLightPrimary,
-      onSurfaceVariant: AppColors.textLightSecondary,
-      outline: AppColors.borderLight,
-      surfaceContainerHighest: AppColors.surfaceDimLight,
-    );
-
-    final extension = AppThemeExtension(
-      primary: AppColors.primaryLight,
-      onPrimary: Colors.white,
-      secondary: AppColors.secondaryLight,
-      onSecondary: Colors.white,
-      surface: AppColors.surfaceLight,
-      onSurface: AppColors.textLightPrimary,
-      background: AppColors.bgLight,
-      error: AppColors.error,
-      success: AppColors.success,
-      warning: AppColors.warning,
-      surfaceDim: AppColors.surfaceDimLight,
-      surfaceHighlight: AppColors.primaryLight.withValues(alpha: 0.05),
-      securitySurface: AppColors.surfaceDimLight,
-      strengthWeak: AppColors.strengthWeak,
-      strengthFair: AppColors.strengthFair,
-      strengthGood: AppColors.strengthGood,
-      strengthStrong: AppColors.strengthStrong,
-      outline: AppColors.borderLight,
-      primaryContainer: scheme.primaryContainer,
-      onPrimaryContainer: scheme.onPrimaryContainer,
-      cardShadow: BoxShadow(
-        color: Colors.black.withValues(alpha: 0.05),
-        blurRadius: 10,
-        offset: const Offset(0, 4),
-      ),
-      glassBlur: 16,
-      glassOpacity: 0.1,
-      passwordText: const TextStyle(
-        fontFamily: _monoFontFamily,
-        fontSize: 16,
-        letterSpacing: 1.2,
-        fontWeight: FontWeight.w600,
-      ),
-      bodyRelaxed: const TextStyle(height: 1.6, letterSpacing: 0.2),
-      vaultGradient: const LinearGradient(
-        colors: [
-          AppColors.vaultGradientLightStart,
-          AppColors.vaultGradientLightEnd,
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      onVaultGradient: Colors.white,
-      inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.light),
-    );
-
     return _buildTheme(
-      scheme,
+      LightThemePreset.colorScheme,
       AppColors.bgLight,
       AppColors.surfaceLight,
       false,
-      extension,
+      LightThemePreset.extension,
     );
   }
 
   static ThemeData _darkTheme() {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primaryLight,
-      brightness: Brightness.dark,
-      primary: AppColors.primaryDark,
-      onPrimary: AppColors.bgDark,
-      secondary: AppColors.secondaryDark,
-      onSecondary: AppColors.bgDark,
-      surface: AppColors.surfaceDark,
-      onSurface: AppColors.textDarkPrimary,
-      onSurfaceVariant: AppColors.textDarkSecondary,
-      outline: AppColors.borderDark,
-      surfaceContainerHighest: AppColors.surfaceDimDark,
-    );
-
-    final extension = AppThemeExtension(
-      primary: AppColors.primaryDark,
-      onPrimary: AppColors.bgDark,
-      secondary: AppColors.secondaryDark,
-      onSecondary: AppColors.bgDark,
-      surface: AppColors.surfaceDark,
-      onSurface: AppColors.textDarkPrimary,
-      background: AppColors.bgDark,
-      error: AppColors.error,
-      success: AppColors.success,
-      warning: AppColors.warning,
-      surfaceDim: AppColors.surfaceDimDark,
-      surfaceHighlight: AppColors.primaryDark.withValues(alpha: 0.1),
-      securitySurface: AppColors.surfaceDark,
-      strengthWeak: AppColors.strengthWeak,
-      strengthFair: AppColors.strengthFair,
-      strengthGood: AppColors.strengthGood,
-      strengthStrong: AppColors.strengthStrong,
-      outline: AppColors.borderDark,
-      primaryContainer: scheme.primaryContainer,
-      onPrimaryContainer: scheme.onPrimaryContainer,
-      cardShadow: BoxShadow(
-        color: Colors.black.withValues(alpha: 0.3),
-        blurRadius: 12,
-        offset: const Offset(0, 4),
-      ),
-      glassBlur: 20,
-      glassOpacity: 0.15,
-      passwordText: const TextStyle(
-        fontFamily: _monoFontFamily,
-        fontSize: 16,
-        letterSpacing: 1.2,
-        fontWeight: FontWeight.w600,
-      ),
-      bodyRelaxed: const TextStyle(height: 1.6, letterSpacing: 0.2),
-      vaultGradient: const LinearGradient(
-        colors: [
-          AppColors.vaultGradientDarkStart,
-          AppColors.vaultGradientDarkEnd,
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      onVaultGradient: Colors.white,
-      inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.dark),
-    );
-
     return _buildTheme(
-      scheme,
+      DarkThemePreset.colorScheme,
       AppColors.bgDark,
       AppColors.surfaceDark,
       true,
-      extension,
+      DarkThemePreset.extension,
     );
   }
 
   static ThemeData _amoledTheme() {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primaryLight,
-      brightness: Brightness.dark,
-      primary: AppColors.primaryDark,
-      onPrimary: AppColors.bgDark,
-      secondary: AppColors.secondaryDark,
-      onSecondary: AppColors.bgDark,
-      surface: AppColors.bgAmoled,
-      onSurface: AppColors.textDarkPrimary,
-      surfaceDim: Colors.black,
-      // Containers - Neutral Grays (No Blue Tint)
-      surfaceContainerLowest: Colors.black,
-      surfaceContainerLow: AppColors.amoledSurfaceContainerLow,
-      surfaceContainer: AppColors.amoledSurfaceContainer,
-      surfaceContainerHigh: AppColors.amoledSurfaceContainerHigh,
-      surfaceContainerHighest: AppColors.amoledSurfaceContainerHighest,
-      onSurfaceVariant: AppColors.textDarkSecondary,
-      outline: AppColors.borderDark,
-      outlineVariant: AppColors.amoledSurfaceContainerHighest,
-    );
-
-    final extension = AppThemeExtension(
-      primary: AppColors.primaryDark,
-      onPrimary: AppColors.bgDark,
-      secondary: AppColors.secondaryDark,
-      onSecondary: AppColors.bgDark,
-      surface: AppColors.bgAmoled, // Use black as base surface
-      onSurface: AppColors.textDarkPrimary,
-      background: AppColors.bgAmoled,
-      error: AppColors.error,
-      success: AppColors.success,
-      warning: AppColors.warning,
-      surfaceDim: AppColors.surfaceAmoled,
-      surfaceHighlight: AppColors.primaryDark.withValues(alpha: 0.15),
-      securitySurface: AppColors.surfaceAmoled,
-      strengthWeak: AppColors.strengthWeak,
-      strengthFair: AppColors.strengthFair,
-      strengthGood: AppColors.strengthGood,
-      strengthStrong: AppColors.strengthStrong,
-      outline: AppColors.borderDark,
-      primaryContainer: scheme.primaryContainer,
-      onPrimaryContainer: scheme.onPrimaryContainer,
-      cardShadow: BoxShadow(
-        color: Colors.white.withValues(
-          alpha: 0.05,
-        ), // Subtle white glow for visibility on black
-        blurRadius: 15,
-        offset: const Offset(0, 0),
-      ),
-      glassBlur: 20,
-      glassOpacity: 0.2,
-      passwordText: const TextStyle(
-        fontFamily: _monoFontFamily,
-        fontSize: 16,
-        letterSpacing: 1.2,
-        fontWeight: FontWeight.w600,
-      ),
-      bodyRelaxed: const TextStyle(height: 1.6, letterSpacing: 0.2),
-      vaultGradient: const LinearGradient(
-        colors: [AppColors.vaultGradientDarkEnd, Colors.black],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      onVaultGradient: Colors.white,
-      inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.dark),
-    );
-
     return _buildTheme(
-      scheme,
+      AmoledThemePreset.colorScheme,
       AppColors.bgAmoled,
-      AppColors.bgAmoled, // Use Pure Black for Surface/BottomSheet
+      AppColors.bgAmoled,
       true,
-      extension,
+      AmoledThemePreset.extension,
     );
   }
 
@@ -293,7 +106,7 @@ class AppTheme {
         foregroundColor: textPrimary,
         elevation: 0,
         centerTitle: true,
-        surfaceTintColor: Colors.transparent, // Disable tint
+        surfaceTintColor: Colors.transparent,
         systemOverlayStyle: isDark
             ? SystemUiOverlayStyle.light
             : SystemUiOverlayStyle.dark,
@@ -308,7 +121,7 @@ class AppTheme {
         color: surface,
         elevation: 0,
         margin: EdgeInsets.zero,
-        surfaceTintColor: Colors.transparent, // Disable tint
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
           side: BorderSide(color: scheme.outline.withValues(alpha: 0.1)),
@@ -316,7 +129,7 @@ class AppTheme {
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: surface,
-        surfaceTintColor: Colors.transparent, // Disable tint
+        surfaceTintColor: Colors.transparent,
         modalBackgroundColor: surface,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(

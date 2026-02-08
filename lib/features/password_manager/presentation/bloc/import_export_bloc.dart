@@ -51,11 +51,9 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     try {
       final result = await _passwordRepository.getPasswords();
       await result.fold(
-        (failure) async {
-          emit(
-            ImportExportFailure(DataMigrationError.unknown, failure.message),
-          );
-        },
+        (failure) async => emit(
+          ImportExportFailure(DataMigrationError.unknown, failure.message),
+        ),
         (passwords) async {
           if (passwords.isEmpty) {
             emit(
@@ -67,36 +65,17 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
             return;
           }
 
-          final timestamp = DateTime.now()
-              .toIso8601String()
-              .replaceAll(':', '-')
-              .split('.')
-              .first;
-          final fileName =
-              'passvault_export_$timestamp.${event.isJson ? 'json' : 'csv'}';
-
+          final extension = event.isJson ? 'json' : 'csv';
+          final fileName = _generateFileName('passvault_export', extension);
           final content = event.isJson
               ? _dataService.generateJson(passwords)
               : _dataService.generateCsv(passwords);
-          final bytes = utf8.encode(content);
 
-          final destinationPath = await _filePickerService.pickSavePath(
-            fileName: fileName,
-            bytes: bytes,
-            allowedExtensions: [event.isJson ? 'json' : 'csv'],
-          );
-
-          if (destinationPath == null) {
-            emit(const ImportExportInitial()); // Cancelled
-            return;
-          }
-
-          emit(ExportSuccess(destinationPath));
+          await _saveAndEmit(fileName, utf8.encode(content), [extension], emit);
         },
       );
     } catch (e) {
-      AppLogger.error('Export failed', tag: 'ImportExportBloc', error: e);
-      emit(ImportExportFailure(DataMigrationError.unknown, e.toString()));
+      _handleError('Export failed', e, emit);
     }
   }
 
@@ -109,40 +88,21 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
       final path = await _filePickerService.pickFile(
         allowedExtensions: event.isJson ? ['json'] : ['csv'],
       );
-
-      if (path == null) {
-        emit(const ImportExportInitial()); // Cancelled
-        return;
-      }
+      if (path == null) return emit(const ImportExportInitial());
 
       final content = await _fileService.readAsString(path);
       final entries = event.isJson
           ? _dataService.importFromJson(content)
           : _dataService.importFromCsv(content);
 
-      emit(const ImportExportLoading());
-      final result = await _importPasswordsUseCase(entries);
-
-      result.fold(
-        (failure) => emit(
-          ImportExportFailure(DataMigrationError.importFailed, failure.message),
-        ),
-        (importResult) {
-          if (importResult.hasDuplicates) {
-            emit(
-              DuplicatesDetected(
-                duplicates: importResult.duplicateEntries,
-                successfulImports: importResult.successfulImports,
-              ),
-            );
-          } else {
-            emit(ImportSuccess(importResult.successfulImports));
-          }
-        },
-      );
+      await _executeImport(entries, emit);
     } catch (e) {
-      AppLogger.error('Import failed', tag: 'ImportExportBloc', error: e);
-      emit(ImportExportFailure(DataMigrationError.invalidFormat, e.toString()));
+      _handleError(
+        'Import failed',
+        e,
+        emit,
+        errorType: DataMigrationError.invalidFormat,
+      );
     }
   }
 
@@ -168,39 +128,17 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
             return;
           }
 
-          final timestamp = DateTime.now()
-              .toIso8601String()
-              .replaceAll(':', '-')
-              .split('.')
-              .first;
-          final fileName = 'passvault_export_$timestamp.pvault';
-
+          final fileName = _generateFileName('passvault_export', 'pvault');
           final content = _dataService.generateEncryptedJson(
             passwords,
             event.password,
           );
 
-          final destinationPath = await _filePickerService.pickSavePath(
-            fileName: fileName,
-            bytes: content,
-            allowedExtensions: ['pvault'],
-          );
-
-          if (destinationPath == null) {
-            emit(const ImportExportInitial());
-            return;
-          }
-
-          emit(ExportSuccess(destinationPath));
+          await _saveAndEmit(fileName, content, ['pvault'], emit);
         },
       );
     } catch (e) {
-      AppLogger.error(
-        'Encrypted export failed',
-        tag: 'ImportExportBloc',
-        error: e,
-      );
-      emit(ImportExportFailure(DataMigrationError.unknown, e.toString()));
+      _handleError('Encrypted export failed', e, emit);
     }
   }
 
@@ -209,38 +147,35 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     Emitter<ImportExportState> emit,
   ) async {
     emit(const ImportExportLoading());
-
-    final path =
-        event.filePath ??
-        await _filePickerService.pickFile(allowedExtensions: ['pvault']);
-
-    if (path == null) {
-      emit(const ImportExportInitial());
-      return;
-    }
-
-    final encryptedData = await _fileService.readAsBytes(path);
-
-    final List<PasswordEntry> entries;
     try {
-      entries = _dataService.importFromEncrypted(
+      final path =
+          event.filePath ??
+          await _filePickerService.pickFile(allowedExtensions: ['pvault']);
+      if (path == null) return emit(const ImportExportInitial());
+
+      final encryptedData = await _fileService.readAsBytes(path);
+      final entries = _dataService.importFromEncrypted(
         Uint8List.fromList(encryptedData),
         event.password,
       );
-    } catch (e) {
-      AppLogger.error('Decryption failed', tag: 'ImportExportBloc', error: e);
-      emit(
-        const ImportExportFailure(
-          DataMigrationError.wrongPassword,
-          'Incorrect password or corrupted file',
-        ),
-      );
-      return;
-    }
 
+      await _executeImport(entries, emit);
+    } catch (e) {
+      _handleError(
+        'Decryption failed',
+        e,
+        emit,
+        errorType: DataMigrationError.wrongPassword,
+      );
+    }
+  }
+
+  Future<void> _executeImport(
+    List<PasswordEntry> entries,
+    Emitter<ImportExportState> emit,
+  ) async {
     emit(const ImportExportLoading());
     final result = await _importPasswordsUseCase(entries);
-
     result.fold(
       (failure) => emit(
         ImportExportFailure(DataMigrationError.importFailed, failure.message),
@@ -260,25 +195,60 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     );
   }
 
+  Future<void> _saveAndEmit(
+    String fileName,
+    Uint8List bytes,
+    List<String> extensions,
+    Emitter<ImportExportState> emit,
+  ) async {
+    final destinationPath = await _filePickerService.pickSavePath(
+      fileName: fileName,
+      bytes: bytes,
+      allowedExtensions: extensions,
+    );
+    if (destinationPath == null) {
+      emit(const ImportExportInitial());
+    } else {
+      emit(ExportSuccess(destinationPath));
+    }
+  }
+
+  String _generateFileName(String prefix, String extension) {
+    final timestamp = DateTime.now()
+        .toIso8601String()
+        .replaceAll(':', '-')
+        .split('.')
+        .first;
+    return '${prefix}_$timestamp.$extension';
+  }
+
+  void _handleError(
+    String message,
+    dynamic error,
+    Emitter<ImportExportState> emit, {
+    DataMigrationError errorType = DataMigrationError.unknown,
+  }) {
+    AppLogger.error(message, tag: 'ImportExportBloc', error: error);
+    emit(ImportExportFailure(errorType, error.toString()));
+  }
+
   Future<void> _onResolveDuplicates(
     ResolveDuplicatesEvent event,
     Emitter<ImportExportState> emit,
   ) async {
     emit(const ImportExportLoading());
-    try {
-      final result = await _resolveDuplicatesUseCase(event.resolutions);
-      result.fold(
-        (failure) => emit(
-          ImportExportFailure(DataMigrationError.unknown, failure.message),
+    final result = await _resolveDuplicatesUseCase(event.resolutions);
+    result.fold(
+      (failure) => emit(
+        ImportExportFailure(DataMigrationError.unknown, failure.message),
+      ),
+      (_) => emit(
+        DuplicatesResolved(
+          totalResolved: event.resolutions.length,
+          totalImported: event.resolutions.length,
         ),
-        (_) {
-          final count = event.resolutions.length;
-          emit(DuplicatesResolved(totalResolved: count, totalImported: count));
-        },
-      );
-    } catch (e) {
-      emit(ImportExportFailure(DataMigrationError.unknown, e.toString()));
-    }
+      ),
+    );
   }
 
   Future<void> _onClearDatabase(
@@ -286,34 +256,17 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     Emitter<ImportExportState> emit,
   ) async {
     emit(const ImportExportLoading());
-
-    AppLogger.info('Starting bulk clear operation', tag: 'ImportExportBloc');
-
     final result = await _clearAllPasswordsUseCase();
-
     result.fold(
-      (failure) {
-        AppLogger.error(
-          'Failed to clear database: ${failure.message}',
-          tag: 'ImportExportBloc',
-        );
-        emit(ImportExportFailure(DataMigrationError.unknown, failure.message));
-      },
-      (_) {
-        AppLogger.info(
-          'Database cleared successfully',
-          tag: 'ImportExportBloc',
-        );
-        // Stream event will be automatically emitted by repository
-        emit(const ClearDatabaseSuccess());
-      },
+      (failure) => emit(
+        ImportExportFailure(DataMigrationError.unknown, failure.message),
+      ),
+      (_) => emit(const ClearDatabaseSuccess()),
     );
   }
 
   void _onResetMigrationStatus(
     ResetMigrationStatus event,
     Emitter<ImportExportState> emit,
-  ) {
-    emit(const ImportExportInitial());
-  }
+  ) => emit(const ImportExportInitial());
 }

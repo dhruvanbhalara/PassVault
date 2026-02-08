@@ -4,7 +4,10 @@ import 'package:passvault/core/utils/app_logger.dart';
 
 @lazySingleton
 class BiometricService {
-  final LocalAuthentication _auth = LocalAuthentication();
+  final LocalAuthentication _auth;
+
+  BiometricService({LocalAuthentication? auth})
+    : _auth = auth ?? LocalAuthentication();
 
   Future<bool> get isBiometricAvailable async {
     try {

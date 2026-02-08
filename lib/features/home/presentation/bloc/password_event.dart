@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 
-abstract class PasswordEvent extends Equatable {
+sealed class PasswordEvent extends Equatable {
   const PasswordEvent();
   @override
   List<Object?> get props => [];
