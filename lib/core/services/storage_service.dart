@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:injectable/injectable.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:passvault/core/constants/storage_keys.dart';
 import 'package:passvault/core/services/encrypted_storage_service.dart';
 import 'package:passvault/core/utils/app_logger.dart';
@@ -21,6 +22,10 @@ abstract class StorageModule {
   Future<FlutterSecureStorage> get secureStorage async {
     return const FlutterSecureStorage(aOptions: AndroidOptions());
   }
+
+  /// Provides the platform local authentication instance.
+  @lazySingleton
+  LocalAuthentication get localAuthentication => LocalAuthentication();
 
   /// Opens the encrypted password box.
   /// This must resolve first as it initializes Hive.

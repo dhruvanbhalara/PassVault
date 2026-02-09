@@ -96,6 +96,9 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.lazySingleton<_i1024.CryptoService>(() => _i1024.CryptoService());
+    gh.lazySingleton<_i152.LocalAuthentication>(
+      () => storageModule.localAuthentication,
+    );
     gh.lazySingleton<_i288.CsvExporter>(() => _i288.CsvExporter());
     gh.lazySingleton<_i371.EstimatePasswordStrengthUseCase>(
       () => _i371.EstimatePasswordStrengthUseCase(),
