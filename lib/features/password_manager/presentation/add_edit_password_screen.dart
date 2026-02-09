@@ -83,7 +83,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
   void _handleSave(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       final entry = PasswordEntry(
-        id: widget.entry?.id ?? const Uuid().v4(),
+        id: widget.entry?.id ?? const Uuid().v7(),
         appName: _appNameController.text,
         username: _usernameController.text,
         password: _passwordController.text,

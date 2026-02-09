@@ -36,7 +36,7 @@ class PasswordGenerationStrategy extends Equatable {
     bool excludeAmbiguousChars = false,
   }) {
     return PasswordGenerationStrategy(
-      id: const Uuid().v4(),
+      id: const Uuid().v7(),
       name: name,
       length: length,
       useNumbers: useNumbers,
@@ -84,7 +84,7 @@ class PasswordGenerationStrategy extends Equatable {
 
   factory PasswordGenerationStrategy.fromJson(Map<String, dynamic> json) {
     return PasswordGenerationStrategy(
-      id: json['id'] as String? ?? const Uuid().v4(),
+      id: json['id'] as String? ?? const Uuid().v7(),
       name: json['name'] as String? ?? 'Custom',
       length: json['length'] as int? ?? 16,
       useNumbers: json['useNumbers'] as bool? ?? true,
@@ -160,7 +160,7 @@ class PasswordGenerationSettings extends Equatable {
     // Handle migration from old format where root fields existed
     if (json.containsKey('length') && !json.containsKey('strategies')) {
       final oldStrategy = PasswordGenerationStrategy.fromJson({
-        'id': const Uuid().v4(),
+        'id': const Uuid().v7(),
         'name': 'Default',
         ...json,
       });
@@ -192,7 +192,7 @@ class PasswordGenerationSettings extends Equatable {
           defaultId ??
           (strategiesList.isNotEmpty
               ? strategiesList.first.id
-              : const Uuid().v4()),
+              : const Uuid().v7()),
     );
   }
 
