@@ -123,10 +123,14 @@ class PasswordGenerationSettings extends Equatable {
 
   /// Migrates old settings format or creates default
   factory PasswordGenerationSettings.initial() {
-    final defaultStrategy = PasswordGenerationStrategy.create(name: 'Default');
+    const defaultId = 'default-strategy';
+    final defaultStrategy = const PasswordGenerationStrategy(
+      id: defaultId,
+      name: 'Default',
+    );
     return PasswordGenerationSettings(
       strategies: [defaultStrategy],
-      defaultStrategyId: defaultStrategy.id,
+      defaultStrategyId: defaultId,
     );
   }
 

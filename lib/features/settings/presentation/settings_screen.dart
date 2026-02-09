@@ -46,7 +46,7 @@ class _SettingsViewState extends State<SettingsView> {
     return MultiBlocListener(
       listeners: [
         BlocListener<SettingsBloc, SettingsState>(
-          listenWhen: (previous, current) => previous.status != current.status,
+          listenWhen: (previous, current) => current is SettingsFailure,
           listener: (context, state) => _handleSettingsState(context, state),
         ),
         BlocListener<ImportExportBloc, ImportExportState>(
@@ -72,11 +72,10 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   void _handleSettingsState(BuildContext context, SettingsState state) {
-    // Only show snackbar for errors
-    if (state.status == SettingsStatus.failure) {
+    if (state is SettingsFailure) {
       final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
       if (isCurrent) {
-        _showSnackBar(context, context.l10n.errorOccurred, isError: true);
+        _showSnackBar(context, state.errorMessage, isError: true);
       }
     }
   }

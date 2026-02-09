@@ -62,7 +62,7 @@ void main() {
 
   group('$AddEditPasswordBloc', () {
     test('initial state is correct', () {
-      expect(bloc.state.status, AddEditStatus.initial);
+      expect(bloc.state, isA<AddEditInitial>());
       expect(bloc.state.strength, 0.0);
       expect(bloc.state.generatedPassword, '');
     });
@@ -108,14 +108,14 @@ void main() {
         bloc.add(const GenerateStrongPassword());
         await Future.delayed(const Duration(milliseconds: 50));
 
-        expect(bloc.state.status, AddEditStatus.generated);
+        expect(bloc.state, isA<AddEditGenerated>());
         expect(bloc.state.generatedPassword, 'GeneratedPass123!');
 
         // Now, user types manually - status should reset to initial
         bloc.add(const PasswordChanged('MyManualPassword'));
         await Future.delayed(const Duration(milliseconds: 50));
 
-        expect(bloc.state.status, AddEditStatus.initial);
+        expect(bloc.state, isA<AddEditInitial>());
         expect(bloc.state.strength, 0.75);
       });
 
@@ -170,7 +170,7 @@ void main() {
         bloc.add(const GenerateStrongPassword());
         await Future.delayed(const Duration(milliseconds: 50));
 
-        expect(bloc.state.status, AddEditStatus.generated);
+        expect(bloc.state, isA<AddEditGenerated>());
         expect(bloc.state.generatedPassword, 'SecurePassword123!');
         expect(bloc.state.strength, 0.9);
       });

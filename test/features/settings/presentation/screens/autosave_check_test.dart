@@ -26,7 +26,7 @@ void main() {
   late MockStrategyPreviewBloc mockPreviewBloc;
 
   setUpAll(() {
-    registerFallbackValue(const SettingsState());
+    registerFallbackValue(const SettingsInitial());
     registerFallbackValue(const LoadSettings());
     registerFallbackValue(
       GeneratePreview(PasswordGenerationStrategy.create(name: 'Fallback'))
@@ -44,9 +44,9 @@ void main() {
     getIt.registerSingleton<StrategyPreviewBloc>(mockPreviewBloc);
     getIt.registerSingleton<SettingsBloc>(mockSettingsBloc);
 
-    final successState = const SettingsState().copyWith(
-      status: SettingsStatus.success,
-      passwordSettings: const PasswordGenerationSettings(
+    final successState = const SettingsLoaded(
+      useBiometrics: false,
+      passwordSettings: PasswordGenerationSettings(
         strategies: [
           PasswordGenerationStrategy(id: 'default-id', name: 'Default'),
         ],
@@ -65,7 +65,7 @@ void main() {
 
     when(
       () => mockPreviewBloc.state,
-    ).thenReturn(StrategyPreviewState.initial());
+    ).thenReturn(const StrategyPreviewInitial());
     when(() => mockPreviewBloc.add(any())).thenReturn(null);
   });
 

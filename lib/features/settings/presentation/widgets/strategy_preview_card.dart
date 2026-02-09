@@ -29,9 +29,8 @@ class _PreviewCardContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<StrategyPreviewBloc, StrategyPreviewState>(
-      listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
-        if (state.status == StrategyPreviewStatus.failure) {
+        if (state is StrategyPreviewFailure) {
           // Ideally show a snackbar or error indication
         }
       },

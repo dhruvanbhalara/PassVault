@@ -28,7 +28,7 @@ void main() {
     mockPasswordBloc = MockPasswordBloc();
     when(() => mockAddEditBloc.close()).thenAnswer((_) async {});
     when(() => mockPasswordBloc.close()).thenAnswer((_) async {});
-    when(() => mockAddEditBloc.state).thenReturn(const AddEditPasswordState());
+    when(() => mockAddEditBloc.state).thenReturn(const AddEditInitial());
     when(() => mockPasswordBloc.state).thenReturn(const PasswordInitial());
   });
 

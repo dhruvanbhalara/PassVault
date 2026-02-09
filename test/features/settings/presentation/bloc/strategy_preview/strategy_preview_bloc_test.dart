@@ -26,7 +26,7 @@ void main() {
     const generatedPassword = 'mockPassword123';
 
     test('initial state is correct', () {
-      expect(bloc.state, StrategyPreviewState.initial());
+      expect(bloc.state, const StrategyPreviewInitial());
     });
 
     blocTest<StrategyPreviewBloc, StrategyPreviewState>(
@@ -46,11 +46,8 @@ void main() {
       },
       act: (bloc) => bloc.add(GeneratePreview(settings)),
       expect: () => [
-        const StrategyPreviewState(status: StrategyPreviewStatus.loading),
-        const StrategyPreviewState(
-          status: StrategyPreviewStatus.success,
-          password: generatedPassword,
-        ),
+        const StrategyPreviewLoading(),
+        const StrategyPreviewSuccess(password: generatedPassword),
       ],
     );
 
@@ -71,11 +68,8 @@ void main() {
       },
       act: (bloc) => bloc.add(GeneratePreview(settings)),
       expect: () => [
-        const StrategyPreviewState(status: StrategyPreviewStatus.loading),
-        const StrategyPreviewState(
-          status: StrategyPreviewStatus.failure,
-          errorMessage: 'error_generating_password',
-        ),
+        const StrategyPreviewLoading(),
+        const StrategyPreviewFailure(errorMessage: 'error_generating_password'),
       ],
     );
   });

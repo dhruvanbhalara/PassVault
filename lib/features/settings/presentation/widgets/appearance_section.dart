@@ -14,23 +14,30 @@ class AppearanceSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final themeBloc = context.watch<ThemeBloc>();
+    return BlocBuilder<ThemeBloc, ThemeState>(
+      builder: (context, state) {
+        final themeType = switch (state) {
+          ThemeLoaded(:final themeType) => themeType,
+        };
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SettingsSectionHeader(title: l10n.appearance),
-        Card(
-          child: ListTile(
-            key: const Key('settings_theme_tile'),
-            leading: const Icon(LucideIcons.palette),
-            title: Text(l10n.theme),
-            subtitle: Text(_getThemeName(themeBloc.state.themeType, l10n)),
-            trailing: const Icon(LucideIcons.chevronRight),
-            onTap: () => _showThemePicker(context, themeBloc, l10n),
-          ),
-        ),
-      ],
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SettingsSectionHeader(title: l10n.appearance),
+            Card(
+              child: ListTile(
+                key: const Key('settings_theme_tile'),
+                leading: const Icon(LucideIcons.palette),
+                title: Text(l10n.theme),
+                subtitle: Text(_getThemeName(themeType, l10n)),
+                trailing: const Icon(LucideIcons.chevronRight),
+                onTap: () =>
+                    _showThemePicker(context, context.read<ThemeBloc>(), l10n),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

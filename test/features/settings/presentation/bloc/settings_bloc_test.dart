@@ -63,7 +63,7 @@ void main() {
 
   group('$SettingsBloc', () {
     test('initial state is correct', () {
-      expect(bloc.state, const SettingsState());
+      expect(bloc.state, const SettingsInitial());
     });
 
     group('$LoadSettings', () {
@@ -84,8 +84,8 @@ void main() {
 
         expectLater(
           bloc.stream,
-          emits(
-            isA<SettingsState>().having(
+          emitsThrough(
+            isA<SettingsLoaded>().having(
               (s) => s.useBiometrics,
               'useBiometrics',
               true,

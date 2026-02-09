@@ -72,7 +72,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    when(() => mockBloc.state).thenReturn(StrategyPreviewState.initial());
+    when(() => mockBloc.state).thenReturn(const StrategyPreviewInitial());
     when(() => mockBloc.add(any())).thenReturn(null);
 
     var strategy = PasswordGenerationStrategy.create(name: 'Initial');
@@ -128,7 +128,7 @@ void main() {
         tester.view.resetDevicePixelRatio();
       });
 
-      when(() => mockBloc.state).thenReturn(StrategyPreviewState.initial());
+      when(() => mockBloc.state).thenReturn(const StrategyPreviewInitial());
       when(() => mockBloc.add(any())).thenReturn(null);
 
       var strategy = PasswordGenerationStrategy.create(

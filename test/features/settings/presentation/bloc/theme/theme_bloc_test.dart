@@ -38,7 +38,7 @@ void main() {
       final bloc = ThemeBloc(mockGetThemeUseCase, mockSetThemeUseCase);
       expect(
         bloc.state,
-        const ThemeState(
+        const ThemeLoaded(
           themeType: ThemeType.system,
           themeMode: ThemeMode.system,
         ),
@@ -54,7 +54,7 @@ void main() {
         return ThemeBloc(mockGetThemeUseCase, mockSetThemeUseCase);
       },
       expect: () => [
-        const ThemeState(
+        const ThemeLoaded(
           themeType: ThemeType.light,
           themeMode: ThemeMode.light,
         ),
@@ -67,7 +67,7 @@ void main() {
       act: (bloc) => bloc.add(const ThemeChanged(ThemeType.light)),
       skip: 1, // Skip initialization event emission
       expect: () => [
-        const ThemeState(
+        const ThemeLoaded(
           themeType: ThemeType.light,
           themeMode: ThemeMode.light,
         ),
@@ -83,7 +83,7 @@ void main() {
       act: (bloc) => bloc.add(const ThemeChanged(ThemeType.dark)),
       skip: 1,
       expect: () => [
-        const ThemeState(themeType: ThemeType.dark, themeMode: ThemeMode.dark),
+        const ThemeLoaded(themeType: ThemeType.dark, themeMode: ThemeMode.dark),
       ],
     );
 
@@ -93,7 +93,7 @@ void main() {
       act: (bloc) => bloc.add(const ThemeChanged(ThemeType.amoled)),
       skip: 1,
       expect: () => [
-        const ThemeState(
+        const ThemeLoaded(
           themeType: ThemeType.amoled,
           themeMode: ThemeMode.dark,
         ),

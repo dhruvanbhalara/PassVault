@@ -1,35 +1,31 @@
 import 'package:equatable/equatable.dart';
 
-enum StrategyPreviewStatus { initial, loading, success, failure }
-
-class StrategyPreviewState extends Equatable {
-  final StrategyPreviewStatus status;
+sealed class StrategyPreviewState extends Equatable {
   final String password;
-  final String? errorMessage;
 
-  const StrategyPreviewState({
-    required this.status,
-    this.password = '',
-    this.errorMessage,
-  });
-
-  factory StrategyPreviewState.initial() => const StrategyPreviewState(
-    status: StrategyPreviewStatus.initial,
-    password: '',
-  );
-
-  StrategyPreviewState copyWith({
-    StrategyPreviewStatus? status,
-    String? password,
-    String? errorMessage,
-  }) {
-    return StrategyPreviewState(
-      status: status ?? this.status,
-      password: password ?? this.password,
-      errorMessage: errorMessage ?? this.errorMessage,
-    );
-  }
+  const StrategyPreviewState({this.password = ''});
 
   @override
-  List<Object?> get props => [status, password, errorMessage];
+  List<Object?> get props => [password];
+}
+
+final class StrategyPreviewInitial extends StrategyPreviewState {
+  const StrategyPreviewInitial({super.password});
+}
+
+final class StrategyPreviewLoading extends StrategyPreviewState {
+  const StrategyPreviewLoading({super.password});
+}
+
+final class StrategyPreviewSuccess extends StrategyPreviewState {
+  const StrategyPreviewSuccess({required super.password});
+}
+
+final class StrategyPreviewFailure extends StrategyPreviewState {
+  final String errorMessage;
+
+  const StrategyPreviewFailure({required this.errorMessage, super.password});
+
+  @override
+  List<Object?> get props => [...super.props, errorMessage];
 }

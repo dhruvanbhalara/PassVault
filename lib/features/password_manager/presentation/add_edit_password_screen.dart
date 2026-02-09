@@ -101,22 +101,27 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
 
     return BlocConsumer<AddEditPasswordBloc, AddEditPasswordState>(
       listener: (context, state) {
-        if (state.status == AddEditStatus.generated &&
-            state.generatedPassword != _lastAppliedGeneratedPassword) {
-          _lastAppliedGeneratedPassword = state.generatedPassword;
-          _passwordController.text = state.generatedPassword;
-          setState(() => _obscurePassword = false);
-        } else if (state.status == AddEditStatus.success) {
-          Navigator.of(context).pop();
-        } else if (state.status == AddEditStatus.failure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errorMessage ?? l10n.errorOccurred),
-              backgroundColor: theme.error,
-              behavior: SnackBarBehavior.floating,
-              duration: AppDuration.normal,
-            ),
-          );
+        switch (state) {
+          case AddEditGenerated():
+            if (state.generatedPassword != _lastAppliedGeneratedPassword) {
+              _lastAppliedGeneratedPassword = state.generatedPassword;
+              _passwordController.text = state.generatedPassword;
+              setState(() => _obscurePassword = false);
+            }
+          case AddEditSuccess():
+            Navigator.of(context).pop();
+          case AddEditFailure(:final errorMessage):
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(errorMessage),
+                backgroundColor: theme.error,
+                behavior: SnackBarBehavior.floating,
+                duration: AppDuration.normal,
+              ),
+            );
+          case AddEditInitial():
+          case AddEditSaving():
+            break;
         }
 
         // Initialize selected strategy if needed
@@ -135,10 +140,10 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
           ),
           floatingActionButton: FloatingActionButton.extended(
             key: const Key('add_edit_save_button'),
-            onPressed: state.status == AddEditStatus.saving
+            onPressed: state is AddEditSaving
                 ? null
                 : () => _handleSave(context),
-            icon: state.status == AddEditStatus.saving
+            icon: state is AddEditSaving
                 ? SizedBox(
                     width: 24,
                     height: 24,
@@ -150,6 +155,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                 : const Icon(LucideIcons.save),
             label: Text(l10n.save),
           ),
+
           body: RepaintBoundary(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppSpacing.m),
