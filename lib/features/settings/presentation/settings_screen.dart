@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
@@ -45,7 +46,7 @@ class _SettingsViewState extends State<SettingsView> {
     return MultiBlocListener(
       listeners: [
         BlocListener<SettingsBloc, SettingsState>(
-          listenWhen: (previous, current) => previous.status != current.status,
+          listenWhen: (previous, current) => current is SettingsFailure,
           listener: (context, state) => _handleSettingsState(context, state),
         ),
         BlocListener<ImportExportBloc, ImportExportState>(
@@ -71,11 +72,10 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   void _handleSettingsState(BuildContext context, SettingsState state) {
-    // Only show snackbar for errors
-    if (state.status == SettingsStatus.failure) {
+    if (state is SettingsFailure) {
       final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
       if (isCurrent) {
-        _showSnackBar(context, context.l10n.errorOccurred, isError: true);
+        _showSnackBar(context, state.errorMessage, isError: true);
       }
     }
   }
@@ -104,7 +104,7 @@ class _SettingsViewState extends State<SettingsView> {
       }
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
     } else if (state is DuplicatesDetected) {
-      context.push('/resolve-duplicates', extra: state.duplicates);
+      context.push(AppRoutes.resolveDuplicates, extra: state.duplicates);
       context.read<ImportExportBloc>().add(const ResetMigrationStatus());
     } else if (state is DuplicatesResolved) {
       _showSnackBar(context, context.l10n.importSuccess);

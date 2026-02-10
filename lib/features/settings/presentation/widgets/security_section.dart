@@ -43,15 +43,20 @@ class SecuritySection extends StatelessWidget {
               ),
               BlocBuilder<SettingsBloc, SettingsState>(
                 builder: (context, state) {
-                  return SwitchListTile(
-                    key: const Key('settings_biometric_switch'),
-                    secondary: const Icon(LucideIcons.shieldCheck),
-                    title: Text(l10n.useBiometrics),
-                    value: state.useBiometrics,
-                    onChanged: (value) {
-                      settingsBloc.add(ToggleBiometrics(value));
-                    },
-                  );
+                  return switch (state) {
+                    SettingsInitial(:final useBiometrics) ||
+                    SettingsLoading(:final useBiometrics) ||
+                    SettingsLoaded(:final useBiometrics) ||
+                    SettingsFailure(:final useBiometrics) => SwitchListTile(
+                      key: const Key('settings_biometric_switch'),
+                      secondary: const Icon(LucideIcons.shieldCheck),
+                      title: Text(l10n.useBiometrics),
+                      value: useBiometrics,
+                      onChanged: (value) {
+                        settingsBloc.add(ToggleBiometrics(value));
+                      },
+                    ),
+                  };
                 },
               ),
             ],

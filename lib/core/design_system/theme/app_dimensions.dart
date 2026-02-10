@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 /// Standard spacing tokens for padding, margins, and gaps.
 abstract class AppSpacing {
   /// 2.0
@@ -130,26 +128,8 @@ abstract class AppIconSize {
 /// Helper class providing standardized dimensions and legacy compatibility.
 class AppDimensions {
   // ─────────────────────────────────────────────────────────────
-  // Legacy BorderRadius Getters (Backward Compatibility)
-  // ─────────────────────────────────────────────────────────────
-  static BorderRadius get borderRadiusXXS =>
-      BorderRadius.circular(AppRadius.xxs);
-  static BorderRadius get borderRadiusXS => BorderRadius.circular(AppRadius.xs);
-  static BorderRadius get borderRadiusS => BorderRadius.circular(AppRadius.s);
-  static BorderRadius get borderRadiusM => BorderRadius.circular(AppRadius.m);
-  static BorderRadius get borderRadiusL => BorderRadius.circular(AppRadius.l);
-  static BorderRadius get borderRadiusXL => BorderRadius.circular(AppRadius.xl);
-
-  // ─────────────────────────────────────────────────────────────
-  // Legacy Scaling Constants (Backward Compatibility)
-  // ─────────────────────────────────────────────────────────────
-  static const double radiusXL = AppRadius.xl;
-
-  // ─────────────────────────────────────────────────────────────
   // Semantic Layout Constants
   // ─────────────────────────────────────────────────────────────
-  static const double dragHandleWidth = AppSpacing.dragHandleWidth;
-  static const double dragHandleHeight = AppSpacing.dragHandleHeight;
   static const double sliverAppBarExpandedHeight = 120.0;
   static const double listTileIconSize = 48.0;
   static const double emptyStateIconSize = 64.0;
@@ -168,15 +148,6 @@ class AppDimensions {
   static const double sliderThumbRadius = 10.0;
   static const double sliderOverlayRadius = 20.0;
   static const double listTileDividerIndent = 72.0;
-
-  static const double spaceXS = AppSpacing.xs;
-  static const double spaceS = AppSpacing.s;
-  static const double spaceM = AppSpacing.m;
-  static const double spaceL = AppSpacing.l;
-  static const double spaceXL = AppSpacing.xl;
-  static const double spaceXXL = AppSpacing.xxl;
-  static const double space3XL = AppSpacing.xxxl;
-  static const double space4XL = AppSpacing.x4xl;
 
   // ─────────────────────────────────────────────────────────────
   // Strategy Editor Dimensions

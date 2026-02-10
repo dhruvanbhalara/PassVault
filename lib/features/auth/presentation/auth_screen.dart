@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
@@ -45,7 +46,7 @@ class AuthView extends StatelessWidget {
   void _handleAuthStateChanges(BuildContext context, AuthState state) {
     final theme = context.theme;
     if (state is AuthAuthenticated) {
-      context.go('/home');
+      context.go(AppRoutes.home);
     } else if (state is AuthUnauthenticated) {
       final l10n = context.l10n;
       String? message;

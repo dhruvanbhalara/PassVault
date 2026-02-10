@@ -9,7 +9,7 @@ export 'duplicate_resolution_state.dart';
 class DuplicateResolutionBloc
     extends Bloc<DuplicateResolutionEvent, DuplicateResolutionState> {
   DuplicateResolutionBloc(List<DuplicatePasswordEntry> duplicates)
-    : super(DuplicateResolutionState(resolutions: duplicates)) {
+    : super(DuplicateResolutionInitial(resolutions: duplicates)) {
     on<ResolutionOptionUpdated>(_onResolutionOptionUpdated);
     on<BulkResolutionOptionSet>(_onBulkResolutionOptionSet);
   }
@@ -26,7 +26,7 @@ class DuplicateResolutionBloc
     updatedResolutions[event.index] = updatedResolutions[event.index]
         .withChoice(event.choice);
 
-    emit(state.copyWith(resolutions: updatedResolutions));
+    emit(DuplicateResolutionInitial(resolutions: updatedResolutions));
   }
 
   void _onBulkResolutionOptionSet(
@@ -37,6 +37,6 @@ class DuplicateResolutionBloc
         .map((r) => r.withChoice(event.choice))
         .toList();
 
-    emit(state.copyWith(resolutions: updatedResolutions));
+    emit(DuplicateResolutionInitial(resolutions: updatedResolutions));
   }
 }

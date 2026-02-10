@@ -13,6 +13,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:hive_ce_flutter/hive_flutter.dart' as _i919;
 import 'package:injectable/injectable.dart' as _i526;
+import 'package:local_auth/local_auth.dart' as _i152;
 
 import '../../features/auth/data/repositories/auth_repository_impl.dart'
     as _i153;
@@ -94,8 +95,10 @@ extension GetItInjectableX on _i174.GetIt {
       () => storageModule.secureStorage,
       preResolve: true,
     );
-    gh.lazySingleton<_i374.BiometricService>(() => _i374.BiometricService());
     gh.lazySingleton<_i1024.CryptoService>(() => _i1024.CryptoService());
+    gh.lazySingleton<_i152.LocalAuthentication>(
+      () => storageModule.localAuthentication,
+    );
     gh.lazySingleton<_i288.CsvExporter>(() => _i288.CsvExporter());
     gh.lazySingleton<_i371.EstimatePasswordStrengthUseCase>(
       () => _i371.EstimatePasswordStrengthUseCase(),
@@ -114,6 +117,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => storageModule.openPasswordBox(gh<_i311.EncryptedStorageService>()),
       instanceName: 'passwordBox',
       preResolve: true,
+    );
+    gh.lazySingleton<_i374.BiometricService>(
+      () => _i374.BiometricService(auth: gh<_i152.LocalAuthentication>()),
     );
     gh.lazySingleton<_i636.DataService>(
       () => _i636.DataService(gh<_i1024.CryptoService>()),

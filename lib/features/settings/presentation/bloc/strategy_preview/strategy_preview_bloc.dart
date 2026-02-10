@@ -17,7 +17,7 @@ class StrategyPreviewBloc
   final GeneratePasswordUseCase _generatePasswordUseCase;
 
   StrategyPreviewBloc(this._generatePasswordUseCase)
-    : super(StrategyPreviewState.initial()) {
+    : super(const StrategyPreviewInitial()) {
     on<GeneratePreview>(_onGeneratePreview);
   }
 
@@ -25,7 +25,7 @@ class StrategyPreviewBloc
     GeneratePreview event,
     Emitter<StrategyPreviewState> emit,
   ) {
-    emit(state.copyWith(status: StrategyPreviewStatus.loading));
+    emit(StrategyPreviewLoading(password: state.password));
 
     var safeSettings = event.settings;
     if (!event.settings.useUppercase &&
@@ -44,17 +44,12 @@ class StrategyPreviewBloc
         useLowercase: safeSettings.useLowercase,
         excludeAmbiguousChars: safeSettings.excludeAmbiguousChars,
       );
-      emit(
-        state.copyWith(
-          status: StrategyPreviewStatus.success,
-          password: password,
-        ),
-      );
+      emit(StrategyPreviewSuccess(password: password));
     } catch (e) {
       emit(
-        state.copyWith(
-          status: StrategyPreviewStatus.failure,
+        StrategyPreviewFailure(
           errorMessage: 'error_generating_password',
+          password: state.password,
         ),
       );
     }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
@@ -32,7 +33,7 @@ class HomeView extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         key: const Key('home_fab'),
-        onPressed: () => context.push('/add-password'),
+        onPressed: () => context.push(AppRoutes.addPassword),
         child: const Icon(LucideIcons.plus),
       ),
       body: CustomScrollView(
@@ -91,7 +92,7 @@ class _HomeAppBar extends StatelessWidget {
         IconButton(
           key: const Key('home_settings_button'),
           icon: Icon(LucideIcons.settings, color: theme.onVaultGradient),
-          onPressed: () => context.push('/settings'),
+          onPressed: () => context.push(AppRoutes.settings),
         ),
       ],
     );
@@ -117,7 +118,7 @@ class _HomeScreenGrid extends StatelessWidget {
           child: PasswordListTile(
             entry: passwords[index],
             onTap: () =>
-                context.push('/edit-password', extra: passwords[index]),
+                context.push(AppRoutes.editPassword, extra: passwords[index]),
             onDismissed: () => context.read<PasswordBloc>().add(
               DeletePassword(passwords[index].id),
             ),
@@ -144,7 +145,7 @@ class _HomeScreenList extends StatelessWidget {
             child: PasswordListTile(
               entry: passwords[index],
               onTap: () =>
-                  context.push('/edit-password', extra: passwords[index]),
+                  context.push(AppRoutes.editPassword, extra: passwords[index]),
               onDismissed: () => context.read<PasswordBloc>().add(
                 DeletePassword(passwords[index].id),
               ),

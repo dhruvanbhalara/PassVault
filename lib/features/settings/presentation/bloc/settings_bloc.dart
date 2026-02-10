@@ -12,7 +12,7 @@ export 'settings_state.dart';
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final SettingsRepository _settingsRepository;
 
-  SettingsBloc(this._settingsRepository) : super(const SettingsState()) {
+  SettingsBloc(this._settingsRepository) : super(const SettingsInitial()) {
     on<LoadSettings>(_onLoadSettings);
     on<ToggleBiometrics>(_onToggleBiometrics);
     on<UpdatePasswordSettings>(_onUpdatePasswordSettings);
@@ -23,6 +23,13 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   }
 
   void _onLoadSettings(LoadSettings event, Emitter<SettingsState> emit) {
+    emit(
+      SettingsLoading(
+        useBiometrics: state.useBiometrics,
+        passwordSettings: state.passwordSettings,
+      ),
+    );
+
     final biometricsResult = _settingsRepository.getBiometricsEnabled();
     final useBiometrics = biometricsResult.fold(
       (failure) => false,
@@ -36,7 +43,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     );
 
     emit(
-      state.copyWith(
+      SettingsLoaded(
         useBiometrics: useBiometrics,
         passwordSettings: passwordSettings,
       ),
@@ -48,7 +55,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     Emitter<SettingsState> emit,
   ) async {
     await _settingsRepository.setBiometricsEnabled(event.value);
-    emit(state.copyWith(useBiometrics: event.value));
+    emit(
+      SettingsLoaded(
+        useBiometrics: event.value,
+        passwordSettings: state.passwordSettings,
+      ),
+    );
   }
 
   Future<void> _onUpdatePasswordSettings(
@@ -56,7 +68,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     Emitter<SettingsState> emit,
   ) async {
     await _settingsRepository.savePasswordGenerationSettings(event.settings);
-    emit(state.copyWith(passwordSettings: event.settings));
+    emit(
+      SettingsLoaded(
+        useBiometrics: state.useBiometrics,
+        passwordSettings: event.settings,
+      ),
+    );
   }
 
   Future<void> _onUpdateStrategy(
@@ -68,7 +85,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     }).toList();
     final newSettings = state.passwordSettings.copyWith(strategies: strategies);
     await _settingsRepository.savePasswordGenerationSettings(newSettings);
-    emit(state.copyWith(passwordSettings: newSettings));
+    emit(
+      SettingsLoaded(
+        useBiometrics: state.useBiometrics,
+        passwordSettings: newSettings,
+      ),
+    );
   }
 
   Future<void> _onAddStrategy(
@@ -80,7 +102,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     )..add(event.strategy);
     final newSettings = state.passwordSettings.copyWith(strategies: strategies);
     await _settingsRepository.savePasswordGenerationSettings(newSettings);
-    emit(state.copyWith(passwordSettings: newSettings));
+    emit(
+      SettingsLoaded(
+        useBiometrics: state.useBiometrics,
+        passwordSettings: newSettings,
+      ),
+    );
   }
 
   Future<void> _onDeleteStrategy(
@@ -104,7 +131,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       defaultStrategyId: newDefaultId,
     );
     await _settingsRepository.savePasswordGenerationSettings(newSettings);
-    emit(state.copyWith(passwordSettings: newSettings));
+    emit(
+      SettingsLoaded(
+        useBiometrics: state.useBiometrics,
+        passwordSettings: newSettings,
+      ),
+    );
   }
 
   Future<void> _onSetDefaultStrategy(
@@ -115,6 +147,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       defaultStrategyId: event.id,
     );
     await _settingsRepository.savePasswordGenerationSettings(newSettings);
-    emit(state.copyWith(passwordSettings: newSettings));
+    emit(
+      SettingsLoaded(
+        useBiometrics: state.useBiometrics,
+        passwordSettings: newSettings,
+      ),
+    );
   }
 }

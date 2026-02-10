@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:injectable/injectable.dart';
@@ -6,16 +7,14 @@ import 'package:pointycastle/export.dart';
 
 /// Provides AES-256-GCM encryption for data export/import.
 ///
-/// This service uses password-based key derivation (PBKDF2) to create
-/// encryption keys from user-provided passwords, ensuring exported data
-/// can be securely transported and imported on other devices.
+/// This service uses password-based key derivation (Argon2id) to create
+/// a strong 256-bit encryption key from a user-provided password.
+///
+/// This ensures exported data can be securely transported and imported
+/// on other devices by providing high resistance to brute-force attacks.
 @lazySingleton
 class CryptoService {
-  /// Number of PBKDF2 iterations for key derivation.
-  /// Higher values increase security but also computation time.
-  static const int _pbkdf2Iterations = 100000;
-
-  /// Salt length in bytes for PBKDF2.
+  /// Salt length in bytes for Argon2id.
   static const int _saltLength = 32;
 
   /// IV (nonce) length in bytes for AES-GCM.
@@ -26,6 +25,11 @@ class CryptoService {
 
   /// Key length in bytes (256 bits for AES-256).
   static const int _keyLength = 32;
+
+  /// Argon2 parameters
+  static const int _argon2Iterations = 3;
+  static const int _argon2Memory = 65536; // 64MB in KB
+  static const int _argon2Lanes = 4;
 
   /// Encrypts data with a password using AES-256-GCM.
   ///
@@ -39,7 +43,7 @@ class CryptoService {
     final salt = secureRandom.nextBytes(_saltLength);
     final iv = secureRandom.nextBytes(_ivLength);
 
-    // Derive key from password using PBKDF2
+    // Derive key from password using Argon2id
     final key = _deriveKey(password, salt);
 
     // Encrypt using AES-GCM
@@ -95,7 +99,7 @@ class CryptoService {
       _saltLength + _ivLength,
     );
 
-    // Derive key from password using PBKDF2
+    // Derive key from password using Argon2id
     final key = _deriveKey(password, salt);
 
     // Decrypt using AES-GCM
@@ -144,37 +148,32 @@ class CryptoService {
     return utf8.decode(decrypted);
   }
 
-  /// Derives a 256-bit key from a password using PBKDF2-HMAC-SHA256.
+  /// Derives a 256-bit key from a password using Argon2id.
   Uint8List _deriveKey(String password, Uint8List salt) {
-    final pbkdf2 = PBKDF2KeyDerivator(HMac(SHA256Digest(), 64))
-      ..init(Pbkdf2Parameters(salt, _pbkdf2Iterations, _keyLength));
+    final argon2 = Argon2BytesGenerator();
+    argon2.init(
+      Argon2Parameters(
+        Argon2Parameters.ARGON2_id,
+        salt,
+        desiredKeyLength: _keyLength,
+        iterations: _argon2Iterations,
+        memory: _argon2Memory,
+        lanes: _argon2Lanes,
+      ),
+    );
 
-    return pbkdf2.process(Uint8List.fromList(utf8.encode(password)));
+    final key = argon2.process(Uint8List.fromList(utf8.encode(password)));
+    return key;
   }
 
   /// Creates a secure random number generator.
   SecureRandom _createSecureRandom() {
     final secureRandom = FortunaRandom();
+    final random = Random.secure();
     final seed = Uint8List(32);
-
-    // Use current time as entropy source (combined with Fortuna's internal state)
-    final now = DateTime.now().microsecondsSinceEpoch;
-    for (int i = 0; i < 8; i++) {
-      seed[i] = (now >> (i * 8)) & 0xFF;
+    for (int i = 0; i < 32; i++) {
+      seed[i] = random.nextInt(256);
     }
-
-    // Add additional entropy from various sources
-    final random = DateTime.now().millisecondsSinceEpoch;
-    for (int i = 8; i < 16; i++) {
-      seed[i] = (random >> ((i - 8) * 8)) & 0xFF;
-    }
-
-    // Add some more entropy using hashCode of now
-    final hashCode = now.hashCode;
-    for (int i = 16; i < 24; i++) {
-      seed[i] = (hashCode >> ((i - 16) * 8)) & 0xFF;
-    }
-
     secureRandom.seed(KeyParameter(seed));
     return secureRandom;
   }

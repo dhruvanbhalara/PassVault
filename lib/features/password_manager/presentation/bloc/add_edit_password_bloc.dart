@@ -29,7 +29,7 @@ class AddEditPasswordBloc
     this._estimateStrengthUseCase,
     this._getSettingsUseCase,
     this._savePasswordUseCase,
-  ) : super(const AddEditPasswordState()) {
+  ) : super(const AddEditInitial()) {
     on<GenerateStrongPassword>(_onGenerateStrongPassword);
     on<PasswordChanged>(_onPasswordChanged);
     on<SaveEntry>(_onSaveEntry);
@@ -45,7 +45,13 @@ class AddEditPasswordBloc
     final result = _getSettingsUseCase();
     result.fold(
       (failure) => null,
-      (settings) => emit(state.copyWith(settings: settings)),
+      (settings) => emit(
+        AddEditInitial(
+          generatedPassword: state.generatedPassword,
+          strength: state.strength,
+          settings: settings,
+        ),
+      ),
     );
   }
 
@@ -53,23 +59,11 @@ class AddEditPasswordBloc
     GenerateStrongPassword event,
     Emitter<AddEditPasswordState> emit,
   ) {
-    if (state.settings == null) {
-      // Fallback if settings haven't loaded yet?
-      // Or re-fetch.
-      // For simplicity let's re-use the fetched settings or fetch now.
-    }
-
-    // We can rely on state.settings being populated, OR better yet, fetch fresh settings
-    // to ensure we have the latest.
     final result = _getSettingsUseCase();
-
     final settings = result.fold(
       (failure) => PasswordGenerationSettings.initial(),
       (settings) => settings,
     );
-
-    // Update state with fresh settings
-    // We emit later, so just use local var for calculation.
 
     // Determine strategy
     PasswordGenerationStrategy strategy;
@@ -96,11 +90,10 @@ class AddEditPasswordBloc
     final strength = _estimateStrengthUseCase(password);
 
     emit(
-      state.copyWith(
-        status: AddEditStatus.generated,
+      AddEditGenerated(
         generatedPassword: password,
         strength: strength,
-        settings: settings, // Update settings in state
+        settings: settings,
       ),
     );
   }
@@ -112,27 +105,45 @@ class AddEditPasswordBloc
     // Re-calculate strength as user types
     final strength = _estimateStrengthUseCase(event.password);
 
-    // Reset status to initial so the UI listener knows this isn't an auto-generation.
-    // This allows the user to manually edit without the listener overwriting their text.
-    emit(state.copyWith(status: AddEditStatus.initial, strength: strength));
+    emit(
+      AddEditInitial(
+        generatedPassword: state.generatedPassword,
+        strength: strength,
+        settings: state.settings,
+      ),
+    );
   }
 
   Future<void> _onSaveEntry(
     SaveEntry event,
     Emitter<AddEditPasswordState> emit,
   ) async {
-    emit(state.copyWith(status: AddEditStatus.saving));
+    emit(
+      AddEditSaving(
+        generatedPassword: state.generatedPassword,
+        strength: state.strength,
+        settings: state.settings,
+      ),
+    );
 
     final result = await _savePasswordUseCase(event.entry);
 
     result.fold(
       (failure) => emit(
-        state.copyWith(
-          status: AddEditStatus.failure,
+        AddEditFailure(
           errorMessage: failure.message,
+          generatedPassword: state.generatedPassword,
+          strength: state.strength,
+          settings: state.settings,
         ),
       ),
-      (_) => emit(state.copyWith(status: AddEditStatus.success)),
+      (_) => emit(
+        AddEditSuccess(
+          generatedPassword: state.generatedPassword,
+          strength: state.strength,
+          settings: state.settings,
+        ),
+      ),
     );
   }
 }

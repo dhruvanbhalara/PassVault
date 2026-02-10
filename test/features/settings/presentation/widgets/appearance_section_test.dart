@@ -22,7 +22,7 @@ void main() {
   setUp(() {
     mockThemeBloc = MockThemeBloc();
     when(() => mockThemeBloc.state).thenReturn(
-      const ThemeState(
+      const ThemeLoaded(
         themeType: ThemeType.system,
         themeMode: ThemeMode.system,
       ),

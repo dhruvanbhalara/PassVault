@@ -17,7 +17,12 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   final SetThemeUseCase _setThemeUseCase;
 
   ThemeBloc(this._getThemeUseCase, this._setThemeUseCase)
-    : super(ThemeState.initial()) {
+    : super(
+        const ThemeLoaded(
+          themeType: ThemeType.system,
+          themeMode: ThemeMode.system,
+        ),
+      ) {
     on<ThemeInitialized>(_onThemeInitialized);
     on<ThemeChanged>(_onThemeChanged);
 
@@ -57,6 +62,6 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
         break;
     }
 
-    emit(ThemeState(themeType: themeType, themeMode: mode));
+    emit(ThemeLoaded(themeType: themeType, themeMode: mode));
   }
 }

@@ -18,7 +18,7 @@ class MockSettingsBloc extends Mock implements SettingsBloc {
 class MockStrategyPreviewBloc extends Mock implements StrategyPreviewBloc {
   @override
   Stream<StrategyPreviewState> get stream =>
-      Stream.value(StrategyPreviewState.initial());
+      Stream.value(const StrategyPreviewInitial());
 }
 
 void main() {
@@ -69,7 +69,8 @@ void main() {
   ) async {
     final strategy = PasswordGenerationStrategy.create(name: 'My Strategy');
     when(() => mockSettingsBloc.state).thenReturn(
-      SettingsState(
+      SettingsLoaded(
+        useBiometrics: false,
         passwordSettings: PasswordGenerationSettings(
           strategies: [strategy],
           defaultStrategyId: strategy.id,

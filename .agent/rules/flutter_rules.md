@@ -17,7 +17,7 @@ trigger: always_on
 ## 1. Security & Data Integrity (Architect Level)
 -   **AES-256-GCM**: Use Authenticated Encryption for all sensitive storage.
 -   **Secret Storage**: Mandatory use of `flutter_secure_storage` for encryption keys and master-derived keys.
--   **Key Derivation**: Mandate NIST-approved hashing (Argon2 or PBKDF2) for master password derivation before local storage encryption.
+-   **Key Derivation**: Mandate NIST-approved hashing (**Argon2id**) for master password derivation before local storage encryption and export.
 -   **Memory Safety**: Strictly clear sensitive variables (passwords, keys) from memory when the operation finishes or the app enters the background. 
 -   **Clipboard Safety**: Mandate programmatic clearing of sensitive data (OTPs, Passwords) after a short duration (30-60s).
 -   **Biometric Gate**: Mandatory local authentication for any view, export, or destructive action.

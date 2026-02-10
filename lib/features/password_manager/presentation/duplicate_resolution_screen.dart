@@ -70,67 +70,70 @@ class DuplicateResolutionView extends StatelessWidget {
           }
         },
         child: BlocBuilder<DuplicateResolutionBloc, DuplicateResolutionState>(
-          builder: (context, resolutionState) {
+          builder: (context, state) {
             final isLoading =
                 context.watch<ImportExportBloc>().state is ImportExportLoading;
 
-            return Scaffold(
-              appBar: AppBar(title: Text(context.l10n.resolveDuplicatesTitle)),
-              bottomNavigationBar: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.m),
-                  child: AppButton(
-                    key: const Key('resolve_duplicates_button'),
-                    text: context.l10n.resolveCountDuplicates(
-                      resolutionState.resolutions.length,
+            return switch (state) {
+              DuplicateResolutionInitial(:final resolutions) => Scaffold(
+                appBar: AppBar(
+                  title: Text(context.l10n.resolveDuplicatesTitle),
+                ),
+                bottomNavigationBar: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.m),
+                    child: AppButton(
+                      key: const Key('resolve_duplicates_button'),
+                      text: context.l10n.resolveCountDuplicates(
+                        resolutions.length,
+                      ),
+                      isLoading: isLoading,
+                      onPressed: state.hasUnresolved
+                          ? null
+                          : () => _handleResolve(context, state),
+                      icon: LucideIcons.circleCheck,
                     ),
-                    isLoading: isLoading,
-                    onPressed: resolutionState.hasUnresolved
-                        ? null
-                        : () => _handleResolve(context, resolutionState),
-                    icon: LucideIcons.circleCheck,
                   ),
                 ),
-              ),
-              body: Column(
-                children: [
-                  _InfoBanner(count: resolutionState.resolutions.length),
-                  if (isLoading)
-                    const Padding(
-                      padding: EdgeInsets.all(AppSpacing.l),
-                      child: AppLoader(size: 40),
-                    ),
-                  if (!isLoading)
-                    Expanded(
-                      child: ListView.separated(
-                        padding: const EdgeInsets.all(AppSpacing.m),
-                        itemCount: resolutionState.resolutions.length + 1,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: AppSpacing.m),
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            return BulkResolutionHeader(
-                              onChoiceSelected: (choice) => context
-                                  .read<DuplicateResolutionBloc>()
-                                  .add(BulkResolutionOptionSet(choice)),
-                            );
-                          }
-                          final duplicate =
-                              resolutionState.resolutions[index - 1];
-                          return DuplicateCard(
-                            key: Key('duplicate_card_${index - 1}'),
-                            duplicate: duplicate,
-                            onChoiceChanged: (choice) =>
-                                context.read<DuplicateResolutionBloc>().add(
-                                  ResolutionOptionUpdated(index - 1, choice),
-                                ),
-                          );
-                        },
+                body: Column(
+                  children: [
+                    _InfoBanner(count: resolutions.length),
+                    if (isLoading)
+                      const Padding(
+                        padding: EdgeInsets.all(AppSpacing.l),
+                        child: AppLoader(size: 40),
                       ),
-                    ),
-                ],
+                    if (!isLoading)
+                      Expanded(
+                        child: ListView.separated(
+                          padding: const EdgeInsets.all(AppSpacing.m),
+                          itemCount: resolutions.length + 1,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: AppSpacing.m),
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return BulkResolutionHeader(
+                                onChoiceSelected: (choice) => context
+                                    .read<DuplicateResolutionBloc>()
+                                    .add(BulkResolutionOptionSet(choice)),
+                              );
+                            }
+                            final duplicate = resolutions[index - 1];
+                            return DuplicateCard(
+                              key: Key('duplicate_card_${index - 1}'),
+                              duplicate: duplicate,
+                              onChoiceChanged: (choice) =>
+                                  context.read<DuplicateResolutionBloc>().add(
+                                    ResolutionOptionUpdated(index - 1, choice),
+                                  ),
+                            );
+                          },
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            );
+            };
           },
         ),
       ),

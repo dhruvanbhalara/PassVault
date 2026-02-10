@@ -21,40 +21,40 @@ class StrategyOptionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    return SwitchListTile.adaptive(
-      value: value,
-      onChanged: onChanged,
-      secondary: Container(
-        padding: const EdgeInsets.all(AppSpacing.s),
-        decoration: BoxDecoration(
-          color: theme.primary.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(AppRadius.m),
-        ),
-        child: Icon(icon, color: theme.primary, size: 20),
+    final colorScheme = context.colorScheme;
+
+    return SwitchListTile(
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.l,
+        vertical: AppSpacing.s,
+      ),
+      secondary: Icon(
+        icon,
+        color: value
+            ? theme.primary
+            : colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+        size: AppIconSize.m,
       ),
       title: Text(
         title,
-        style: context.typography.bodyMedium?.copyWith(
+        style: context.typography.bodyLarge?.copyWith(
           fontWeight: FontWeight.w500,
         ),
       ),
       subtitle: subtitle != null
           ? Text(
               subtitle!,
-              style: context.typography.labelSmall?.copyWith(
-                color: context.colorScheme.onSurfaceVariant,
+              style: context.typography.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             )
           : null,
-      activeTrackColor: theme.primary,
-      activeThumbColor: theme.onPrimary,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.m,
-        vertical: AppSpacing.xs,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.l),
-      ),
+      value: value,
+      onChanged: onChanged,
+      activeThumbColor: theme.primary,
+      activeTrackColor: theme.primary.withValues(alpha: 0.2),
+      inactiveThumbColor: colorScheme.outline,
+      inactiveTrackColor: colorScheme.surfaceContainerHighest,
     );
   }
 }

@@ -1,45 +1,63 @@
 import 'package:equatable/equatable.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 
-enum AddEditStatus { initial, generated, saving, success, failure }
-
-class AddEditPasswordState extends Equatable {
-  final AddEditStatus status;
+sealed class AddEditPasswordState extends Equatable {
   final String generatedPassword;
   final double strength;
-  final String? errorMessage;
   final PasswordGenerationSettings? settings;
 
   const AddEditPasswordState({
-    this.status = AddEditStatus.initial,
     this.generatedPassword = '',
     this.strength = 0.0,
-    this.errorMessage,
     this.settings,
   });
 
-  AddEditPasswordState copyWith({
-    AddEditStatus? status,
-    String? generatedPassword,
-    double? strength,
-    String? errorMessage,
-    PasswordGenerationSettings? settings,
-  }) {
-    return AddEditPasswordState(
-      status: status ?? this.status,
-      generatedPassword: generatedPassword ?? this.generatedPassword,
-      strength: strength ?? this.strength,
-      errorMessage: errorMessage ?? this.errorMessage,
-      settings: settings ?? this.settings,
-    );
-  }
+  @override
+  List<Object?> get props => [generatedPassword, strength, settings];
+}
+
+final class AddEditInitial extends AddEditPasswordState {
+  const AddEditInitial({
+    super.generatedPassword,
+    super.strength,
+    super.settings,
+  });
+}
+
+final class AddEditGenerated extends AddEditPasswordState {
+  const AddEditGenerated({
+    required super.generatedPassword,
+    required super.strength,
+    super.settings,
+  });
+}
+
+final class AddEditSaving extends AddEditPasswordState {
+  const AddEditSaving({
+    super.generatedPassword,
+    super.strength,
+    super.settings,
+  });
+}
+
+final class AddEditSuccess extends AddEditPasswordState {
+  const AddEditSuccess({
+    super.generatedPassword,
+    super.strength,
+    super.settings,
+  });
+}
+
+final class AddEditFailure extends AddEditPasswordState {
+  final String errorMessage;
+
+  const AddEditFailure({
+    required this.errorMessage,
+    super.generatedPassword,
+    super.strength,
+    super.settings,
+  });
 
   @override
-  List<Object?> get props => [
-    status,
-    generatedPassword,
-    strength,
-    errorMessage,
-    settings,
-  ];
+  List<Object?> get props => [...super.props, errorMessage];
 }

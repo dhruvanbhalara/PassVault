@@ -10,6 +10,7 @@ import 'package:passvault/features/password_manager/domain/entities/duplicate_pa
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
+import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
@@ -64,11 +65,17 @@ void main() {
     when(() => mockPasswordBloc.close()).thenAnswer((_) async {});
     when(() => mockImportExportBloc.close()).thenAnswer((_) async {});
 
-    when(
-      () => mockSettingsBloc.state,
-    ).thenReturn(const SettingsState(useBiometrics: false));
+    when(() => mockSettingsBloc.state).thenReturn(
+      const SettingsLoaded(
+        useBiometrics: false,
+        passwordSettings: PasswordGenerationSettings(
+          strategies: [],
+          defaultStrategyId: '',
+        ),
+      ),
+    );
     when(() => mockThemeBloc.state).thenReturn(
-      const ThemeState(
+      const ThemeLoaded(
         themeType: ThemeType.system,
         themeMode: ThemeMode.system,
       ),

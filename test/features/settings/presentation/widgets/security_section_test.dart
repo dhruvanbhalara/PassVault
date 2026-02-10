@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
+import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/widgets/security_section.dart';
 import 'package:passvault/l10n/app_localizations.dart';
@@ -16,9 +17,15 @@ void main() {
 
   setUp(() {
     mockSettingsBloc = MockSettingsBloc();
-    when(
-      () => mockSettingsBloc.state,
-    ).thenReturn(const SettingsState(useBiometrics: false));
+    when(() => mockSettingsBloc.state).thenReturn(
+      const SettingsLoaded(
+        useBiometrics: false,
+        passwordSettings: PasswordGenerationSettings(
+          strategies: [],
+          defaultStrategyId: '',
+        ),
+      ),
+    );
   });
 
   Widget createWidgetUnderTest() {

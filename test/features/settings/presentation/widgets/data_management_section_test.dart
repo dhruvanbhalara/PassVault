@@ -25,7 +25,7 @@ void main() {
   setUp(() {
     mockSettingsBloc = MockSettingsBloc();
     mockImportExportBloc = MockImportExportBloc();
-    when(() => mockSettingsBloc.state).thenReturn(const SettingsState());
+    when(() => mockSettingsBloc.state).thenReturn(const SettingsInitial());
     when(
       () => mockImportExportBloc.state,
     ).thenReturn(const ImportExportInitial());

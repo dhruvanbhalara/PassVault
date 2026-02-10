@@ -50,7 +50,7 @@ Presentation → Domain ← Data
 
 1. **Master Key**: Generated via `Hive.generateSecureKey()` and stored in `FlutterSecureStorage`.
 2. **Encrypted Storage**: All Hive boxes (`passwords`, `settings`) are encrypted using `HiveAesCipher` with the Master Key.
-3. **Data Export**: Files are encrypted using **AES-256-GCM** with a user-provided password derived via **PBKDF2**.
+3. **Data Export**: Files are encrypted using **AES-256-GCM** with a user-provided password derived via **Argon2id**.
 
 ## State Management
 

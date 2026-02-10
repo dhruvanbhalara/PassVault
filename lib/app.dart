@@ -18,23 +18,17 @@ class PassVaultApp extends StatelessWidget {
       create: (context) => getIt<ThemeBloc>(),
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {
-          ThemeData theme;
-          ThemeData? darkThemeData;
-          switch (state.themeType) {
-            case ThemeType.system:
-              theme = AppTheme.getTheme(ThemeType.light);
-              darkThemeData = AppTheme.getTheme(ThemeType.dark);
-              break;
-            case ThemeType.light:
-              theme = AppTheme.getTheme(ThemeType.light);
-              break;
-            case ThemeType.dark:
-              theme = AppTheme.getTheme(ThemeType.dark);
-              break;
-            case ThemeType.amoled:
-              theme = AppTheme.getTheme(ThemeType.amoled);
-              break;
-          }
+          final (theme, darkThemeData, themeMode) = switch (state) {
+            ThemeLoaded(:final themeType, :final themeMode) => (
+              AppTheme.getTheme(
+                themeType == ThemeType.system ? ThemeType.light : themeType,
+              ),
+              themeType == ThemeType.system
+                  ? AppTheme.getTheme(ThemeType.dark)
+                  : null,
+              themeMode,
+            ),
+          };
 
           return MaterialApp.router(
             title: 'PassVault',
@@ -48,7 +42,7 @@ class PassVaultApp extends StatelessWidget {
             supportedLocales: AppLocalizations.supportedLocales,
             theme: theme,
             darkTheme: darkThemeData ?? theme,
-            themeMode: state.themeMode,
+            themeMode: themeMode,
             routerConfig: appRouter,
           );
         },
