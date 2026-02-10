@@ -34,6 +34,7 @@ void main() {
     testWidgets('submitting password adds ExportEncryptedData event', (
       WidgetTester tester,
     ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(
         wrapWithMaterial(
           PasswordProtectedDialog(bloc: mockBloc, isExport: true),
@@ -41,7 +42,7 @@ void main() {
       );
 
       await tester.enterText(find.byType(TextFormField), 'password123');
-      await tester.tap(find.text('Export'));
+      await tester.tap(find.text(l10n.export));
       await tester.pumpAndSettle();
 
       verify(

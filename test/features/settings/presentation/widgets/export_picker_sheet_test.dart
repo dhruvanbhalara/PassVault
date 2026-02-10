@@ -34,11 +34,12 @@ void main() {
     testWidgets('selecting JSON export adds event to bloc', (
       WidgetTester tester,
     ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(
         wrapWithMaterial(ExportPickerSheet(bloc: mockBloc)),
       );
 
-      await tester.tap(find.text('Export as JSON'));
+      await tester.tap(find.text(l10n.exportJson));
       await tester.pumpAndSettle();
 
       verify(() => mockBloc.add(const ExportDataEvent(isJson: true))).called(1);
@@ -47,11 +48,12 @@ void main() {
     testWidgets('selecting CSV export adds event to bloc', (
       WidgetTester tester,
     ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(
         wrapWithMaterial(ExportPickerSheet(bloc: mockBloc)),
       );
 
-      await tester.tap(find.text('Export as CSV'));
+      await tester.tap(find.text(l10n.exportCsv));
       await tester.pumpAndSettle();
 
       verify(

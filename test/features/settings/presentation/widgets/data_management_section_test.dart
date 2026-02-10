@@ -52,20 +52,22 @@ void main() {
     testWidgets('displays import and export tiles', (
       WidgetTester tester,
     ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      expect(find.text('Export Data (JSON/CSV)'), findsOneWidget);
-      expect(find.text('Import Data'), findsOneWidget);
+      expect(find.text(l10n.exportData), findsOneWidget);
+      expect(find.text(l10n.importData), findsOneWidget);
     });
 
     testWidgets('tapping export tile shows export picker sheet', (
       WidgetTester tester,
     ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Export Data (JSON/CSV)'));
+      await tester.tap(find.text(l10n.exportData));
       await tester.pumpAndSettle();
 
       expect(find.byType(BottomSheet), findsOneWidget);
@@ -74,10 +76,11 @@ void main() {
     testWidgets('tapping import tile shows import picker sheet', (
       WidgetTester tester,
     ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Import Data'));
+      await tester.tap(find.text(l10n.importData));
       await tester.pumpAndSettle();
 
       expect(find.byType(BottomSheet), findsOneWidget);

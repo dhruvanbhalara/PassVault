@@ -66,6 +66,7 @@ void main() {
     testWidgets('calls onChoiceChanged when a resolution is selected', (
       WidgetTester tester,
     ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       final onChoiceChanged = MockOnChoiceChanged();
       await tester.pumpWidget(
         wrapWithMaterial(
@@ -76,7 +77,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Keep Existing'));
+      await tester.tap(find.text(l10n.keepExistingTitle));
       await tester.pumpAndSettle();
 
       verify(

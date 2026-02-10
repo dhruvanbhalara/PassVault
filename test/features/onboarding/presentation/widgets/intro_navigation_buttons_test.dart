@@ -17,6 +17,7 @@ void main() {
 
   group('$IntroNavigationButtons', () {
     testWidgets('renders pagination and buttons', (WidgetTester tester) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       bool skipPressed = false;
       bool nextPressed = false;
 
@@ -31,20 +32,21 @@ void main() {
         ),
       );
 
-      expect(find.text('Skip'), findsOneWidget);
-      expect(find.text('Next'), findsOneWidget);
+      expect(find.text(l10n.skip), findsOneWidget);
+      expect(find.text(l10n.next), findsOneWidget);
       expect(find.byType(IntroPaginationIndicator), findsOneWidget);
 
-      await tester.tap(find.text('Skip'));
+      await tester.tap(find.text(l10n.skip));
       expect(skipPressed, isTrue);
 
-      await tester.tap(find.text('Next'));
+      await tester.tap(find.text(l10n.next));
       expect(nextPressed, isTrue);
     });
 
     testWidgets('shows Done instead of Next on last page', (
       WidgetTester tester,
     ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(
         wrapWithMaterial(
           IntroNavigationButtons(
@@ -56,8 +58,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Done'), findsOneWidget);
-      expect(find.text('Skip'), findsNothing);
+      expect(find.text(l10n.done), findsOneWidget);
+      expect(find.text(l10n.skip), findsNothing);
     });
   });
 }

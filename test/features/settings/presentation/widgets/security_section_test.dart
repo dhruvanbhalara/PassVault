@@ -46,10 +46,11 @@ void main() {
     testWidgets('displays biometric switch with current state', (
       WidgetTester tester,
     ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      expect(find.text('Biometric Authentication'), findsOneWidget);
+      expect(find.text(l10n.useBiometrics), findsOneWidget);
       final switchFinder = find.byType(Switch);
       expect(switchFinder, findsOneWidget);
 
@@ -74,10 +75,11 @@ void main() {
     testWidgets('displays password generation tile', (
       WidgetTester tester,
     ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      expect(find.text('Password Generation'), findsOneWidget);
+      expect(find.text(l10n.passwordGeneration), findsOneWidget);
     });
   });
 }

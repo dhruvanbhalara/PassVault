@@ -16,3 +16,7 @@ Widget createTestWidget({required Widget child}) {
     home: Scaffold(body: child),
   );
 }
+
+Future<AppLocalizations> getL10n() async {
+  return await AppLocalizations.delegate.load(const Locale('en'));
+}

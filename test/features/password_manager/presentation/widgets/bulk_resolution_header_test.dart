@@ -24,6 +24,7 @@ void main() {
     testWidgets('calls onChoiceSelected for each bulk action', (
       WidgetTester tester,
     ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       final onChoiceSelected = MockOnChoiceChanged();
       await tester.pumpWidget(
         wrapWithMaterial(
@@ -31,17 +32,17 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Keep All Existing'));
+      await tester.tap(find.text(l10n.keepAllExisting));
       verify(
         () => onChoiceSelected.call(DuplicateResolutionChoice.keepExisting),
       ).called(1);
 
-      await tester.tap(find.text('Replace All'));
+      await tester.tap(find.text(l10n.replaceAll));
       verify(
         () => onChoiceSelected.call(DuplicateResolutionChoice.replaceWithNew),
       ).called(1);
 
-      await tester.tap(find.text('Keep All Both'));
+      await tester.tap(find.text(l10n.keepAllBothAction));
       verify(
         () => onChoiceSelected.call(DuplicateResolutionChoice.keepBoth),
       ).called(1);

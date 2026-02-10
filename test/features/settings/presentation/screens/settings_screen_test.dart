@@ -48,9 +48,11 @@ void main() {
   late MockPasswordBloc mockPasswordBloc;
   late MockImportExportBloc mockImportExportBloc;
   late MockGoRouter mockGoRouter;
+  late AppLocalizations l10n;
 
-  setUpAll(() {
+  setUpAll(() async {
     registerFallbackValue(const ResetMigrationStatus());
+    l10n = await AppLocalizations.delegate.load(const Locale('en'));
   });
 
   setUp(() {
@@ -142,7 +144,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100)); // Wait for snackbar
 
-      expect(find.textContaining('exported successfully'), findsOneWidget);
+      expect(find.textContaining(l10n.exportSuccess), findsOneWidget);
       verify(
         () => mockImportExportBloc.add(const ResetMigrationStatus()),
       ).called(1);
@@ -157,7 +159,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100)); // Wait for snackbar
 
-      expect(find.textContaining('imported successfully'), findsOneWidget);
+      expect(find.textContaining(l10n.importSuccess), findsOneWidget);
       // verify(() => mockPasswordBloc.add(const LoadPasswords())).called(1); // Auto-reloads via stream
       verify(
         () => mockImportExportBloc.add(const ResetMigrationStatus()),
@@ -175,7 +177,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100)); // Wait for snackbar
 
-      expect(find.textContaining('cleared successfully'), findsOneWidget);
+      expect(find.textContaining(l10n.databaseCleared), findsOneWidget);
       verify(
         () => mockImportExportBloc.add(const ResetMigrationStatus()),
       ).called(1);

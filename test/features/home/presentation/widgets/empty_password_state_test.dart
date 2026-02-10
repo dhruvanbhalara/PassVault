@@ -16,8 +16,9 @@ void main() {
 
   group('$EmptyPasswordState', () {
     testWidgets('renders empty message', (WidgetTester tester) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(wrapWithMaterial(const EmptyPasswordState()));
-      expect(find.text('No passwords yet.\nTap + to add one.'), findsOneWidget);
+      expect(find.text(l10n.noPasswords), findsOneWidget);
     });
   });
 }

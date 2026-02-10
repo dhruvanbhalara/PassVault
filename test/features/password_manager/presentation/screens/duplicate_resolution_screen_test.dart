@@ -26,6 +26,7 @@ class MockGoRouter extends Mock implements GoRouter {}
 void main() {
   late MockImportExportBloc mockBloc;
   late MockGoRouter mockRouter;
+  late AppLocalizations l10n;
 
   final testExisting = PasswordEntry(
     id: 'ent-1',
@@ -49,9 +50,10 @@ void main() {
     conflictReason: 'Same appName and username',
   );
 
-  setUp(() {
+  setUp(() async {
     mockBloc = MockImportExportBloc();
     mockRouter = MockGoRouter();
+    l10n = await AppLocalizations.delegate.load(const Locale('en'));
   });
 
   Widget createTestWidget(List<DuplicatePasswordEntry> duplicates) {
@@ -81,12 +83,15 @@ void main() {
       await tester.pumpWidget(createTestWidget([testDuplicate]));
       await tester.pumpAndSettle();
 
-      expect(find.widgetWithText(AppBar, 'Resolve Duplicates'), findsOneWidget);
+      expect(
+        find.widgetWithText(AppBar, l10n.resolveDuplicatesTitle),
+        findsOneWidget,
+      );
       expect(find.text('Google'), findsWidgets);
-      expect(find.text('Username: user@gmail.com'), findsWidgets);
-      expect(find.text('Keep Existing'), findsOneWidget);
-      expect(find.text('Replace with New'), findsOneWidget);
-      expect(find.text('Keep Both'), findsOneWidget);
+      expect(find.text('${l10n.usernameLabel}: user@gmail.com'), findsWidgets);
+      expect(find.text(l10n.keepExistingTitle), findsOneWidget);
+      expect(find.text(l10n.replaceWithNewTitle), findsOneWidget);
+      expect(find.text(l10n.keepBothTitle), findsOneWidget);
     });
 
     testWidgets('Resolve All button is disabled initially', (tester) async {
@@ -110,7 +115,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap "Keep Existing"
-      await tester.tap(find.text('Keep Existing'));
+      await tester.tap(find.text(l10n.keepExistingTitle));
       await tester.pumpAndSettle();
 
       final button = tester.widget<AppButton>(
@@ -172,7 +177,7 @@ void main() {
       expect(button.onPressed, isNull);
 
       // Tap "Replace All" in Bulk Actions
-      await tester.tap(find.text('Replace All'));
+      await tester.tap(find.text(l10n.replaceAll));
       await tester.pumpAndSettle();
 
       // Check if both duplicate cards now show "Replace with New" as selected

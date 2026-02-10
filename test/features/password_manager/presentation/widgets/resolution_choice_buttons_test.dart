@@ -22,6 +22,7 @@ void main() {
 
   group('$ResolutionChoiceButtons', () {
     testWidgets('renders all options', (WidgetTester tester) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       final onChoiceChanged = MockOnChoiceChanged();
       await tester.pumpWidget(
         wrapWithMaterial(
@@ -32,9 +33,9 @@ void main() {
         ),
       );
 
-      expect(find.text('Keep Existing'), findsOneWidget);
-      expect(find.text('Replace with New'), findsOneWidget);
-      expect(find.text('Keep Both'), findsOneWidget);
+      expect(find.text(l10n.keepExistingTitle), findsOneWidget);
+      expect(find.text(l10n.replaceWithNewTitle), findsOneWidget);
+      expect(find.text(l10n.keepBothTitle), findsOneWidget);
     });
   });
 }
