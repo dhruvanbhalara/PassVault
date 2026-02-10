@@ -1,21 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/design_system/theme/app_theme.dart';
+import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
-import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:passvault/features/settings/presentation/settings_screen.dart';
-import 'package:passvault/l10n/app_localizations.dart';
+
+import '../../../../fixtures/settings_fixtures.dart';
+import '../../../../helpers/test_helpers.dart';
+import '../../../../robots/settings_robot.dart';
 
 class MockSettingsBloc extends Mock implements SettingsBloc {
   @override
@@ -49,10 +46,11 @@ void main() {
   late MockImportExportBloc mockImportExportBloc;
   late MockGoRouter mockGoRouter;
   late AppLocalizations l10n;
+  late SettingsRobot robot;
 
   setUpAll(() async {
     registerFallbackValue(const ResetMigrationStatus());
-    l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    l10n = await getL10n();
   });
 
   setUp(() {
@@ -68,12 +66,9 @@ void main() {
     when(() => mockImportExportBloc.close()).thenAnswer((_) async {});
 
     when(() => mockSettingsBloc.state).thenReturn(
-      const SettingsLoaded(
+      SettingsLoaded(
         useBiometrics: false,
-        passwordSettings: PasswordGenerationSettings(
-          strategies: [],
-          defaultStrategyId: '',
-        ),
+        passwordSettings: SettingsFixtures.initialSettings,
       ),
     );
     when(() => mockThemeBloc.state).thenReturn(
@@ -88,19 +83,12 @@ void main() {
     ).thenReturn(const ImportExportInitial());
   });
 
-  Widget createTestWidget() {
-    return InheritedGoRouter(
-      goRouter: mockGoRouter,
-      child: MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        theme: AppTheme.lightTheme,
-        home: MultiBlocProvider(
+  Future<void> loadSettingsScreen(WidgetTester tester) async {
+    robot = SettingsRobot(tester);
+    await tester.pumpApp(
+      InheritedGoRouter(
+        goRouter: mockGoRouter,
+        child: MultiBlocProvider(
           providers: [
             BlocProvider<SettingsBloc>.value(value: mockSettingsBloc),
             BlocProvider<ThemeBloc>.value(value: mockThemeBloc),
@@ -114,116 +102,85 @@ void main() {
   }
 
   group('$SettingsScreen', () {
-    testWidgets(
-      'Tapping Export JSON dispatches correct event to ImportExportBloc',
-      (tester) async {
-        await tester.pumpWidget(createTestWidget());
-        await tester.pumpAndSettle();
+    testWidgets('Tapping Export JSON dispatches correct event', (tester) async {
+      await loadSettingsScreen(tester);
 
-        await tester.tap(find.byKey(const Key('settings_export_tile')));
-        await tester.pumpAndSettle();
+      await robot.tapExport();
+      await robot.tapExportJson();
 
-        final jsonTile = find.byKey(const Key('export_json_tile'));
-        expect(jsonTile, findsOneWidget);
+      verify(
+        () => mockImportExportBloc.add(const ExportDataEvent(isJson: true)),
+      ).called(1);
+    });
 
-        await tester.tap(jsonTile);
-        await tester.pump();
-
-        verify(
-          () => mockImportExportBloc.add(const ExportDataEvent(isJson: true)),
-        ).called(1);
-      },
-    );
-
-    testWidgets('Shows correct message for ExportSuccess', (tester) async {
+    testWidgets('Shows success message on ExportSuccess', (tester) async {
       when(
         () => mockImportExportBloc.state,
       ).thenReturn(const ExportSuccess('/path/to/file'));
+      await loadSettingsScreen(tester);
 
-      await tester.pumpWidget(createTestWidget());
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100)); // Wait for snackbar
-
-      expect(find.textContaining(l10n.exportSuccess), findsOneWidget);
+      robot.expectSnackBarContaining(l10n.exportSuccess);
       verify(
         () => mockImportExportBloc.add(const ResetMigrationStatus()),
       ).called(1);
     });
 
-    testWidgets('Shows correct message for ImportSuccess and reloads passwords', (
+    testWidgets('Shows success message on ImportSuccess', (tester) async {
+      when(() => mockImportExportBloc.state).thenReturn(const ImportSuccess(5));
+      await loadSettingsScreen(tester);
+
+      robot.expectSnackBarContaining(l10n.importSuccess);
+      verify(
+        () => mockImportExportBloc.add(const ResetMigrationStatus()),
+      ).called(1);
+    });
+
+    testWidgets('Navigates to resolution screen on DuplicatesDetected', (
       tester,
     ) async {
-      when(() => mockImportExportBloc.state).thenReturn(const ImportSuccess(5));
+      final mockDuplicate = MockDuplicatePasswordEntry();
+      when(() => mockImportExportBloc.state).thenReturn(
+        DuplicatesDetected(duplicates: [mockDuplicate], successfulImports: 0),
+      );
+      when(
+        () => mockGoRouter.push(any(), extra: any(named: 'extra')),
+      ).thenAnswer((_) async => null);
 
-      await tester.pumpWidget(createTestWidget());
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100)); // Wait for snackbar
+      await loadSettingsScreen(tester);
 
-      expect(find.textContaining(l10n.importSuccess), findsOneWidget);
-      // verify(() => mockPasswordBloc.add(const LoadPasswords())).called(1); // Auto-reloads via stream
+      verify(
+        () => mockGoRouter.push(
+          AppRoutes.resolveDuplicates,
+          extra: any(named: 'extra'),
+        ),
+      ).called(1);
       verify(
         () => mockImportExportBloc.add(const ResetMigrationStatus()),
       ).called(1);
     });
 
-    testWidgets('Shows correct message for ClearDatabaseSuccess', (
+    testWidgets('Shows success message on ClearDatabaseSuccess', (
       tester,
     ) async {
       when(
         () => mockImportExportBloc.state,
       ).thenReturn(const ClearDatabaseSuccess());
+      await loadSettingsScreen(tester);
 
-      await tester.pumpWidget(createTestWidget());
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100)); // Wait for snackbar
-
-      expect(find.textContaining(l10n.databaseCleared), findsOneWidget);
+      robot.expectSnackBarContaining(l10n.databaseCleared);
       verify(
         () => mockImportExportBloc.add(const ResetMigrationStatus()),
       ).called(1);
     });
 
-    testWidgets(
-      'Navigates to resolution screen and resets on DuplicatesDetected',
-      (tester) async {
-        final mockDuplicate = MockDuplicatePasswordEntry();
-        when(() => mockImportExportBloc.state).thenReturn(
-          DuplicatesDetected(duplicates: [mockDuplicate], successfulImports: 0),
-        );
-        when(
-          () => mockGoRouter.push(any(), extra: any(named: 'extra')),
-        ).thenAnswer((_) async => null);
-
-        await tester.pumpWidget(createTestWidget());
-        await tester.pump(); // Listener triggers navigation
-
-        // Verify go_router push occurred
-        verify(
-          () => mockGoRouter.push(
-            '/resolve-duplicates',
-            extra: any(named: 'extra'),
-          ),
-        ).called(1);
-        // Verify reset event
-        verify(
-          () => mockImportExportBloc.add(const ResetMigrationStatus()),
-        ).called(1);
-      },
-    );
-
-    testWidgets('Shows localized error message on ImportExportFailure', (
-      tester,
-    ) async {
+    testWidgets('Shows snackbar on ImportExportFailure', (tester) async {
       when(() => mockImportExportBloc.state).thenReturn(
         const ImportExportFailure(
           DataMigrationError.wrongPassword,
           'Error message',
         ),
       );
-
-      await tester.pumpWidget(createTestWidget());
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await loadSettingsScreen(tester);
 
       expect(find.byType(SnackBar), findsOneWidget);
       verify(

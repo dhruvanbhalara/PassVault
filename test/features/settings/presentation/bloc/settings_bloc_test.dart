@@ -156,7 +156,6 @@ void main() {
 
         // Use a bloc seeded with this strategy for this specific test would be better,
         // but existing pattern re-uses the bloc instance.
-        // Given the 'setUp' creates a fresh bloc, we are starting with default state.
 
         // Rely on the initial default strategy for update test.
         final defaultStrategy = bloc.state.passwordSettings.strategies.first;

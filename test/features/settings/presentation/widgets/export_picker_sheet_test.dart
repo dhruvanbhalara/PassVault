@@ -1,13 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
 import 'package:passvault/features/settings/presentation/widgets/export_picker_sheet.dart';
-import 'package:passvault/l10n/app_localizations.dart';
+
+import '../../../../helpers/test_helpers.dart';
 
 class MockImportExportBloc
     extends MockBloc<ImportExportEvent, ImportExportState>
@@ -21,23 +18,12 @@ void main() {
     when(() => mockBloc.state).thenReturn(const ImportExportInitial());
   });
 
-  Widget wrapWithMaterial(Widget child) {
-    return MaterialApp(
-      theme: AppTheme.lightTheme,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: child),
-    );
-  }
-
   group('$ExportPickerSheet', () {
     testWidgets('selecting JSON export adds event to bloc', (
       WidgetTester tester,
     ) async {
-      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-      await tester.pumpWidget(
-        wrapWithMaterial(ExportPickerSheet(bloc: mockBloc)),
-      );
+      final l10n = await getL10n();
+      await tester.pumpApp(ExportPickerSheet(bloc: mockBloc));
 
       await tester.tap(find.text(l10n.exportJson));
       await tester.pumpAndSettle();
@@ -48,10 +34,8 @@ void main() {
     testWidgets('selecting CSV export adds event to bloc', (
       WidgetTester tester,
     ) async {
-      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-      await tester.pumpWidget(
-        wrapWithMaterial(ExportPickerSheet(bloc: mockBloc)),
-      );
+      final l10n = await getL10n();
+      await tester.pumpApp(ExportPickerSheet(bloc: mockBloc));
 
       await tester.tap(find.text(l10n.exportCsv));
       await tester.pumpAndSettle();

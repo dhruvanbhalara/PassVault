@@ -52,27 +52,28 @@ class _StrategyEditorState extends State<StrategyEditor> {
   Widget build(BuildContext context) {
     final settings = widget.strategy;
 
-    return Column(
-      children: [
-        StrategyPreviewCard(settings: settings),
-        const SizedBox(height: AppSpacing.xl),
-        _StrategyNameInput(
-          controller: _nameController,
-          onChanged: (value) =>
-              widget.onChanged(settings.copyWith(name: value)),
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        StrategyLengthControl(
-          length: settings.length,
-          onChanged: (value) =>
-              widget.onChanged(settings.copyWith(length: value.round())),
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        StrategyCharacterSetsControl(
-          settings: settings,
-          onChanged: widget.onChanged,
-        ),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: AppSpacing.xl,
+        children: [
+          StrategyPreviewCard(settings: settings),
+          _StrategyNameInput(
+            controller: _nameController,
+            onChanged: (value) =>
+                widget.onChanged(settings.copyWith(name: value)),
+          ),
+          StrategyLengthControl(
+            length: settings.length,
+            onChanged: (value) =>
+                widget.onChanged(settings.copyWith(length: value.round())),
+          ),
+          StrategyCharacterSetsControl(
+            settings: settings,
+            onChanged: widget.onChanged,
+          ),
+        ],
+      ),
     );
   }
 }

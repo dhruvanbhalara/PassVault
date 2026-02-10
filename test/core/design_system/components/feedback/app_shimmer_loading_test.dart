@@ -1,4 +1,3 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:passvault/core/design_system/components/feedback/app_shimmer_loading.dart';
 
 import '../../../../helpers/test_helpers.dart';
@@ -8,48 +7,38 @@ void main() {
     testWidgets('renders shimmer with default rectangle shape', (
       WidgetTester tester,
     ) async {
-      // Given
       const width = 200.0;
       const height = 50.0;
 
-      // When
-      await tester.pumpWidget(
-        createTestWidget(
-          child: const AppShimmerLoading(width: width, height: height),
-        ),
+      await tester.pumpApp(
+        const AppShimmerLoading(width: width, height: height),
+        usePumpAndSettle: false,
       );
 
-      // Then
       expect(find.byType(AppShimmerLoading), findsOneWidget);
     });
 
     testWidgets('renders shimmer with circle shape', (
       WidgetTester tester,
     ) async {
-      // Given
       const size = 50.0;
 
-      // When
-      await tester.pumpWidget(
-        createTestWidget(
-          child: const AppShimmerLoading(
-            width: size,
-            height: size,
-            shape: AppShimmerShape.circle,
-          ),
+      await tester.pumpApp(
+        const AppShimmerLoading(
+          width: size,
+          height: size,
+          shape: AppShimmerShape.circle,
         ),
+        usePumpAndSettle: false,
       );
 
-      // Then
       expect(find.byType(AppShimmerLoading), findsOneWidget);
     });
 
     testWidgets('animates shimmer effect', (WidgetTester tester) async {
-      // When
-      await tester.pumpWidget(
-        createTestWidget(
-          child: const AppShimmerLoading(width: 100, height: 100),
-        ),
+      await tester.pumpApp(
+        const AppShimmerLoading(width: 100, height: 100),
+        usePumpAndSettle: false,
       );
 
       // Pump some frames to ensure animation is running
@@ -57,7 +46,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
-      // Then - animation controller should be active and widget present
+      // animation controller should be active and widget present
       expect(find.byType(AppShimmerLoading), findsOneWidget);
     });
   });

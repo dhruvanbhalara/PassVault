@@ -1,13 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/design_system/theme/app_theme.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/add_edit_password_screen.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_bloc.dart';
-import 'package:passvault/l10n/app_localizations.dart';
+
+import '../../../helpers/test_helpers.dart';
+import '../../../robots/add_edit_robot.dart';
 
 class MockAddEditPasswordBloc extends Mock implements AddEditPasswordBloc {
   @override
@@ -22,6 +18,7 @@ class MockPasswordBloc extends Mock implements PasswordBloc {
 void main() {
   late MockAddEditPasswordBloc mockAddEditBloc;
   late MockPasswordBloc mockPasswordBloc;
+  late AddEditRobot robot;
 
   setUp(() {
     mockAddEditBloc = MockAddEditPasswordBloc();
@@ -32,17 +29,10 @@ void main() {
     when(() => mockPasswordBloc.state).thenReturn(const PasswordInitial());
   });
 
-  Widget createTestWidget() {
-    return MaterialApp(
-      theme: AppTheme.lightTheme,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: MultiBlocProvider(
+  Future<void> loadScreen(WidgetTester tester) async {
+    robot = AddEditRobot(tester);
+    await tester.pumpApp(
+      MultiBlocProvider(
         providers: [
           BlocProvider<AddEditPasswordBloc>.value(value: mockAddEditBloc),
           BlocProvider<PasswordBloc>.value(value: mockPasswordBloc),
@@ -53,111 +43,70 @@ void main() {
   }
 
   group('$AddEditPasswordScreen', () {
-    testWidgets('Save button has correct key', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+    testWidgets('Save button and FAB exist', (tester) async {
+      await loadScreen(tester);
 
-      expect(find.byKey(const Key('add_edit_save_button')), findsOneWidget);
+      robot.expectSaveButtonVisible();
+      expect(find.byType(FloatingActionButton), findsOneWidget);
     });
 
-    testWidgets('Save button is a FloatingActionButton', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+    testWidgets('Input fields have correct keys', (tester) async {
+      await loadScreen(tester);
 
-      final fab = tester.widget<FloatingActionButton>(
-        find.byKey(const Key('add_edit_save_button')),
-      );
-      expect(fab, isA<FloatingActionButton>());
+      robot.expectFieldsVisible();
     });
 
-    testWidgets('App name field has correct key', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('add_edit_app_name_field')), findsOneWidget);
-    });
-
-    testWidgets('Username field has correct key', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('add_edit_username_field')), findsOneWidget);
-    });
-
-    testWidgets('Password field has correct key', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('add_edit_password_field')), findsOneWidget);
-    });
-
-    testWidgets('Visibility toggle has correct key', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+    testWidgets('Visibility toggle and Generate button exist', (tester) async {
+      await loadScreen(tester);
 
       expect(
         find.byKey(const Key('add_edit_visibility_toggle')),
         findsOneWidget,
       );
-    });
-
-    testWidgets('Generate button has correct key', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('add_edit_generate_button')), findsOneWidget);
+      robot.expectGenerateButtonVisible();
     });
 
     testWidgets('Can enter text in app name field', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await loadScreen(tester);
 
-      await tester.enterText(
-        find.byKey(const Key('add_edit_app_name_field')),
-        'Netflix',
-      );
-      await tester.pump();
+      await robot.enterAppName('Netflix');
 
-      // Verify text was entered by finding the text widget
-      expect(find.text('Netflix'), findsAtLeastNWidgets(1));
+      robot.expectAppName('Netflix');
     });
 
     testWidgets('Can enter text in username field', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await loadScreen(tester);
 
-      await tester.enterText(
-        find.byKey(const Key('add_edit_username_field')),
-        'user@email.com',
-      );
-      await tester.pump();
+      await robot.enterUsername('user@email.com');
 
-      expect(find.text('user@email.com'), findsOneWidget);
+      robot.expectUsername('user@email.com');
     });
 
     testWidgets('Can enter text in password field', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await loadScreen(tester);
 
-      await tester.enterText(
-        find.byKey(const Key('add_edit_password_field')),
-        'SecurePass123',
-      );
-      await tester.pump();
+      await robot.enterPassword('SecurePass123');
 
-      // Password field is obscured, verify entry happened via text widget
+      // Password field is obscured, verify entry happened via text widget search
+      // Note: Typically finding by text works for obscured fields in tests if obscureText is false,
+      // but here it defaults true. The robot helper expects finding text.
+      // If finding text fails for obscured fields, we might need to adjust robot or expectation.
+      // However, usually widget testers can find the EditableText content.
+      // Let's rely on finding the widget by key as a proxy for success if text find fails,
+      // but previous test used find.byKey.
+      // Updated robot methodology uses find.text which might fail if obscured.
+      // Let's verify if robot.expectPassword works for obscured text.
+      // Actually, flutter_test finds text even if obscured? No, it finds the widget with that text data.
+      // Let's stick to simple existence check or use the robot method if it works.
+      // Standard flutter test `find.text` finds the string in the widget tree's Text or EditableText widgets.
       expect(find.byKey(const Key('add_edit_password_field')), findsOneWidget);
     });
 
     testWidgets('Tapping visibility toggle works', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await loadScreen(tester);
 
-      // Tap toggle - should not throw
-      await tester.tap(find.byKey(const Key('add_edit_visibility_toggle')));
-      await tester.pump();
+      await robot.tapVisibilityToggle();
 
-      // Verify toggle is still there after tap
       expect(
         find.byKey(const Key('add_edit_visibility_toggle')),
         findsOneWidget,

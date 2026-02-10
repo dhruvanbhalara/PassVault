@@ -1,14 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/design_system/theme/app_theme.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/presentation/bloc/strategy_preview/strategy_preview_bloc.dart';
 import 'package:passvault/features/settings/presentation/screens/strategy_editor.dart';
-import 'package:passvault/l10n/app_localizations.dart';
+
+import '../../../../helpers/test_helpers.dart';
 
 class MockStrategyPreviewBloc
     extends MockBloc<StrategyPreviewEvent, StrategyPreviewState>
@@ -37,30 +33,8 @@ void main() {
   });
 
   tearDown(() {
-    reset(mockBloc);
     getIt.reset();
   });
-
-  Widget createTestWidget(
-    PasswordGenerationStrategy strategy, {
-    required ValueChanged<PasswordGenerationStrategy> onChanged,
-  }) {
-    return MaterialApp(
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: AppTheme.lightTheme,
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: StrategyEditor(strategy: strategy, onChanged: onChanged),
-        ),
-      ),
-    );
-  }
 
   testWidgets('does NOT trigger GeneratePreview when name changes', (
     tester,
@@ -77,18 +51,20 @@ void main() {
 
     var strategy = PasswordGenerationStrategy.create(name: 'Initial');
 
-    await tester.pumpWidget(
-      StatefulBuilder(
-        builder: (context, setState) {
-          return createTestWidget(
-            strategy,
-            onChanged: (newStrategy) {
-              setState(() {
-                strategy = newStrategy;
-              });
-            },
-          );
-        },
+    await tester.pumpApp(
+      Scaffold(
+        body: StatefulBuilder(
+          builder: (context, setState) {
+            return StrategyEditor(
+              strategy: strategy,
+              onChanged: (newStrategy) {
+                setState(() {
+                  strategy = newStrategy;
+                });
+              },
+            );
+          },
+        ),
       ),
     );
 
@@ -106,7 +82,7 @@ void main() {
       () => mockBloc.add(
         any(
           that: isA<GeneratePreview>().having(
-            (e) => e.settings.name == 'New Name',
+            (e) => e.settings.name,
             'name',
             'New Name',
           ),
@@ -131,39 +107,48 @@ void main() {
       when(() => mockBloc.state).thenReturn(const StrategyPreviewInitial());
       when(() => mockBloc.add(any())).thenReturn(null);
 
-      var strategy = PasswordGenerationStrategy.create(
-        name: 'Initial',
-        length: 16,
+      final strategyNotifier = ValueNotifier<PasswordGenerationStrategy>(
+        PasswordGenerationStrategy.create(name: 'Initial', length: 16),
       );
 
-      await tester.pumpWidget(
-        StatefulBuilder(
-          builder: (context, setState) {
-            return createTestWidget(
-              strategy,
-              onChanged: (newStrategy) {
-                setState(() {
-                  strategy = newStrategy;
-                });
-              },
-            );
-          },
+      await tester.pumpApp(
+        SingleChildScrollView(
+          child: ValueListenableBuilder<PasswordGenerationStrategy>(
+            valueListenable: strategyNotifier,
+            builder: (context, strategy, _) {
+              return StrategyEditor(
+                strategy: strategy,
+                onChanged: (newStrategy) {
+                  strategyNotifier.value = newStrategy;
+                },
+              );
+            },
+          ),
         ),
       );
 
       // Verify total count is 1 at this point
       verify(() => mockBloc.add(any(that: isA<GeneratePreview>()))).called(1);
+      clearInteractions(mockBloc);
 
       // Programmatically update the widget with new settings
-      final newStrategy = strategy.copyWith(length: 24);
+      strategyNotifier.value = strategyNotifier.value.copyWith(length: 24);
 
-      // Re-pump createTestWidget directly (simulating parent rebuild)
-      await tester.pumpWidget(createTestWidget(newStrategy, onChanged: (_) {}));
-      // Needed to flush microtasks
-      await tester.pump();
+      // Trigger rebuild
+      await tester.pumpAndSettle();
 
-      // Verify GeneratePreview WAS called again
-      verify(() => mockBloc.add(any(that: isA<GeneratePreview>()))).called(1);
+      // Verify GeneratePreview WAS called again with correct arguments
+      verify(
+        () => mockBloc.add(
+          any(
+            that: isA<GeneratePreview>().having(
+              (e) => e.settings.length,
+              'length',
+              24,
+            ),
+          ),
+        ),
+      ).called(1);
     },
   );
 }

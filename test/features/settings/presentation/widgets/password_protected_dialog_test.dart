@@ -1,13 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
 import 'package:passvault/features/settings/presentation/widgets/password_protected_dialog.dart';
-import 'package:passvault/l10n/app_localizations.dart';
+
+import '../../../../helpers/test_helpers.dart';
 
 class MockImportExportBloc
     extends MockBloc<ImportExportEvent, ImportExportState>
@@ -21,24 +18,13 @@ void main() {
     when(() => mockBloc.state).thenReturn(const ImportExportInitial());
   });
 
-  Widget wrapWithMaterial(Widget child) {
-    return MaterialApp(
-      theme: AppTheme.lightTheme,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: child),
-    );
-  }
-
   group('$PasswordProtectedDialog', () {
     testWidgets('submitting password adds ExportEncryptedData event', (
       WidgetTester tester,
     ) async {
-      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-      await tester.pumpWidget(
-        wrapWithMaterial(
-          PasswordProtectedDialog(bloc: mockBloc, isExport: true),
-        ),
+      final l10n = await getL10n();
+      await tester.pumpApp(
+        PasswordProtectedDialog(bloc: mockBloc, isExport: true),
       );
 
       await tester.enterText(find.byType(TextFormField), 'password123');

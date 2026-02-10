@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:passvault/core/design_system/theme/app_colors.dart';
-import 'package:passvault/core/design_system/theme/app_dimensions.dart';
-import 'package:passvault/core/design_system/theme/app_theme.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
+
+import '../../../helpers/test_helpers.dart';
 
 void main() {
   group('Tokens', () {
@@ -23,6 +20,7 @@ void main() {
   group('$AppColors', () {
     test('Light theme should have defined primary focus color', () {
       final focusColor = AppColors.getPrimaryFocus(Brightness.light);
+
       expect(focusColor, isA<Color>());
       expect(focusColor, isNot(AppColors.primaryLight));
     });
@@ -37,18 +35,15 @@ void main() {
     testWidgets('BuildContext extension should provide theme properties', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.lightTheme,
-          home: Builder(
-            builder: (context) {
-              final theme = context.theme;
-              expect(theme.primary, AppColors.primaryLight);
-              expect(theme.vaultGradient, isNotNull);
-              expect(theme.inputFocusedBorder, isA<Color>());
-              return const SizedBox();
-            },
-          ),
+      await tester.pumpApp(
+        Builder(
+          builder: (context) {
+            final theme = context.theme;
+            expect(theme.primary, AppColors.primaryLight);
+            expect(theme.vaultGradient, isNotNull);
+            expect(theme.inputFocusedBorder, isA<Color>());
+            return const SizedBox();
+          },
         ),
       );
     });
@@ -58,18 +53,16 @@ void main() {
       (tester) async {
         tester.view.physicalSize = const Size(400, 800);
         tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
 
-        await tester.pumpWidget(
-          MaterialApp(
-            theme: AppTheme.lightTheme,
-            home: Builder(
-              builder: (context) {
-                final val = context.responsive('mobile', tablet: 'tablet');
-                expect(val, 'mobile');
-                expect(context.isMobile, true);
-                return const SizedBox();
-              },
-            ),
+        await tester.pumpApp(
+          Builder(
+            builder: (context) {
+              final val = context.responsive('mobile', tablet: 'tablet');
+              expect(val, 'mobile');
+              expect(context.isMobile, true);
+              return const SizedBox();
+            },
           ),
         );
       },
@@ -80,49 +73,46 @@ void main() {
       (tester) async {
         tester.view.physicalSize = const Size(800, 800);
         tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
 
-        await tester.pumpWidget(
-          MaterialApp(
-            theme: AppTheme.lightTheme,
-            home: Builder(
-              builder: (context) {
-                final val = context.responsive(
-                  'mobile',
-                  tablet: 'tablet',
-                  desktop: 'desktop',
-                );
-                expect(val, 'tablet');
-                expect(context.isTablet, true);
-                return const SizedBox();
-              },
-            ),
+        await tester.pumpApp(
+          Builder(
+            builder: (context) {
+              final val = context.responsive(
+                'mobile',
+                tablet: 'tablet',
+                desktop: 'desktop',
+              );
+              expect(val, 'tablet');
+              expect(context.isTablet, true);
+              return const SizedBox();
+            },
           ),
         );
       },
     );
+
     testWidgets(
       'Responsive helper should return desktop value on large screens',
       (tester) async {
         tester.view.physicalSize = const Size(1200, 800);
         tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
 
-        await tester.pumpWidget(
-          MaterialApp(
-            theme: AppTheme.lightTheme,
-            home: Builder(
-              builder: (context) {
-                final val = context.responsive(
-                  'mobile',
-                  tablet: 'tablet',
-                  desktop: 'desktop',
-                );
-                expect(val, 'desktop');
-                expect(context.isDesktop, true);
-                expect(context.isTablet, false);
-                expect(context.isMobile, false);
-                return const SizedBox();
-              },
-            ),
+        await tester.pumpApp(
+          Builder(
+            builder: (context) {
+              final val = context.responsive(
+                'mobile',
+                tablet: 'tablet',
+                desktop: 'desktop',
+              );
+              expect(val, 'desktop');
+              expect(context.isDesktop, true);
+              expect(context.isTablet, false);
+              expect(context.isMobile, false);
+              return const SizedBox();
+            },
           ),
         );
       },
