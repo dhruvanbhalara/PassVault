@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/screens/password_generation_settings_screen.dart';
-import 'package:passvault/features/settings/presentation/widgets/settings_section_header.dart';
 
 /// Section for security-related settings.
 class SecuritySection extends StatelessWidget {
@@ -18,7 +18,10 @@ class SecuritySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SettingsSectionHeader(title: l10n.security),
+        AppSectionHeader(
+          title: l10n.security,
+          variant: AppSectionHeaderVariant.premium,
+        ),
         Card(
           child: Column(
             children: [

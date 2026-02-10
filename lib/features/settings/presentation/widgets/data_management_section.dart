@@ -2,12 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/settings/presentation/widgets/export_picker_sheet.dart';
 import 'package:passvault/features/settings/presentation/widgets/import_picker_sheet.dart';
-import 'package:passvault/features/settings/presentation/widgets/settings_section_header.dart';
 
 /// Section for data management settings.
 class DataManagementSection extends StatelessWidget {
@@ -21,7 +21,10 @@ class DataManagementSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SettingsSectionHeader(title: l10n.dataManagement),
+        AppSectionHeader(
+          title: l10n.dataManagement,
+          variant: AppSectionHeaderVariant.premium,
+        ),
         Card(
           child: Column(
             children: [
