@@ -1,47 +1,32 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_resolution_choice.dart';
 import 'package:passvault/features/password_manager/presentation/widgets/bulk_resolution_header.dart';
-import 'package:passvault/l10n/app_localizations.dart';
+
+import '../../../../helpers/test_helpers.dart';
 
 class MockOnChoiceChanged extends Mock {
   void call(DuplicateResolutionChoice choice);
 }
 
 void main() {
-  Widget wrapWithMaterial(Widget child) {
-    return MaterialApp(
-      theme: AppTheme.lightTheme,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: child),
-    );
-  }
-
   group('$BulkResolutionHeader', () {
-    testWidgets('calls onChoiceSelected for each bulk action', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('calls onChoiceSelected for each bulk action', (tester) async {
+      final l10n = await getL10n();
       final onChoiceSelected = MockOnChoiceChanged();
-      await tester.pumpWidget(
-        wrapWithMaterial(
-          BulkResolutionHeader(onChoiceSelected: onChoiceSelected.call),
-        ),
+      await tester.pumpApp(
+        BulkResolutionHeader(onChoiceSelected: onChoiceSelected.call),
       );
 
-      await tester.tap(find.text('Keep All Existing'));
+      await tester.tap(find.text(l10n.keepAllExisting));
       verify(
         () => onChoiceSelected.call(DuplicateResolutionChoice.keepExisting),
       ).called(1);
 
-      await tester.tap(find.text('Replace All'));
+      await tester.tap(find.text(l10n.replaceAll));
       verify(
         () => onChoiceSelected.call(DuplicateResolutionChoice.replaceWithNew),
       ).called(1);
 
-      await tester.tap(find.text('Keep All Both'));
+      await tester.tap(find.text(l10n.keepAllBothAction));
       verify(
         () => onChoiceSelected.call(DuplicateResolutionChoice.keepBoth),
       ).called(1);

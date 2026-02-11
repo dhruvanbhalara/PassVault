@@ -1,14 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/design_system/theme/app_theme.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/strategy_preview/strategy_preview_bloc.dart';
 import 'package:passvault/features/settings/presentation/screens/password_generation_settings_screen.dart';
-import 'package:passvault/l10n/app_localizations.dart';
+
+import '../../../../helpers/test_helpers.dart';
 
 class MockSettingsBloc extends Mock implements SettingsBloc {
   @override
@@ -50,20 +46,6 @@ void main() {
     getIt.reset();
   });
 
-  Widget createTestWidget() {
-    return MaterialApp(
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: AppTheme.lightTheme,
-      home: const PasswordGenerationSettingsScreen(),
-    );
-  }
-
   testWidgets('Renders PasswordGenerationSettingsScreen with strategies', (
     tester,
   ) async {
@@ -78,8 +60,7 @@ void main() {
       ),
     );
 
-    await tester.pumpWidget(createTestWidget());
-    await tester.pumpAndSettle();
+    await tester.pumpApp(const PasswordGenerationSettingsScreen());
 
     expect(find.byType(PasswordGenerationSettingsScreen), findsOneWidget);
     expect(find.text('My Strategy'), findsOneWidget);

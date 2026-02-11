@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:passvault/core/design_system/components/feedback/app_loader.dart';
 
 import '../../../../helpers/test_helpers.dart';
@@ -7,14 +5,17 @@ import '../../../../helpers/test_helpers.dart';
 void main() {
   group('$AppLoader', () {
     testWidgets('renders CircularProgressIndicator', (tester) async {
-      await tester.pumpWidget(createTestWidget(child: const AppLoader()));
+      await tester.pumpApp(const AppLoader(), usePumpAndSettle: false);
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
     testWidgets('uses custom size', (tester) async {
-      await tester.pumpWidget(
-        createTestWidget(child: const AppLoader(size: 50.0)),
+      const size = 50.0;
+
+      await tester.pumpApp(
+        const AppLoader(size: size),
+        usePumpAndSettle: false,
       );
 
       final sizedBox = tester.widget<SizedBox>(
@@ -23,8 +24,8 @@ void main() {
           matching: find.byType(SizedBox),
         ),
       );
-      expect(sizedBox.height, 50.0);
-      expect(sizedBox.width, 50.0);
+      expect(sizedBox.height, size);
+      expect(sizedBox.width, size);
     });
   });
 }

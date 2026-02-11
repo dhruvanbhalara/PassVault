@@ -47,11 +47,12 @@ void main() {
     testWidgets('displays theme tile with current theme name', (
       WidgetTester tester,
     ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      expect(find.text('Theme'), findsOneWidget);
-      expect(find.text('System Default'), findsOneWidget);
+      expect(find.text(l10n.theme), findsOneWidget);
+      expect(find.text(l10n.system), findsOneWidget);
     });
 
     testWidgets('tapping theme tile shows theme picker sheet', (

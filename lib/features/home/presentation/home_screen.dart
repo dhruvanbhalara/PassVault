@@ -1,4 +1,3 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +6,7 @@ import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
+import 'package:passvault/core/utils/app_semantics.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/home/presentation/widgets/empty_password_state.dart';
 import 'package:passvault/features/home/presentation/widgets/password_list_tile.dart';
@@ -30,11 +30,16 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        key: const Key('home_fab'),
-        onPressed: () => context.push(AppRoutes.addPassword),
-        child: const Icon(LucideIcons.plus),
+      floatingActionButton: AppSemantics.button(
+        label: l10n.addPassword,
+        hint: 'Creates a new password entry',
+        child: FloatingActionButton(
+          key: const Key('home_fab'),
+          onPressed: () => context.push(AppRoutes.addPassword),
+          child: const Icon(LucideIcons.plus),
+        ),
       ),
       body: CustomScrollView(
         slivers: [
@@ -42,8 +47,13 @@ class HomeView extends StatelessWidget {
           BlocBuilder<PasswordBloc, PasswordState>(
             builder: (context, state) {
               if (state is PasswordLoading) {
-                return const SliverFillRemaining(
-                  child: Center(child: AppLoader(key: Key('home_loading'))),
+                return SliverFillRemaining(
+                  child: Center(
+                    child: AppSemantics.loading(
+                      label: 'Loading passwords',
+                      child: const AppLoader(key: Key('home_loading')),
+                    ),
+                  ),
                 );
               } else if (state is PasswordLoaded) {
                 if (state.passwords.isEmpty) {
@@ -81,18 +91,23 @@ class _HomeAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
+    final l10n = context.l10n;
     return SliverAppBar(
       floating: true,
       pinned: true,
       centerTitle: true,
       scrolledUnderElevation: 0,
       backgroundColor: Colors.transparent,
-      title: Text(context.l10n.appName),
+      title: Text(l10n.appName),
       actions: [
-        IconButton(
-          key: const Key('home_settings_button'),
-          icon: Icon(LucideIcons.settings, color: theme.onVaultGradient),
-          onPressed: () => context.push(AppRoutes.settings),
+        AppSemantics.button(
+          label: 'Settings',
+          hint: 'Opens application settings',
+          child: IconButton(
+            key: const Key('home_settings_button'),
+            icon: Icon(LucideIcons.settings, color: theme.onVaultGradient),
+            onPressed: () => context.push(AppRoutes.settings),
+          ),
         ),
       ],
     );
@@ -113,7 +128,7 @@ class _HomeScreenGrid extends StatelessWidget {
         childAspectRatio: AppDimensions.gridAspectRatio,
       ),
       delegate: SliverChildBuilderDelegate(
-        (context, index) => _StaggeredAnimation(
+        (context, index) => AppAnimatedListItem(
           index: index,
           child: PasswordListTile(
             entry: passwords[index],
@@ -140,7 +155,7 @@ class _HomeScreenList extends StatelessWidget {
       delegate: SliverChildBuilderDelegate(
         (context, index) => Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.m),
-          child: _StaggeredAnimation(
+          child: AppAnimatedListItem(
             index: index,
             child: PasswordListTile(
               entry: passwords[index],
@@ -154,20 +169,6 @@ class _HomeScreenList extends StatelessWidget {
         ),
         childCount: passwords.length,
       ),
-    );
-  }
-}
-
-class _StaggeredAnimation extends StatelessWidget {
-  final int index;
-  final Widget child;
-  const _StaggeredAnimation({required this.index, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeInUp(
-      duration: AppDuration.normal + Duration(milliseconds: index * 50),
-      child: child,
     );
   }
 }

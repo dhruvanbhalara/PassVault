@@ -47,19 +47,15 @@ dependencies:
   local_auth: ^3.0.0
 
   # UI & Assets
-  cupertino_icons: ^1.0.6
-  flutter_svg: ^2.2.3
+  # UI & Assets
   lucide_icons_flutter: ^3.1.9
 
   # Animations & Utilities
   lottie: ^3.3.2
-  animations: ^2.0.11
-  animate_do: ^4.2.0
   share_plus: ^12.0.1
   file_picker: ^10.3.8
   file_saver: ^0.3.1
   csv: ^6.0.0
-  path: ^1.9.0
   path_provider: ^2.1.5
 
   # Password Logic (Git)

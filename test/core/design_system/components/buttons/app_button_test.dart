@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:passvault/core/design_system/components/buttons/app_button.dart';
 
 import '../../../../helpers/test_helpers.dart';
@@ -7,24 +5,14 @@ import '../../../../helpers/test_helpers.dart';
 void main() {
   group('$AppButton', () {
     testWidgets('renders text correctly', (tester) async {
-      await tester.pumpWidget(
-        createTestWidget(
-          child: const AppButton(text: 'Click Me', onPressed: null),
-        ),
-      );
+      await tester.pumpApp(const AppButton(text: 'Click Me', onPressed: null));
 
       expect(find.text('Click Me'), findsOneWidget);
     });
 
     testWidgets('renders icon when provided', (tester) async {
-      await tester.pumpWidget(
-        createTestWidget(
-          child: const AppButton(
-            text: 'Icon Button',
-            icon: Icons.add,
-            onPressed: null,
-          ),
-        ),
+      await tester.pumpApp(
+        const AppButton(text: 'Icon Button', icon: Icons.add, onPressed: null),
       );
 
       expect(find.byIcon(Icons.add), findsOneWidget);
@@ -33,14 +21,9 @@ void main() {
     testWidgets('shows loading indicator when isLoading is true', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        createTestWidget(
-          child: const AppButton(
-            text: 'Loading',
-            isLoading: true,
-            onPressed: null,
-          ),
-        ),
+      await tester.pumpApp(
+        const AppButton(text: 'Loading', isLoading: true, onPressed: null),
+        usePumpAndSettle: false,
       );
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -49,29 +32,28 @@ void main() {
 
     testWidgets('calls onPressed when clicked', (tester) async {
       bool pressed = false;
-      await tester.pumpWidget(
-        createTestWidget(
-          child: AppButton(text: 'Click Me', onPressed: () => pressed = true),
-        ),
+      await tester.pumpApp(
+        AppButton(text: 'Click Me', onPressed: () => pressed = true),
       );
 
       await tester.tap(find.byType(AppButton));
+
       expect(pressed, true);
     });
 
     testWidgets('disabled when isLoading is true', (tester) async {
       bool pressed = false;
-      await tester.pumpWidget(
-        createTestWidget(
-          child: AppButton(
-            text: 'Loading',
-            isLoading: true,
-            onPressed: () => pressed = true,
-          ),
+      await tester.pumpApp(
+        AppButton(
+          text: 'Loading',
+          isLoading: true,
+          onPressed: () => pressed = true,
         ),
+        usePumpAndSettle: false,
       );
 
       await tester.tap(find.byType(AppButton));
+
       expect(pressed, false);
     });
   });

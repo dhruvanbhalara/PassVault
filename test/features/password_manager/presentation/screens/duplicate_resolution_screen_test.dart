@@ -1,21 +1,15 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/design_system/components/components.dart';
-import 'package:passvault/core/design_system/theme/app_theme.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_resolution_choice.dart';
-import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
 import 'package:passvault/features/password_manager/presentation/duplicate_resolution_screen.dart';
-import 'package:passvault/l10n/app_localizations.dart';
+
+import '../../../../helpers/test_helpers.dart';
+import '../../../../robots/duplicate_resolution_robot.dart';
 
 class MockImportExportBloc
     extends MockBloc<ImportExportEvent, ImportExportState>
@@ -26,6 +20,7 @@ class MockGoRouter extends Mock implements GoRouter {}
 void main() {
   late MockImportExportBloc mockBloc;
   late MockGoRouter mockRouter;
+  late DuplicateResolutionRobot robot;
 
   final testExisting = PasswordEntry(
     id: 'ent-1',
@@ -54,69 +49,60 @@ void main() {
     mockRouter = MockGoRouter();
   });
 
-  Widget createTestWidget(List<DuplicatePasswordEntry> duplicates) {
-    return MaterialApp(
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: AppTheme.lightTheme,
-      home: InheritedGoRouter(
+  Future<void> loadScreen(
+    WidgetTester tester,
+    List<DuplicatePasswordEntry> duplicates, {
+    bool usePumpAndSettle = true,
+  }) async {
+    robot = DuplicateResolutionRobot(tester);
+    await tester.pumpApp(
+      InheritedGoRouter(
         goRouter: mockRouter,
         child: BlocProvider<ImportExportBloc>.value(
           value: mockBloc,
           child: DuplicateResolutionView(duplicates: duplicates),
         ),
       ),
+      usePumpAndSettle: usePumpAndSettle,
     );
   }
 
   group('$DuplicateResolutionScreen', () {
     testWidgets('renders duplicates list accurately', (tester) async {
       when(() => mockBloc.state).thenReturn(const ImportExportInitial());
+      final l10n = await getL10n();
 
-      await tester.pumpWidget(createTestWidget([testDuplicate]));
-      await tester.pumpAndSettle();
+      await loadScreen(tester, [testDuplicate]);
 
-      expect(find.widgetWithText(AppBar, 'Resolve Duplicates'), findsOneWidget);
-      expect(find.text('Google'), findsWidgets);
-      expect(find.text('Username: user@gmail.com'), findsWidgets);
-      expect(find.text('Keep Existing'), findsOneWidget);
-      expect(find.text('Replace with New'), findsOneWidget);
-      expect(find.text('Keep Both'), findsOneWidget);
+      expect(
+        find.widgetWithText(AppBar, l10n.resolveDuplicatesTitle),
+        findsOneWidget,
+      );
+      robot.expectTextVisible('Google');
+      robot.expectTextVisible('${l10n.usernameLabel}: user@gmail.com');
+      robot.expectTextVisible(l10n.keepExistingTitle);
+      robot.expectTextVisible(l10n.replaceWithNewTitle);
+      robot.expectTextVisible(l10n.keepBothTitle);
     });
 
     testWidgets('Resolve All button is disabled initially', (tester) async {
       when(() => mockBloc.state).thenReturn(const ImportExportInitial());
 
-      await tester.pumpWidget(createTestWidget([testDuplicate]));
-      await tester.pumpAndSettle();
+      await loadScreen(tester, [testDuplicate]);
 
-      final button = tester.widget<AppButton>(
-        find.byKey(const Key('resolve_duplicates_button')),
-      );
-      expect(button.onPressed, isNull);
+      robot.expectResolveButtonDisabled();
     });
 
     testWidgets('Resolve All button is enabled after choosing resolution', (
       tester,
     ) async {
       when(() => mockBloc.state).thenReturn(const ImportExportInitial());
+      final l10n = await getL10n();
+      await loadScreen(tester, [testDuplicate]);
 
-      await tester.pumpWidget(createTestWidget([testDuplicate]));
-      await tester.pumpAndSettle();
+      await robot.tapChoice(l10n.keepExistingTitle);
 
-      // Tap "Keep Existing"
-      await tester.tap(find.text('Keep Existing'));
-      await tester.pumpAndSettle();
-
-      final button = tester.widget<AppButton>(
-        find.byKey(const Key('resolve_duplicates_button')),
-      );
-      expect(button.onPressed, isNotNull);
+      robot.expectResolveButtonEnabled();
     });
 
     testWidgets('shows success message and pops on resolution', (tester) async {
@@ -129,21 +115,17 @@ void main() {
         initialState: const ImportExportInitial(),
       );
 
-      await tester.pumpWidget(createTestWidget([testDuplicate]));
+      await loadScreen(tester, [testDuplicate]);
       await tester.pump();
       await tester.pumpAndSettle();
 
-      // Snack bar is now in SettingsScreen, so we just check for pop
       verify(() => mockRouter.pop()).called(greaterThanOrEqualTo(1));
     });
 
     testWidgets('Bulk Action "Replace All" updates all duplicates', (
       tester,
     ) async {
-      tester.view.physicalSize = const Size(
-        1200,
-        2400,
-      ); // Ensures all items fit
+      tester.view.physicalSize = const Size(1200, 2400);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
 
@@ -161,63 +143,23 @@ void main() {
         ),
       ];
       when(() => mockBloc.state).thenReturn(const ImportExportInitial());
+      final l10n = await getL10n();
+      await loadScreen(tester, multipleDuplicates);
 
-      await tester.pumpWidget(createTestWidget(multipleDuplicates));
-      await tester.pumpAndSettle();
+      await robot.tapChoice(l10n.replaceAll);
 
-      // Initially button is disabled
-      var button = tester.widget<AppButton>(
-        find.byKey(const Key('resolve_duplicates_button')),
-      );
-      expect(button.onPressed, isNull);
-
-      // Tap "Replace All" in Bulk Actions
-      await tester.tap(find.text('Replace All'));
-      await tester.pumpAndSettle();
-
-      // Check if both duplicate cards now show "Replace with New" as selected
-      // We find all RadioListTiles and filter those with the target value
-      final replaceRadios = find.byWidgetPredicate(
-        (widget) =>
-            widget is RadioListTile<DuplicateResolutionChoice> &&
-            widget.value == DuplicateResolutionChoice.replaceWithNew,
-      );
-      expect(replaceRadios, findsNWidgets(2));
-
-      for (final radioFinder in replaceRadios.evaluate()) {
-        final radioGroup = tester.widget<RadioGroup<DuplicateResolutionChoice>>(
-          find
-              .ancestor(
-                of: find.byWidget(radioFinder.widget),
-                matching: find.byType(RadioGroup<DuplicateResolutionChoice>),
-              )
-              .first,
-        );
-        expect(radioGroup.groupValue, DuplicateResolutionChoice.replaceWithNew);
-      }
-
-      // Final resolution button should now be enabled
-      button = tester.widget<AppButton>(
-        find.byKey(const Key('resolve_duplicates_button')),
-      );
-      expect(button.onPressed, isNotNull);
+      robot.expectChoiceSelected(DuplicateResolutionChoice.replaceWithNew, 2);
+      robot.expectResolveButtonEnabled();
     });
 
     testWidgets('shows loading indicator when resolving', (tester) async {
       when(() => mockBloc.state).thenReturn(const ImportExportLoading());
 
-      await tester.pumpWidget(createTestWidget([testDuplicate]));
-      await tester.pump(); // Allow build
+      await loadScreen(tester, [testDuplicate], usePumpAndSettle: false);
+      await tester.pump();
 
-      expect(find.byType(AppLoader), findsOneWidget);
-      expect(
-        tester
-            .widget<AppButton>(
-              find.byKey(const Key('resolve_duplicates_button')),
-            )
-            .isLoading,
-        isTrue,
-      );
+      robot.expectLoaderVisible();
+      robot.expectResolveButtonLoading();
     });
 
     testWidgets('shows error SnackBar on failure', (tester) async {
@@ -230,15 +172,12 @@ void main() {
         initialState: const ImportExportInitial(),
       );
 
-      await tester.pumpWidget(createTestWidget([testDuplicate]));
+      await loadScreen(tester, [testDuplicate]);
       await tester.pump();
       await tester.pumpAndSettle();
 
-      expect(find.text('Test Error'), findsOneWidget);
-      expect(
-        find.byIcon(LucideIcons.circleCheck),
-        findsOneWidget,
-      ); // Button reset
+      robot.expectTextVisible('Test Error');
+      expect(find.byIcon(LucideIcons.circleCheck), findsOneWidget);
     });
   });
 }

@@ -39,13 +39,15 @@ trigger: always_on
 ## 4. UI Performance & Design System
 -   **Atoms Tokens**: Use `AppSpacing`, `AppRadius`, and `AppColors`. No hardcoded pixel values.
 -   **Const-First**: Every widget that can be `const` MUST be `const`.
--   **Lazy Rendering**: Mandatory `ListView.builder` for any list exceedng 10 items.
+-   **Widget Extraction**: STRICTLY prohibit private `_build*()` methods that return widgets. Extract them into separate `StatelessWidget` or `StatefulWidget` classes (can be private with `_` prefix). This ensures better testability, reusability, and composition.
+-   **Lazy Rendering**: Mandatory `ListView.builder` for any list exceeding 10 items.
 -   **Repaint Boundaries**: Wrap complex animations or heavy UI sections in `RepaintBoundary` to optimize Impeller frame budget.
 -   **Isolate Parsing**: Mandate `compute()` or `Isolate` for JSON parsing exceeding 1MB to avoid main-thread jank.
 -   **Theme Access**: ALWAYS use `context` extensions (e.g., `context.colorScheme`, `context.theme`).
 
 ## 5. Quality Assurance & Advanced Testing (The Mirror Rule)
 -   **Mirror Test Rule**: 100% logic and widget coverage. No code without a test.
+-   **Test Naming**: Use string interpolation for test group names: `group('$ClassName',` not `group('ClassName',`. This ensures consistency and allows for better tooling support.
 -   **Test Structure**: Mandate the `Given-When-Then` pattern within `test()` blocks for readability (e.g., `// Given`, `// When`, `// Then`).
 -   **Coverage Targets**: Target 100% logic coverage for `domain` and `bloc` layers.
 -   **Mocking Protocol**: Use `mocktail` for all dependency mocking. STRICTLY prohibit using real implementation dependencies in unit tests.
@@ -53,6 +55,7 @@ trigger: always_on
 -   **Test Grouping**: Use `group()` to organize tests by feature, class, or state for clearer reporting.
 -   **Pure Logic**: Business logic inside BLoCs or UseCases should be extracted to static pure functions for 100% unit test coverage.
 -   **Widget Keys**: Assign distinctive `Key`s to interactive widgets using `Key('feature_action_id')` format.
+-   **Test Localization**: STRICTLY prohibit hardcoded strings in tests for text that is localized in the application. Mandatory use of `AppLocalizations` (e.g., via `context.l10n` in widget tests or a helper for unit tests) to ensure test assertions remain in sync with the source of truth.
 -   **CI/CD**: Analysis (0 warnings), Formatting, and Tests must pass before PR.
 
 ## 6. Open Source & Clean Code
