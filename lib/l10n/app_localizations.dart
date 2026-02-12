@@ -226,6 +226,12 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get save;
 
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
@@ -493,7 +499,7 @@ abstract class AppLocalizations {
   /// No description provided for @excludeAmbiguousHint.
   ///
   /// In en, this message translates to:
-  /// **'Avoid i, l, 1, L, o, 0, O'**
+  /// **'I, l, 1, O, 0'**
   String get excludeAmbiguousHint;
 
   /// No description provided for @characterSets.
@@ -885,6 +891,540 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved Strategies'**
   String get savedStrategies;
+
+  /// No description provided for @exportVault.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Vault'**
+  String get exportVault;
+
+  /// No description provided for @entryDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry Details'**
+  String get entryDetails;
+
+  /// No description provided for @resolveConflicts.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve Conflicts'**
+  String get resolveConflicts;
+
+  /// No description provided for @resolveConflictsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Please resolve all remaining duplicates'**
+  String get resolveConflictsDesc;
+
+  /// No description provided for @exportFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'EXPORT FORMAT'**
+  String get exportFormat;
+
+  /// No description provided for @jsonRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'JSON (Recommended)'**
+  String get jsonRecommended;
+
+  /// No description provided for @jsonDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Structured data, easy to import back.'**
+  String get jsonDesc;
+
+  /// No description provided for @csvSpreadsheet.
+  ///
+  /// In en, this message translates to:
+  /// **'CSV Spreadsheet'**
+  String get csvSpreadsheet;
+
+  /// No description provided for @csvDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Viewable in Excel or Google Sheets.'**
+  String get csvDesc;
+
+  /// No description provided for @encryptWithPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypt with Password'**
+  String get encryptWithPassword;
+
+  /// No description provided for @encryptDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Highly recommended for security.'**
+  String get encryptDesc;
+
+  /// No description provided for @encryptionPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Encryption Password'**
+  String get encryptionPassword;
+
+  /// No description provided for @exportNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Now'**
+  String get exportNow;
+
+  /// No description provided for @warningSensitiveData.
+  ///
+  /// In en, this message translates to:
+  /// **'Exported files contain your sensitive data. Keep them secure or delete them after use.'**
+  String get warningSensitiveData;
+
+  /// No description provided for @passwordGenerator.
+  ///
+  /// In en, this message translates to:
+  /// **'Password Generator'**
+  String get passwordGenerator;
+
+  /// No description provided for @lengthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'LENGTH'**
+  String get lengthLabel;
+
+  /// No description provided for @uppercaseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Uppercase (A-Z)'**
+  String get uppercaseLabel;
+
+  /// No description provided for @lowercaseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Lowercase (a-z)'**
+  String get lowercaseLabel;
+
+  /// No description provided for @numbersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Numbers (0-9)'**
+  String get numbersLabel;
+
+  /// No description provided for @symbolsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Symbols (!@#\$)'**
+  String get symbolsLabel;
+
+  /// No description provided for @generateNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate New'**
+  String get generateNew;
+
+  /// No description provided for @copyPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Password'**
+  String get copyPassword;
+
+  /// No description provided for @excellentSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'EXCELLENT SECURITY'**
+  String get excellentSecurity;
+
+  /// No description provided for @usernameEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'USERNAME / EMAIL'**
+  String get usernameEmailLabel;
+
+  /// No description provided for @createdOnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CREATED ON'**
+  String get createdOnLabel;
+
+  /// No description provided for @lastModifiedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'LAST MODIFIED'**
+  String get lastModifiedLabel;
+
+  /// No description provided for @launchWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Launch Website'**
+  String get launchWebsite;
+
+  /// No description provided for @enableBiometricLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Biometric Login'**
+  String get enableBiometricLogin;
+
+  /// No description provided for @headingEnableBiometrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Biometrics'**
+  String get headingEnableBiometrics;
+
+  /// No description provided for @descEnableBiometrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock your vault faster with fingerprint or FaceID'**
+  String get descEnableBiometrics;
+
+  /// No description provided for @privacyNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Your biometric data stays on your device'**
+  String get privacyNotice;
+
+  /// No description provided for @enableNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Now'**
+  String get enableNow;
+
+  /// No description provided for @skipForNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for Now'**
+  String get skipForNow;
+
+  /// No description provided for @biometricNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Your device does not support biometric authentication.'**
+  String get biometricNotSupported;
+
+  /// No description provided for @noBiometricsEnrolled.
+  ///
+  /// In en, this message translates to:
+  /// **'No Biometrics Enrolled'**
+  String get noBiometricsEnrolled;
+
+  /// No description provided for @noBiometricsEnrolledDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enroll a fingerprint or face in your device settings first, then try again.'**
+  String get noBiometricsEnrolledDesc;
+
+  /// No description provided for @confirmBiometricReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your biometric to enable quick unlock'**
+  String get confirmBiometricReason;
+
+  /// No description provided for @biometricAuthFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric authentication failed. Please try again.'**
+  String get biometricAuthFailed;
+
+  /// No description provided for @biometricSetupError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred during biometric setup.'**
+  String get biometricSetupError;
+
+  /// No description provided for @masterPasswordSetupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Master Password'**
+  String get masterPasswordSetupTitle;
+
+  /// No description provided for @masterPasswordStepIndicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 1 of 2'**
+  String get masterPasswordStepIndicator;
+
+  /// No description provided for @masterPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Password'**
+  String get masterPasswordLabel;
+
+  /// No description provided for @masterPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your master password'**
+  String get masterPasswordHint;
+
+  /// No description provided for @showPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get showPassword;
+
+  /// No description provided for @hidePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get hidePassword;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @confirmPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat your master password'**
+  String get confirmPasswordHint;
+
+  /// No description provided for @passwordsMatchError.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords don\'t match'**
+  String get passwordsMatchError;
+
+  /// No description provided for @masterPasswordSecurityTips.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 12+ characters, mix upper/lowercase, numbers, and symbols for a strong password.'**
+  String get masterPasswordSecurityTips;
+
+  /// No description provided for @continueToBiometrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to biometric setup'**
+  String get continueToBiometrics;
+
+  /// No description provided for @continueDisabledFixErrors.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue button disabled, fix password errors first'**
+  String get continueDisabledFixErrors;
+
+  /// No description provided for @strengthWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak'**
+  String get strengthWeak;
+
+  /// No description provided for @strengthMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get strengthMedium;
+
+  /// No description provided for @strengthStrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong'**
+  String get strengthStrong;
+
+  /// No description provided for @english.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get english;
+
+  /// No description provided for @dangerZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Danger Zone'**
+  String get dangerZone;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout from PassVault'**
+  String get logout;
+
+  /// No description provided for @masterAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Master Account'**
+  String get masterAccount;
+
+  /// No description provided for @lastSyncedMock.
+  ///
+  /// In en, this message translates to:
+  /// **'Last synched: 2 mins ago'**
+  String get lastSyncedMock;
+
+  /// No description provided for @tapToAuthenticate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to Authenticate'**
+  String get tapToAuthenticate;
+
+  /// No description provided for @unlockVaultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Your Vault'**
+  String get unlockVaultTitle;
+
+  /// No description provided for @biometricAuthRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric authentication is required to access your passwords.'**
+  String get biometricAuthRequired;
+
+  /// No description provided for @searchPasswords.
+  ///
+  /// In en, this message translates to:
+  /// **'Search passwords...'**
+  String get searchPasswords;
+
+  /// No description provided for @searchPasswordsSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Search passwords'**
+  String get searchPasswordsSemantics;
+
+  /// No description provided for @clearSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get clearSearch;
+
+  /// No description provided for @searchYourVault.
+  ///
+  /// In en, this message translates to:
+  /// **'Search your vault'**
+  String get searchYourVault;
+
+  /// No description provided for @vault.
+  ///
+  /// In en, this message translates to:
+  /// **'Vault'**
+  String get vault;
+
+  /// No description provided for @generator.
+  ///
+  /// In en, this message translates to:
+  /// **'Generator'**
+  String get generator;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get filterFavorites;
+
+  /// No description provided for @filterWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get filterWork;
+
+  /// No description provided for @filterSocial.
+  ///
+  /// In en, this message translates to:
+  /// **'Social'**
+  String get filterSocial;
+
+  /// No description provided for @filterPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get filterPersonal;
+
+  /// No description provided for @optionIcon.
+  ///
+  /// In en, this message translates to:
+  /// **'Option icon'**
+  String get optionIcon;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get loading;
+
+  /// No description provided for @tabSemanticsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} tab'**
+  String tabSemanticsLabel(String label);
+
+  /// No description provided for @loadingPasswords.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading passwords'**
+  String get loadingPasswords;
+
+  /// No description provided for @filterChipSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by {label}'**
+  String filterChipSemantics(String label);
+
+  /// No description provided for @filterChipSelectedSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by {label}, selected'**
+  String filterChipSelectedSemantics(String label);
+
+  /// No description provided for @radioButtonSemanticsPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Radio button'**
+  String get radioButtonSemanticsPrefix;
+
+  /// No description provided for @selectedState.
+  ///
+  /// In en, this message translates to:
+  /// **'selected'**
+  String get selectedState;
+
+  /// No description provided for @notSelectedState.
+  ///
+  /// In en, this message translates to:
+  /// **'not selected'**
+  String get notSelectedState;
+
+  /// No description provided for @serviceNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Name'**
+  String get serviceNameLabel;
+
+  /// No description provided for @enterServiceName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter service name'**
+  String get enterServiceName;
+
+  /// No description provided for @enterUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter username'**
+  String get enterUsername;
+
+  /// No description provided for @enterPasswordValidator.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter password'**
+  String get enterPasswordValidator;
+
+  /// No description provided for @savePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Password'**
+  String get savePassword;
+
+  /// No description provided for @updatePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Password'**
+  String get updatePassword;
 }
 
 class _AppLocalizationsDelegate

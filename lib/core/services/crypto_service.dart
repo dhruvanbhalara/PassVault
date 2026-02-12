@@ -166,6 +166,41 @@ class CryptoService {
     return key;
   }
 
+  /// Hashes a password using Argon2id for secure storage/verification.
+  ///
+  /// Returns `base64(salt):base64(hash)`.
+  String hashPassword(String password) {
+    final secureRandom = _createSecureRandom();
+    final salt = secureRandom.nextBytes(_saltLength);
+    final hash = _deriveKey(password, salt);
+
+    return '${base64Encode(salt)}:${base64Encode(hash)}';
+  }
+
+  /// Verifies a password against a stored `base64(salt):base64(hash)` string.
+  bool verifyPassword(String password, String storedHash) {
+    try {
+      final parts = storedHash.split(':');
+      if (parts.length != 2) return false;
+
+      final salt = base64Decode(parts[0]);
+      final expectedHash = base64Decode(parts[1]);
+
+      final actualHash = _deriveKey(password, salt);
+
+      if (actualHash.length != expectedHash.length) return false;
+
+      // Constant-time comparison to prevent timing attacks
+      var result = 0;
+      for (var i = 0; i < actualHash.length; i++) {
+        result |= actualHash[i] ^ expectedHash[i];
+      }
+      return result == 0;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// Creates a secure random number generator.
   SecureRandom _createSecureRandom() {
     final secureRandom = FortunaRandom();

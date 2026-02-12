@@ -25,6 +25,9 @@ class AppCard extends StatelessWidget {
   /// Whether to show a border outline. Defaults to false.
   final bool hasOutline;
 
+  /// Whether to show a glow effect (useful for AMOLED).
+  final bool hasGlow;
+
   /// Standardized application card/container.
   const AppCard({
     super.key,
@@ -34,6 +37,7 @@ class AppCard extends StatelessWidget {
     this.onTap,
     this.backgroundColor,
     this.hasOutline = false,
+    this.hasGlow = false,
   });
 
   @override
@@ -46,7 +50,10 @@ class AppCard extends StatelessWidget {
       border: hasOutline
           ? Border.all(color: theme.outline.withValues(alpha: 0.1))
           : null,
-      boxShadow: [if (!hasOutline) theme.cardShadow],
+      boxShadow: [
+        if (!hasOutline) theme.cardShadow,
+        if (hasGlow && theme.accentGlow != null) theme.accentGlow!,
+      ],
     );
 
     final content = Padding(
@@ -60,7 +67,7 @@ class AppCard extends StatelessWidget {
       clipBehavior:
           Clip.antiAlias, // Ensures splashes don't overflow rounded corners
       child: Material(
-        color: Colors.transparent,
+        color: theme.surface.withValues(alpha: 0),
         child: onTap != null ? InkWell(onTap: onTap, child: content) : content,
       ),
     );

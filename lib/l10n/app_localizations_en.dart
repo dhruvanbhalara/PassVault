@@ -75,6 +75,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get save => 'Save';
 
   @override
+  String get apply => 'Apply';
+
+  @override
   String get cancel => 'Cancel';
 
   @override
@@ -210,7 +213,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get excludeAmbiguous => 'Exclude Ambiguous';
 
   @override
-  String get excludeAmbiguousHint => 'Avoid i, l, 1, L, o, 0, O';
+  String get excludeAmbiguousHint => 'I, l, 1, O, 0';
 
   @override
   String get characterSets => 'Character Sets';
@@ -417,4 +420,286 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get savedStrategies => 'Saved Strategies';
+
+  @override
+  String get exportVault => 'Export Vault';
+
+  @override
+  String get entryDetails => 'Entry Details';
+
+  @override
+  String get resolveConflicts => 'Resolve Conflicts';
+
+  @override
+  String get resolveConflictsDesc => 'Please resolve all remaining duplicates';
+
+  @override
+  String get exportFormat => 'EXPORT FORMAT';
+
+  @override
+  String get jsonRecommended => 'JSON (Recommended)';
+
+  @override
+  String get jsonDesc => 'Structured data, easy to import back.';
+
+  @override
+  String get csvSpreadsheet => 'CSV Spreadsheet';
+
+  @override
+  String get csvDesc => 'Viewable in Excel or Google Sheets.';
+
+  @override
+  String get encryptWithPassword => 'Encrypt with Password';
+
+  @override
+  String get encryptDesc => 'Highly recommended for security.';
+
+  @override
+  String get encryptionPassword => 'Encryption Password';
+
+  @override
+  String get exportNow => 'Export Now';
+
+  @override
+  String get warningSensitiveData =>
+      'Exported files contain your sensitive data. Keep them secure or delete them after use.';
+
+  @override
+  String get passwordGenerator => 'Password Generator';
+
+  @override
+  String get lengthLabel => 'LENGTH';
+
+  @override
+  String get uppercaseLabel => 'Uppercase (A-Z)';
+
+  @override
+  String get lowercaseLabel => 'Lowercase (a-z)';
+
+  @override
+  String get numbersLabel => 'Numbers (0-9)';
+
+  @override
+  String get symbolsLabel => 'Symbols (!@#\$)';
+
+  @override
+  String get generateNew => 'Generate New';
+
+  @override
+  String get copyPassword => 'Copy Password';
+
+  @override
+  String get excellentSecurity => 'EXCELLENT SECURITY';
+
+  @override
+  String get usernameEmailLabel => 'USERNAME / EMAIL';
+
+  @override
+  String get createdOnLabel => 'CREATED ON';
+
+  @override
+  String get lastModifiedLabel => 'LAST MODIFIED';
+
+  @override
+  String get launchWebsite => 'Launch Website';
+
+  @override
+  String get enableBiometricLogin => 'Enable Biometric Login';
+
+  @override
+  String get headingEnableBiometrics => 'Enable Biometrics';
+
+  @override
+  String get descEnableBiometrics =>
+      'Unlock your vault faster with fingerprint or FaceID';
+
+  @override
+  String get privacyNotice => 'Your biometric data stays on your device';
+
+  @override
+  String get enableNow => 'Enable Now';
+
+  @override
+  String get skipForNow => 'Skip for Now';
+
+  @override
+  String get biometricNotSupported =>
+      'Your device does not support biometric authentication.';
+
+  @override
+  String get noBiometricsEnrolled => 'No Biometrics Enrolled';
+
+  @override
+  String get noBiometricsEnrolledDesc =>
+      'Please enroll a fingerprint or face in your device settings first, then try again.';
+
+  @override
+  String get confirmBiometricReason =>
+      'Confirm your biometric to enable quick unlock';
+
+  @override
+  String get biometricAuthFailed =>
+      'Biometric authentication failed. Please try again.';
+
+  @override
+  String get biometricSetupError => 'An error occurred during biometric setup.';
+
+  @override
+  String get masterPasswordSetupTitle => 'Create Master Password';
+
+  @override
+  String get masterPasswordStepIndicator => 'Step 1 of 2';
+
+  @override
+  String get masterPasswordLabel => 'Create Password';
+
+  @override
+  String get masterPasswordHint => 'Enter your master password';
+
+  @override
+  String get showPassword => 'Show password';
+
+  @override
+  String get hidePassword => 'Hide password';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm Password';
+
+  @override
+  String get confirmPasswordHint => 'Repeat your master password';
+
+  @override
+  String get passwordsMatchError => 'Passwords don\'t match';
+
+  @override
+  String get masterPasswordSecurityTips =>
+      'Use 12+ characters, mix upper/lowercase, numbers, and symbols for a strong password.';
+
+  @override
+  String get continueToBiometrics => 'Continue to biometric setup';
+
+  @override
+  String get continueDisabledFixErrors =>
+      'Continue button disabled, fix password errors first';
+
+  @override
+  String get strengthWeak => 'Weak';
+
+  @override
+  String get strengthMedium => 'Medium';
+
+  @override
+  String get strengthStrong => 'Strong';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get dangerZone => 'Danger Zone';
+
+  @override
+  String get logout => 'Logout from PassVault';
+
+  @override
+  String get masterAccount => 'Master Account';
+
+  @override
+  String get lastSyncedMock => 'Last synched: 2 mins ago';
+
+  @override
+  String get tapToAuthenticate => 'Tap to Authenticate';
+
+  @override
+  String get unlockVaultTitle => 'Unlock Your Vault';
+
+  @override
+  String get biometricAuthRequired =>
+      'Biometric authentication is required to access your passwords.';
+
+  @override
+  String get searchPasswords => 'Search passwords...';
+
+  @override
+  String get searchPasswordsSemantics => 'Search passwords';
+
+  @override
+  String get clearSearch => 'Clear search';
+
+  @override
+  String get searchYourVault => 'Search your vault';
+
+  @override
+  String get vault => 'Vault';
+
+  @override
+  String get generator => 'Generator';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterFavorites => 'Favorites';
+
+  @override
+  String get filterWork => 'Work';
+
+  @override
+  String get filterSocial => 'Social';
+
+  @override
+  String get filterPersonal => 'Personal';
+
+  @override
+  String get optionIcon => 'Option icon';
+
+  @override
+  String get loading => 'Loading';
+
+  @override
+  String tabSemanticsLabel(String label) {
+    return '$label tab';
+  }
+
+  @override
+  String get loadingPasswords => 'Loading passwords';
+
+  @override
+  String filterChipSemantics(String label) {
+    return 'Filter by $label';
+  }
+
+  @override
+  String filterChipSelectedSemantics(String label) {
+    return 'Filter by $label, selected';
+  }
+
+  @override
+  String get radioButtonSemanticsPrefix => 'Radio button';
+
+  @override
+  String get selectedState => 'selected';
+
+  @override
+  String get notSelectedState => 'not selected';
+
+  @override
+  String get serviceNameLabel => 'Service Name';
+
+  @override
+  String get enterServiceName => 'Enter service name';
+
+  @override
+  String get enterUsername => 'Enter username';
+
+  @override
+  String get enterPasswordValidator => 'Enter password';
+
+  @override
+  String get savePassword => 'Save Password';
+
+  @override
+  String get updatePassword => 'Update Password';
 }

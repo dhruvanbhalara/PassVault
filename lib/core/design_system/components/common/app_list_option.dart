@@ -89,7 +89,7 @@ class _AppListOptionIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       image: true,
-      label: 'Option icon',
+      label: context.l10n.optionIcon,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),

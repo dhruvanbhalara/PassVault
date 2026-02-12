@@ -16,8 +16,8 @@ class DarkThemePreset {
       surface: AppColors.surfaceDark,
       onSurface: AppColors.textDarkPrimary,
       background: AppColors.bgDark,
-      error: AppColors.error,
-      success: AppColors.success,
+      error: AppColors.errorDark,
+      success: AppColors.successDark,
       warning: AppColors.warning,
       surfaceDim: AppColors.surfaceDimDark,
       surfaceHighlight: AppColors.primaryDark.withValues(alpha: 0.1),
@@ -57,7 +57,7 @@ class DarkThemePreset {
   }
 
   static ColorScheme get colorScheme => ColorScheme.fromSeed(
-    seedColor: AppColors.primaryLight,
+    seedColor: AppColors.primaryDark,
     brightness: Brightness.dark,
     primary: AppColors.primaryDark,
     onPrimary: AppColors.bgDark,

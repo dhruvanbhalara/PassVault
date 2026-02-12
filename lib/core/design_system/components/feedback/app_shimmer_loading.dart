@@ -72,7 +72,7 @@ class _AppShimmerLoadingState extends State<AppShimmerLoading>
 
     return Semantics(
       liveRegion: true,
-      label: 'Loading',
+      label: context.l10n.loading,
       child: AnimatedBuilder(
         animation: _animation,
         builder: (context, child) {

@@ -26,8 +26,8 @@ void main() {
     });
 
     test('Dark theme should have high-contrast background pairing', () {
-      expect(AppColors.bgDark, const Color(0xFF0F172A));
-      expect(AppColors.surfaceDark, const Color(0xFF1E293B));
+      expect(AppColors.bgDark, const Color(0xFF121212));
+      expect(AppColors.surfaceDark, const Color(0xFF1E1E1E));
     });
   });
 

@@ -206,6 +206,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i830.SetOnboardingCompleteUseCase>(
       () => _i830.SetOnboardingCompleteUseCase(gh<_i674.SettingsRepository>()),
     );
+    gh.lazySingleton<_i830.GetOnboardingStepUseCase>(
+      () => _i830.GetOnboardingStepUseCase(gh<_i674.SettingsRepository>()),
+    );
+    gh.lazySingleton<_i830.SetOnboardingStepUseCase>(
+      () => _i830.SetOnboardingStepUseCase(gh<_i674.SettingsRepository>()),
+    );
+    gh.lazySingleton<_i830.DeleteOnboardingStepUseCase>(
+      () => _i830.DeleteOnboardingStepUseCase(gh<_i674.SettingsRepository>()),
+    );
     gh.lazySingleton<_i739.GetPasswordGenerationSettingsUseCase>(
       () => _i739.GetPasswordGenerationSettingsUseCase(
         gh<_i674.SettingsRepository>(),
@@ -243,15 +252,22 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i108.IFilePickerService>(),
       ),
     );
-    gh.factory<_i792.OnboardingBloc>(
-      () => _i792.OnboardingBloc(gh<_i830.SetOnboardingCompleteUseCase>()),
-    );
     gh.lazySingleton<_i552.PasswordBloc>(
       () => _i552.PasswordBloc(
         gh<_i969.GetPasswordsUseCase>(),
         gh<_i969.SavePasswordUseCase>(),
         gh<_i969.DeletePasswordUseCase>(),
         gh<_i580.PasswordRepository>(),
+      ),
+    );
+    gh.factory<_i792.OnboardingBloc>(
+      () => _i792.OnboardingBloc(
+        gh<_i830.GetOnboardingCompleteUseCase>(),
+        gh<_i830.SetOnboardingCompleteUseCase>(),
+        gh<_i360.SetBiometricsEnabledUseCase>(),
+        gh<_i458.CheckBiometricsUseCase>(),
+        gh<_i1045.AuthenticateUseCase>(),
+        gh<_i830.DeleteOnboardingStepUseCase>(),
       ),
     );
     gh.factory<_i683.AddEditPasswordBloc>(

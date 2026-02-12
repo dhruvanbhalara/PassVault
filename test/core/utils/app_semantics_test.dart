@@ -4,17 +4,23 @@ import '../../helpers/test_helpers.dart';
 
 void main() {
   group('$AppSemantics', () {
+    late AppLocalizations l10n;
+
+    setUpAll(() async {
+      l10n = await getL10n();
+    });
+
     testWidgets('button wrapper renders child widget', (
       WidgetTester tester,
     ) async {
       await tester.pumpApp(
         AppSemantics.button(
-          label: 'Save',
-          child: const ElevatedButton(onPressed: null, child: Text('Save')),
+          label: l10n.save,
+          child: ElevatedButton(onPressed: null, child: Text(l10n.save)),
         ),
       );
 
-      expect(find.text('Save'), findsOneWidget);
+      expect(find.text(l10n.save), findsOneWidget);
       expect(find.byType(ElevatedButton), findsOneWidget);
     });
 
@@ -22,10 +28,10 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpApp(
-        AppSemantics.header(label: 'Security', child: const Text('Security')),
+        AppSemantics.header(label: l10n.security, child: Text(l10n.security)),
       );
 
-      expect(find.text('Security'), findsOneWidget);
+      expect(find.text(l10n.security), findsOneWidget);
     });
 
     testWidgets('listItem wrapper renders child widget', (
@@ -46,7 +52,7 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpApp(
-        AppSemantics.input(label: 'Password', child: const TextField()),
+        AppSemantics.input(label: l10n.passwordLabel, child: const TextField()),
       );
 
       expect(find.byType(TextField), findsOneWidget);

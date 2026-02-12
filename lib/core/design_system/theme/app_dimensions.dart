@@ -27,9 +27,7 @@ abstract class AppSpacing {
   /// 80.0
   static const double x4xl = 80.0;
 
-  // ─────────────────────────────────────────────────────────────
   // Semantic Layout Tokens
-  // ─────────────────────────────────────────────────────────────
 
   /// Standard vertical safe area (notch) spacing.
   static const double safeAreaVertical = 24.0;
@@ -127,9 +125,8 @@ abstract class AppIconSize {
 
 /// Helper class providing standardized dimensions and legacy compatibility.
 class AppDimensions {
-  // ─────────────────────────────────────────────────────────────
   // Semantic Layout Constants
-  // ─────────────────────────────────────────────────────────────
+
   static const double sliverAppBarExpandedHeight = 120.0;
   static const double listTileIconSize = 48.0;
   static const double emptyStateIconSize = 64.0;
@@ -149,9 +146,7 @@ class AppDimensions {
   static const double sliderOverlayRadius = 20.0;
   static const double listTileDividerIndent = 72.0;
 
-  // ─────────────────────────────────────────────────────────────
   // Strategy Editor Dimensions
-  // ─────────────────────────────────────────────────────────────
 
   /// Slider track height for strategy editor (premium thick track).
   static const double strategySliderTrackHeight = 12.0;
