@@ -28,7 +28,7 @@ void main() {
     await tester.pumpApp(
       BlocProvider<AuthBloc>.value(
         value: mockAuthBloc,
-        child: const AuthView(),
+        child: const AuthScreen(),
       ),
       usePumpAndSettle: usePumpAndSettle,
     );

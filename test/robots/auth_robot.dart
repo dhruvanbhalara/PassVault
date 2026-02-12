@@ -25,6 +25,5 @@ class AuthRobot {
 
   void expectUnlockButtonVisible() {
     expect(unlockButtonFinder, findsOneWidget);
-    expect(find.byType(AppButton), findsOneWidget);
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/error/result.dart';
+import 'package:passvault/core/error/error.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 import 'package:passvault/features/auth/domain/usecases/authenticate_usecase.dart';
 import 'package:passvault/features/auth/presentation/bloc/auth_bloc.dart';

@@ -9,3 +9,12 @@ sealed class AuthEvent extends Equatable {
 class AuthCheckRequested extends AuthEvent {}
 
 class AuthLoginRequested extends AuthEvent {}
+
+class AuthPasswordLoginRequested extends AuthEvent {
+  final String password;
+
+  const AuthPasswordLoginRequested(this.password);
+
+  @override
+  List<Object> get props => [password];
+}
