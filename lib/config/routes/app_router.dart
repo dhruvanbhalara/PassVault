@@ -22,7 +22,6 @@ import 'package:passvault/features/password_manager/presentation/add_edit_passwo
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/duplicate_resolution_screen.dart';
 import 'package:passvault/features/password_manager/presentation/export_vault_screen.dart';
-import 'package:passvault/features/password_manager/presentation/password_detail_screen.dart';
 import 'package:passvault/features/settings/domain/usecases/biometrics_usecases.dart';
 import 'package:passvault/features/settings/domain/usecases/onboarding_usecases.dart';
 import 'package:passvault/features/settings/domain/usecases/password_settings_usecases.dart';
@@ -132,15 +131,6 @@ class AppRouter {
                         pageBuilder: (context, state) => _slideTransition(
                           AddEditPasswordScreen(
                             entry: state.extra as PasswordEntry,
-                          ),
-                          state,
-                        ),
-                      ),
-                      GoRoute(
-                        path: AppRoutes.passwordDetailRoute,
-                        pageBuilder: (context, state) => _slideTransition(
-                          PasswordDetailScreen(
-                            passwordId: state.pathParameters['id']!,
                           ),
                           state,
                         ),
