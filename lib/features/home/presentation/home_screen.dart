@@ -20,7 +20,6 @@ class HomeScreen extends StatelessWidget {
     final theme = context.theme;
     final l10n = context.l10n;
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text(l10n.vault)),
       floatingActionButton: FloatingActionButton(
         key: const Key('home_fab'),
         onPressed: () => context.push(AppRoutes.addPassword),
@@ -30,6 +29,14 @@ class HomeScreen extends StatelessWidget {
       ),
       body: CustomScrollView(
         slivers: [
+          SliverAppBar(
+            centerTitle: true,
+            title: Text(l10n.vault),
+            floating: true,
+            pinned: true,
+            scrolledUnderElevation: 0,
+            backgroundColor: theme.background.withValues(alpha: 0),
+          ),
           BlocBuilder<PasswordBloc, PasswordState>(
             builder: (context, state) {
               if (state is PasswordLoading) {

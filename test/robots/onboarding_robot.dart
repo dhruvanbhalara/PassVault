@@ -29,6 +29,7 @@ class OnboardingRobot {
 
   Future<void> tapEnableBiometrics() async {
     await tester.ensureVisible(biometricEnableButtonFinder);
+    await tester.pump(const Duration(milliseconds: 500));
     await tester.tap(biometricEnableButtonFinder);
     await tester.pump();
   }

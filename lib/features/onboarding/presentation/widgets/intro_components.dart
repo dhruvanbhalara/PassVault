@@ -144,43 +144,54 @@ class BaseOnboardingSlide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.l),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(height: AppSpacing.xxl),
-          ScaleTransition(
-            scale: pulseAnimation,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: context.colors.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.xxl),
-                child: Icon(icon, size: 80, color: context.colors.primary),
-              ),
+    return CustomScrollView(
+      slivers: [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.l),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: AppSpacing.xxl),
+                ScaleTransition(
+                  scale: pulseAnimation,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: context.colors.primary.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.xxl),
+                      child: Icon(
+                        icon,
+                        size: 80,
+                        color: context.colors.primary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xxl),
+                Text(
+                  title,
+                  style: context.typography.headlineMedium,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.m),
+                Text(
+                  description,
+                  style: context.typography.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+                if (footer != null) ...[
+                  const SizedBox(height: AppSpacing.xl),
+                  footer!,
+                ],
+              ],
             ),
           ),
-          const SizedBox(height: AppSpacing.xxl),
-          Text(
-            title,
-            style: context.typography.headlineMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppSpacing.m),
-          Text(
-            description,
-            style: context.typography.bodyMedium,
-            textAlign: TextAlign.center,
-          ),
-          if (footer != null) ...[
-            const SizedBox(height: AppSpacing.xl),
-            footer!,
-          ],
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

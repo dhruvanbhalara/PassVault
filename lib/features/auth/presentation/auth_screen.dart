@@ -84,68 +84,75 @@ class _AuthContentState extends State<_AuthContent> {
 
         final isAmoled = theme.primaryGlow != null;
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
-              // App Logo (shield)
-              _AppLogo(isAmoled: isAmoled),
-              const SizedBox(height: AppSpacing.xxl),
-              // Header
-              Text(
-                context.l10n.unlockVaultTitle,
-                style: context.typography.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: isAmoled ? theme.onPrimary : theme.onSurface,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.m),
-              Text(
-                context.l10n.biometricAuthRequired,
-                style: context.typography.bodyMedium?.copyWith(
-                  color: (isAmoled ? theme.onPrimary : theme.onSurface)
-                      .withValues(alpha: 0.7),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.xxxl),
-              // Biometric Shortcut
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: onBiometricTap,
+        return CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Center(
-                      child: Hero(
-                        tag: 'biometric_icon',
-                        child: IconButton(
-                          key: const Key('auth_unlock_button'),
-                          iconSize: 80,
-                          icon: Icon(
-                            LucideIcons.fingerprintPattern,
-                            color: theme.primary,
-                          ),
-                          onPressed: onBiometricTap,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    // Unlock Button replacement or label
+                    SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
+                    // App Logo (shield)
+                    _AppLogo(isAmoled: isAmoled),
+                    const SizedBox(height: AppSpacing.xxl),
+                    // Header
                     Text(
-                      context.l10n.tapToAuthenticate,
-                      style: context.typography.labelLarge?.copyWith(
-                        color: theme.primary,
+                      context.l10n.unlockVaultTitle,
+                      style: context.typography.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
+                        color: isAmoled ? theme.onPrimary : theme.onSurface,
                       ),
                     ),
+                    const SizedBox(height: AppSpacing.m),
+                    Text(
+                      context.l10n.biometricAuthRequired,
+                      style: context.typography.bodyMedium?.copyWith(
+                        color: (isAmoled ? theme.onPrimary : theme.onSurface)
+                            .withValues(alpha: 0.7),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.xxxl),
+                    // Biometric Shortcut
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: onBiometricTap,
+                      child: Column(
+                        children: [
+                          Center(
+                            child: Hero(
+                              tag: 'biometric_icon',
+                              child: IconButton(
+                                key: const Key('auth_unlock_button'),
+                                iconSize: 80,
+                                icon: Icon(
+                                  LucideIcons.fingerprintPattern,
+                                  color: theme.primary,
+                                ),
+                                onPressed: onBiometricTap,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.xl),
+                          // Unlock Button replacement or label
+                          Text(
+                            context.l10n.tapToAuthenticate,
+                            style: context.typography.labelLarge?.copyWith(
+                              color: theme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xxl),
                   ],
                 ),
               ),
-              const SizedBox(height: AppSpacing.xxl),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );

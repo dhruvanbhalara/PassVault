@@ -46,10 +46,6 @@ class DuplicateResolutionScreen extends StatelessWidget {
 
             return switch (state) {
               DuplicateResolutionInitial(:final resolutions) => Scaffold(
-                appBar: AppBar(
-                  centerTitle: true,
-                  title: Text(l10n.resolveDuplicatesTitle),
-                ),
                 bottomNavigationBar: SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.l),
@@ -64,36 +60,64 @@ class DuplicateResolutionScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                body: Column(
-                  children: [
-                    _InfoBanner(count: resolutions.length, theme: theme),
+                body: CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      centerTitle: true,
+                      title: Text(l10n.resolveDuplicatesTitle),
+                      floating: true,
+                      pinned: true,
+                      scrolledUnderElevation: 0,
+                      surfaceTintColor: Colors.transparent,
+                    ),
+                    SliverToBoxAdapter(
+                      child: _InfoBanner(
+                        count: resolutions.length,
+                        theme: theme,
+                      ),
+                    ),
                     if (isLoading)
-                      const Expanded(child: Center(child: AppLoader())),
-                    if (!isLoading)
-                      Expanded(
-                        child: ListView.separated(
-                          padding: const EdgeInsets.all(AppSpacing.l),
-                          itemCount: resolutions.length + 1,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: AppSpacing.l),
-                          itemBuilder: (context, index) {
+                      const SliverFillRemaining(
+                        child: Center(child: AppLoader()),
+                      )
+                    else
+                      SliverPadding(
+                        padding: const EdgeInsets.all(AppSpacing.l),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
                             if (index == 0) {
-                              return BulkResolutionHeader(
-                                onChoiceSelected: (choice) => context
-                                    .read<DuplicateResolutionBloc>()
-                                    .add(BulkResolutionOptionSet(choice)),
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: AppSpacing.l,
+                                ),
+                                child: BulkResolutionHeader(
+                                  onChoiceSelected: (choice) => context
+                                      .read<DuplicateResolutionBloc>()
+                                      .add(BulkResolutionOptionSet(choice)),
+                                ),
                               );
                             }
                             final duplicate = resolutions[index - 1];
-                            return DuplicateCard(
-                              key: Key('duplicate_card_${index - 1}'),
-                              duplicate: duplicate,
-                              onChoiceChanged: (choice) =>
-                                  context.read<DuplicateResolutionBloc>().add(
-                                    ResolutionOptionUpdated(index - 1, choice),
-                                  ),
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: AppSpacing.l,
+                              ),
+                              child: DuplicateCard(
+                                key: Key('duplicate_card_${index - 1}'),
+                                duplicate: duplicate,
+                                onChoiceChanged: (choice) =>
+                                    context.read<DuplicateResolutionBloc>().add(
+                                      ResolutionOptionUpdated(
+                                        index - 1,
+                                        choice,
+                                      ),
+                                    ),
+                              ),
                             );
-                          },
+                          }, childCount: resolutions.length + 1),
                         ),
                       ),
                   ],

@@ -154,64 +154,78 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                   )
                 : const Icon(LucideIcons.save),
           ),
-          appBar: AppBar(
-            centerTitle: true,
-            title: Text(
-              widget.entry == null ? l10n.addPassword : l10n.editPassword,
-            ),
-          ),
           body: RepaintBoundary(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.l),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    AppCard(
-                      hasGlow: isAmoled,
-                      padding: const EdgeInsets.all(AppSpacing.l),
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  centerTitle: true,
+                  title: Text(
+                    widget.entry == null ? l10n.addPassword : l10n.editPassword,
+                  ),
+                  floating: true,
+                  pinned: true,
+                  scrolledUnderElevation: 0,
+                  backgroundColor: theme.background.withValues(alpha: 0),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.all(AppSpacing.l),
+                  sliver: SliverToBoxAdapter(
+                    child: Form(
+                      key: _formKey,
                       child: Column(
-                        spacing: AppSpacing.l,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          PasswordFormFields(
-                            l10n: l10n,
-                            appNameController: _appNameController,
-                            usernameController: _usernameController,
-                          ),
-                          PasswordFieldSection(
-                            l10n: l10n,
-                            passwordController: _passwordController,
-                            obscurePassword: _obscurePassword,
-                            onToggleVisibility: () => setState(
-                              () => _obscurePassword = !_obscurePassword,
-                            ),
-                            state: state,
-                            selectedStrategyId: _selectedStrategyId,
-                            onStrategyChanged: (value) {
-                              if (value != null) {
-                                setState(() => _selectedStrategyId = value);
-                                context.read<AddEditPasswordBloc>().add(
-                                  GenerateStrongPassword(strategyId: value),
-                                );
-                              }
-                            },
-                            onGenerate: () {
-                              context.read<AddEditPasswordBloc>().add(
-                                GenerateStrongPassword(
-                                  strategyId: _selectedStrategyId,
+                          AppCard(
+                            hasGlow: isAmoled,
+                            padding: const EdgeInsets.all(AppSpacing.l),
+                            child: Column(
+                              spacing: AppSpacing.l,
+                              children: [
+                                PasswordFormFields(
+                                  l10n: l10n,
+                                  appNameController: _appNameController,
+                                  usernameController: _usernameController,
                                 ),
-                              );
-                            },
+                                PasswordFieldSection(
+                                  l10n: l10n,
+                                  passwordController: _passwordController,
+                                  obscurePassword: _obscurePassword,
+                                  onToggleVisibility: () => setState(
+                                    () => _obscurePassword = !_obscurePassword,
+                                  ),
+                                  state: state,
+                                  selectedStrategyId: _selectedStrategyId,
+                                  onStrategyChanged: (value) {
+                                    if (value != null) {
+                                      setState(
+                                        () => _selectedStrategyId = value,
+                                      );
+                                      context.read<AddEditPasswordBloc>().add(
+                                        GenerateStrongPassword(
+                                          strategyId: value,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  onGenerate: () {
+                                    context.read<AddEditPasswordBloc>().add(
+                                      GenerateStrongPassword(
+                                        strategyId: _selectedStrategyId,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
+
+                          const SizedBox(height: AppSpacing.xxl),
                         ],
                       ),
                     ),
-
-                    const SizedBox(height: AppSpacing.xxl),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         );

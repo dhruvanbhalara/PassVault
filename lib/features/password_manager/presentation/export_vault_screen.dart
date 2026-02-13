@@ -44,90 +44,103 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(centerTitle: true, title: Text(l10n.exportVault)),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.l),
-          child: Column(
-            children: [
-              // Warning Banner
-              AppCard(
-                hasGlow: isAmoled,
-                backgroundColor: theme.error.withValues(alpha: 0.1),
-                padding: const EdgeInsets.all(AppSpacing.m),
-                child: Row(
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              centerTitle: true,
+              title: Text(l10n.exportVault),
+              floating: true,
+              pinned: true,
+              scrolledUnderElevation: 0,
+              backgroundColor: theme.background.withValues(alpha: 0),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.all(AppSpacing.l),
+              sliver: SliverToBoxAdapter(
+                child: Column(
                   children: [
-                    Icon(
-                      LucideIcons.triangleAlert,
-                      color: theme.error,
-                      size: 24,
-                    ),
-                    const SizedBox(width: AppSpacing.m),
-                    Expanded(
-                      child: Text(
-                        l10n.warningSensitiveData,
-                        style: context.typography.bodySmall?.copyWith(
-                          color: theme.error,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    // Warning Banner
+                    AppCard(
+                      hasGlow: isAmoled,
+                      backgroundColor: theme.error.withValues(alpha: 0.1),
+                      padding: const EdgeInsets.all(AppSpacing.m),
+                      child: Row(
+                        children: [
+                          Icon(
+                            LucideIcons.triangleAlert,
+                            color: theme.error,
+                            size: 24,
+                          ),
+                          const SizedBox(width: AppSpacing.m),
+                          Expanded(
+                            child: Text(
+                              l10n.warningSensitiveData,
+                              style: context.typography.bodySmall?.copyWith(
+                                color: theme.error,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    const SizedBox(height: AppSpacing.xl),
+                    // Format Selection
+                    _SectionHeader(title: l10n.exportFormat),
+                    AppRadioOptionCard(
+                      icon: LucideIcons.fileCode,
+                      title: l10n.jsonRecommended,
+                      description: l10n.jsonDesc,
+                      isSelected: _isJsonSelected,
+                      onTap: () => setState(() => _isJsonSelected = true),
+                    ),
+                    const SizedBox(height: AppSpacing.s),
+                    AppRadioOptionCard(
+                      icon: LucideIcons.fileSpreadsheet,
+                      title: l10n.csvSpreadsheet,
+                      description: l10n.csvDesc,
+                      isSelected: !_isJsonSelected,
+                      onTap: () => setState(() => _isJsonSelected = false),
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    // Encryption Toggle
+                    AppCard(
+                      hasGlow: isAmoled,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.m,
+                        vertical: AppSpacing.s,
+                      ),
+                      child: SwitchListTile(
+                        title: Text(l10n.encryptWithPassword),
+                        subtitle: Text(l10n.encryptDesc),
+                        value: _encryptExport,
+                        onChanged: (v) => setState(() => _encryptExport = v),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    if (_encryptExport) ...[
+                      const SizedBox(height: AppSpacing.l),
+                      AppTextField(
+                        label: l10n.encryptionPassword,
+                        hint: l10n.encryptionPassword,
+                        controller: _passwordController,
+                        obscureText: true,
+                        prefixIcon: LucideIcons.lock,
+                        hasFocusGlow: isAmoled,
+                      ),
+                    ],
+                    const SizedBox(height: AppSpacing.xxl),
+                    AppButton(
+                      text: l10n.exportNow,
+                      onPressed: () => _handleExport(context),
+                      hasGlow: isAmoled,
+                    ),
+                    const SizedBox(height: AppSpacing.xxl),
                   ],
                 ),
               ),
-              const SizedBox(height: AppSpacing.xl),
-              // Format Selection
-              _SectionHeader(title: l10n.exportFormat),
-              AppRadioOptionCard(
-                icon: LucideIcons.fileCode,
-                title: l10n.jsonRecommended,
-                description: l10n.jsonDesc,
-                isSelected: _isJsonSelected,
-                onTap: () => setState(() => _isJsonSelected = true),
-              ),
-              const SizedBox(height: AppSpacing.s),
-              AppRadioOptionCard(
-                icon: LucideIcons.fileSpreadsheet,
-                title: l10n.csvSpreadsheet,
-                description: l10n.csvDesc,
-                isSelected: !_isJsonSelected,
-                onTap: () => setState(() => _isJsonSelected = false),
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              // Encryption Toggle
-              AppCard(
-                hasGlow: isAmoled,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.m,
-                  vertical: AppSpacing.s,
-                ),
-                child: SwitchListTile(
-                  title: Text(l10n.encryptWithPassword),
-                  subtitle: Text(l10n.encryptDesc),
-                  value: _encryptExport,
-                  onChanged: (v) => setState(() => _encryptExport = v),
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-              if (_encryptExport) ...[
-                const SizedBox(height: AppSpacing.l),
-                AppTextField(
-                  label: l10n.encryptionPassword,
-                  hint: l10n.encryptionPassword,
-                  controller: _passwordController,
-                  obscureText: true,
-                  prefixIcon: LucideIcons.lock,
-                  hasFocusGlow: isAmoled,
-                ),
-              ],
-              const SizedBox(height: AppSpacing.xxl),
-              AppButton(
-                text: l10n.exportNow,
-                onPressed: () => _handleExport(context),
-                hasGlow: isAmoled,
-              ),
-              const SizedBox(height: AppSpacing.xxl),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

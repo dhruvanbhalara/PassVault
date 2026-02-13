@@ -22,51 +22,62 @@ class _GeneratorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(context.l10n.passwordGenerator),
-      ),
-      body: BlocBuilder<GeneratorBloc, GeneratorState>(
-        builder: (context, state) {
-          return switch (state) {
-            GeneratorLoading() => const Center(child: AppLoader()),
-            GeneratorLoaded() => _GeneratorContent(state: state),
-          };
-        },
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            centerTitle: true,
+            title: Text(context.l10n.passwordGenerator),
+            floating: true,
+            pinned: true,
+            scrolledUnderElevation: 0,
+            backgroundColor: context.theme.background.withValues(alpha: 0),
+          ),
+          BlocBuilder<GeneratorBloc, GeneratorState>(
+            builder: (context, state) {
+              return switch (state) {
+                GeneratorLoading() => const SliverFillRemaining(
+                  child: Center(child: AppLoader()),
+                ),
+                GeneratorLoaded() => _GeneratorContentSliver(state: state),
+              };
+            },
+          ),
+        ],
       ),
     );
   }
 }
 
-class _GeneratorContent extends StatelessWidget {
+class _GeneratorContentSliver extends StatelessWidget {
   final GeneratorLoaded state;
 
-  const _GeneratorContent({required this.state});
+  const _GeneratorContentSliver({required this.state});
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return SliverPadding(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.l,
         AppSpacing.m,
         AppSpacing.l,
         AppSpacing.xxl,
       ),
-
-      children: [
-        GeneratorGeneratedPasswordCard(state: state),
-        const SizedBox(height: AppSpacing.m),
-        AppButton(
-          key: const Key('generator_generate_button'),
-          text: context.l10n.generateNew,
-          icon: LucideIcons.refreshCw,
-          onPressed: () =>
-              context.read<GeneratorBloc>().add(const GeneratorRequested()),
-          hasGlow: false,
-        ),
-        const SizedBox(height: AppSpacing.l),
-        GeneratorControlsCard(state: state),
-      ],
+      sliver: SliverList(
+        delegate: SliverChildListDelegate([
+          GeneratorGeneratedPasswordCard(state: state),
+          const SizedBox(height: AppSpacing.m),
+          AppButton(
+            key: const Key('generator_generate_button'),
+            text: context.l10n.generateNew,
+            icon: LucideIcons.refreshCw,
+            onPressed: () =>
+                context.read<GeneratorBloc>().add(const GeneratorRequested()),
+            hasGlow: false,
+          ),
+          const SizedBox(height: AppSpacing.l),
+          GeneratorControlsCard(state: state),
+        ]),
+      ),
     );
   }
 }

@@ -50,36 +50,33 @@ class _StrategyEditorState extends State<StrategyEditor> {
   Widget build(BuildContext context) {
     final settings = widget.strategy;
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.xl,
-        children: [
-          StrategyPreviewCard(settings: settings),
-          _StrategyNameInput(
-            controller: _nameController,
-            onChanged: (value) =>
-                widget.onChanged(settings.copyWith(name: value)),
-          ),
-          PasswordGenerationControlsCard(
-            strategy: settings,
-            controlsPrefix: 'strategy_editor',
-            onLengthChanged: (value) =>
-                widget.onChanged(settings.copyWith(length: value)),
-            onUppercaseChanged: (value) =>
-                widget.onChanged(settings.copyWith(useUppercase: value)),
-            onLowercaseChanged: (value) =>
-                widget.onChanged(settings.copyWith(useLowercase: value)),
-            onNumbersChanged: (value) =>
-                widget.onChanged(settings.copyWith(useNumbers: value)),
-            onSymbolsChanged: (value) =>
-                widget.onChanged(settings.copyWith(useSpecialChars: value)),
-            onExcludeAmbiguousChanged: (value) => widget.onChanged(
-              settings.copyWith(excludeAmbiguousChars: value),
-            ),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.xl,
+      children: [
+        StrategyPreviewCard(settings: settings),
+        _StrategyNameInput(
+          controller: _nameController,
+          onChanged: (value) =>
+              widget.onChanged(settings.copyWith(name: value)),
+        ),
+        PasswordGenerationControlsCard(
+          strategy: settings,
+          controlsPrefix: 'strategy_editor',
+          onLengthChanged: (value) =>
+              widget.onChanged(settings.copyWith(length: value)),
+          onUppercaseChanged: (value) =>
+              widget.onChanged(settings.copyWith(useUppercase: value)),
+          onLowercaseChanged: (value) =>
+              widget.onChanged(settings.copyWith(useLowercase: value)),
+          onNumbersChanged: (value) =>
+              widget.onChanged(settings.copyWith(useNumbers: value)),
+          onSymbolsChanged: (value) =>
+              widget.onChanged(settings.copyWith(useSpecialChars: value)),
+          onExcludeAmbiguousChanged: (value) =>
+              widget.onChanged(settings.copyWith(excludeAmbiguousChars: value)),
+        ),
+      ],
     );
   }
 }

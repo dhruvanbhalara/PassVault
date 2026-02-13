@@ -22,6 +22,7 @@ class PasswordGenerationSettingsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.background,
       floatingActionButton: FloatingActionButton(
+        key: const Key('add_strategy_fab'),
         onPressed: () {
           _showEditor(
             context,
@@ -29,6 +30,8 @@ class PasswordGenerationSettingsScreen extends StatelessWidget {
             isNew: true,
           );
         },
+        backgroundColor: theme.primary,
+        foregroundColor: theme.onPrimary,
         child: const Icon(LucideIcons.plus),
       ),
       body: BlocBuilder<SettingsBloc, SettingsState>(

@@ -78,22 +78,28 @@ class _StrategyEditorSheetState extends State<StrategyEditorSheet> {
                 ),
               ),
               Expanded(
-                child: SingleChildScrollView(
+                child: CustomScrollView(
                   controller: scrollController,
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.l,
-                    AppSpacing.s,
-                    AppSpacing.l,
-                    AppSpacing.m,
-                  ),
-                  child: StrategyEditor(
-                    strategy: _currentStrategy,
-                    onChanged: (newStrategy) {
-                      setState(() {
-                        _currentStrategy = newStrategy;
-                      });
-                    },
-                  ),
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.l,
+                        AppSpacing.s,
+                        AppSpacing.l,
+                        AppSpacing.m,
+                      ),
+                      sliver: SliverToBoxAdapter(
+                        child: StrategyEditor(
+                          strategy: _currentStrategy,
+                          onChanged: (newStrategy) {
+                            setState(() {
+                              _currentStrategy = newStrategy;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               SafeArea(

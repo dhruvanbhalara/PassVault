@@ -70,120 +70,133 @@ class SettingsScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: AppBar(centerTitle: true, title: Text(l10n.settings)),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.l),
-          child: Column(
-            children: [
-              SettingsGroup(
-                title: l10n.security,
-                theme: theme,
-                items: [
-                  SettingsItem(
-                    key: const Key('settings_password_gen_tile'),
-                    icon: LucideIcons.keyRound,
-                    label: l10n.passwordGeneration,
-                    onTap: () => context.push(
-                      AppRoutes.passwordGeneration,
-                      extra: context.read<SettingsBloc>(),
-                    ),
-                  ),
-                  BlocBuilder<SettingsBloc, SettingsState>(
-                    builder: (context, state) {
-                      return switch (state) {
-                        SettingsInitial(:final useBiometrics) ||
-                        SettingsLoading(:final useBiometrics) ||
-                        SettingsLoaded(:final useBiometrics) ||
-                        SettingsFailure(:final useBiometrics) => SwitchListTile(
-                          key: const Key('settings_biometric_switch'),
-                          secondary: const Icon(LucideIcons.shieldCheck),
-                          title: Text(l10n.useBiometrics),
-                          value: useBiometrics,
-                          onChanged: (value) {
-                            context.read<SettingsBloc>().add(
-                              ToggleBiometrics(value),
-                            );
-                          },
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              centerTitle: true,
+              title: Text(l10n.settings),
+              floating: true,
+              pinned: true,
+              scrolledUnderElevation: 0,
+              backgroundColor: theme.background.withValues(alpha: 0),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.all(AppSpacing.l),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  SettingsGroup(
+                    title: l10n.security,
+                    theme: theme,
+                    items: [
+                      SettingsItem(
+                        key: const Key('settings_password_gen_tile'),
+                        icon: LucideIcons.keyRound,
+                        label: l10n.passwordGeneration,
+                        onTap: () => context.push(
+                          AppRoutes.passwordGeneration,
+                          extra: context.read<SettingsBloc>(),
                         ),
-                      };
-                    },
+                      ),
+                      BlocBuilder<SettingsBloc, SettingsState>(
+                        builder: (context, state) {
+                          return switch (state) {
+                            SettingsInitial(:final useBiometrics) ||
+                            SettingsLoading(:final useBiometrics) ||
+                            SettingsLoaded(:final useBiometrics) ||
+                            SettingsFailure(
+                              :final useBiometrics,
+                            ) => SwitchListTile(
+                              key: const Key('settings_biometric_switch'),
+                              secondary: const Icon(LucideIcons.shieldCheck),
+                              title: Text(l10n.useBiometrics),
+                              value: useBiometrics,
+                              onChanged: (value) {
+                                context.read<SettingsBloc>().add(
+                                  ToggleBiometrics(value),
+                                );
+                              },
+                            ),
+                          };
+                        },
+                      ),
+                    ],
                   ),
-                ],
-              ),
 
-              const SizedBox(height: AppSpacing.l),
-              // Appearance Section
-              SettingsGroup(
-                title: l10n.appearance,
-                theme: theme,
-                items: [
-                  SettingsItem(
-                    key: const Key('settings_theme_tile'),
-                    icon: LucideIcons.moon,
-                    label: l10n.theme,
-                    trailing: Text(_getThemeName(currentThemeType, l10n)),
-                    onTap: () => _showThemePicker(
-                      context,
-                      currentThemeType: currentThemeType,
-                      l10n: l10n,
-                    ),
+                  const SizedBox(height: AppSpacing.l),
+                  // Appearance Section
+                  SettingsGroup(
+                    title: l10n.appearance,
+                    theme: theme,
+                    items: [
+                      SettingsItem(
+                        key: const Key('settings_theme_tile'),
+                        icon: LucideIcons.moon,
+                        label: l10n.theme,
+                        trailing: Text(_getThemeName(currentThemeType, l10n)),
+                        onTap: () => _showThemePicker(
+                          context,
+                          currentThemeType: currentThemeType,
+                          l10n: l10n,
+                        ),
+                      ),
+                      SettingsItem(
+                        key: const Key('settings_language_tile'),
+                        icon: LucideIcons.languages,
+                        label: l10n.language,
+                        trailing: Text(_localeDisplayName(currentLocale, l10n)),
+                        onTap: () => _showLanguagePicker(
+                          context,
+                          selectedLocale: localeOverride,
+                          l10n: l10n,
+                        ),
+                      ),
+                    ],
                   ),
-                  SettingsItem(
-                    key: const Key('settings_language_tile'),
-                    icon: LucideIcons.languages,
-                    label: l10n.language,
-                    trailing: Text(_localeDisplayName(currentLocale, l10n)),
-                    onTap: () => _showLanguagePicker(
-                      context,
-                      selectedLocale: localeOverride,
-                      l10n: l10n,
-                    ),
+                  const SizedBox(height: AppSpacing.l),
+                  // Data Section
+                  SettingsGroup(
+                    title: l10n.dataManagement,
+                    theme: theme,
+                    items: [
+                      SettingsItem(
+                        key: const Key('settings_import_tile'),
+                        icon: LucideIcons.download,
+                        label: l10n.importData,
+                        onTap: () => context.read<ImportExportBloc>().add(
+                          const PrepareImportFromFileEvent(),
+                        ),
+                      ),
+                      SettingsItem(
+                        key: const Key('settings_export_tile'),
+                        icon: LucideIcons.upload,
+                        label: l10n.exportVault,
+                        onTap: () => _showExportPicker(context),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.l),
-              // Data Section
-              SettingsGroup(
-                title: l10n.dataManagement,
-                theme: theme,
-                items: [
-                  SettingsItem(
-                    key: const Key('settings_import_tile'),
-                    icon: LucideIcons.download,
-                    label: l10n.importData,
-                    onTap: () => context.read<ImportExportBloc>().add(
-                      const PrepareImportFromFileEvent(),
-                    ),
-                  ),
-                  SettingsItem(
-                    key: const Key('settings_export_tile'),
-                    icon: LucideIcons.upload,
-                    label: l10n.exportVault,
-                    onTap: () => _showExportPicker(context),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.xl),
+                  const SizedBox(height: AppSpacing.xl),
 
-              // Danger Zone
-              SettingsGroup(
-                title: l10n.dangerZone,
-                theme: theme,
-                isDanger: true,
-                items: [
-                  SettingsItem(
-                    key: const Key('settings_clear_db_tile'),
-                    icon: LucideIcons.trash2,
-                    label: l10n.clearDatabase,
-                    labelColor: theme.error,
-                    iconColor: theme.error,
-                    onTap: () => _showClearDatabaseDialog(context),
+                  // Danger Zone
+                  SettingsGroup(
+                    title: l10n.dangerZone,
+                    theme: theme,
+                    isDanger: true,
+                    items: [
+                      SettingsItem(
+                        key: const Key('settings_clear_db_tile'),
+                        icon: LucideIcons.trash2,
+                        label: l10n.clearDatabase,
+                        labelColor: theme.error,
+                        iconColor: theme.error,
+                        onTap: () => _showClearDatabaseDialog(context),
+                      ),
+                    ],
                   ),
-                ],
+                  const SizedBox(height: AppSpacing.xxl),
+                ]),
               ),
-              const SizedBox(height: AppSpacing.xxl),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
