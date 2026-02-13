@@ -6,7 +6,6 @@ import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
-import 'package:passvault/l10n/app_localizations.dart';
 
 class SavedStrategiesSection extends StatelessWidget {
   final PasswordGenerationSettings settings;
@@ -31,7 +30,7 @@ class SavedStrategiesSection extends StatelessWidget {
         AppSpacing.l,
         AppSpacing.l,
         AppSpacing.l,
-        AppSpacing.x4xl + 80,
+        AppSpacing.x4xl + 56,
       ),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
@@ -58,10 +57,7 @@ class _SavedHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: AppSpacing.s, bottom: AppSpacing.s),
-      child: AppSectionHeader(title: l10n.savedStrategies),
-    );
+    return AppSectionHeader(title: l10n.savedStrategies);
   }
 }
 
@@ -82,33 +78,18 @@ class StrategyListItem extends StatelessWidget {
     final theme = context.theme;
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.m),
-      child: Card(
-        elevation: 0,
-        color: context.colorScheme.surfaceContainerLow,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.l),
-          side: BorderSide(color: theme.outline.withValues(alpha: 0.1)),
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(AppRadius.l),
-          onTap: () {
-            context.read<SettingsBloc>().add(SetDefaultStrategy(strategy.id));
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.m),
-            child: Row(
-              children: [
-                _TrailingIconPlaceholder(theme: theme),
-                const SizedBox(width: AppSpacing.m),
-                _ListItemInfo(strategy: strategy, l10n: l10n),
-                _ListItemActions(
-                  strategy: strategy,
-                  l10n: l10n,
-                  onEdit: onEdit,
-                ),
-              ],
-            ),
-          ),
+      child: AppCard(
+        hasOutline: true,
+        onTap: () =>
+            context.read<SettingsBloc>().add(SetDefaultStrategy(strategy.id)),
+        padding: const EdgeInsets.all(AppSpacing.m),
+        child: Row(
+          children: [
+            _TrailingIconPlaceholder(theme: theme),
+            const SizedBox(width: AppSpacing.m),
+            _ListItemInfo(strategy: strategy, l10n: l10n),
+            _ListItemActions(strategy: strategy, l10n: l10n, onEdit: onEdit),
+          ],
         ),
       ),
     );
@@ -124,13 +105,13 @@ class _TrailingIconPlaceholder extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.s),
       decoration: BoxDecoration(
-        color: theme.surface,
+        color: theme.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(AppRadius.m),
-        border: Border.all(color: theme.outline.withValues(alpha: 0.1)),
+        border: Border.all(color: theme.primary.withValues(alpha: 0.18)),
       ),
       child: Icon(
         LucideIcons.slidersHorizontal,
-        color: context.colorScheme.onSurfaceVariant,
+        color: theme.primary,
         size: 18,
       ),
     );
@@ -196,12 +177,18 @@ class _ListItemActions extends StatelessWidget {
           onPressed: () =>
               context.read<SettingsBloc>().add(SetDefaultStrategy(strategy.id)),
         ),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+          width: 1,
+          height: AppSpacing.l,
+          color: theme.outline.withValues(alpha: 0.2),
+        ),
         IconButton(
           key: Key('edit_saved_strategy_${strategy.id}'),
           icon: Icon(
             LucideIcons.pencil,
             size: AppDimensions.strategyIconSmall,
-            color: context.colorScheme.onSurfaceVariant,
+            color: context.colorScheme.onSurface,
           ),
           onPressed: onEdit,
         ),

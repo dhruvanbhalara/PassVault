@@ -135,4 +135,45 @@ class SettingsRepositoryImpl implements SettingsRepository {
       return const Error(UnknownFailure());
     }
   }
+
+  @override
+  Result<int> getOnboardingStep() {
+    try {
+      final step = _dbService.read(
+        StorageKeys.settingsBox,
+        StorageKeys.onboardingStep,
+        defaultValue: 0,
+      );
+      return Success(step);
+    } catch (e) {
+      return const Error(UnknownFailure());
+    }
+  }
+
+  @override
+  Future<Result<void>> saveOnboardingStep(int step) async {
+    try {
+      await _dbService.write(
+        StorageKeys.settingsBox,
+        StorageKeys.onboardingStep,
+        step,
+      );
+      return const Success(null);
+    } catch (e) {
+      return const Error(UnknownFailure());
+    }
+  }
+
+  @override
+  Future<Result<void>> deleteOnboardingStep() async {
+    try {
+      await _dbService.delete(
+        StorageKeys.settingsBox,
+        StorageKeys.onboardingStep,
+      );
+      return const Success(null);
+    } catch (e) {
+      return const Error(UnknownFailure());
+    }
+  }
 }

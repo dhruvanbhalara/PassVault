@@ -7,11 +7,13 @@ import 'package:passvault/features/password_manager/presentation/bloc/import_exp
 class PasswordProtectedDialog extends StatefulWidget {
   final ImportExportBloc bloc;
   final bool isExport;
+  final String? filePath;
 
   const PasswordProtectedDialog({
     super.key,
     required this.bloc,
     required this.isExport,
+    this.filePath,
   });
 
   @override
@@ -72,7 +74,12 @@ class _PasswordProtectedDialogState extends State<PasswordProtectedDialog> {
               if (widget.isExport) {
                 widget.bloc.add(ExportEncryptedEvent(password));
               } else {
-                widget.bloc.add(ImportEncryptedEvent(password: password));
+                widget.bloc.add(
+                  ImportEncryptedEvent(
+                    password: password,
+                    filePath: widget.filePath,
+                  ),
+                );
               }
             }
           },

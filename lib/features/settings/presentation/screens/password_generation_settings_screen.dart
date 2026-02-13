@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 
@@ -14,37 +13,6 @@ import '../widgets/strategy_editor_sheet.dart';
 /// Screen to configure password generation preferences.
 class PasswordGenerationSettingsScreen extends StatelessWidget {
   const PasswordGenerationSettingsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<SettingsBloc>()..add(const LoadSettings()),
-      child: const _PasswordGenerationSettingsView(),
-    );
-  }
-}
-
-class _PasswordGenerationSettingsView extends StatelessWidget {
-  const _PasswordGenerationSettingsView();
-
-  void _showEditor(
-    BuildContext context, {
-    required PasswordGenerationStrategy strategy,
-    required bool isNew,
-  }) {
-    final settingsBloc = context.read<SettingsBloc>();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (context) {
-        return BlocProvider.value(
-          value: settingsBloc,
-          child: StrategyEditorSheet(strategy: strategy, isNew: isNew),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +43,7 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
                 floating: true,
                 pinned: true,
                 scrolledUnderElevation: 0,
-                backgroundColor: Colors.transparent,
+                backgroundColor: theme.background.withValues(alpha: 0),
               ),
               if (settings.strategies.isEmpty)
                 EmptyStrategiesPlaceholder(l10n: l10n, theme: theme)
@@ -98,6 +66,25 @@ class _PasswordGenerationSettingsView extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  void _showEditor(
+    BuildContext context, {
+    required PasswordGenerationStrategy strategy,
+    required bool isNew,
+  }) {
+    final settingsBloc = context.read<SettingsBloc>();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) {
+        return BlocProvider.value(
+          value: settingsBloc,
+          child: StrategyEditorSheet(strategy: strategy, isNew: isNew),
+        );
+      },
     );
   }
 }

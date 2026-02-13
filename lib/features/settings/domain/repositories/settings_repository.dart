@@ -22,6 +22,15 @@ abstract class SettingsRepository {
   /// Sets onboarding as complete.
   Future<Result<void>> setOnboardingComplete(bool complete);
 
+  /// Retrieves the current onboarding step.
+  Result<int> getOnboardingStep();
+
+  /// Saves the current onboarding step.
+  Future<Result<void>> saveOnboardingStep(int step);
+
+  /// Deletes the onboarding step.
+  Future<Result<void>> deleteOnboardingStep();
+
   /// Retrieves password generation settings.
   Result<PasswordGenerationSettings> getPasswordGenerationSettings();
 

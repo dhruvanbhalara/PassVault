@@ -4,7 +4,6 @@ import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
-import 'package:passvault/features/settings/presentation/widgets/password_protected_dialog.dart';
 
 /// Sheet for picking data import format.
 class ImportPickerSheet extends StatelessWidget {
@@ -45,47 +44,24 @@ class ImportPickerSheet extends StatelessWidget {
           const SizedBox(height: AppSpacing.s),
           // Options
           AppListOption(
-            key: const Key('import_json_tile'),
-            icon: LucideIcons.braces,
+            key: const Key('import_file_tile'),
+            icon: LucideIcons.fileInput,
             iconColor: theme.primary,
-            title: l10n.importJson,
-            subtitle: l10n.importFromJsonBackup,
+            title: l10n.importData,
+            subtitle: _importFormatsLabel(l10n),
             onTap: () {
               Navigator.pop(context);
-              bloc.add(const ImportDataEvent(isJson: true));
-            },
-          ),
-          const Divider(indent: AppDimensions.listTileDividerIndent, height: 1),
-          AppListOption(
-            key: const Key('import_csv_tile'),
-            icon: LucideIcons.table,
-            iconColor: theme.secondary,
-            title: l10n.importCsv,
-            subtitle: l10n.importFromSpreadsheet,
-            onTap: () {
-              Navigator.pop(context);
-              bloc.add(const ImportDataEvent(isJson: false));
-            },
-          ),
-          const Divider(indent: AppDimensions.listTileDividerIndent, height: 1),
-          AppListOption(
-            key: const Key('import_encrypted_tile'),
-            icon: LucideIcons.lock,
-            iconColor: theme.warning,
-            title: l10n.importEncrypted,
-            subtitle: l10n.importFromEncryptedBackup,
-            onTap: () {
-              Navigator.pop(context);
-              showDialog(
-                context: context,
-                builder: (context) =>
-                    PasswordProtectedDialog(bloc: bloc, isExport: false),
-              );
+              bloc.add(const PrepareImportFromFileEvent());
             },
           ),
           const SizedBox(height: AppSpacing.m),
         ],
       ),
     );
+  }
+
+  String _importFormatsLabel(AppLocalizations l10n) {
+    final formats = [l10n.importJson, l10n.importCsv, l10n.importEncrypted];
+    return formats.join(', ');
   }
 }

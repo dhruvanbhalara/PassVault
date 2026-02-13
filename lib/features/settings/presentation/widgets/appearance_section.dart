@@ -5,7 +5,6 @@ import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
-import 'package:passvault/l10n/app_localizations.dart';
 
 /// Section for appearance settings like theme.
 class AppearanceSection extends StatelessWidget {
@@ -30,12 +29,16 @@ class AppearanceSection extends StatelessWidget {
             Card(
               child: ListTile(
                 key: const Key('settings_theme_tile'),
-                leading: const Icon(LucideIcons.palette),
+                leading: const Icon(LucideIcons.palette, size: 24),
                 title: Text(l10n.theme),
                 subtitle: Text(_getThemeName(themeType, l10n)),
-                trailing: const Icon(LucideIcons.chevronRight),
-                onTap: () =>
-                    _showThemePicker(context, context.read<ThemeBloc>(), l10n),
+                trailing: const Icon(LucideIcons.chevronRight, size: 24),
+                onTap: () => _showThemePicker(
+                  context,
+                  context.read<ThemeBloc>(),
+                  themeType,
+                  l10n,
+                ),
               ),
             ),
           ],
@@ -60,6 +63,7 @@ class AppearanceSection extends StatelessWidget {
   void _showThemePicker(
     BuildContext context,
     ThemeBloc bloc,
+    ThemeType currentTheme,
     AppLocalizations l10n,
   ) {
     showModalBottomSheet(
@@ -67,19 +71,27 @@ class AppearanceSection extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
-      builder: (context) => _ThemePickerSheet(bloc: bloc, l10n: l10n),
+      builder: (context) =>
+          _ThemePickerSheet(bloc: bloc, currentTheme: currentTheme, l10n: l10n),
     );
   }
 }
 
 class _ThemePickerSheet extends StatelessWidget {
   final ThemeBloc bloc;
+  final ThemeType currentTheme;
   final AppLocalizations l10n;
 
-  const _ThemePickerSheet({required this.bloc, required this.l10n});
+  const _ThemePickerSheet({
+    required this.bloc,
+    required this.currentTheme,
+    required this.l10n,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return SafeArea(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -96,37 +108,56 @@ class _ThemePickerSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.m),
-          ListTile(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                l10n.theme,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.s),
+          _ThemeOptionTile(
             key: const Key('theme_option_system'),
-            leading: const Icon(LucideIcons.monitor),
-            title: Text(l10n.system),
+            icon: LucideIcons.monitor,
+            title: l10n.system,
+            isSelected: currentTheme == ThemeType.system,
+            selectedColor: colorScheme.primary,
             onTap: () {
               bloc.add(const ThemeChanged(ThemeType.system));
               Navigator.pop(context);
             },
           ),
-          ListTile(
+          _ThemeOptionTile(
             key: const Key('theme_option_light'),
-            leading: const Icon(LucideIcons.sun),
-            title: Text(l10n.light),
+            icon: LucideIcons.sun,
+            title: l10n.light,
+            isSelected: currentTheme == ThemeType.light,
+            selectedColor: colorScheme.primary,
             onTap: () {
               bloc.add(const ThemeChanged(ThemeType.light));
               Navigator.pop(context);
             },
           ),
-          ListTile(
+          _ThemeOptionTile(
             key: const Key('theme_option_dark'),
-            leading: const Icon(LucideIcons.moon),
-            title: Text(l10n.dark),
+            icon: LucideIcons.moon,
+            title: l10n.dark,
+            isSelected: currentTheme == ThemeType.dark,
+            selectedColor: colorScheme.primary,
             onTap: () {
               bloc.add(const ThemeChanged(ThemeType.dark));
               Navigator.pop(context);
             },
           ),
-          ListTile(
+          _ThemeOptionTile(
             key: const Key('theme_option_amoled'),
-            leading: const Icon(LucideIcons.sparkles),
-            title: Text(l10n.amoled),
+            icon: LucideIcons.sparkles,
+            title: l10n.amoled,
+            isSelected: currentTheme == ThemeType.amoled,
+            selectedColor: colorScheme.primary,
             onTap: () {
               bloc.add(const ThemeChanged(ThemeType.amoled));
               Navigator.pop(context);
@@ -135,6 +166,40 @@ class _ThemePickerSheet extends StatelessWidget {
           const SizedBox(height: AppSpacing.m),
         ],
       ),
+    );
+  }
+}
+
+class _ThemeOptionTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final bool isSelected;
+  final Color selectedColor;
+  final VoidCallback onTap;
+
+  const _ThemeOptionTile({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.isSelected,
+    required this.selectedColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon, size: 24, color: isSelected ? selectedColor : null),
+      title: Text(
+        title,
+        style: isSelected
+            ? TextStyle(color: selectedColor, fontWeight: FontWeight.w600)
+            : null,
+      ),
+      trailing: isSelected
+          ? Icon(LucideIcons.check, size: 24, color: selectedColor)
+          : null,
+      onTap: onTap,
     );
   }
 }

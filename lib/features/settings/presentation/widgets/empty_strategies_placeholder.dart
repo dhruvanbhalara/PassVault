@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
-import 'package:passvault/l10n/app_localizations.dart';
 
 class EmptyStrategiesPlaceholder extends StatelessWidget {
   final AppLocalizations l10n;

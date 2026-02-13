@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
@@ -32,44 +33,59 @@ class _StrategyEditorSheetState extends State<StrategyEditorSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final title = widget.isNew ? l10n.newStrategy : l10n.editStrategy;
+
     return DraggableScrollableSheet(
-      initialChildSize: 0.9,
+      initialChildSize: 0.92,
       minChildSize: 0.5,
-      maxChildSize: 0.95,
+      maxChildSize: 0.96,
       expand: false,
       builder: (context, scrollController) {
-        return Padding(
-          padding: const EdgeInsets.all(AppSpacing.l),
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            color: context.theme.background,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(AppRadius.xl),
+            ),
+          ),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.isNew ? l10n.newStrategy : l10n.editStrategy,
-                    style: context.typography.titleLarge,
-                  ),
-                  IconButton(
-                    icon: const Icon(LucideIcons.check),
-                    onPressed: () {
-                      if (widget.isNew) {
-                        context.read<SettingsBloc>().add(
-                          AddStrategy(_currentStrategy),
-                        );
-                      } else {
-                        context.read<SettingsBloc>().add(
-                          UpdateStrategy(_currentStrategy),
-                        );
-                      }
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
+              const SizedBox(height: AppSpacing.s),
+              const _DragHandle(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.l,
+                  AppSpacing.s,
+                  AppSpacing.l,
+                  AppSpacing.s,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: context.typography.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: l10n.cancel,
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(LucideIcons.x),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: AppSpacing.m),
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.l,
+                    AppSpacing.s,
+                    AppSpacing.l,
+                    AppSpacing.m,
+                  ),
                   child: StrategyEditor(
                     strategy: _currentStrategy,
                     onChanged: (newStrategy) {
@@ -80,10 +96,49 @@ class _StrategyEditorSheetState extends State<StrategyEditorSheet> {
                   ),
                 ),
               ),
+              SafeArea(
+                top: false,
+                minimum: const EdgeInsets.fromLTRB(
+                  AppSpacing.l,
+                  AppSpacing.s,
+                  AppSpacing.l,
+                  AppSpacing.m,
+                ),
+                child: AppButton(
+                  text: l10n.save,
+                  icon: LucideIcons.check,
+                  onPressed: _saveStrategy,
+                ),
+              ),
             ],
           ),
         );
       },
+    );
+  }
+
+  void _saveStrategy() {
+    if (widget.isNew) {
+      context.read<SettingsBloc>().add(AddStrategy(_currentStrategy));
+    } else {
+      context.read<SettingsBloc>().add(UpdateStrategy(_currentStrategy));
+    }
+    Navigator.pop(context);
+  }
+}
+
+class _DragHandle extends StatelessWidget {
+  const _DragHandle();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 44,
+      height: 4,
+      decoration: BoxDecoration(
+        color: context.theme.onSurface.withValues(alpha: 0.22),
+        borderRadius: BorderRadius.circular(AppRadius.full),
+      ),
     );
   }
 }

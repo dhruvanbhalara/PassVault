@@ -9,7 +9,6 @@ import 'package:passvault/features/password_manager/presentation/bloc/import_exp
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/widgets/data_management_section.dart';
-import 'package:passvault/l10n/app_localizations.dart';
 
 class MockSettingsBloc extends MockBloc<SettingsEvent, SettingsState>
     implements SettingsBloc {}

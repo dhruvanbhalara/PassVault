@@ -23,3 +23,36 @@ class SetOnboardingCompleteUseCase {
     return _repository.setOnboardingComplete(complete);
   }
 }
+
+@lazySingleton
+class GetOnboardingStepUseCase {
+  final SettingsRepository _repository;
+
+  GetOnboardingStepUseCase(this._repository);
+
+  Result<int> call() {
+    return _repository.getOnboardingStep();
+  }
+}
+
+@lazySingleton
+class SetOnboardingStepUseCase {
+  final SettingsRepository _repository;
+
+  SetOnboardingStepUseCase(this._repository);
+
+  Future<Result<void>> call(int step) async {
+    return _repository.saveOnboardingStep(step);
+  }
+}
+
+@lazySingleton
+class DeleteOnboardingStepUseCase {
+  final SettingsRepository _repository;
+
+  DeleteOnboardingStepUseCase(this._repository);
+
+  Future<Result<void>> call() async {
+    return _repository.deleteOnboardingStep();
+  }
+}

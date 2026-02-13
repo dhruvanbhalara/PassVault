@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
+import 'package:passvault/features/generator/presentation/widgets/generator_sections.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 
-import '../widgets/strategy_character_sets_control.dart';
-import '../widgets/strategy_length_control.dart';
 import '../widgets/strategy_preview_card.dart';
 
 class StrategyEditor extends StatefulWidget {
@@ -63,14 +61,22 @@ class _StrategyEditorState extends State<StrategyEditor> {
             onChanged: (value) =>
                 widget.onChanged(settings.copyWith(name: value)),
           ),
-          StrategyLengthControl(
-            length: settings.length,
-            onChanged: (value) =>
-                widget.onChanged(settings.copyWith(length: value.round())),
-          ),
-          StrategyCharacterSetsControl(
-            settings: settings,
-            onChanged: widget.onChanged,
+          PasswordGenerationControlsCard(
+            strategy: settings,
+            controlsPrefix: 'strategy_editor',
+            onLengthChanged: (value) =>
+                widget.onChanged(settings.copyWith(length: value)),
+            onUppercaseChanged: (value) =>
+                widget.onChanged(settings.copyWith(useUppercase: value)),
+            onLowercaseChanged: (value) =>
+                widget.onChanged(settings.copyWith(useLowercase: value)),
+            onNumbersChanged: (value) =>
+                widget.onChanged(settings.copyWith(useNumbers: value)),
+            onSymbolsChanged: (value) =>
+                widget.onChanged(settings.copyWith(useSpecialChars: value)),
+            onExcludeAmbiguousChanged: (value) => widget.onChanged(
+              settings.copyWith(excludeAmbiguousChars: value),
+            ),
           ),
         ],
       ),
@@ -91,41 +97,31 @@ class _StrategyNameInput extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final textTheme = context.typography;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AppSectionHeader(title: l10n.strategyName),
-        const SizedBox(height: AppSpacing.s),
-        TextField(
-          controller: controller,
-          style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
-          decoration: InputDecoration(
-            labelText: l10n.strategyName,
-            hintText: l10n.hintStrategyName,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadius.l),
-              borderSide: BorderSide(color: colorScheme.outline),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadius.l),
-              borderSide: BorderSide(
-                color: colorScheme.outline.withValues(alpha: 0.2),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadius.l),
-              borderSide: BorderSide(color: theme.primary, width: 2),
-            ),
-            prefixIcon: Icon(
-              LucideIcons.tag,
-              color: colorScheme.onSurfaceVariant,
-            ),
-            filled: true,
-            fillColor: colorScheme.surfaceContainerLow.withValues(alpha: 0.5),
-          ),
-          onChanged: onChanged,
+    return TextField(
+      controller: controller,
+      style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+      decoration: InputDecoration(
+        labelText: l10n.strategyName,
+        hintText: l10n.hintStrategyName,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.l),
+          borderSide: BorderSide(color: colorScheme.outline),
         ),
-      ],
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.l),
+          borderSide: BorderSide(
+            color: colorScheme.outline.withValues(alpha: 0.2),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.l),
+          borderSide: BorderSide(color: theme.primary, width: 2),
+        ),
+        prefixIcon: Icon(LucideIcons.tag, color: colorScheme.onSurfaceVariant),
+        filled: true,
+        fillColor: colorScheme.surfaceContainerLow.withValues(alpha: 0.5),
+      ),
+      onChanged: onChanged,
     );
   }
 }

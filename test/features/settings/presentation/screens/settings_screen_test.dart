@@ -6,6 +6,7 @@ import 'package:passvault/features/password_manager/presentation/bloc/import_exp
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
+import 'package:passvault/features/settings/presentation/bloc/locale/locale_cubit.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:passvault/features/settings/presentation/settings_screen.dart';
@@ -84,6 +85,11 @@ void main() {
   });
 
   Future<void> loadSettingsScreen(WidgetTester tester) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     robot = SettingsRobot(tester);
     await tester.pumpApp(
       InheritedGoRouter(
@@ -92,26 +98,45 @@ void main() {
           providers: [
             BlocProvider<SettingsBloc>.value(value: mockSettingsBloc),
             BlocProvider<ThemeBloc>.value(value: mockThemeBloc),
+            BlocProvider<LocaleCubit>(create: (_) => LocaleCubit()),
             BlocProvider<PasswordBloc>.value(value: mockPasswordBloc),
             BlocProvider<ImportExportBloc>.value(value: mockImportExportBloc),
           ],
-          child: const SettingsView(),
+          child: const SettingsScreen(),
         ),
       ),
     );
   }
 
   group('$SettingsScreen', () {
-    testWidgets('Tapping Export JSON dispatches correct event', (tester) async {
-      await loadSettingsScreen(tester);
+    testWidgets(
+      'Tapping Export Vault opens picker and dispatches export event',
+      (tester) async {
+        await loadSettingsScreen(tester);
 
-      await robot.tapExport();
-      await robot.tapExportJson();
+        await robot.tapExport();
+        expect(find.byKey(const Key('export_json_tile')), findsOneWidget);
+        await tester.tap(find.byKey(const Key('export_json_tile')));
+        await tester.pumpAndSettle();
 
-      verify(
-        () => mockImportExportBloc.add(const ExportDataEvent(isJson: true)),
-      ).called(1);
-    });
+        verify(
+          () => mockImportExportBloc.add(const ExportDataEvent(isJson: true)),
+        ).called(1);
+      },
+    );
+
+    testWidgets(
+      'Tapping Import Data dispatches file import prepare event directly',
+      (tester) async {
+        await loadSettingsScreen(tester);
+
+        await robot.tapImport();
+
+        verify(
+          () => mockImportExportBloc.add(const PrepareImportFromFileEvent()),
+        ).called(1);
+      },
+    );
 
     testWidgets('Shows success message on ExportSuccess', (tester) async {
       when(
@@ -186,6 +211,31 @@ void main() {
       verify(
         () => mockImportExportBloc.add(const ResetMigrationStatus()),
       ).called(1);
+    });
+
+    testWidgets('Tapping theme opens picker and dispatches theme event', (
+      tester,
+    ) async {
+      await loadSettingsScreen(tester);
+
+      await robot.tapTheme();
+      await tester.tap(find.byKey(const Key('theme_option_light')));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => mockThemeBloc.add(const ThemeChanged(ThemeType.light)),
+      ).called(1);
+    });
+
+    testWidgets('Tapping language shows available locale options', (
+      tester,
+    ) async {
+      await loadSettingsScreen(tester);
+
+      await robot.tapLanguage();
+
+      expect(find.byKey(const Key('locale_option_system')), findsOneWidget);
+      expect(find.byKey(const Key('locale_option_en')), findsOneWidget);
     });
   });
 }

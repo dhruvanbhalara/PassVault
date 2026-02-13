@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
-import 'package:passvault/features/settings/presentation/screens/password_generation_settings_screen.dart';
 
 /// Section for security-related settings.
 class SecuritySection extends StatelessWidget {
@@ -22,7 +23,8 @@ class SecuritySection extends StatelessWidget {
           title: l10n.security,
           variant: AppSectionHeaderVariant.premium,
         ),
-        Card(
+        AppCard(
+          padding: EdgeInsets.zero,
           child: Column(
             children: [
               ListTile(
@@ -30,15 +32,10 @@ class SecuritySection extends StatelessWidget {
                 leading: const Icon(LucideIcons.keyRound),
                 title: Text(l10n.passwordGeneration),
                 trailing: const Icon(LucideIcons.chevronRight),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          const PasswordGenerationSettingsScreen(),
-                    ),
-                  );
-                },
+                onTap: () => context.push(
+                  AppRoutes.passwordGeneration,
+                  extra: context.read<SettingsBloc>(),
+                ),
               ),
               const Divider(
                 indent: AppDimensions.listTileDividerIndent,

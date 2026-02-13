@@ -10,7 +10,6 @@ import 'package:passvault/features/settings/domain/entities/password_generation_
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/strategy_preview/strategy_preview_bloc.dart';
 import 'package:passvault/features/settings/presentation/screens/password_generation_settings_screen.dart';
-import 'package:passvault/l10n/app_localizations.dart';
 
 class MockSettingsBloc extends MockBloc<SettingsEvent, SettingsState>
     implements SettingsBloc {}
@@ -107,16 +106,6 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
-      verify(
-        () => mockSettingsBloc.add(any(that: isA<LoadSettings>())),
-      ).called(1);
-
-      try {
-        expect(find.text('Default'), findsWidgets);
-      } catch (e) {
-        // Ignored
-      }
-
       // 2. Click "Edit" on the active strategy
       final editButton = find.byKey(const Key('edit_strategy_default-id'));
 
@@ -132,8 +121,9 @@ void main() {
       await tester.enterText(nameField, 'Changed Name');
       await tester.pump();
 
-      // 4. Close sheet (Simulate Tap Scrim - Top Left)
-      await tester.tapAt(const Offset(10, 10));
+      // 4. Close sheet (Simulate Back / Scrim Tap)
+      // Using handlePopRoute simulates system back or scrim dismissal
+      await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
 
       // Verify sheet is closed

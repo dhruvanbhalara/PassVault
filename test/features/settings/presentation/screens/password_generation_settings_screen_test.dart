@@ -60,7 +60,12 @@ void main() {
       ),
     );
 
-    await tester.pumpApp(const PasswordGenerationSettingsScreen());
+    await tester.pumpApp(
+      BlocProvider<SettingsBloc>.value(
+        value: mockSettingsBloc,
+        child: const PasswordGenerationSettingsScreen(),
+      ),
+    );
 
     expect(find.byType(PasswordGenerationSettingsScreen), findsOneWidget);
     expect(find.text('My Strategy'), findsOneWidget);

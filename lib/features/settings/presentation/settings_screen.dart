@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
+import 'package:passvault/features/settings/domain/entities/theme_type.dart';
+import 'package:passvault/features/settings/presentation/bloc/locale/locale_cubit.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
-import 'package:passvault/features/settings/presentation/widgets/appearance_section.dart';
-import 'package:passvault/features/settings/presentation/widgets/data_management_section.dart';
-import 'package:passvault/features/settings/presentation/widgets/security_section.dart';
+import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
+import 'package:passvault/features/settings/presentation/widgets/export_picker_sheet.dart';
+import 'package:passvault/features/settings/presentation/widgets/password_protected_dialog.dart';
+import 'package:passvault/features/settings/presentation/widgets/settings_panels.dart';
 
 /// Screen for managing application settings, security, and data.
 class SettingsScreen extends StatelessWidget {
@@ -18,132 +21,265 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => getIt<SettingsBloc>()..add(const LoadSettings()),
-        ),
-        BlocProvider(create: (context) => getIt<ImportExportBloc>()),
-      ],
-      child: const SettingsView(),
-    );
-  }
-}
-
-/// The stateful UI for the settings screen.
-class SettingsView extends StatefulWidget {
-  const SettingsView({super.key});
-
-  @override
-  State<SettingsView> createState() => _SettingsViewState();
-}
-
-class _SettingsViewState extends State<SettingsView> {
-  @override
-  Widget build(BuildContext context) {
+    final theme = context.theme;
     final l10n = context.l10n;
+    final themeState = context.watch<ThemeBloc>().state;
+    final currentThemeType = switch (themeState) {
+      ThemeLoaded(:final themeType) => themeType,
+    };
+    final localeOverride = context.watch<LocaleCubit>().state;
+    final currentLocale = localeOverride ?? Localizations.localeOf(context);
 
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<SettingsBloc, SettingsState>(
-          listenWhen: (previous, current) => current is SettingsFailure,
-          listener: (context, state) => _handleSettingsState(context, state),
-        ),
-        BlocListener<ImportExportBloc, ImportExportState>(
-          listener: (context, state) =>
-              _handleImportExportState(context, state),
-        ),
-      ],
+    return BlocListener<ImportExportBloc, ImportExportState>(
+      listener: (context, state) {
+        if (state is ExportSuccess) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.exportSuccess)));
+          context.read<ImportExportBloc>().add(const ResetMigrationStatus());
+        } else if (state is ImportSuccess) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.importSuccess)));
+          context.read<ImportExportBloc>().add(const ResetMigrationStatus());
+        } else if (state is DuplicatesDetected) {
+          context.push(AppRoutes.resolveDuplicates, extra: state.duplicates);
+          context.read<ImportExportBloc>().add(const ResetMigrationStatus());
+        } else if (state is ImportEncryptedFileSelected) {
+          showDialog(
+            context: context,
+            builder: (dialogContext) => PasswordProtectedDialog(
+              bloc: context.read<ImportExportBloc>(),
+              isExport: false,
+              filePath: state.filePath,
+            ),
+          );
+        } else if (state is ClearDatabaseSuccess) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.databaseCleared)));
+          context.read<ImportExportBloc>().add(const ResetMigrationStatus());
+        } else if (state is ImportExportFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: theme.error,
+            ),
+          );
+          context.read<ImportExportBloc>().add(const ResetMigrationStatus());
+        }
+      },
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.settings)),
-        body: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m),
-          children: const [
-            AppearanceSection(),
-            SizedBox(height: AppSpacing.l),
-            SecuritySection(),
-            SizedBox(height: AppSpacing.l),
-            DataManagementSection(),
-            SizedBox(height: AppSpacing.xl),
-          ],
+        appBar: AppBar(centerTitle: true, title: Text(l10n.settings)),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppSpacing.l),
+          child: Column(
+            children: [
+              SettingsGroup(
+                title: l10n.security,
+                theme: theme,
+                items: [
+                  SettingsItem(
+                    key: const Key('settings_password_gen_tile'),
+                    icon: LucideIcons.keyRound,
+                    label: l10n.passwordGeneration,
+                    onTap: () => context.push(
+                      AppRoutes.passwordGeneration,
+                      extra: context.read<SettingsBloc>(),
+                    ),
+                  ),
+                  BlocBuilder<SettingsBloc, SettingsState>(
+                    builder: (context, state) {
+                      return switch (state) {
+                        SettingsInitial(:final useBiometrics) ||
+                        SettingsLoading(:final useBiometrics) ||
+                        SettingsLoaded(:final useBiometrics) ||
+                        SettingsFailure(:final useBiometrics) => SwitchListTile(
+                          key: const Key('settings_biometric_switch'),
+                          secondary: const Icon(LucideIcons.shieldCheck),
+                          title: Text(l10n.useBiometrics),
+                          value: useBiometrics,
+                          onChanged: (value) {
+                            context.read<SettingsBloc>().add(
+                              ToggleBiometrics(value),
+                            );
+                          },
+                        ),
+                      };
+                    },
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: AppSpacing.l),
+              // Appearance Section
+              SettingsGroup(
+                title: l10n.appearance,
+                theme: theme,
+                items: [
+                  SettingsItem(
+                    key: const Key('settings_theme_tile'),
+                    icon: LucideIcons.moon,
+                    label: l10n.theme,
+                    trailing: Text(_getThemeName(currentThemeType, l10n)),
+                    onTap: () => _showThemePicker(
+                      context,
+                      currentThemeType: currentThemeType,
+                      l10n: l10n,
+                    ),
+                  ),
+                  SettingsItem(
+                    key: const Key('settings_language_tile'),
+                    icon: LucideIcons.languages,
+                    label: l10n.language,
+                    trailing: Text(_localeDisplayName(currentLocale, l10n)),
+                    onTap: () => _showLanguagePicker(
+                      context,
+                      selectedLocale: localeOverride,
+                      l10n: l10n,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.l),
+              // Data Section
+              SettingsGroup(
+                title: l10n.dataManagement,
+                theme: theme,
+                items: [
+                  SettingsItem(
+                    key: const Key('settings_import_tile'),
+                    icon: LucideIcons.download,
+                    label: l10n.importData,
+                    onTap: () => context.read<ImportExportBloc>().add(
+                      const PrepareImportFromFileEvent(),
+                    ),
+                  ),
+                  SettingsItem(
+                    key: const Key('settings_export_tile'),
+                    icon: LucideIcons.upload,
+                    label: l10n.exportVault,
+                    onTap: () => _showExportPicker(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.xl),
+
+              // Danger Zone
+              SettingsGroup(
+                title: l10n.dangerZone,
+                theme: theme,
+                isDanger: true,
+                items: [
+                  SettingsItem(
+                    key: const Key('settings_clear_db_tile'),
+                    icon: LucideIcons.trash2,
+                    label: l10n.clearDatabase,
+                    labelColor: theme.error,
+                    iconColor: theme.error,
+                    onTap: () => _showClearDatabaseDialog(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.xxl),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  void _handleSettingsState(BuildContext context, SettingsState state) {
-    if (state is SettingsFailure) {
-      final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
-      if (isCurrent) {
-        _showSnackBar(context, state.errorMessage, isError: true);
-      }
-    }
+  String _getThemeName(ThemeType type, AppLocalizations l10n) {
+    return switch (type) {
+      ThemeType.system => l10n.system,
+      ThemeType.light => l10n.light,
+      ThemeType.dark => l10n.dark,
+      ThemeType.amoled => l10n.amoled,
+    };
   }
 
-  void _handleImportExportState(BuildContext context, ImportExportState state) {
-    final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
-    if (!isCurrent) return; // Don't handle if not current route
-
-    // Handle each state type
-    if (state is ImportSuccess) {
-      _showSnackBar(context, context.l10n.importSuccess);
-      context.read<ImportExportBloc>().add(const ResetMigrationStatus());
-    } else if (state is ExportSuccess) {
-      _showSnackBar(context, context.l10n.exportSuccess);
-      context.read<ImportExportBloc>().add(const ResetMigrationStatus());
-    } else if (state is ClearDatabaseSuccess) {
-      _showSnackBar(context, context.l10n.databaseCleared);
-      context.read<ImportExportBloc>().add(const ResetMigrationStatus());
-    } else if (state is ImportExportFailure) {
-      if (state.error != DataMigrationError.cancelled) {
-        _showSnackBar(
-          context,
-          _getMigrationErrorMessage(state.error, context),
-          isError: true,
-        );
-      }
-      context.read<ImportExportBloc>().add(const ResetMigrationStatus());
-    } else if (state is DuplicatesDetected) {
-      context.push(AppRoutes.resolveDuplicates, extra: state.duplicates);
-      context.read<ImportExportBloc>().add(const ResetMigrationStatus());
-    } else if (state is DuplicatesResolved) {
-      _showSnackBar(context, context.l10n.importSuccess);
-      context.read<ImportExportBloc>().add(const ResetMigrationStatus());
-    }
+  String _localeDisplayName(Locale locale, AppLocalizations l10n) {
+    return switch (locale.languageCode) {
+      'en' => l10n.english,
+      _ => locale.toLanguageTag(),
+    };
   }
 
-  String _getMigrationErrorMessage(
-    DataMigrationError error,
-    BuildContext context,
-  ) {
-    final l10n = context.l10n;
-    switch (error) {
-      case DataMigrationError.noDataToExport:
-        return l10n.noDataToExport;
-      case DataMigrationError.importFailed:
-        return l10n.importFailed;
-      case DataMigrationError.wrongPassword:
-        return l10n.wrongPassword;
-      case DataMigrationError.fileNotFound:
-        return l10n.fileNotFound;
-      case DataMigrationError.invalidFormat:
-        return l10n.importFailed;
-      default:
-        return l10n.errorOccurred;
-    }
-  }
-
-  void _showSnackBar(
-    BuildContext context,
-    String message, {
-    bool isError = false,
+  void _showThemePicker(
+    BuildContext context, {
+    required ThemeType currentThemeType,
+    required AppLocalizations l10n,
   }) {
+    final themeBloc = context.read<ThemeBloc>();
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (context) => ThemePickerSheet(
+        currentThemeType: currentThemeType,
+        onThemeSelected: (themeType) => themeBloc.add(ThemeChanged(themeType)),
+        l10n: l10n,
+      ),
+    );
+  }
+
+  void _showLanguagePicker(
+    BuildContext context, {
+    required Locale? selectedLocale,
+    required AppLocalizations l10n,
+  }) {
+    final localeCubit = context.read<LocaleCubit>();
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (context) => LocalePickerSheet(
+        selectedLocale: selectedLocale,
+        onLocaleSelected: localeCubit.setLocale,
+        onSystemLocaleSelected: localeCubit.setSystemLocale,
+        l10n: l10n,
+      ),
+    );
+  }
+
+  void _showExportPicker(BuildContext context) {
+    final bloc = context.read<ImportExportBloc>();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: context.theme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (context) => ExportPickerSheet(bloc: bloc),
+    );
+  }
+
+  void _showClearDatabaseDialog(BuildContext context) {
+    final bloc = context.read<ImportExportBloc>();
+    final l10n = context.l10n;
     final theme = context.theme;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: isError ? theme.error : null,
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.clearDatabaseTitle),
+        content: Text(l10n.clearDatabaseMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel, style: TextStyle(color: theme.onSurface)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              bloc.add(const ClearDatabaseEvent());
+            },
+            style: TextButton.styleFrom(foregroundColor: theme.error),
+            child: Text(l10n.clearAll),
+          ),
+        ],
       ),
     );
   }
