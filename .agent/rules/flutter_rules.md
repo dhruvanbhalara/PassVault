@@ -40,7 +40,8 @@ trigger: always_on
 -   **Atoms Tokens**: Use `AppSpacing`, `AppRadius`, and `AppColors`. No hardcoded pixel values.
 -   **Const-First**: Every widget that can be `const` MUST be `const`.
 -   **Widget Extraction**: STRICTLY prohibit private `_build*()` methods that return widgets. Extract them into separate `StatelessWidget` or `StatefulWidget` classes (can be private with `_` prefix). This ensures better testability, reusability, and composition.
--   **Lazy Rendering**: Mandatory `ListView.builder` for any list exceeding 10 items.
+-   **Lazy Rendering**: Mandatory use of lazy-loading constructs (`SliverList` with `SliverChildBuilderDelegate` or `ListView.builder`) for any list exceeding 10 items.
+-   **Sliver Preference**: Prefer `CustomScrollView` with `Slivers` over `SingleChildScrollView` for any non-trivial scrollable layout to ensure lazy loading and avoid jank. Use `SliverList` and `SliverGrid` for mixed content types.
 -   **Repaint Boundaries**: Wrap complex animations or heavy UI sections in `RepaintBoundary` to optimize Impeller frame budget.
 -   **Isolate Parsing**: Mandate `compute()` or `Isolate` for JSON parsing exceeding 1MB to avoid main-thread jank.
 -   **Theme Access**: ALWAYS use `context` extensions (e.g., `context.colorScheme`, `context.theme`).
