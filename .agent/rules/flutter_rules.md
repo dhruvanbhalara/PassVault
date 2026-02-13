@@ -79,6 +79,7 @@ trigger: always_on
 -   **Meaningful Naming**: Use intention-revealing names. Boolean variables MUST use prefixes like `is`, `has`, `should`.
 -   **Strong Typing**: Strictly prohibit `dynamic`. Use `Object?` or explicit types.
 -   **Cascade Pattern**: Use cascade notation (`..`) for cleaner initialization of complex objects where appropriate.
+-   **Disposable Lifecycle**: `TextEditingController`, `ScrollController`, `FocusNode`, `StreamSubscription`, `AnimationController`, etc. MUST be `late` initialized in `initState()` and disposed in `dispose()`. Inline initialization is STRICTLY prohibited to prevent memory leaks and ensure proper lifecycle management.
 
 ## 9. Agent Guardrails
 -   **ALWAYS**: Run `flutter analyze` and `dart format` before committing.
@@ -90,3 +91,4 @@ trigger: always_on
 -   **Dynamic Routes**: STRICTLY prohibit hardcoded route strings in `GoRouter` configuration. Use static constants in `AppRoutes`.
 -   **Centralized BLoCs**: BLoC providers MUST be injected via `ShellRoute` or `BlocProvider` in `app_router.dart` when shared across multiple screens or within a feature branch.
 -   **No Local Providers**: Avoid `BlocProvider` in individual screen `build()` methods if the BLoC is needed by a feature set.
+-   **Primitive Route Arguments**: STRICTLY prohibit passing complex objects (BLoCs, ChangeNotifiers, Entity instances) as route arguments. Pass only primitive IDs/Keys and fetch data in the destination screen using `Repository` or `Bloc` injection.
