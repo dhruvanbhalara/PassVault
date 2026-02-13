@@ -241,6 +241,21 @@ void main() {
 
       group('Encrypted Operations', () {
         blocTest<ImportExportBloc, ImportExportState>(
+          'emits [Loading, ImportEncryptedFileSelected] when encrypted file is picked',
+          build: () {
+            when(
+              () => mockFilePickerService.pickFile(),
+            ).thenAnswer((_) async => '/path/to/file.pvault');
+            return bloc;
+          },
+          act: (bloc) => bloc.add(const PrepareImportEncryptedEvent()),
+          expect: () => [
+            const ImportExportLoading(),
+            const ImportEncryptedFileSelected('/path/to/file.pvault'),
+          ],
+        );
+
+        blocTest<ImportExportBloc, ImportExportState>(
           'emits [Loading, ExportSuccess] when encrypted export is successful',
           build: () {
             when(
@@ -269,9 +284,7 @@ void main() {
           'emits [Loading, ImportSuccess] when encrypted import succeeds with valid password',
           build: () {
             when(
-              () => mockFilePickerService.pickFile(
-                allowedExtensions: any(named: 'allowedExtensions'),
-              ),
+              () => mockFilePickerService.pickFile(),
             ).thenAnswer((_) async => '/path/to/file.pvault');
             when(
               () => mockFileService.readAsBytes(any()),
@@ -295,6 +308,25 @@ void main() {
           act: (bloc) =>
               bloc.add(const ImportEncryptedEvent(password: 'correct')),
           expect: () => [const ImportExportLoading(), const ImportSuccess(1)],
+        );
+
+        blocTest<ImportExportBloc, ImportExportState>(
+          'emits [Loading, Failure] when selected file extension is unsupported',
+          build: () {
+            when(
+              () => mockFilePickerService.pickFile(),
+            ).thenAnswer((_) async => '/path/to/file.txt');
+            return bloc;
+          },
+          act: (bloc) =>
+              bloc.add(const ImportEncryptedEvent(password: 'correct')),
+          expect: () => [
+            const ImportExportLoading(),
+            const ImportExportFailure(
+              DataMigrationError.invalidFormat,
+              'Please select a .json, .csv, or .pvault file',
+            ),
+          ],
         );
       });
 

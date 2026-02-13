@@ -15,6 +15,7 @@ import 'package:hive_ce_flutter/hive_flutter.dart' as _i919;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:local_auth/local_auth.dart' as _i152;
 
+import '../../config/routes/app_router.dart' as _i20;
 import '../../features/auth/data/repositories/auth_repository_impl.dart'
     as _i153;
 import '../../features/auth/domain/repositories/auth_repository.dart' as _i787;
@@ -227,6 +228,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i986.SetThemeUseCase>(
       () => _i986.SetThemeUseCase(gh<_i674.SettingsRepository>()),
+    );
+    gh.lazySingleton<_i20.AppRouter>(
+      () => _i20.AppRouter(
+        gh<_i830.GetOnboardingCompleteUseCase>(),
+        gh<_i360.GetBiometricsEnabledUseCase>(),
+      ),
     );
     gh.lazySingleton<_i242.ThemeBloc>(
       () => _i242.ThemeBloc(

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/duplicate_resolution/duplicate_resolution_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
@@ -21,39 +20,10 @@ class DuplicateResolutionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: getIt<ImportExportBloc>(),
-      child: DuplicateResolutionView(duplicates: duplicates),
-    );
-  }
-}
+    final theme = context.theme;
+    final isAmoled = context.isAmoled;
+    final l10n = context.l10n;
 
-@visibleForTesting
-class DuplicateResolutionView extends StatelessWidget {
-  final List<DuplicatePasswordEntry> duplicates;
-
-  const DuplicateResolutionView({super.key, required this.duplicates});
-
-  void _handleResolve(BuildContext context, DuplicateResolutionState state) {
-    if (state.hasUnresolved) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            context.l10n.resolveRemainingDuplicates(state.unresolved.length),
-          ),
-          backgroundColor: context.colorScheme.error,
-        ),
-      );
-      return;
-    }
-
-    context.read<ImportExportBloc>().add(
-      ResolveDuplicatesEvent(state.resolutions),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => DuplicateResolutionBloc(duplicates),
       child: BlocListener<ImportExportBloc, ImportExportState>(
@@ -77,39 +47,35 @@ class DuplicateResolutionView extends StatelessWidget {
             return switch (state) {
               DuplicateResolutionInitial(:final resolutions) => Scaffold(
                 appBar: AppBar(
-                  title: Text(context.l10n.resolveDuplicatesTitle),
+                  centerTitle: true,
+                  title: Text(l10n.resolveDuplicatesTitle),
                 ),
                 bottomNavigationBar: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.m),
+                    padding: const EdgeInsets.all(AppSpacing.l),
                     child: AppButton(
                       key: const Key('resolve_duplicates_button'),
-                      text: context.l10n.resolveCountDuplicates(
-                        resolutions.length,
-                      ),
+                      text: '${l10n.apply} (${resolutions.length})',
                       isLoading: isLoading,
                       onPressed: state.hasUnresolved
                           ? null
                           : () => _handleResolve(context, state),
-                      icon: LucideIcons.circleCheck,
+                      hasGlow: isAmoled,
                     ),
                   ),
                 ),
                 body: Column(
                   children: [
-                    _InfoBanner(count: resolutions.length),
+                    _InfoBanner(count: resolutions.length, theme: theme),
                     if (isLoading)
-                      const Padding(
-                        padding: EdgeInsets.all(AppSpacing.l),
-                        child: AppLoader(size: 40),
-                      ),
+                      const Expanded(child: Center(child: AppLoader())),
                     if (!isLoading)
                       Expanded(
                         child: ListView.separated(
-                          padding: const EdgeInsets.all(AppSpacing.m),
+                          padding: const EdgeInsets.all(AppSpacing.l),
                           itemCount: resolutions.length + 1,
                           separatorBuilder: (context, index) =>
-                              const SizedBox(height: AppSpacing.m),
+                              const SizedBox(height: AppSpacing.l),
                           itemBuilder: (context, index) {
                             if (index == 0) {
                               return BulkResolutionHeader(
@@ -139,28 +105,52 @@ class DuplicateResolutionView extends StatelessWidget {
       ),
     );
   }
+
+  void _handleResolve(BuildContext context, DuplicateResolutionState state) {
+    final l10n = context.l10n;
+    if (state.hasUnresolved) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.resolveConflictsDesc),
+          backgroundColor: context.theme.error,
+        ),
+      );
+      return;
+    }
+
+    context.read<ImportExportBloc>().add(
+      ResolveDuplicatesEvent(state.resolutions),
+    );
+  }
 }
 
 class _InfoBanner extends StatelessWidget {
   final int count;
+  final AppThemeExtension theme;
 
-  const _InfoBanner({required this.count});
+  const _InfoBanner({required this.count, required this.theme});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.m),
-      color: context.theme.surfaceDim,
+      decoration: BoxDecoration(
+        color: theme.primary.withValues(alpha: 0.1),
+        border: Border(
+          bottom: BorderSide(color: theme.primary.withValues(alpha: 0.1)),
+        ),
+      ),
       child: Row(
         children: [
-          Icon(LucideIcons.triangleAlert, color: context.theme.onSurface),
+          Icon(LucideIcons.triangleAlert, color: theme.primary, size: 20),
           const SizedBox(width: AppSpacing.m),
           Expanded(
             child: Text(
               context.l10n.duplicatesFoundCount(count),
-              style: context.typography.titleMedium?.copyWith(
-                color: context.theme.onSurface,
+              style: context.typography.bodyMedium?.copyWith(
+                color: theme.primary,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),

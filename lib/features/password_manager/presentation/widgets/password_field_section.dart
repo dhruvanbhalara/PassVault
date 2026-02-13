@@ -5,7 +5,6 @@ import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_bloc.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
-import 'package:passvault/l10n/app_localizations.dart';
 
 class PasswordFieldSection extends StatelessWidget {
   final AppLocalizations l10n;

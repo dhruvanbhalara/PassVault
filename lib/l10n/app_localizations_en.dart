@@ -583,13 +583,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'Continue button disabled, fix password errors first';
 
   @override
+  String get strengthVeryWeak => 'Very weak';
+
+  @override
   String get strengthWeak => 'Weak';
 
   @override
-  String get strengthMedium => 'Medium';
+  String get strengthFair => 'Fair';
+
+  @override
+  String get strengthGood => 'Good';
 
   @override
   String get strengthStrong => 'Strong';
+
+  @override
+  String get strengthVeryStrong => 'Very strong';
 
   @override
   String get english => 'English';

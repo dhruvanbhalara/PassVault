@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_resolution_choice.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
@@ -60,7 +59,7 @@ void main() {
         goRouter: mockRouter,
         child: BlocProvider<ImportExportBloc>.value(
           value: mockBloc,
-          child: DuplicateResolutionView(duplicates: duplicates),
+          child: DuplicateResolutionScreen(duplicates: duplicates),
         ),
       ),
       usePumpAndSettle: usePumpAndSettle,
@@ -79,7 +78,7 @@ void main() {
         findsOneWidget,
       );
       robot.expectTextVisible('Google');
-      robot.expectTextVisible('${l10n.usernameLabel}: user@gmail.com');
+      robot.expectTextVisible('user@gmail.com');
       robot.expectTextVisible(l10n.keepExistingTitle);
       robot.expectTextVisible(l10n.replaceWithNewTitle);
       robot.expectTextVisible(l10n.keepBothTitle);
@@ -177,7 +176,6 @@ void main() {
       await tester.pumpAndSettle();
 
       robot.expectTextVisible('Test Error');
-      expect(find.byIcon(LucideIcons.circleCheck), findsOneWidget);
     });
   });
 }

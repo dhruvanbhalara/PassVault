@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
@@ -132,71 +133,82 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
         }
       },
       builder: (context, state) {
+        final isAmoled = context.isAmoled;
+
         return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              widget.entry == null ? l10n.addPassword : l10n.editPassword,
-            ),
-          ),
           floatingActionButton: FloatingActionButton.extended(
             key: const Key('add_edit_save_button'),
             onPressed: state is AddEditSaving
                 ? null
                 : () => _handleSave(context),
+            backgroundColor: theme.primary,
+            foregroundColor: theme.onPrimary,
+            label: Text(
+              widget.entry == null ? l10n.savePassword : l10n.updatePassword,
+            ),
             icon: state is AddEditSaving
-                ? SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(theme.onPrimary),
-                    ),
+                ? const SizedBox(
+                    width: AppIconSize.m,
+                    height: AppIconSize.m,
+                    child: AppLoader(key: Key('add_edit_saving_loader')),
                   )
                 : const Icon(LucideIcons.save),
-            label: Text(l10n.save),
           ),
-
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text(
+              widget.entry == null ? l10n.addPassword : l10n.editPassword,
+            ),
+          ),
           body: RepaintBoundary(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.m),
+              padding: const EdgeInsets.all(AppSpacing.l),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    PasswordFormFields(
-                      l10n: l10n,
-                      appNameController: _appNameController,
-                      usernameController: _usernameController,
-                    ),
-                    const SizedBox(height: AppSpacing.l),
-                    PasswordFieldSection(
-                      l10n: l10n,
-                      passwordController: _passwordController,
-                      obscurePassword: _obscurePassword,
-                      onToggleVisibility: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
-                      state: state,
-                      selectedStrategyId: _selectedStrategyId,
-                      onStrategyChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _selectedStrategyId = value;
-                          });
-                          context.read<AddEditPasswordBloc>().add(
-                            GenerateStrongPassword(strategyId: value),
-                          );
-                        }
-                      },
-                      onGenerate: () {
-                        context.read<AddEditPasswordBloc>().add(
-                          GenerateStrongPassword(
-                            strategyId: _selectedStrategyId,
+                    AppCard(
+                      hasGlow: isAmoled,
+                      padding: const EdgeInsets.all(AppSpacing.l),
+                      child: Column(
+                        spacing: AppSpacing.l,
+                        children: [
+                          PasswordFormFields(
+                            l10n: l10n,
+                            appNameController: _appNameController,
+                            usernameController: _usernameController,
                           ),
-                        );
-                      },
+                          PasswordFieldSection(
+                            l10n: l10n,
+                            passwordController: _passwordController,
+                            obscurePassword: _obscurePassword,
+                            onToggleVisibility: () => setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            ),
+                            state: state,
+                            selectedStrategyId: _selectedStrategyId,
+                            onStrategyChanged: (value) {
+                              if (value != null) {
+                                setState(() => _selectedStrategyId = value);
+                                context.read<AddEditPasswordBloc>().add(
+                                  GenerateStrongPassword(strategyId: value),
+                                );
+                              }
+                            },
+                            onGenerate: () {
+                              context.read<AddEditPasswordBloc>().add(
+                                GenerateStrongPassword(
+                                  strategyId: _selectedStrategyId,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: AppSpacing.x4xl),
+
+                    const SizedBox(height: AppSpacing.xxl),
                   ],
                 ),
               ),

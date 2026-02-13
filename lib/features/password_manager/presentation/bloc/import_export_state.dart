@@ -86,6 +86,16 @@ class DuplicatesResolved extends ImportExportState {
   List<Object?> get props => [totalResolved, totalImported];
 }
 
+/// Encrypted backup file selected and waiting for password input.
+class ImportEncryptedFileSelected extends ImportExportState {
+  final String filePath;
+
+  const ImportEncryptedFileSelected(this.filePath);
+
+  @override
+  List<Object?> get props => [filePath];
+}
+
 /// Operation failed.
 class ImportExportFailure extends ImportExportState {
   final DataMigrationError error;

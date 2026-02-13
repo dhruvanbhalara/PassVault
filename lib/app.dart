@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
+import 'package:passvault/features/settings/presentation/bloc/locale/locale_cubit.dart';
 import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
-import 'package:passvault/l10n/app_localizations.dart';
 
 import 'config/routes/app_router.dart';
 import 'core/design_system/theme/theme.dart';
@@ -14,8 +14,11 @@ class PassVaultApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<ThemeBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<ThemeBloc>()),
+        BlocProvider(create: (_) => LocaleCubit()),
+      ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {
           final (theme, darkThemeData, themeMode) = switch (state) {
@@ -30,8 +33,10 @@ class PassVaultApp extends StatelessWidget {
             ),
           };
 
+          final locale = context.watch<LocaleCubit>().state;
+
           return MaterialApp.router(
-            title: 'PassVault',
+            onGenerateTitle: (context) => context.l10n.appName,
             debugShowCheckedModeBanner: false,
             localizationsDelegates: const [
               AppLocalizations.delegate,
@@ -40,10 +45,11 @@ class PassVaultApp extends StatelessWidget {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: AppLocalizations.supportedLocales,
+            locale: locale,
             theme: theme,
             darkTheme: darkThemeData ?? theme,
             themeMode: themeMode,
-            routerConfig: appRouter,
+            routerConfig: getIt<AppRouter>().config,
           );
         },
       ),

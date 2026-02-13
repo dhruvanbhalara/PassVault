@@ -24,13 +24,18 @@ void main() {
     PasswordState state, {
     bool usePumpAndSettle = true,
   }) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     robot = HomeRobot(tester);
     when(() => mockPasswordBloc.state).thenReturn(state);
 
     await tester.pumpApp(
       BlocProvider<PasswordBloc>.value(
         value: mockPasswordBloc,
-        child: const HomeView(),
+        child: const HomeScreen(),
       ),
       usePumpAndSettle: usePumpAndSettle,
     );
@@ -41,7 +46,6 @@ void main() {
       await loadHomeScreen(tester, const PasswordLoaded([]));
 
       expect(find.byKey(const Key('home_fab')), findsOneWidget);
-      expect(find.byKey(const Key('home_settings_button')), findsOneWidget);
     });
 
     testWidgets('shows loading state correctly', (tester) async {

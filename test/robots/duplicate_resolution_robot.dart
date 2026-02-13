@@ -21,7 +21,10 @@ class DuplicateResolutionRobot {
   }
 
   Future<void> tapChoice(String label) async {
-    await tester.tap(find.text(label));
+    final choiceFinder = find.text(label).first;
+    await tester.ensureVisible(choiceFinder);
+    await tester.pumpAndSettle();
+    await tester.tap(choiceFinder, warnIfMissed: false);
     await tester.pumpAndSettle();
   }
 

@@ -1198,23 +1198,41 @@ abstract class AppLocalizations {
   /// **'Continue button disabled, fix password errors first'**
   String get continueDisabledFixErrors;
 
+  /// No description provided for @strengthVeryWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Very weak'**
+  String get strengthVeryWeak;
+
   /// No description provided for @strengthWeak.
   ///
   /// In en, this message translates to:
   /// **'Weak'**
   String get strengthWeak;
 
-  /// No description provided for @strengthMedium.
+  /// No description provided for @strengthFair.
   ///
   /// In en, this message translates to:
-  /// **'Medium'**
-  String get strengthMedium;
+  /// **'Fair'**
+  String get strengthFair;
+
+  /// No description provided for @strengthGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get strengthGood;
 
   /// No description provided for @strengthStrong.
   ///
   /// In en, this message translates to:
   /// **'Strong'**
   String get strengthStrong;
+
+  /// No description provided for @strengthVeryStrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Very strong'**
+  String get strengthVeryStrong;
 
   /// No description provided for @english.
   ///

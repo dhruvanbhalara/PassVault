@@ -5,7 +5,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/core/utils/app_semantics.dart';
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/home/presentation/widgets/empty_password_state.dart';
@@ -18,39 +17,26 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: getIt<PasswordBloc>()..add(const LoadPasswords()),
-      child: const HomeView(),
-    );
-  }
-}
-
-class HomeView extends StatelessWidget {
-  const HomeView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
+    final theme = context.theme;
     final l10n = context.l10n;
     return Scaffold(
-      floatingActionButton: AppSemantics.button(
-        label: l10n.addPassword,
-        hint: 'Creates a new password entry',
-        child: FloatingActionButton(
-          key: const Key('home_fab'),
-          onPressed: () => context.push(AppRoutes.addPassword),
-          child: const Icon(LucideIcons.plus),
-        ),
+      appBar: AppBar(centerTitle: true, title: Text(l10n.vault)),
+      floatingActionButton: FloatingActionButton(
+        key: const Key('home_fab'),
+        onPressed: () => context.push(AppRoutes.addPassword),
+        backgroundColor: theme.primary,
+        foregroundColor: theme.onPrimary,
+        child: const Icon(LucideIcons.plus),
       ),
       body: CustomScrollView(
         slivers: [
-          _HomeAppBar(),
           BlocBuilder<PasswordBloc, PasswordState>(
             builder: (context, state) {
               if (state is PasswordLoading) {
                 return SliverFillRemaining(
                   child: Center(
                     child: AppSemantics.loading(
-                      label: 'Loading passwords',
+                      label: context.l10n.loadingPasswords,
                       child: const AppLoader(key: Key('home_loading')),
                     ),
                   ),
@@ -63,7 +49,7 @@ class HomeView extends StatelessWidget {
                 return SliverPadding(
                   key: const Key('home_password_list'),
                   padding: EdgeInsets.all(
-                    context.responsive(AppSpacing.m, tablet: AppSpacing.l),
+                    context.responsive(AppSpacing.l, tablet: AppSpacing.xl),
                   ),
                   sliver: context.isDesktop || context.isTablet
                       ? _HomeScreenGrid(passwords: state.passwords)
@@ -83,33 +69,6 @@ class HomeView extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _HomeAppBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.theme;
-    final l10n = context.l10n;
-    return SliverAppBar(
-      floating: true,
-      pinned: true,
-      centerTitle: true,
-      scrolledUnderElevation: 0,
-      backgroundColor: Colors.transparent,
-      title: Text(l10n.appName),
-      actions: [
-        AppSemantics.button(
-          label: 'Settings',
-          hint: 'Opens application settings',
-          child: IconButton(
-            key: const Key('home_settings_button'),
-            icon: Icon(LucideIcons.settings, color: theme.onVaultGradient),
-            onPressed: () => context.push(AppRoutes.settings),
-          ),
-        ),
-      ],
     );
   }
 }

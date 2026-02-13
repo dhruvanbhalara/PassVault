@@ -50,6 +50,17 @@ class ImportEncryptedEvent extends ImportExportEvent {
   List<Object?> get props => [password, filePath];
 }
 
+/// Starts encrypted import by picking the file first.
+class PrepareImportEncryptedEvent extends ImportExportEvent {
+  const PrepareImportEncryptedEvent();
+}
+
+/// Starts import by selecting a file first. Strategy is chosen by extension:
+/// .json/.csv direct import, .pvault prompts password.
+class PrepareImportFromFileEvent extends ImportExportEvent {
+  const PrepareImportFromFileEvent();
+}
+
 /// Resolve detected duplicates from a previous import.
 class ResolveDuplicatesEvent extends ImportExportEvent {
   final List<DuplicatePasswordEntry> resolutions;
