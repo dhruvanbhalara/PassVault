@@ -24,10 +24,12 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.surfaceDim,
     required this.surfaceHighlight,
     required this.securitySurface,
+    required this.strengthVeryWeak,
     required this.strengthWeak,
     required this.strengthFair,
     required this.strengthGood,
     required this.strengthStrong,
+    required this.strengthVeryStrong,
     required this.outline,
     required this.primaryContainer,
     required this.onPrimaryContainer,
@@ -60,10 +62,12 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   final Color surfaceDim;
   final Color surfaceHighlight;
   final Color securitySurface;
+  final Color strengthVeryWeak;
   final Color strengthWeak;
   final Color strengthFair;
   final Color strengthGood;
   final Color strengthStrong;
+  final Color strengthVeryStrong;
   final Color outline;
   final Color primaryContainer;
   final Color onPrimaryContainer;
@@ -118,10 +122,12 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     Color? surfaceDim,
     Color? surfaceHighlight,
     Color? securitySurface,
+    Color? strengthVeryWeak,
     Color? strengthWeak,
     Color? strengthFair,
     Color? strengthGood,
     Color? strengthStrong,
+    Color? strengthVeryStrong,
     Color? outline,
     Color? primaryContainer,
     Color? onPrimaryContainer,
@@ -153,9 +159,11 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       surfaceDim: surfaceDim ?? this.surfaceDim,
       surfaceHighlight: surfaceHighlight ?? this.surfaceHighlight,
       securitySurface: securitySurface ?? this.securitySurface,
+      strengthVeryWeak: strengthWeak ?? this.strengthWeak,
       strengthWeak: strengthWeak ?? this.strengthWeak,
       strengthFair: strengthFair ?? this.strengthFair,
       strengthGood: strengthGood ?? this.strengthGood,
+      strengthVeryStrong: strengthStrong ?? this.strengthStrong,
       strengthStrong: strengthStrong ?? this.strengthStrong,
       outline: outline ?? this.outline,
       primaryContainer: primaryContainer ?? this.primaryContainer,
@@ -197,10 +205,20 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         t,
       )!,
       securitySurface: Color.lerp(securitySurface, other.securitySurface, t)!,
+      strengthVeryWeak: Color.lerp(
+        strengthVeryWeak,
+        other.strengthVeryWeak,
+        t,
+      )!,
       strengthWeak: Color.lerp(strengthWeak, other.strengthWeak, t)!,
       strengthFair: Color.lerp(strengthFair, other.strengthFair, t)!,
       strengthGood: Color.lerp(strengthGood, other.strengthGood, t)!,
       strengthStrong: Color.lerp(strengthStrong, other.strengthStrong, t)!,
+      strengthVeryStrong: Color.lerp(
+        strengthVeryStrong,
+        other.strengthVeryStrong,
+        t,
+      )!,
       outline: Color.lerp(outline, other.outline, t)!,
       primaryContainer: Color.lerp(
         primaryContainer,

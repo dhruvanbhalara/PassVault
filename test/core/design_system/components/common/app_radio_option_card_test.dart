@@ -6,12 +6,16 @@ import '../../../../helpers/test_helpers.dart';
 void main() {
   group('$AppRadioOptionCard', () {
     late AppLocalizations l10n;
-    const title = 'Encrypted Vault';
-    const description = 'AES-256 encrypted, password protected';
-    const icon = Icons.lock;
+    late String title;
+    late String description;
+    const icon = LucideIcons.lock;
+    late String badgeText;
 
     setUpAll(() async {
       l10n = await getL10n();
+      title = l10n.exportEncrypted;
+      description = l10n.encryptedPasswordProtected;
+      badgeText = l10n.jsonRecommended;
     });
 
     Widget buildCard({
@@ -68,15 +72,15 @@ void main() {
     ) async {
       await tester.pumpApp(buildCard(badgeText: null));
 
-      expect(find.text('Recommended'), findsNothing);
+      expect(find.text(badgeText), findsNothing);
     });
 
     testWidgets('shows badge when badgeText is provided', (
       WidgetTester tester,
     ) async {
-      await tester.pumpApp(buildCard(badgeText: 'Recommended'));
+      await tester.pumpApp(buildCard(badgeText: badgeText));
 
-      expect(find.text('Recommended'), findsOneWidget);
+      expect(find.text(badgeText), findsOneWidget);
     });
 
     testWidgets('calls onTap when card is tapped', (WidgetTester tester) async {
@@ -122,17 +126,17 @@ void main() {
     testWidgets('includes badge in semantic label', (
       WidgetTester tester,
     ) async {
-      await tester.pumpApp(buildCard(badgeText: 'Recommended'));
+      await tester.pumpApp(buildCard(badgeText: badgeText));
 
       final semantics = tester.getSemantics(find.byType(AppRadioOptionCard));
-      expect(semantics.label, contains('Recommended'));
+      expect(semantics.label, contains(badgeText));
     });
 
     testWidgets('renders in dark theme without errors', (
       WidgetTester tester,
     ) async {
       await tester.pumpApp(
-        buildCard(isSelected: true, badgeText: 'Recommended'),
+        buildCard(isSelected: true, badgeText: badgeText),
         theme: AppTheme.darkTheme,
       );
 
@@ -143,7 +147,7 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpApp(
-        buildCard(isSelected: true, badgeText: 'Recommended'),
+        buildCard(isSelected: true, badgeText: badgeText),
         theme: AppTheme.amoledTheme,
       );
 
@@ -156,12 +160,12 @@ void main() {
       await tester.pumpApp(
         Column(
           children: [
-            buildCard(isSelected: true, badgeText: 'Recommended'),
+            buildCard(isSelected: true, badgeText: badgeText),
             buildCard(isSelected: false),
             AppRadioOptionCard(
-              icon: Icons.table_chart,
-              title: 'CSV Spreadsheet',
-              description: 'Unencrypted, for Excel/Sheets',
+              icon: LucideIcons.fileSpreadsheet,
+              title: l10n.csvSpreadsheet,
+              description: l10n.csvDesc,
               isSelected: false,
               onTap: () {},
             ),

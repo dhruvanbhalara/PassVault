@@ -1,46 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/core/design_system/components/common/app_radio_option_badge.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 
-/// A tappable radio-style option card with icon, title, description, and
-/// optional badge.
-///
-/// Designed for the Export Vault screen where the user picks among exclusive
-/// format options (e.g. encrypted, JSON, CSV).
-///
-/// Example:
-/// ```dart
-/// AppRadioOptionCard(
-///   icon: Icons.lock,
-///   title: 'Encrypted Vault',
-///   description: 'AES-256 encrypted, password protected',
-///   badgeText: 'Recommended',
-///   badgeColor: Colors.green,
-///   isSelected: selectedFormat == ExportFormat.encrypted,
-///   onTap: () => setState(() => selectedFormat = ExportFormat.encrypted),
-/// )
-/// ```
 class AppRadioOptionCard extends StatefulWidget {
-  /// Leading icon displayed beside the radio indicator.
   final IconData icon;
-
-  /// Primary label for the option.
   final String title;
-
-  /// Secondary descriptive text.
   final String description;
-
-  /// Whether this option is the currently selected one.
   final bool isSelected;
-
-  /// Called when the entire card is tapped.
   final VoidCallback? onTap;
-
-  /// Optional badge label (e.g. "Recommended"). Hidden when null.
   final String? badgeText;
-
-  /// Badge accent color. Falls back to [AppThemeExtension.success] when null.
   final Color? badgeColor;
 
   const AppRadioOptionCard({
@@ -62,9 +32,6 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-
-  /// Tracks the previous selection state so haptic feedback only fires on
-  /// actual change.
   bool _previousSelected = false;
 
   bool get _isAmoled => context.theme.primaryGlow != null;
@@ -90,7 +57,6 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
     super.didUpdateWidget(oldWidget);
 
     if (widget.isSelected != oldWidget.isSelected) {
-      // Fire haptic only on actual state change.
       if (widget.isSelected && !_previousSelected) {
         HapticFeedback.selectionClick();
       }
@@ -162,7 +128,6 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
                 padding: const EdgeInsets.all(AppSpacing.m),
                 child: Row(
                   children: [
-                    // Radio indicator
                     ExcludeSemantics(
                       child: Icon(
                         widget.isSelected
@@ -175,7 +140,6 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
                       ),
                     ),
                     const SizedBox(width: AppSpacing.s),
-                    // Option icon
                     ExcludeSemantics(
                       child: Icon(
                         widget.icon,
@@ -186,7 +150,6 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
                       ),
                     ),
                     const SizedBox(width: AppSpacing.m),
-                    // Title + description
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,7 +170,7 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
                               ),
                               if (widget.badgeText != null) ...[
                                 const SizedBox(width: AppSpacing.s),
-                                _Badge(
+                                AppRadioOptionBadge(
                                   text: widget.badgeText!,
                                   color: widget.badgeColor ?? theme.success,
                                   isAmoled: isAmoled,
@@ -257,7 +220,6 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
     bool isAmoled,
   ) {
     if (isAmoled) {
-      // Neon glow on AMOLED
       return [
         BoxShadow(
           color: theme.primary.withValues(alpha: 0.35),
@@ -268,7 +230,6 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
     }
 
     if (context.isDarkMode) {
-      // Subtle elevation for dark mode
       return [
         BoxShadow(
           color: theme.primary.withValues(alpha: 0.15),
@@ -278,7 +239,6 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
       ];
     }
 
-    // Light mode – subtle shadow
     return [
       BoxShadow(
         color: theme.primary.withValues(alpha: 0.12),
@@ -286,72 +246,5 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
         offset: const Offset(0, 2),
       ),
     ];
-  }
-}
-
-class _Badge extends StatelessWidget {
-  final String text;
-  final Color color;
-  final bool isAmoled;
-
-  const _Badge({
-    required this.text,
-    required this.color,
-    required this.isAmoled,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final typography = context.typography;
-
-    if (isAmoled) {
-      // AMOLED: outlined badge with neon glow
-      return Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.xs,
-          vertical: AppSpacing.xxs,
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppRadius.s),
-          border: Border.all(color: color.withValues(alpha: 0.6)),
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: 0.30),
-              blurRadius: 6,
-              spreadRadius: 0,
-            ),
-          ],
-        ),
-        child: Text(
-          text,
-          style: typography.labelSmall?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: color,
-          ),
-        ),
-      );
-    }
-
-    final isDark = context.isDarkMode;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.xs,
-        vertical: AppSpacing.xxs,
-      ),
-      decoration: BoxDecoration(
-        color: isDark
-            ? color.withValues(alpha: 0.15)
-            : color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(AppRadius.s),
-      ),
-      child: Text(
-        text,
-        style: typography.labelSmall?.copyWith(
-          fontWeight: FontWeight.w500,
-          color: isDark ? color.withValues(alpha: 0.9) : color,
-        ),
-      ),
-    );
   }
 }

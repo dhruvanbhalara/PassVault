@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 
 import 'app_colors.dart';
 import 'app_dimensions.dart';
+import 'app_text_theme_builder.dart';
 import 'app_theme_extension.dart';
 import 'presets/amoled_theme_preset.dart';
 import 'presets/dark_theme_preset.dart';
@@ -75,8 +77,16 @@ class AppTheme {
     final textSecondary = isDark
         ? AppColors.textDarkSecondary
         : AppColors.textLightSecondary;
+    final inputBorderColor = isAmoled
+        ? Colors.white24
+        : scheme.outline.withValues(alpha: isDark ? 0.62 : 0.58);
+    final inputDisabledBorderColor = isAmoled
+        ? Colors.white24.withValues(alpha: 0.45)
+        : scheme.outline.withValues(alpha: isDark ? 0.40 : 0.36);
 
-    final textTheme = _buildTextTheme(textPrimary, textSecondary);
+    final textTheme = const AppTextThemeBuilder(
+      _fontFamily,
+    ).build(textPrimary, textSecondary);
 
     return ThemeData(
       useMaterial3: true,
@@ -100,6 +110,10 @@ class AppTheme {
           fontWeight: FontWeight.bold,
           color: textPrimary,
         ),
+      ),
+      actionIconTheme: ActionIconThemeData(
+        backButtonIconBuilder: (BuildContext context) =>
+            const Icon(LucideIcons.chevronLeft),
       ),
       cardTheme: CardThemeData(
         color: surface,
@@ -132,19 +146,27 @@ class AppTheme {
         hintStyle: TextStyle(color: textSecondary.withValues(alpha: 0.5)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
-          borderSide: isAmoled
-              ? const BorderSide(color: Colors.white24)
-              : BorderSide.none,
+          borderSide: BorderSide(color: inputBorderColor, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
-          borderSide: isAmoled
-              ? const BorderSide(color: Colors.white24)
-              : BorderSide.none,
+          borderSide: BorderSide(color: inputBorderColor, width: 2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
           borderSide: BorderSide(color: extension.inputFocusedBorder, width: 2),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.m),
+          borderSide: BorderSide(color: inputDisabledBorderColor, width: 1.0),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.m),
+          borderSide: BorderSide(color: scheme.error, width: 1.2),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.m),
+          borderSide: BorderSide(color: scheme.error, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.m,
@@ -189,148 +211,6 @@ class AppTheme {
           }
           return scheme.outline;
         }),
-      ),
-    );
-  }
-
-  /// Builds a complete [TextTheme] aligned with the design prompt.
-  ///
-  /// Mapping from design prompt:
-  ///   - displayLarge  → Heading 1 (32px, Bold)
-  ///   - headlineMedium → Heading 2 (24px, Semibold)
-  ///   - bodyLarge     → Body (16px, Regular)
-  ///   - bodyMedium    → Caption (14px, Regular)
-  ///   - bodySmall     → Small (12px, Regular)
-  static TextTheme _buildTextTheme(Color primary, Color secondary) {
-    return TextTheme(
-      // --- Display styles (mapped from design Heading 1) ---
-      displayLarge: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 32,
-        fontWeight: FontWeight.w700,
-        height: 1.2,
-        letterSpacing: -0.25,
-        color: primary,
-      ),
-      displayMedium: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 28,
-        fontWeight: FontWeight.w700,
-        height: 1.2,
-        letterSpacing: 0,
-        color: primary,
-      ),
-      displaySmall: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        height: 1.2,
-        letterSpacing: 0,
-        color: primary,
-      ),
-
-      // --- Headline styles (mapped from design Heading 2) ---
-      headlineLarge: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 28,
-        fontWeight: FontWeight.w700,
-        height: 1.2,
-        letterSpacing: 0,
-        color: primary,
-      ),
-      headlineMedium: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        height: 1.2,
-        letterSpacing: 0,
-        color: primary,
-      ),
-      headlineSmall: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        height: 1.2,
-        letterSpacing: 0,
-        color: primary,
-      ),
-
-      // --- Title styles ---
-      titleLarge: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        height: 1.3,
-        letterSpacing: 0,
-        color: primary,
-      ),
-      titleMedium: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        height: 1.3,
-        letterSpacing: 0.15,
-        color: primary,
-      ),
-      titleSmall: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        height: 1.3,
-        letterSpacing: 0.1,
-        color: primary,
-      ),
-
-      // --- Body styles (mapped from design Body / Caption / Small) ---
-      bodyLarge: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        height: 1.5,
-        letterSpacing: 0.25,
-        color: primary,
-      ),
-      bodyMedium: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        height: 1.5,
-        letterSpacing: 0.25,
-        color: secondary,
-      ),
-      bodySmall: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        height: 1.5,
-        letterSpacing: 0.4,
-        color: secondary,
-      ),
-
-      // --- Label styles ---
-      labelLarge: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        height: 1.4,
-        letterSpacing: 0.1,
-        color: primary,
-      ),
-      labelMedium: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        height: 1.4,
-        letterSpacing: 0.5,
-        color: primary,
-      ),
-      labelSmall: TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 11,
-        fontWeight: FontWeight.w500,
-        height: 1.4,
-        letterSpacing: 0.5,
-        color: secondary,
       ),
     );
   }

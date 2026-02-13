@@ -21,6 +21,5 @@ linter:
     avoid_empty_else: true
 
     # --- Architectural Rigor ---
-    package_api_docs: false
     public_member_api_docs: false # Switch to true for local packages
     avoid_type_to_string: true

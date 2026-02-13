@@ -4,18 +4,19 @@ import 'package:passvault/core/design_system/components/common/app_list_option.d
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
+  const title = 'Export JSON';
+  const subtitle = 'Backup in JSON format';
+
   group('$AppListOption', () {
     testWidgets('renders title, subtitle, icon, and chevron', (
       WidgetTester tester,
     ) async {
-      const title = 'Export JSON';
-      const subtitle = 'Backup in JSON format';
       var tapped = false;
 
       await tester.pumpApp(
         AppListOption(
           icon: LucideIcons.braces,
-          iconColor: Colors.blue,
+          iconColor: AppColors.primaryLight,
           title: title,
           subtitle: subtitle,
           onTap: () => tapped = true,
@@ -36,14 +37,14 @@ void main() {
     testWidgets('renders custom trailing widget when provided', (
       WidgetTester tester,
     ) async {
-      const trailing = Icon(Icons.check);
+      const trailing = Icon(LucideIcons.check);
 
       await tester.pumpApp(
         AppListOption(
           icon: LucideIcons.braces,
-          iconColor: Colors.blue,
-          title: 'Title',
-          subtitle: 'Subtitle',
+          iconColor: AppColors.primaryLight,
+          title: title,
+          subtitle: subtitle,
           onTap: () {},
           trailing: trailing,
         ),

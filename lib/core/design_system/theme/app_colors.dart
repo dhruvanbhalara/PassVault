@@ -116,17 +116,23 @@ abstract class AppColors {
   /// Color used for warnings and moderate security items.
   static const Color warning = Color(0xFFF59E0B);
 
+  /// Level 0 password strength (Very Weak).
+  static const Color strengthVeryWeak = Color(0xFFB91C1C); // Red 700
+
   /// Level 1 password strength (Weak).
-  static const Color strengthWeak = errorLight;
+  static const Color strengthWeak = Color(0xFFEF4444); // Red 500
 
   /// Level 2 password strength (Fair).
-  static const Color strengthFair = Color(0xFFF97316);
+  static const Color strengthFair = Color(0xFFF97316); // Orange 500
 
   /// Level 3 password strength (Good).
-  static const Color strengthGood = warning;
+  static const Color strengthGood = Color(0xFFFACC15); // Yellow 400
 
   /// Level 4 password strength (Strong).
-  static const Color strengthStrong = successLight;
+  static const Color strengthStrong = Color(0xFF22C55E); // Green 500
+
+  /// Level 5 password strength (Very Strong).
+  static const Color strengthVeryStrong = Color(0xFF15803D); // Green 700
 
   // Vault Gradient Colors
 

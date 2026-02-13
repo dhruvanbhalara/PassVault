@@ -34,7 +34,7 @@ trigger: always_on
 -   **Sealed States**: Always use `sealed class` for States to ensure exhaustive UI handling.
 -   **Immutability**: All States, Events, and Domain Entities MUST be immutable (using `final` and `Equatable` or `freezed`).
 -   **Concurrency**: Use `transformers` (e.g., `restartable()`, `droppable()`) for events requiring debouncing (search) or throttling (buttons).
--   **Zero-Logic UI**: Widgets should ONLY call `bloc.add(Event)`. No logical branching in `build()`.
+-   **Zero-Logic UI**: Widgets MUST NOT contain business logic, orchestration logic, or direct calls to external services (e.g., Auth, Biometrics, API, Storage). They should ONLY dispatch events (`bloc.add(Event)`) and build UI based on BLoC states. Strictly prohibit logical branching or service orchestration in `build()` or state methods.
 
 ## 4. UI Performance & Design System
 -   **Atoms Tokens**: Use `AppSpacing`, `AppRadius`, and `AppColors`. No hardcoded pixel values.
@@ -48,7 +48,7 @@ trigger: always_on
 ## 5. Quality Assurance & Advanced Testing (The Mirror Rule)
 -   **Mirror Test Rule**: 100% logic and widget coverage. No code without a test.
 -   **Test Naming**: Use string interpolation for test group names: `group('$ClassName',` not `group('ClassName',`. This ensures consistency and allows for better tooling support.
--   **Test Structure**: Mandate the `Given-When-Then` pattern within `test()` blocks for readability (e.g., `// Given`, `// When`, `// Then`).
+- [ ] **Test Structure**: Tests MUST follow a logical `Given-When-Then` sequence without explicit comments. The structure should be inherent in the code flow (e.g., setup, act, expect).
 -   **Coverage Targets**: Target 100% logic coverage for `domain` and `bloc` layers.
 -   **Mocking Protocol**: Use `mocktail` for all dependency mocking. STRICTLY prohibit using real implementation dependencies in unit tests.
 -   **Mirror Organization**: Test files MUST strictly mirror the `lib/` directory structure and end with `_test.dart`.
@@ -84,3 +84,8 @@ trigger: always_on
 -   **ALWAYS**: Check `implementation_plan.md` status before completing a task.
 -   **ASK FIRST**: Before changing global themes, updating critical dependencies, or deleting files. 
 -   **NEVER**: Commit raw API keys, secrets, or hardcoded sensitive data.
+
+## 10. Navigation & Dependency Injection Standards
+-   **Dynamic Routes**: STRICTLY prohibit hardcoded route strings in `GoRouter` configuration. Use static constants in `AppRoutes`.
+-   **Centralized BLoCs**: BLoC providers MUST be injected via `ShellRoute` or `BlocProvider` in `app_router.dart` when shared across multiple screens or within a feature branch.
+-   **No Local Providers**: Avoid `BlocProvider` in individual screen `build()` methods if the BLoC is needed by a feature set.

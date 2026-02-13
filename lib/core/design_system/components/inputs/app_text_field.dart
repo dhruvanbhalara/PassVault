@@ -76,41 +76,24 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    final typography = context.typography;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: AppSpacing.xs),
-          child: Text(
-            label.toUpperCase(),
-            style: typography.labelSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-              color: theme.primary,
-            ),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.s),
-        TextFormField(
-          controller: controller,
-          validator: validator,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          onChanged: onChanged,
-          style: usePasswordStyle ? theme.passwordText : null,
-          decoration: InputDecoration(
-            hintText: hint,
-            prefixIcon: prefixIcon != null
-                ? Icon(prefixIcon, size: AppIconSize.m)
-                : null,
-            suffixIcon: suffixIcon,
-          ),
-        ),
-      ],
+    return TextFormField(
+      controller: controller,
+      validator: validator,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      onChanged: onChanged,
+      style: usePasswordStyle ? theme.passwordText : null,
+      decoration: InputDecoration(
+        hintText: hint,
+        labelText: label,
+        floatingLabelBehavior: FloatingLabelBehavior.auto,
+        prefixIcon: prefixIcon != null
+            ? Icon(prefixIcon, size: AppIconSize.m)
+            : null,
+        suffixIcon: suffixIcon,
+      ),
     );
   }
 }

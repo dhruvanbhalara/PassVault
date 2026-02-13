@@ -210,15 +210,20 @@ class _AppSearchBarState extends State<AppSearchBar> {
 
   BoxDecoration _buildDecoration(AppThemeExtension theme, bool isAmoled) {
     final focusBorder = _focusBorderColor(theme);
+    final idleBorder = theme.onSurface.withValues(
+      alpha: isAmoled
+          ? 0.3
+          : context.isDarkMode
+          ? 0.34
+          : 0.30,
+    );
 
     if (isAmoled) {
       return BoxDecoration(
         color: _backgroundColor(theme),
         borderRadius: BorderRadius.circular(AppRadius.m),
         border: Border.all(
-          color: _hasFocus
-              ? focusBorder
-              : theme.onSurface.withValues(alpha: 0.3),
+          color: _hasFocus ? focusBorder : idleBorder,
           width: _hasFocus ? 1.5 : 1.0,
         ),
         boxShadow: _hasFocus && theme.primaryGlow != null
@@ -230,7 +235,10 @@ class _AppSearchBarState extends State<AppSearchBar> {
     return BoxDecoration(
       color: _backgroundColor(theme),
       borderRadius: BorderRadius.circular(AppRadius.m),
-      border: _hasFocus ? Border.all(color: focusBorder, width: 1.5) : null,
+      border: Border.all(
+        color: _hasFocus ? focusBorder : idleBorder,
+        width: _hasFocus ? 1.5 : 1.0,
+      ),
     );
   }
 

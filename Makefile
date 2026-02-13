@@ -22,14 +22,14 @@ pod_repo_update:
 # --- Code Generation ---
 build_runner:
 	@echo "Running build_runner..."
-	dart run build_runner build --delete-conflicting-outputs
+	flutter pub run build_runner build --delete-conflicting-outputs
 
 build_runner_clean:
 	@echo "Cleaning generated files..."
-	dart run build_runner clean
+	flutter pub run build_runner clean
 
 watch_runner:
-	dart run build_runner watch --delete-conflicting-outputs
+	flutter pub run build_runner watch --delete-conflicting-outputs
 
 l10n:
 	@echo "Generating localization..."

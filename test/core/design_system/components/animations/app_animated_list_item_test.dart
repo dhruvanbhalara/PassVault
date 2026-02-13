@@ -3,10 +3,13 @@ import 'package:passvault/core/design_system/components/animations/app_animated_
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
+  const childText = 'Test Child';
+  const firstText = 'First';
+  const secondText = 'Second';
+  const animatedChildText = 'Animated Child';
+
   group('$AppAnimatedListItem', () {
     testWidgets('renders child widget', (WidgetTester tester) async {
-      const childText = 'Test Child';
-
       await tester.pumpApp(
         const AppAnimatedListItem(index: 0, child: Text(childText)),
       );
@@ -17,8 +20,8 @@ void main() {
     testWidgets('applies staggered animation based on index', (
       WidgetTester tester,
     ) async {
-      const firstChild = Text('First');
-      const secondChild = Text('Second');
+      const firstChild = Text(firstText);
+      const secondChild = Text(secondText);
 
       await tester.pumpApp(
         const Column(
@@ -34,14 +37,14 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.text('First'), findsOneWidget);
-      expect(find.text('Second'), findsOneWidget);
+      expect(find.text(firstText), findsOneWidget);
+      expect(find.text(secondText), findsOneWidget);
     });
 
     testWidgets('completes animation after duration', (
       WidgetTester tester,
     ) async {
-      const child = Text('Animated Child');
+      const child = Text(animatedChildText);
 
       await tester.pumpApp(
         const AppAnimatedListItem(index: 0, child: child),
@@ -60,7 +63,7 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpApp(
-        const AppAnimatedListItem(index: 0, child: Text('Test')),
+        const AppAnimatedListItem(index: 0, child: Text(childText)),
       );
 
       expect(find.byType(RepaintBoundary), findsWidgets);

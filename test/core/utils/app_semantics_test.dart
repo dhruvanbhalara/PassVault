@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/utils/app_semantics.dart';
 
 import '../../helpers/test_helpers.dart';
@@ -37,14 +38,15 @@ void main() {
     testWidgets('listItem wrapper renders child widget', (
       WidgetTester tester,
     ) async {
+      final itemLabel = l10n.appName;
       await tester.pumpApp(
         AppSemantics.listItem(
-          label: 'Password entry',
-          child: const ListTile(title: Text('example.com')),
+          label: itemLabel,
+          child: ListTile(title: Text(itemLabel)),
         ),
       );
 
-      expect(find.text('example.com'), findsOneWidget);
+      expect(find.text(itemLabel), findsOneWidget);
       expect(find.byType(ListTile), findsOneWidget);
     });
 
@@ -72,8 +74,12 @@ void main() {
     testWidgets('image wrapper renders child widget', (
       WidgetTester tester,
     ) async {
+      final imageLabel = l10n.appName;
       await tester.pumpApp(
-        AppSemantics.image(label: 'Icon', child: const Icon(Icons.security)),
+        AppSemantics.image(
+          label: imageLabel,
+          child: const Icon(LucideIcons.shield),
+        ),
       );
 
       expect(find.byType(Icon), findsOneWidget);
@@ -82,30 +88,33 @@ void main() {
     testWidgets('link wrapper renders child widget', (
       WidgetTester tester,
     ) async {
+      final linkText = l10n.privacyNotice;
       await tester.pumpApp(
-        AppSemantics.link(label: 'Privacy', child: const Text('Privacy')),
+        AppSemantics.link(label: linkText, child: Text(linkText)),
       );
 
-      expect(find.text('Privacy'), findsOneWidget);
+      expect(find.text(linkText), findsOneWidget);
     });
 
     testWidgets('announce does not throw exception', (
       WidgetTester tester,
     ) async {
+      final announceText = l10n.importData;
+      final announceMessage = l10n.importSuccess;
       await tester.pumpApp(
         Builder(
           builder: (context) {
             return ElevatedButton(
-              onPressed: () => AppSemantics.announce(context, 'Test message'),
-              child: const Text('Announce'),
+              onPressed: () => AppSemantics.announce(context, announceMessage),
+              child: Text(announceText),
             );
           },
         ),
       );
 
-      await tester.tap(find.text('Announce'));
+      await tester.tap(find.text(announceText));
       await tester.pumpAndSettle();
-      expect(find.text('Announce'), findsOneWidget);
+      expect(find.text(announceText), findsOneWidget);
     });
   });
 }
