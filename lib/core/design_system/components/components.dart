@@ -20,7 +20,6 @@ export 'common/strategy_option_tile.dart';
 export 'feedback/app_loader.dart';
 export 'feedback/app_shimmer_loading.dart';
 // Inputs
-export 'inputs/app_search_bar.dart';
 export 'inputs/app_text_field.dart';
 // Layout
 export 'layout/app_card.dart';
