@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:passvault/features/password_manager/domain/entities/duplicate_resolution_choice.dart';
+part of 'duplicate_resolution_bloc.dart';
 
 sealed class DuplicateResolutionEvent extends Equatable {
   const DuplicateResolutionEvent();

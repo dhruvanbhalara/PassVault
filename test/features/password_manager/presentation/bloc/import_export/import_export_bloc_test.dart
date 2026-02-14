@@ -17,8 +17,6 @@ import 'package:passvault/features/password_manager/domain/usecases/clear_all_pa
 import 'package:passvault/features/password_manager/domain/usecases/import_passwords_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/resolve_duplicates_usecase.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_bloc.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_event.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_state.dart';
 
 class MockBiometricService extends Mock implements BiometricService {}
 
@@ -262,8 +260,7 @@ void main() {
             );
             return bloc;
           },
-          act: (bloc) =>
-              bloc.add(const ImportEncryptedEvent(password: 'correct')),
+          act: (bloc) => bloc.add(const ImportEncryptedEvent('correct')),
           expect: () => [const ImportExportLoading(), const ImportSuccess(1)],
         );
 
@@ -275,8 +272,7 @@ void main() {
             ).thenAnswer((_) async => '/path/to/file.txt');
             return bloc;
           },
-          act: (bloc) =>
-              bloc.add(const ImportEncryptedEvent(password: 'correct')),
+          act: (bloc) => bloc.add(const ImportEncryptedEvent('correct')),
           expect: () => [
             const ImportExportLoading(),
             const ImportExportFailure(

@@ -1,20 +1,5 @@
-import 'package:equatable/equatable.dart';
-import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
+part of 'import_export_bloc.dart';
 
-/// Exhaustive error types for Data Migration operations.
-enum DataMigrationError {
-  fileNotFound,
-  invalidFormat,
-  wrongPassword,
-  permissionDenied,
-  noDataToExport,
-  storageFull,
-  importFailed,
-  cancelled,
-  unknown,
-}
-
-/// Type-safe Sealed States for ImportExportBloc.
 sealed class ImportExportState extends Equatable {
   const ImportExportState();
 
@@ -22,47 +7,33 @@ sealed class ImportExportState extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Initial state - waiting for user action.
 class ImportExportInitial extends ImportExportState {
   const ImportExportInitial();
 }
 
-/// Operation in progress.
 class ImportExportLoading extends ImportExportState {
   const ImportExportLoading();
-
-  @override
-  List<Object?> get props => [];
 }
 
-/// Successful Import with no duplicates.
-class ImportSuccess extends ImportExportState {
-  final int count;
-  const ImportSuccess(this.count);
-
-  @override
-  List<Object?> get props => [count];
-}
-
-/// Successful Export.
 class ExportSuccess extends ImportExportState {
-  final String destination;
-  const ExportSuccess(this.destination);
+  final String filePath;
+  const ExportSuccess(this.filePath);
 
   @override
-  List<Object?> get props => [destination];
+  List<Object?> get props => [filePath];
 }
 
-/// Successful Database Wipe (Debug feature).
-class ClearDatabaseSuccess extends ImportExportState {
-  const ClearDatabaseSuccess();
+class ImportEncryptedFileSelected extends ImportExportState {
+  final String filePath;
+  const ImportEncryptedFileSelected(this.filePath);
+
+  @override
+  List<Object?> get props => [filePath];
 }
 
-/// Duplicates detected - requires user intervention.
 class DuplicatesDetected extends ImportExportState {
   final List<DuplicatePasswordEntry> duplicates;
   final int successfulImports;
-
   const DuplicatesDetected({
     required this.duplicates,
     required this.successfulImports,
@@ -72,11 +43,17 @@ class DuplicatesDetected extends ImportExportState {
   List<Object?> get props => [duplicates, successfulImports];
 }
 
-/// State after duplicates have been successfully resolved.
+class ImportSuccess extends ImportExportState {
+  final int totalImported;
+  const ImportSuccess(this.totalImported);
+
+  @override
+  List<Object?> get props => [totalImported];
+}
+
 class DuplicatesResolved extends ImportExportState {
   final int totalResolved;
   final int totalImported;
-
   const DuplicatesResolved({
     required this.totalResolved,
     required this.totalImported,
@@ -86,21 +63,23 @@ class DuplicatesResolved extends ImportExportState {
   List<Object?> get props => [totalResolved, totalImported];
 }
 
-/// Encrypted backup file selected and waiting for password input.
-class ImportEncryptedFileSelected extends ImportExportState {
-  final String filePath;
-
-  const ImportEncryptedFileSelected(this.filePath);
-
-  @override
-  List<Object?> get props => [filePath];
+class ClearDatabaseSuccess extends ImportExportState {
+  const ClearDatabaseSuccess();
 }
 
-/// Operation failed.
+enum DataMigrationError {
+  unknown,
+  invalidFormat,
+  noDataToExport,
+  wrongPassword,
+  permissionDenied,
+  fileNotFound,
+  importFailed,
+}
+
 class ImportExportFailure extends ImportExportState {
   final DataMigrationError error;
   final String message;
-
   const ImportExportFailure(this.error, this.message);
 
   @override

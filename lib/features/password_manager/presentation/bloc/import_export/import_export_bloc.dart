@@ -1,19 +1,22 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/core/services/data_service.dart';
 import 'package:passvault/core/services/file_picker_service.dart';
 import 'package:passvault/core/services/file_service.dart';
+import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 import 'package:passvault/features/password_manager/domain/repositories/password_repository.dart';
 import 'package:passvault/features/password_manager/domain/usecases/clear_all_passwords_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/import_passwords_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/resolve_duplicates_usecase.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_helpers.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_path_resolver.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_state.dart';
+
+part 'import_export_event.dart';
+part 'import_export_state.dart';
 
 @lazySingleton
 class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
