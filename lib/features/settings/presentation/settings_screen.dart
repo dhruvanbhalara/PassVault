@@ -36,6 +36,7 @@ class SettingsScreen extends StatelessWidget {
           context.read<ImportExportBloc>().add(const ResetMigrationStatus());
         } else if (state is DuplicatesDetected) {
           context.push(AppRoutes.resolveDuplicates, extra: state.duplicates);
+        } else if (state is DuplicatesResolved) {
           context.read<ImportExportBloc>().add(const ResetMigrationStatus());
         } else if (state is ImportEncryptedFileSelected) {
           showDialog(
