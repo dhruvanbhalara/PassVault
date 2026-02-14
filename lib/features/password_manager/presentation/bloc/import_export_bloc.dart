@@ -15,7 +15,7 @@ import 'package:passvault/features/password_manager/presentation/bloc/import_exp
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_path_resolver.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
 
-@injectable
+@lazySingleton
 class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
   final ImportPasswordsUseCase _importPasswordsUseCase;
   final ResolveDuplicatesUseCase _resolveDuplicatesUseCase;

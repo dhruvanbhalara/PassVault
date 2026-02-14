@@ -8,7 +8,7 @@ import 'package:passvault/features/settings/presentation/bloc/settings_state.dar
 export 'settings_event.dart';
 export 'settings_state.dart';
 
-@injectable
+@lazySingleton
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final SettingsRepository _settingsRepository;
 

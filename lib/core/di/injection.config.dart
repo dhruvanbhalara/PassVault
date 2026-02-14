@@ -43,6 +43,8 @@ import '../../features/password_manager/domain/usecases/export_passwords_usecase
     as _i145;
 import '../../features/password_manager/domain/usecases/generate_password_usecase.dart'
     as _i16;
+import '../../features/password_manager/domain/usecases/get_password_usecase.dart'
+    as _i13;
 import '../../features/password_manager/domain/usecases/import_passwords_usecase.dart'
     as _i823;
 import '../../features/password_manager/domain/usecases/password_usecases.dart'
@@ -168,6 +170,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i145.ExportPasswordsUseCase>(
       () => _i145.ExportPasswordsUseCase(gh<_i580.PasswordRepository>()),
     );
+    gh.lazySingleton<_i13.GetPasswordUseCase>(
+      () => _i13.GetPasswordUseCase(gh<_i580.PasswordRepository>()),
+    );
     gh.lazySingleton<_i823.ImportPasswordsUseCase>(
       () => _i823.ImportPasswordsUseCase(gh<_i580.PasswordRepository>()),
     );
@@ -189,7 +194,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i537.SaveBulkPasswordsUseCase>(
       () => _i537.SaveBulkPasswordsUseCase(gh<_i580.PasswordRepository>()),
     );
-    gh.factory<_i585.SettingsBloc>(
+    gh.lazySingleton<_i585.SettingsBloc>(
       () => _i585.SettingsBloc(gh<_i674.SettingsRepository>()),
     );
     gh.lazySingleton<_i360.GetBiometricsEnabledUseCase>(
@@ -248,7 +253,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i360.GetBiometricsEnabledUseCase>(),
       ),
     );
-    gh.factory<_i404.ImportExportBloc>(
+    gh.lazySingleton<_i404.ImportExportBloc>(
       () => _i404.ImportExportBloc(
         gh<_i823.ImportPasswordsUseCase>(),
         gh<_i649.ResolveDuplicatesUseCase>(),
@@ -267,6 +272,15 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i580.PasswordRepository>(),
       ),
     );
+    gh.factory<_i683.AddEditPasswordBloc>(
+      () => _i683.AddEditPasswordBloc(
+        gh<_i16.GeneratePasswordUseCase>(),
+        gh<_i371.EstimatePasswordStrengthUseCase>(),
+        gh<_i739.GetPasswordGenerationSettingsUseCase>(),
+        gh<_i969.SavePasswordUseCase>(),
+        gh<_i13.GetPasswordUseCase>(),
+      ),
+    );
     gh.factory<_i792.OnboardingBloc>(
       () => _i792.OnboardingBloc(
         gh<_i830.GetOnboardingCompleteUseCase>(),
@@ -275,14 +289,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i458.CheckBiometricsUseCase>(),
         gh<_i1045.AuthenticateUseCase>(),
         gh<_i830.DeleteOnboardingStepUseCase>(),
-      ),
-    );
-    gh.factory<_i683.AddEditPasswordBloc>(
-      () => _i683.AddEditPasswordBloc(
-        gh<_i16.GeneratePasswordUseCase>(),
-        gh<_i371.EstimatePasswordStrengthUseCase>(),
-        gh<_i739.GetPasswordGenerationSettingsUseCase>(),
-        gh<_i969.SavePasswordUseCase>(),
       ),
     );
     return this;
