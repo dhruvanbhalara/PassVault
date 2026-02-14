@@ -10,10 +10,10 @@ import 'package:passvault/features/password_manager/domain/repositories/password
 import 'package:passvault/features/password_manager/domain/usecases/clear_all_passwords_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/import_passwords_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/resolve_duplicates_usecase.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_helpers.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_path_resolver.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_event.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_helpers.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_path_resolver.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_state.dart';
 
 @lazySingleton
 class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
@@ -35,9 +35,7 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     this._filePickerService,
   ) : super(const ImportExportInitial()) {
     on<ExportDataEvent>(_onExportData);
-    on<ImportDataEvent>(_onImportData);
     on<ExportEncryptedEvent>(_onExportEncrypted);
-    on<PrepareImportEncryptedEvent>(_onPrepareImportEncrypted);
     on<PrepareImportFromFileEvent>(_onPrepareImportFromFile);
     on<ImportEncryptedEvent>(_onImportEncrypted);
     on<ResolveDuplicatesEvent>(_onResolveDuplicates);
@@ -81,38 +79,6 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
       );
     } catch (e) {
       _emitFailure(emit, message: 'Export failed', error: e);
-    }
-  }
-
-  Future<void> _onImportData(
-    ImportDataEvent event,
-    Emitter<ImportExportState> emit,
-  ) async {
-    emit(const ImportExportLoading());
-    try {
-      final path = await _filePickerService.pickFile(
-        allowedExtensions: event.isJson ? ['json'] : ['csv'],
-      );
-      if (path == null) return emit(const ImportExportInitial());
-
-      final content = await _fileService.readAsString(path);
-      final entries = event.isJson
-          ? _dataService.importFromJson(content)
-          : _dataService.importFromCsv(content);
-
-      emit(
-        await resolveImportState(
-          importPasswordsUseCase: _importPasswordsUseCase,
-          entries: entries,
-        ),
-      );
-    } catch (e) {
-      _emitFailure(
-        emit,
-        message: 'Import failed',
-        error: e,
-        errorType: DataMigrationError.invalidFormat,
-      );
     }
   }
 
@@ -177,7 +143,9 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
   ) async {
     emit(const ImportExportLoading());
     try {
-      final path = await _filePickerService.pickFile();
+      final path = await _filePickerService.pickFile(
+        allowedExtensions: ['json', 'csv', 'pvault'],
+      );
       if (path == null) {
         emit(const ImportExportInitial());
         return;
@@ -192,11 +160,6 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
       );
     }
   }
-
-  Future<void> _onPrepareImportEncrypted(
-    PrepareImportEncryptedEvent event,
-    Emitter<ImportExportState> emit,
-  ) async => _onPrepareImportFromFile(const PrepareImportFromFileEvent(), emit);
 
   Future<void> _resolveAndImport(
     String path,

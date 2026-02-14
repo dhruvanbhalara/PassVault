@@ -19,16 +19,6 @@ class ExportDataEvent extends ImportExportEvent {
   List<Object?> get props => [isJson];
 }
 
-/// Generic Data Import (CSV or JSON).
-class ImportDataEvent extends ImportExportEvent {
-  final bool isJson;
-
-  const ImportDataEvent({required this.isJson});
-
-  @override
-  List<Object?> get props => [isJson];
-}
-
 /// Export with Password-Based Encryption (.pvault).
 class ExportEncryptedEvent extends ImportExportEvent {
   final String password;
@@ -48,11 +38,6 @@ class ImportEncryptedEvent extends ImportExportEvent {
 
   @override
   List<Object?> get props => [password, filePath];
-}
-
-/// Starts encrypted import by picking the file first.
-class PrepareImportEncryptedEvent extends ImportExportEvent {
-  const PrepareImportEncryptedEvent();
 }
 
 /// Starts import by selecting a file first. Strategy is chosen by extension:

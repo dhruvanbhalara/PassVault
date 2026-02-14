@@ -4,7 +4,7 @@ import 'package:passvault/core/services/file_picker_service.dart';
 import 'package:passvault/core/utils/app_logger.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/domain/usecases/import_passwords_usecase.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_state.dart';
 
 Future<ImportExportState> saveExportResult({
   required IFilePickerService filePickerService,
