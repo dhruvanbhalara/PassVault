@@ -1,18 +1,17 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/domain/repositories/settings_repository.dart';
-import 'package:passvault/features/settings/presentation/bloc/settings_event.dart';
-import 'package:passvault/features/settings/presentation/bloc/settings_state.dart';
 
-export 'settings_event.dart';
-export 'settings_state.dart';
+part 'settings_event.dart';
+part 'settings_state.dart';
 
 @lazySingleton
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final SettingsRepository _settingsRepository;
 
-  SettingsBloc(this._settingsRepository) : super(const SettingsInitial()) {
+  SettingsBloc(this._settingsRepository) : super(SettingsInitial()) {
     on<LoadSettings>(_onLoadSettings);
     on<ToggleBiometrics>(_onToggleBiometrics);
     on<UpdatePasswordSettings>(_onUpdatePasswordSettings);

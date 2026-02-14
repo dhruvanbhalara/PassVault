@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
-import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/widgets/security_section.dart';
 
 class MockSettingsBloc extends MockBloc<SettingsEvent, SettingsState>

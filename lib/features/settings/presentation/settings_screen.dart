@@ -5,11 +5,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_bloc.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_event.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_state.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
-import 'package:passvault/features/settings/presentation/bloc/locale/locale_cubit.dart';
-import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/locale/locale_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:passvault/features/settings/presentation/widgets/password_protected_dialog.dart';
 import 'package:passvault/features/settings/presentation/widgets/settings_panels.dart';
@@ -26,7 +24,7 @@ class SettingsScreen extends StatelessWidget {
     final currentThemeType = switch (themeState) {
       ThemeLoaded(:final themeType) => themeType,
     };
-    final localeOverride = context.watch<LocaleCubit>().state;
+    final localeOverride = context.watch<LocaleBloc>().state.locale;
     final currentLocale = localeOverride ?? Localizations.localeOf(context);
 
     return BlocListener<ImportExportBloc, ImportExportState>(
@@ -90,24 +88,18 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       BlocBuilder<SettingsBloc, SettingsState>(
                         builder: (context, state) {
-                          return switch (state) {
-                            SettingsInitial(:final useBiometrics) ||
-                            SettingsLoading(:final useBiometrics) ||
-                            SettingsLoaded(:final useBiometrics) ||
-                            SettingsFailure(
-                              :final useBiometrics,
-                            ) => SwitchListTile(
-                              key: const Key('settings_biometric_switch'),
-                              secondary: const Icon(LucideIcons.shieldCheck),
-                              title: Text(l10n.useBiometrics),
-                              value: useBiometrics,
-                              onChanged: (value) {
-                                context.read<SettingsBloc>().add(
-                                  ToggleBiometrics(value),
-                                );
-                              },
-                            ),
-                          };
+                          final useBiometrics = state.useBiometrics;
+                          return SwitchListTile(
+                            key: const Key('settings_biometric_switch'),
+                            secondary: const Icon(LucideIcons.shieldCheck),
+                            title: Text(l10n.useBiometrics),
+                            value: useBiometrics,
+                            onChanged: (value) {
+                              context.read<SettingsBloc>().add(
+                                ToggleBiometrics(value),
+                              );
+                            },
+                          );
                         },
                       ),
                     ],
@@ -233,7 +225,7 @@ class SettingsScreen extends StatelessWidget {
     required Locale? selectedLocale,
     required AppLocalizations l10n,
   }) {
-    final localeCubit = context.read<LocaleCubit>();
+    final localeBloc = context.read<LocaleBloc>();
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -241,8 +233,8 @@ class SettingsScreen extends StatelessWidget {
       ),
       builder: (context) => LocalePickerSheet(
         selectedLocale: selectedLocale,
-        onLocaleSelected: localeCubit.setLocale,
-        onSystemLocaleSelected: localeCubit.setSystemLocale,
+        onLocaleSelected: (locale) => localeBloc.add(ChangeLocale(locale)),
+        onSystemLocaleSelected: () => localeBloc.add(const SetSystemLocale()),
         l10n: l10n,
       ),
     );

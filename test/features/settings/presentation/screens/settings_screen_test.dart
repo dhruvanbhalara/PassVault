@@ -1,13 +1,11 @@
 import 'package:go_router/go_router.dart';
 import 'package:passvault/config/routes/app_routes.dart';
-import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
+import 'package:passvault/features/home/presentation/bloc/password/password_bloc.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_bloc.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_event.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_state.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
-import 'package:passvault/features/settings/presentation/bloc/locale/locale_cubit.dart';
-import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/locale/locale_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:passvault/features/settings/presentation/settings_screen.dart';
 
@@ -98,7 +96,7 @@ void main() {
           providers: [
             BlocProvider<SettingsBloc>.value(value: mockSettingsBloc),
             BlocProvider<ThemeBloc>.value(value: mockThemeBloc),
-            BlocProvider<LocaleCubit>(create: (_) => LocaleCubit()),
+            BlocProvider<LocaleBloc>(create: (_) => LocaleBloc()),
             BlocProvider<PasswordBloc>.value(value: mockPasswordBloc),
             BlocProvider<ImportExportBloc>.value(value: mockImportExportBloc),
           ],

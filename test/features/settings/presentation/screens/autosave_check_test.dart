@@ -7,7 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
-import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/strategy_preview/strategy_preview_bloc.dart';
 import 'package:passvault/features/settings/presentation/screens/password_generation_settings_screen.dart';
 
@@ -25,7 +25,7 @@ void main() {
   late MockStrategyPreviewBloc mockPreviewBloc;
 
   setUpAll(() {
-    registerFallbackValue(const SettingsInitial());
+    registerFallbackValue(SettingsInitial());
     registerFallbackValue(const LoadSettings());
     registerFallbackValue(
       GeneratePreview(PasswordGenerationStrategy.create(name: 'Fallback'))

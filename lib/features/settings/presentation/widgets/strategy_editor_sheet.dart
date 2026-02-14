@@ -4,7 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
-import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/screens/strategy_editor.dart';
 
 class StrategyEditorSheet extends StatefulWidget {

@@ -5,7 +5,7 @@ import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
-import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 
 class SavedStrategiesSection extends StatelessWidget {
   final PasswordGenerationSettings settings;

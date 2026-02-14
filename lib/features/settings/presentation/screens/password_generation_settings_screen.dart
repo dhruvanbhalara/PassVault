@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
-import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 
 import '../widgets/active_strategy_card.dart';
 import '../widgets/empty_strategies_placeholder.dart';

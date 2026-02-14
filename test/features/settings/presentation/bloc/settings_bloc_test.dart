@@ -11,7 +11,7 @@ import 'package:passvault/features/password_manager/domain/repositories/password
 import 'package:passvault/features/password_manager/domain/usecases/import_passwords_usecase.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/domain/repositories/settings_repository.dart';
-import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 
 class MockImportPasswordsUseCase extends Mock
     implements ImportPasswordsUseCase {}
@@ -63,7 +63,7 @@ void main() {
 
   group('$SettingsBloc', () {
     test('initial state is correct', () {
-      expect(bloc.state, const SettingsInitial());
+      expect(bloc.state, SettingsInitial());
     });
 
     group('$LoadSettings', () {
