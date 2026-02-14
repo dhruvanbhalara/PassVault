@@ -3,6 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/error/result.dart';
 import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
+import 'package:passvault/features/password_manager/domain/usecases/get_password_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/password_usecases.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_bloc.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
@@ -17,6 +18,8 @@ class MockEstimatePasswordStrengthUseCase extends Mock
 class MockGetPasswordGenerationSettingsUseCase extends Mock
     implements GetPasswordGenerationSettingsUseCase {}
 
+class MockGetPasswordUseCase extends Mock implements GetPasswordUseCase {}
+
 class MockSavePasswordUseCase extends Mock implements SavePasswordUseCase {}
 
 void main() {
@@ -25,12 +28,14 @@ void main() {
   late MockEstimatePasswordStrengthUseCase mockEstimateStrengthUseCase;
   late MockGetPasswordGenerationSettingsUseCase mockGetSettingsUseCase;
   late MockSavePasswordUseCase mockSavePasswordUseCase;
+  late MockGetPasswordUseCase mockGetPasswordUseCase;
 
   setUp(() {
     mockGeneratePasswordUseCase = MockGeneratePasswordUseCase();
     mockEstimateStrengthUseCase = MockEstimatePasswordStrengthUseCase();
     mockGetSettingsUseCase = MockGetPasswordGenerationSettingsUseCase();
     mockSavePasswordUseCase = MockSavePasswordUseCase();
+    mockGetPasswordUseCase = MockGetPasswordUseCase();
 
     // Stub default settings to avoid failures during Bloc initialization
     when(() => mockGetSettingsUseCase()).thenReturn(
@@ -53,6 +58,7 @@ void main() {
       mockEstimateStrengthUseCase,
       mockGetSettingsUseCase,
       mockSavePasswordUseCase,
+      mockGetPasswordUseCase,
     );
   });
 

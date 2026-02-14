@@ -52,14 +52,19 @@ void main() {
     WidgetTester tester,
     List<DuplicatePasswordEntry> duplicates, {
     bool usePumpAndSettle = true,
+    ImportExportState? state,
   }) async {
     robot = DuplicateResolutionRobot(tester);
+    when(() => mockBloc.state).thenReturn(
+      state ?? DuplicatesDetected(duplicates: duplicates, successfulImports: 0),
+    );
+
     await tester.pumpApp(
       InheritedGoRouter(
         goRouter: mockRouter,
         child: BlocProvider<ImportExportBloc>.value(
           value: mockBloc,
-          child: DuplicateResolutionScreen(duplicates: duplicates),
+          child: const DuplicateResolutionScreen(),
         ),
       ),
       usePumpAndSettle: usePumpAndSettle,
@@ -152,9 +157,12 @@ void main() {
     });
 
     testWidgets('shows loading indicator when resolving', (tester) async {
-      when(() => mockBloc.state).thenReturn(const ImportExportLoading());
-
-      await loadScreen(tester, [testDuplicate], usePumpAndSettle: false);
+      await loadScreen(
+        tester,
+        [testDuplicate],
+        usePumpAndSettle: false,
+        state: const ImportExportLoading(),
+      );
       await tester.pump();
 
       robot.expectLoaderVisible();

@@ -109,21 +109,16 @@ void main() {
   }
 
   group('$SettingsScreen', () {
-    testWidgets(
-      'Tapping Export Vault opens picker and dispatches export event',
-      (tester) async {
-        await loadSettingsScreen(tester);
+    testWidgets('Tapping Export Vault navigates to export screen', (
+      tester,
+    ) async {
+      when(() => mockGoRouter.push(any())).thenAnswer((_) async => null);
+      await loadSettingsScreen(tester);
 
-        await robot.tapExport();
-        expect(find.byKey(const Key('export_json_tile')), findsOneWidget);
-        await tester.tap(find.byKey(const Key('export_json_tile')));
-        await tester.pumpAndSettle();
+      await robot.tapExport();
 
-        verify(
-          () => mockImportExportBloc.add(const ExportDataEvent(isJson: true)),
-        ).called(1);
-      },
-    );
+      verify(() => mockGoRouter.push(AppRoutes.exportVault)).called(1);
+    });
 
     testWidgets(
       'Tapping Import Data dispatches file import prepare event directly',
@@ -137,18 +132,6 @@ void main() {
         ).called(1);
       },
     );
-
-    testWidgets('Shows success message on ExportSuccess', (tester) async {
-      when(
-        () => mockImportExportBloc.state,
-      ).thenReturn(const ExportSuccess('/path/to/file'));
-      await loadSettingsScreen(tester);
-
-      robot.expectSnackBarContaining(l10n.exportSuccess);
-      verify(
-        () => mockImportExportBloc.add(const ResetMigrationStatus()),
-      ).called(1);
-    });
 
     testWidgets('Shows success message on ImportSuccess', (tester) async {
       when(() => mockImportExportBloc.state).thenReturn(const ImportSuccess(5));

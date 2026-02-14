@@ -73,16 +73,6 @@ class _IntroScreenState extends State<IntroScreen>
         body: SafeArea(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: AppSpacing.xl),
-                child: Text(
-                  l10n.appName,
-                  style: context.typography.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-              ),
               Expanded(
                 child: PageView(
                   key: const Key('intro_page_view'),

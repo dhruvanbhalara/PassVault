@@ -30,7 +30,7 @@ void main() {
     when(() => mockPasswordBloc.state).thenReturn(const PasswordInitial());
   });
 
-  Future<void> loadScreen(WidgetTester tester) async {
+  Future<void> loadScreen(WidgetTester tester, {String? id}) async {
     robot = AddEditRobot(tester);
     await tester.pumpApp(
       MultiBlocProvider(
@@ -38,7 +38,7 @@ void main() {
           BlocProvider<AddEditPasswordBloc>.value(value: mockAddEditBloc),
           BlocProvider<PasswordBloc>.value(value: mockPasswordBloc),
         ],
-        child: const AddEditPasswordView(),
+        child: AddEditPasswordView(id: id),
       ),
     );
   }
