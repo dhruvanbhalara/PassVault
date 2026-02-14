@@ -4,7 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/error/error.dart';
 import 'package:passvault/features/auth/domain/usecases/authenticate_usecase.dart';
 import 'package:passvault/features/auth/domain/usecases/check_biometrics_usecase.dart';
-import 'package:passvault/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:passvault/features/onboarding/presentation/bloc/onboarding/onboarding_bloc.dart';
 import 'package:passvault/features/settings/domain/usecases/biometrics_usecases.dart';
 import 'package:passvault/features/settings/domain/usecases/onboarding_usecases.dart';
 
@@ -68,7 +68,7 @@ void main() {
           when(() => getOnboardingComplete()).thenReturn(const Success(true));
         },
         build: () => bloc,
-        act: (bloc) => bloc.add(OnboardingStarted()),
+        act: (bloc) => bloc.add(const OnboardingStarted()),
         expect: () => [isA<OnboardingComplete>()],
       );
 
@@ -78,7 +78,7 @@ void main() {
           when(() => getOnboardingComplete()).thenReturn(const Success(false));
         },
         build: () => bloc,
-        act: (bloc) => bloc.add(OnboardingStarted()),
+        act: (bloc) => bloc.add(const OnboardingStarted()),
         expect: () => [const OnboardingInProgress(currentStep: 0)],
       );
     });
@@ -120,7 +120,7 @@ void main() {
           ).thenAnswer((_) async => const Success(null));
         },
         build: () => bloc,
-        act: (bloc) => bloc.add(OnboardingSkipped()),
+        act: (bloc) => bloc.add(const OnboardingSkipped()),
         expect: () => [isA<OnboardingComplete>()],
         verify: (_) {
           verify(() => setOnboardingComplete(true)).called(1);
@@ -149,7 +149,7 @@ void main() {
           ).thenAnswer((_) async => const Success(null));
         },
         build: () => bloc,
-        act: (bloc) => bloc.add(BiometricAuthRequested()),
+        act: (bloc) => bloc.add(const BiometricAuthRequested()),
         expect: () => [
           isA<BiometricAuthInProgress>(),
           isA<OnboardingComplete>(),
@@ -170,7 +170,7 @@ void main() {
           ).thenAnswer((_) async => const Success(false));
         },
         build: () => bloc,
-        act: (bloc) => bloc.add(BiometricAuthRequested()),
+        act: (bloc) => bloc.add(const BiometricAuthRequested()),
         expect: () => [
           isA<BiometricAuthInProgress>(),
           isA<BiometricAuthFailure>(),
@@ -189,7 +189,7 @@ void main() {
           ).thenAnswer((_) async => const Success(false));
         },
         build: () => bloc,
-        act: (bloc) => bloc.add(BiometricAuthRequested()),
+        act: (bloc) => bloc.add(const BiometricAuthRequested()),
         expect: () => [
           isA<BiometricAuthInProgress>(),
           isA<BiometricAuthFailure>(),

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:passvault/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:passvault/features/onboarding/presentation/bloc/onboarding/onboarding_bloc.dart';
 import 'package:passvault/features/onboarding/presentation/intro_screen.dart';
 
 import '../../../helpers/test_helpers.dart';
@@ -31,7 +31,9 @@ void main() {
 
     setUp(() {
       mockOnboardingBloc = MockOnboardingBloc();
-      when(() => mockOnboardingBloc.state).thenReturn(OnboardingInitial());
+      when(
+        () => mockOnboardingBloc.state,
+      ).thenReturn(const OnboardingInitial());
       // Ensure the stream emits the initial state immediately upon subscription if needed,
       // but usually BlocListener waits for *changes*.
       // However, initial state is accessed via .state getter usually.
@@ -126,7 +128,9 @@ void main() {
 
       await robot.tapEnableBiometrics();
 
-      verify(() => mockOnboardingBloc.add(BiometricAuthRequested())).called(1);
+      verify(
+        () => mockOnboardingBloc.add(const BiometricAuthRequested()),
+      ).called(1);
     });
   });
 }

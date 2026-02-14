@@ -5,7 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/utils/app_logger.dart';
-import 'package:passvault/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:passvault/features/onboarding/presentation/bloc/onboarding/onboarding_bloc.dart';
 import 'package:passvault/features/onboarding/presentation/widgets/intro_components.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -44,7 +44,7 @@ class _IntroScreenState extends State<IntroScreen>
 
   void _skipBiometric() {
     AppLogger.info('User skipped biometric setup', tag: 'IntroScreen');
-    context.read<OnboardingBloc>().add(OnboardingSkipped());
+    context.read<OnboardingBloc>().add(const OnboardingSkipped());
   }
 
   @override

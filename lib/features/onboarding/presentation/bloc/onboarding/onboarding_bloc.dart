@@ -1,14 +1,13 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/features/auth/domain/usecases/authenticate_usecase.dart';
 import 'package:passvault/features/auth/domain/usecases/check_biometrics_usecase.dart';
-import 'package:passvault/features/onboarding/presentation/bloc/onboarding_event.dart';
-import 'package:passvault/features/onboarding/presentation/bloc/onboarding_state.dart';
 import 'package:passvault/features/settings/domain/usecases/biometrics_usecases.dart';
 import 'package:passvault/features/settings/domain/usecases/onboarding_usecases.dart';
 
-export 'onboarding_event.dart';
-export 'onboarding_state.dart';
+part 'onboarding_event.dart';
+part 'onboarding_state.dart';
 
 @injectable
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
@@ -26,7 +25,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     this._checkBiometricsUseCase,
     this._authenticateUseCase,
     this._deleteOnboardingStepUseCase,
-  ) : super(OnboardingInitial()) {
+  ) : super(const OnboardingInitial()) {
     on<OnboardingStarted>(_onStarted);
     on<BiometricSetupCompleted>(_onBiometricSetupCompleted);
     on<BiometricAuthRequested>(_onBiometricAuthRequested);
@@ -43,7 +42,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     final isComplete = result.fold((_) => false, (data) => data);
 
     if (isComplete) {
-      emit(OnboardingComplete());
+      emit(const OnboardingComplete());
       return;
     }
 
@@ -55,7 +54,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     BiometricAuthRequested event,
     Emitter<OnboardingState> emit,
   ) async {
-    emit(BiometricAuthInProgress());
+    emit(const BiometricAuthInProgress());
 
     // 1. Check availability
     final availableResult = await _checkBiometricsUseCase();
@@ -82,7 +81,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           // 3. Persist and Complete
           await _setBiometricsEnabledUseCase(true);
           await _markOnboardingComplete();
-          emit(OnboardingComplete());
+          emit(const OnboardingComplete());
         } else {
           emit(const BiometricAuthFailure('Authentication failed'));
           emit(const OnboardingInProgress(currentStep: 0));
@@ -98,7 +97,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   ) async {
     await _setBiometricsEnabledUseCase(event.enabled);
     await _markOnboardingComplete();
-    emit(OnboardingComplete());
+    emit(const OnboardingComplete());
   }
 
   /// Skip finishes onboarding immediately.
@@ -107,7 +106,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     Emitter<OnboardingState> emit,
   ) async {
     await _markOnboardingComplete();
-    emit(OnboardingComplete());
+    emit(const OnboardingComplete());
   }
 
   /// Direct completion (legacy / programmatic).
@@ -116,7 +115,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     Emitter<OnboardingState> emit,
   ) async {
     await _markOnboardingComplete();
-    emit(OnboardingComplete());
+    emit(const OnboardingComplete());
   }
 
   Future<void> _markOnboardingComplete() async {
