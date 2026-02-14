@@ -7,24 +7,21 @@ import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/core/observers/go_router_observer.dart';
 import 'package:passvault/features/auth/presentation/auth_screen.dart';
-import 'package:passvault/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:passvault/features/generator/presentation/bloc/generator_bloc.dart';
+import 'package:passvault/features/auth/presentation/bloc/auth/auth_bloc.dart';
+import 'package:passvault/features/generator/presentation/bloc/generator/generator_bloc.dart';
 import 'package:passvault/features/generator/presentation/generator_screen.dart';
-import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
+import 'package:passvault/features/home/presentation/bloc/password/password_bloc.dart';
 import 'package:passvault/features/home/presentation/home_screen.dart';
-import 'package:passvault/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:passvault/features/onboarding/presentation/bloc/onboarding/onboarding_bloc.dart';
 import 'package:passvault/features/onboarding/presentation/intro_screen.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
-import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
-import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/password_manager/presentation/add_edit_password_screen.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/duplicate_resolution_screen.dart';
 import 'package:passvault/features/password_manager/presentation/export_vault_screen.dart';
 import 'package:passvault/features/settings/domain/usecases/biometrics_usecases.dart';
 import 'package:passvault/features/settings/domain/usecases/onboarding_usecases.dart';
-import 'package:passvault/features/settings/domain/usecases/password_settings_usecases.dart';
-import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/screens/password_generation_settings_screen.dart';
 import 'package:passvault/features/settings/presentation/settings_screen.dart';
 import 'package:passvault/features/shell/presentation/main_shell.dart';
@@ -78,7 +75,7 @@ class AppRouter {
         builder: (context, state, child) {
           return BlocProvider(
             create: (context) =>
-                getIt<OnboardingBloc>()..add(OnboardingStarted()),
+                getIt<OnboardingBloc>()..add(const OnboardingStarted()),
             child: child,
           );
         },
@@ -94,7 +91,8 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.auth,
         builder: (context, state) => BlocProvider(
-          create: (context) => getIt<AuthBloc>()..add(AuthCheckRequested()),
+          create: (context) =>
+              getIt<AuthBloc>()..add(const AuthCheckRequested()),
           child: const AuthScreen(),
         ),
       ),
@@ -146,11 +144,7 @@ class AppRouter {
               ShellRoute(
                 builder: (context, state, child) {
                   return BlocProvider(
-                    create: (_) => GeneratorBloc(
-                      getIt<GeneratePasswordUseCase>(),
-                      getIt<EstimatePasswordStrengthUseCase>(),
-                      getIt<GetPasswordGenerationSettingsUseCase>(),
-                    ),
+                    create: (_) => getIt<GeneratorBloc>(),
                     child: child,
                   );
                 },

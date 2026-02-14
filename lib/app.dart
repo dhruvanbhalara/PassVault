@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
-import 'package:passvault/features/settings/presentation/bloc/locale/locale_cubit.dart';
+import 'package:passvault/features/settings/presentation/bloc/locale/locale_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
 
 import 'config/routes/app_router.dart';
@@ -17,7 +17,7 @@ class PassVaultApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => getIt<ThemeBloc>()),
-        BlocProvider(create: (_) => LocaleCubit()),
+        BlocProvider(create: (_) => getIt<LocaleBloc>()),
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {
@@ -33,7 +33,7 @@ class PassVaultApp extends StatelessWidget {
             ),
           };
 
-          final locale = context.watch<LocaleCubit>().state;
+          final locale = context.watch<LocaleBloc>().state.locale;
 
           return MaterialApp.router(
             onGenerateTitle: (context) => context.l10n.appName,
