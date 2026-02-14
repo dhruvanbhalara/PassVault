@@ -14,7 +14,6 @@ import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/home/presentation/home_screen.dart';
 import 'package:passvault/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:passvault/features/onboarding/presentation/intro_screen.dart';
-import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
@@ -130,7 +129,7 @@ class AppRouter {
                         path: AppRoutes.editPasswordRoute,
                         pageBuilder: (context, state) => _slideTransition(
                           AddEditPasswordScreen(
-                            entry: state.extra as PasswordEntry,
+                            id: (state.extra as PasswordEntry?)?.id,
                           ),
                           state,
                         ),
@@ -198,9 +197,7 @@ class AppRouter {
         path: AppRoutes.resolveDuplicates,
         builder: (context, state) => BlocProvider.value(
           value: getIt<ImportExportBloc>(),
-          child: DuplicateResolutionScreen(
-            duplicates: state.extra as List<DuplicatePasswordEntry>,
-          ),
+          child: const DuplicateResolutionScreen(),
         ),
       ),
       GoRoute(
@@ -208,7 +205,7 @@ class AppRouter {
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) => _slideTransition(
           BlocProvider.value(
-            value: state.extra as ImportExportBloc,
+            value: getIt<ImportExportBloc>(),
             child: const ExportVaultScreen(),
           ),
           state,
@@ -219,7 +216,7 @@ class AppRouter {
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) => _slideTransition(
           BlocProvider.value(
-            value: state.extra as SettingsBloc,
+            value: getIt<SettingsBloc>(),
             child: const PasswordGenerationSettingsScreen(),
           ),
           state,

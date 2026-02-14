@@ -14,15 +14,18 @@ import 'package:passvault/features/password_manager/presentation/widgets/duplica
 
 /// Screen for resolving duplicate password entries detected during import.
 class DuplicateResolutionScreen extends StatelessWidget {
-  final List<DuplicatePasswordEntry> duplicates;
-
-  const DuplicateResolutionScreen({super.key, required this.duplicates});
+  const DuplicateResolutionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
     final isAmoled = context.isAmoled;
     final l10n = context.l10n;
+
+    final importExportState = context.watch<ImportExportBloc>().state;
+    final duplicates = importExportState is DuplicatesDetected
+        ? importExportState.duplicates
+        : <DuplicatePasswordEntry>[];
 
     return BlocProvider(
       create: (_) => DuplicateResolutionBloc(duplicates),

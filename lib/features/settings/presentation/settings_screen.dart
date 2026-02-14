@@ -11,7 +11,6 @@ import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 import 'package:passvault/features/settings/presentation/bloc/locale/locale_cubit.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
-import 'package:passvault/features/settings/presentation/widgets/export_picker_sheet.dart';
 import 'package:passvault/features/settings/presentation/widgets/password_protected_dialog.dart';
 import 'package:passvault/features/settings/presentation/widgets/settings_panels.dart';
 
@@ -32,12 +31,7 @@ class SettingsScreen extends StatelessWidget {
 
     return BlocListener<ImportExportBloc, ImportExportState>(
       listener: (context, state) {
-        if (state is ExportSuccess) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(l10n.exportSuccess)));
-          context.read<ImportExportBloc>().add(const ResetMigrationStatus());
-        } else if (state is ImportSuccess) {
+        if (state is ImportSuccess) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(l10n.importSuccess)));
@@ -92,10 +86,7 @@ class SettingsScreen extends StatelessWidget {
                         key: const Key('settings_password_gen_tile'),
                         icon: LucideIcons.keyRound,
                         label: l10n.passwordGeneration,
-                        onTap: () => context.push(
-                          AppRoutes.passwordGeneration,
-                          extra: context.read<SettingsBloc>(),
-                        ),
+                        onTap: () => context.push(AppRoutes.passwordGeneration),
                       ),
                       BlocBuilder<SettingsBloc, SettingsState>(
                         builder: (context, state) {
@@ -170,7 +161,7 @@ class SettingsScreen extends StatelessWidget {
                         key: const Key('settings_export_tile'),
                         icon: LucideIcons.upload,
                         label: l10n.exportVault,
-                        onTap: () => _showExportPicker(context),
+                        onTap: () => context.push(AppRoutes.exportVault),
                       ),
                     ],
                   ),
@@ -254,18 +245,6 @@ class SettingsScreen extends StatelessWidget {
         onSystemLocaleSelected: localeCubit.setSystemLocale,
         l10n: l10n,
       ),
-    );
-  }
-
-  void _showExportPicker(BuildContext context) {
-    final bloc = context.read<ImportExportBloc>();
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: context.theme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
-      ),
-      builder: (context) => ExportPickerSheet(bloc: bloc),
     );
   }
 

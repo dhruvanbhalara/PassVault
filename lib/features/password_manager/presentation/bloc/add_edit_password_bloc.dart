@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
+import 'package:passvault/features/password_manager/domain/usecases/get_password_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/password_usecases.dart';
 
 /// Events for the [AddEditPasswordBloc].
@@ -23,19 +24,61 @@ class AddEditPasswordBloc
   final EstimatePasswordStrengthUseCase _estimateStrengthUseCase;
   final GetPasswordGenerationSettingsUseCase _getSettingsUseCase;
   final SavePasswordUseCase _savePasswordUseCase;
+  final GetPasswordUseCase _getPasswordUseCase;
 
   AddEditPasswordBloc(
     this._generatePasswordUseCase,
     this._estimateStrengthUseCase,
     this._getSettingsUseCase,
     this._savePasswordUseCase,
+    this._getPasswordUseCase,
   ) : super(const AddEditInitial()) {
     on<GenerateStrongPassword>(_onGenerateStrongPassword);
     on<PasswordChanged>(_onPasswordChanged);
     on<SaveEntry>(_onSaveEntry);
     on<LoadGenerationSettings>(_onLoadGenerationSettings);
+    on<LoadEntry>(_onLoadEntry);
 
     add(LoadGenerationSettings());
+  }
+
+  Future<void> _onLoadEntry(
+    LoadEntry event,
+    Emitter<AddEditPasswordState> emit,
+  ) async {
+    emit(const AddEditLoading());
+    final result = await _getPasswordUseCase(event.id);
+    result.fold(
+      (failure) => emit(
+        AddEditFailure(
+          errorMessage: failure.message,
+          generatedPassword: state.generatedPassword,
+          strength: state.strength,
+          settings: state.settings,
+        ),
+      ),
+      (entry) {
+        if (entry != null) {
+          emit(
+            AddEditLoaded(
+              entry: entry,
+              generatedPassword: state.generatedPassword,
+              strength: state.strength,
+              settings: state.settings,
+            ),
+          );
+        } else {
+          emit(
+            AddEditFailure(
+              errorMessage: 'Entry not found',
+              generatedPassword: state.generatedPassword,
+              strength: state.strength,
+              settings: state.settings,
+            ),
+          );
+        }
+      },
+    );
   }
 
   Future<void> _onLoadGenerationSettings(

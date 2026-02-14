@@ -13,24 +13,24 @@ import 'widgets/password_form_fields.dart';
 
 /// Screen for adding or editing a password entry.
 class AddEditPasswordScreen extends StatelessWidget {
-  final PasswordEntry? entry;
+  final String? id;
 
-  const AddEditPasswordScreen({super.key, this.entry});
+  const AddEditPasswordScreen({super.key, this.id});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<AddEditPasswordBloc>(),
-      child: AddEditPasswordView(entry: entry),
+      child: AddEditPasswordView(id: id),
     );
   }
 }
 
 @visibleForTesting
 class AddEditPasswordView extends StatefulWidget {
-  final PasswordEntry? entry;
+  final String? id;
 
-  const AddEditPasswordView({super.key, this.entry});
+  const AddEditPasswordView({super.key, this.id});
 
   @override
   State<AddEditPasswordView> createState() => _AddEditPasswordViewState();
@@ -48,22 +48,14 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
   @override
   void initState() {
     super.initState();
-    _appNameController = TextEditingController(
-      text: widget.entry?.appName ?? '',
-    );
-    _usernameController = TextEditingController(
-      text: widget.entry?.username ?? '',
-    );
-    _passwordController = TextEditingController(
-      text: widget.entry?.password ?? '',
-    );
+    _appNameController = TextEditingController();
+    _usernameController = TextEditingController();
+    _passwordController = TextEditingController();
     _passwordController.addListener(_onPasswordChanged);
 
-    if (_passwordController.text.isNotEmpty) {
-      context.read<AddEditPasswordBloc>().add(
-        PasswordChanged(_passwordController.text),
-      );
-    } else if (widget.entry == null) {
+    if (widget.id != null) {
+      context.read<AddEditPasswordBloc>().add(LoadEntry(widget.id!));
+    } else {
       // Auto-generate strong password for new entries
       context.read<AddEditPasswordBloc>().add(const GenerateStrongPassword());
     }
@@ -84,7 +76,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
   void _handleSave(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       final entry = PasswordEntry(
-        id: widget.entry?.id ?? const Uuid().v7(),
+        id: widget.id ?? const Uuid().v7(),
         appName: _appNameController.text,
         username: _usernameController.text,
         password: _passwordController.text,
@@ -109,6 +101,14 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
               _passwordController.text = state.generatedPassword;
               setState(() => _obscurePassword = false);
             }
+          case AddEditLoaded(:final entry):
+            _appNameController.text = entry.appName;
+            _usernameController.text = entry.username;
+            // Only update password if controller is empty to avoid overwriting user edits
+            // or if we just loaded the entry
+            if (_passwordController.text.isEmpty) {
+              _passwordController.text = entry.password;
+            }
           case AddEditSuccess():
             Navigator.of(context).pop();
           case AddEditFailure(:final errorMessage):
@@ -122,6 +122,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
             );
           case AddEditInitial():
           case AddEditSaving():
+          case AddEditLoading():
             break;
         }
 
@@ -144,7 +145,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
             backgroundColor: theme.primary,
             foregroundColor: theme.onPrimary,
             label: Text(
-              widget.entry == null ? l10n.savePassword : l10n.updatePassword,
+              widget.id == null ? l10n.savePassword : l10n.updatePassword,
             ),
             icon: state is AddEditSaving
                 ? const SizedBox(
@@ -160,7 +161,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                 SliverAppBar(
                   centerTitle: true,
                   title: Text(
-                    widget.entry == null ? l10n.addPassword : l10n.editPassword,
+                    widget.id == null ? l10n.addPassword : l10n.editPassword,
                   ),
                   floating: true,
                   pinned: true,

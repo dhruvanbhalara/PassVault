@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 
 sealed class AddEditPasswordState extends Equatable {
@@ -60,4 +61,24 @@ final class AddEditFailure extends AddEditPasswordState {
 
   @override
   List<Object?> get props => [...super.props, errorMessage];
+}
+
+final class AddEditLoading extends AddEditPasswordState {
+  const AddEditLoading({
+    super.generatedPassword,
+    super.strength,
+    super.settings,
+  });
+}
+
+final class AddEditLoaded extends AddEditPasswordState {
+  final PasswordEntry entry;
+  const AddEditLoaded({
+    required this.entry,
+    super.generatedPassword,
+    super.strength,
+    super.settings,
+  });
+  @override
+  List<Object?> get props => [entry, ...super.props];
 }

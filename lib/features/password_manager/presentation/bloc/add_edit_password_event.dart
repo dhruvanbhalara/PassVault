@@ -7,7 +7,14 @@ sealed class AddEditPasswordEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class LoadGenerationSettings extends AddEditPasswordEvent {}
+final class LoadEntry extends AddEditPasswordEvent {
+  final String id;
+  const LoadEntry(this.id);
+  @override
+  List<Object?> get props => [id];
+}
+
+class LoadGenerationSettings extends AddEditPasswordEvent {}
 
 class GenerateStrongPassword extends AddEditPasswordEvent {
   final String? strategyId;
