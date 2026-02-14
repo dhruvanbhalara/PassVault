@@ -218,7 +218,7 @@ void main() {
                 that: isA<PasswordEntryModel>().having(
                   (e) => e.appName,
                   'appName',
-                  contains('(imported)'),
+                  equals(tDuplicate.newEntry.appName),
                 ),
               ),
             ),
