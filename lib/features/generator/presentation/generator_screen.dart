@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/features/generator/presentation/bloc/generator_bloc.dart';
+import 'package:passvault/features/generator/presentation/bloc/generator/generator_bloc.dart';
 
 import 'widgets/generator_sections.dart';
 

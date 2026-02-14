@@ -1,4 +1,4 @@
-import 'package:passvault/features/generator/presentation/bloc/generator_bloc.dart';
+import 'package:passvault/features/generator/presentation/bloc/generator/generator_bloc.dart';
 import 'package:passvault/features/generator/presentation/generator_screen.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 

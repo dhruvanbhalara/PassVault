@@ -2,7 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/error/error.dart';
-import 'package:passvault/features/generator/presentation/bloc/generator_bloc.dart';
+import 'package:passvault/features/generator/presentation/bloc/generator/generator_bloc.dart';
 import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';

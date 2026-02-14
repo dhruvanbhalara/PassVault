@@ -1,14 +1,15 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passvault/features/generator/presentation/bloc/generator_event.dart';
-import 'package:passvault/features/generator/presentation/bloc/generator_state.dart';
+import 'package:injectable/injectable.dart';
 import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/domain/usecases/password_settings_usecases.dart';
 
-export 'generator_event.dart';
-export 'generator_state.dart';
+part 'generator_event.dart';
+part 'generator_state.dart';
 
+@injectable
 class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
   final GeneratePasswordUseCase _generatePasswordUseCase;
   final EstimatePasswordStrengthUseCase _estimatePasswordStrengthUseCase;

@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
+part of 'generator_bloc.dart';
 
 sealed class GeneratorState extends Equatable {
   const GeneratorState();

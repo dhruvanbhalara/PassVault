@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'generator_bloc.dart';
 
 sealed class GeneratorEvent extends Equatable {
   const GeneratorEvent();
@@ -17,7 +17,6 @@ final class GeneratorRequested extends GeneratorEvent {
 
 final class GeneratorLengthChanged extends GeneratorEvent {
   final int length;
-
   const GeneratorLengthChanged(this.length);
 
   @override
@@ -26,7 +25,6 @@ final class GeneratorLengthChanged extends GeneratorEvent {
 
 final class GeneratorUppercaseToggled extends GeneratorEvent {
   final bool value;
-
   const GeneratorUppercaseToggled(this.value);
 
   @override
@@ -35,7 +33,6 @@ final class GeneratorUppercaseToggled extends GeneratorEvent {
 
 final class GeneratorLowercaseToggled extends GeneratorEvent {
   final bool value;
-
   const GeneratorLowercaseToggled(this.value);
 
   @override
@@ -44,7 +41,6 @@ final class GeneratorLowercaseToggled extends GeneratorEvent {
 
 final class GeneratorNumbersToggled extends GeneratorEvent {
   final bool value;
-
   const GeneratorNumbersToggled(this.value);
 
   @override
@@ -53,7 +49,6 @@ final class GeneratorNumbersToggled extends GeneratorEvent {
 
 final class GeneratorSymbolsToggled extends GeneratorEvent {
   final bool value;
-
   const GeneratorSymbolsToggled(this.value);
 
   @override
@@ -62,7 +57,6 @@ final class GeneratorSymbolsToggled extends GeneratorEvent {
 
 final class GeneratorExcludeAmbiguousToggled extends GeneratorEvent {
   final bool value;
-
   const GeneratorExcludeAmbiguousToggled(this.value);
 
   @override
