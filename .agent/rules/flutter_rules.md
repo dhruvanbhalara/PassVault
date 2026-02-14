@@ -31,10 +31,35 @@ trigger: always_on
 -   **Feature-First 2.0**: Enforce strict separation of `DataSources` (External/Raw) vs `Repositories` (Domain abstraction).
 
 ## 3. Advanced State Management (Bloc Event-State)
--   **Sealed States**: Always use `sealed class` for States to ensure exhaustive UI handling.
+-   **Sealed States & Events**: Always use `sealed class` for both States and Events to ensure exhaustive UI handling and compile-time safety.
 -   **Immutability**: All States, Events, and Domain Entities MUST be immutable (using `final` and `Equatable` or `freezed`).
+-   **Official BLoC Part-Part Of Pattern**: Every `_bloc.dart` file MUST include its corresponding `_event.dart` and `_state.dart` files using `part` directives. Each event/state file MUST have a `part of` directive pointing back to the bloc file. This ensures a single library scope and shared private members.
+    ```dart
+    // auth_bloc.dart
+    part 'auth_event.dart';
+    part 'auth_state.dart';
+
+    class AuthBloc extends Bloc<AuthEvent, AuthState> { ... }
+
+    // auth_event.dart
+    part of 'auth_bloc.dart';
+
+    // auth_state.dart
+    part of 'auth_bloc.dart';
+    ```
+-   **Mandatory Directory Structure**: Every BLoC feature set MUST reside in its own sub-directory within the `bloc/` folder. Flat `bloc/` directories are STRICTLY prohibited.
+    ```text
+    presentation/bloc/
+    └── <bloc_name>/
+        ├── <bloc_name>_bloc.dart
+        ├── <bloc_name>_event.dart
+        └── <bloc_name>_state.dart
+    ```
+-   **Standardized Injection**:
+    -   Use `@injectable` for screen-specific BLoCs to ensure a fresh instance per screen access.
+    -   Use `@lazySingleton` for global or shared BLoCs (e.g., `AuthBloc`, `ThemeBloc`, `SettingsBloc`, `PasswordBloc`).
 -   **Concurrency**: Use `transformers` (e.g., `restartable()`, `droppable()`) for events requiring debouncing (search) or throttling (buttons).
--   **Zero-Logic UI**: Widgets MUST NOT contain business logic, orchestration logic, or direct calls to external services (e.g., Auth, Biometrics, API, Storage). They should ONLY dispatch events (`bloc.add(Event)`) and build UI based on BLoC states. Strictly prohibit logical branching or service orchestration in `build()` or state methods.
+-   **Zero-Logic UI**: Widgets MUST NOT contain business logic, orchestration logic, or direct calls to external services. They should ONLY dispatch events and build UI based on BLoC states.
 
 ## 4. UI Performance & Design System
 -   **Atoms Tokens**: Use `AppSpacing`, `AppRadius`, and `AppColors`. No hardcoded pixel values.

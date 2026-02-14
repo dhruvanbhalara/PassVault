@@ -8,6 +8,7 @@
 ## 1. 🏗️ Architectural Integrity
 - [ ] **Domain Purity**: Does `lib/features/<feature>/domain` have ZERO imports from `package:flutter`?
 - [ ] **Boundary Check**: Did I use the Repository interface in the Bloc instead of the implementation?
+- [ ] **BLoC Structure**: Does every BLoC have its own subdirectory and use the mandatory `part`/`part of` pattern?
 - [ ] **Functional Returns**: Do all Repository and UseCase methods return a `Result` or `Either<Failure, T>`?
 - [ ] **DI registration**: Are new classes annotated with `@injectable` and registered via `build_runner`?
 
