@@ -1,14 +1,13 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/core/utils/app_logger.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 import 'package:passvault/features/auth/domain/usecases/authenticate_usecase.dart';
-import 'package:passvault/features/auth/presentation/bloc/auth_event.dart';
-import 'package:passvault/features/auth/presentation/bloc/auth_state.dart';
 import 'package:passvault/features/settings/domain/usecases/biometrics_usecases.dart';
 
-export 'auth_event.dart';
-export 'auth_state.dart';
+part 'auth_event.dart';
+part 'auth_state.dart';
 
 @injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -20,7 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this._authenticateUseCase,
     this._authRepository,
     this._getBiometricsEnabledUseCase,
-  ) : super(AuthInitial()) {
+  ) : super(const AuthInitial()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<AuthLoginRequested>(_onAuthLoginRequested);
   }
@@ -35,7 +34,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     if (!useBiometrics) {
       AppLogger.info('Biometrics disabled by user, skipping', tag: 'AuthBloc');
-      emit(AuthAuthenticated());
+      emit(const AuthAuthenticated());
       return;
     }
 
@@ -63,8 +62,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             'Biometrics available, auto-triggering login',
             tag: 'AuthBloc',
           );
-          add(AuthLoginRequested());
-          emit(AuthInitial());
+          add(const AuthLoginRequested());
+          emit(const AuthInitial());
         }
       },
     );
@@ -75,7 +74,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     AppLogger.info('Requesting biometric login', tag: 'AuthBloc');
-    emit(AuthLoading());
+    emit(const AuthLoading());
     final result = await _authenticateUseCase();
     result.fold(
       (failure) {
@@ -89,7 +88,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (success) {
         if (success) {
           AppLogger.info('Authentication successful', tag: 'AuthBloc');
-          emit(AuthAuthenticated());
+          emit(const AuthAuthenticated());
         } else {
           AppLogger.warning(
             'Authentication cancelled or failed by user',

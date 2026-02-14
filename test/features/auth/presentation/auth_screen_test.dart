@@ -1,5 +1,5 @@
 import 'package:passvault/features/auth/presentation/auth_screen.dart';
-import 'package:passvault/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:passvault/features/auth/presentation/bloc/auth/auth_bloc.dart';
 
 import '../../../helpers/test_helpers.dart';
 import '../../../robots/auth_robot.dart';
@@ -36,13 +36,21 @@ void main() {
 
   group('$AuthScreen', () {
     testWidgets('Shows loading indicator with correct key', (tester) async {
-      await loadAuthScreen(tester, AuthLoading(), usePumpAndSettle: false);
+      await loadAuthScreen(
+        tester,
+        const AuthLoading(),
+        usePumpAndSettle: false,
+      );
 
       robot.expectLoading();
     });
 
     testWidgets('Shows AppButton when not loading', (tester) async {
-      await loadAuthScreen(tester, AuthInitial(), usePumpAndSettle: false);
+      await loadAuthScreen(
+        tester,
+        const AuthInitial(),
+        usePumpAndSettle: false,
+      );
 
       robot.expectUnlockButtonVisible();
     });

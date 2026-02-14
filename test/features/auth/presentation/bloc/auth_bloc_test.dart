@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/error/error.dart';
 import 'package:passvault/features/auth/domain/repositories/auth_repository.dart';
 import 'package:passvault/features/auth/domain/usecases/authenticate_usecase.dart';
-import 'package:passvault/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:passvault/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:passvault/features/settings/domain/usecases/biometrics_usecases.dart';
 
 class MockAuthenticateUseCase extends Mock implements AuthenticateUseCase {}
@@ -49,7 +49,7 @@ void main() {
         final states = <AuthState>[];
         final subscription = bloc.stream.listen(states.add);
 
-        bloc.add(AuthCheckRequested());
+        bloc.add(const AuthCheckRequested());
 
         await Future.delayed(const Duration(milliseconds: 100));
         await subscription.cancel();
@@ -64,7 +64,7 @@ void main() {
             () => mockGetBiometricsEnabledUseCase(),
           ).thenReturn(const Success(false));
 
-          bloc.add(AuthCheckRequested());
+          bloc.add(const AuthCheckRequested());
           await Future.delayed(const Duration(milliseconds: 100));
 
           expect(bloc.state, isA<AuthAuthenticated>());
@@ -84,7 +84,7 @@ void main() {
             () => mockAuthenticateUseCase(),
           ).thenAnswer((_) async => const Success(true));
 
-          bloc.add(AuthCheckRequested());
+          bloc.add(const AuthCheckRequested());
           await Future.delayed(const Duration(milliseconds: 100));
 
           verify(() => mockAuthRepository.isBiometricAvailable()).called(1);
@@ -106,7 +106,7 @@ void main() {
           final states = <AuthState>[];
           final subscription = bloc.stream.listen(states.add);
 
-          bloc.add(AuthCheckRequested());
+          bloc.add(const AuthCheckRequested());
 
           await Future.delayed(const Duration(milliseconds: 100));
           await subscription.cancel();
@@ -134,7 +134,7 @@ void main() {
           final states = <AuthState>[];
           final subscription = bloc.stream.listen(states.add);
 
-          bloc.add(AuthCheckRequested());
+          bloc.add(const AuthCheckRequested());
 
           await Future.delayed(const Duration(milliseconds: 100));
           await subscription.cancel();
@@ -159,7 +159,7 @@ void main() {
         final states = <AuthState>[];
         final subscription = bloc.stream.listen(states.add);
 
-        bloc.add(AuthLoginRequested());
+        bloc.add(const AuthLoginRequested());
 
         await Future.delayed(const Duration(milliseconds: 100));
         await subscription.cancel();
@@ -177,7 +177,7 @@ void main() {
         final states = <AuthState>[];
         final subscription = bloc.stream.listen(states.add);
 
-        bloc.add(AuthLoginRequested());
+        bloc.add(const AuthLoginRequested());
 
         await Future.delayed(const Duration(milliseconds: 100));
         await subscription.cancel();

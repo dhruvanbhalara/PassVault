@@ -5,7 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:passvault/features/auth/presentation/bloc/auth/auth_bloc.dart';
 
 /// Screen responsible for biometric and local authentication.
 ///
@@ -159,7 +159,7 @@ class _AuthContentState extends State<_AuthContent> {
   }
 
   void onBiometricTap() {
-    context.read<AuthBloc>().add(AuthLoginRequested());
+    context.read<AuthBloc>().add(const AuthLoginRequested());
   }
 }
 
