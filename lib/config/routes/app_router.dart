@@ -18,7 +18,7 @@ import 'package:passvault/features/password_manager/domain/entities/password_ent
 import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/password_manager/presentation/add_edit_password_screen.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/duplicate_resolution_screen.dart';
 import 'package:passvault/features/password_manager/presentation/export_vault_screen.dart';
 import 'package:passvault/features/settings/domain/usecases/biometrics_usecases.dart';

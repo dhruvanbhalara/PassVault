@@ -53,10 +53,10 @@ import '../../features/password_manager/domain/usecases/resolve_duplicates_useca
     as _i649;
 import '../../features/password_manager/domain/usecases/save_bulk_passwords_usecase.dart'
     as _i537;
-import '../../features/password_manager/presentation/bloc/add_edit_password_bloc.dart'
-    as _i683;
-import '../../features/password_manager/presentation/bloc/import_export_bloc.dart'
-    as _i404;
+import '../../features/password_manager/presentation/bloc/add_edit_password/add_edit_password_bloc.dart'
+    as _i590;
+import '../../features/password_manager/presentation/bloc/import_export/import_export_bloc.dart'
+    as _i454;
 import '../../features/settings/data/repositories/settings_repository_impl.dart'
     as _i955;
 import '../../features/settings/domain/repositories/settings_repository.dart'
@@ -253,8 +253,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i360.GetBiometricsEnabledUseCase>(),
       ),
     );
-    gh.lazySingleton<_i404.ImportExportBloc>(
-      () => _i404.ImportExportBloc(
+    gh.lazySingleton<_i454.ImportExportBloc>(
+      () => _i454.ImportExportBloc(
         gh<_i823.ImportPasswordsUseCase>(),
         gh<_i649.ResolveDuplicatesUseCase>(),
         gh<_i766.ClearAllPasswordsUseCase>(),
@@ -272,8 +272,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i580.PasswordRepository>(),
       ),
     );
-    gh.factory<_i683.AddEditPasswordBloc>(
-      () => _i683.AddEditPasswordBloc(
+    gh.factory<_i590.AddEditPasswordBloc>(
+      () => _i590.AddEditPasswordBloc(
         gh<_i16.GeneratePasswordUseCase>(),
         gh<_i371.EstimatePasswordStrengthUseCase>(),
         gh<_i739.GetPasswordGenerationSettingsUseCase>(),
