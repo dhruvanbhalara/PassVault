@@ -5,7 +5,7 @@ import 'package:passvault/features/password_manager/domain/usecases/estimate_pas
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/get_password_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/password_usecases.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_bloc.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_bloc.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/domain/usecases/password_settings_usecases.dart';
 

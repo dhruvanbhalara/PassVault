@@ -2,9 +2,9 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_resolution_choice.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_bloc.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_event.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_state.dart';
 import 'package:passvault/features/password_manager/presentation/duplicate_resolution_screen.dart';
 
 import '../../../../helpers/test_helpers.dart';

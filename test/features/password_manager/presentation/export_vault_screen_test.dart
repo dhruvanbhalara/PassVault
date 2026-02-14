@@ -1,15 +1,17 @@
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
+import 'dart:async';
+
+import 'package:bloc_test/bloc_test.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_bloc.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_event.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_state.dart';
 import 'package:passvault/features/password_manager/presentation/export_vault_screen.dart';
 
 import '../../../helpers/test_helpers.dart';
 import '../../../robots/export_vault_robot.dart';
 
-class MockImportExportBloc extends Mock implements ImportExportBloc {
-  @override
-  Stream<ImportExportState> get stream => Stream.value(state);
-}
+class MockImportExportBloc
+    extends MockBloc<ImportExportEvent, ImportExportState>
+    implements ImportExportBloc {}
 
 void main() {
   late MockImportExportBloc mockImportExportBloc;
@@ -116,30 +118,52 @@ void main() {
     testWidgets('Shows success message on ExportSuccess and resets status', (
       tester,
     ) async {
-      when(
-        () => mockImportExportBloc.state,
-      ).thenReturn(const ExportSuccess('/path/to/file'));
+      final states = StreamController<ImportExportState>.broadcast();
+      whenListen(
+        mockImportExportBloc,
+        states.stream,
+        initialState: const ImportExportInitial(),
+      );
+
       await loadExportVaultScreen(tester);
 
-      robot.expectSnackBarContaining(l10n.exportSuccess);
+      states.add(const ExportSuccess('/path/to/file'));
+      await tester.pump(); // Trigger listener
+      await tester.pump(const Duration(milliseconds: 100));
+
       verify(
         () => mockImportExportBloc.add(const ResetMigrationStatus()),
       ).called(1);
+      robot.expectSnackBarContaining(l10n.exportSuccess);
+
+      await states.close();
     });
 
     testWidgets('Shows error message on ImportExportFailure', (tester) async {
-      when(() => mockImportExportBloc.state).thenReturn(
+      final states = StreamController<ImportExportState>.broadcast();
+      whenListen(
+        mockImportExportBloc,
+        states.stream,
+        initialState: const ImportExportInitial(),
+      );
+
+      await loadExportVaultScreen(tester);
+
+      states.add(
         const ImportExportFailure(
           DataMigrationError.unknown,
           'Test Error Message',
         ),
       );
-      await loadExportVaultScreen(tester);
+      await tester.pump(); // Trigger listener
+      await tester.pump(const Duration(milliseconds: 100));
 
       robot.expectSnackBarContaining('Test Error Message');
       verify(
         () => mockImportExportBloc.add(const ResetMigrationStatus()),
       ).called(1);
+
+      await states.close();
     });
   });
 }

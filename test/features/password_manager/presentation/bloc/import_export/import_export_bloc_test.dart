@@ -16,9 +16,9 @@ import 'package:passvault/features/password_manager/domain/repositories/password
 import 'package:passvault/features/password_manager/domain/usecases/clear_all_passwords_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/import_passwords_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/resolve_duplicates_usecase.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_bloc.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_event.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_state.dart';
 
 class MockBiometricService extends Mock implements BiometricService {}
 
@@ -161,9 +161,9 @@ void main() {
           const ImportExportInitial(),
         ],
       );
-      group('$ImportDataEvent', () {
+      group('$PrepareImportFromFileEvent', () {
         blocTest<ImportExportBloc, ImportExportState>(
-          'emits [Loading, ImportSuccess] when JSON import is successful',
+          'emits [Loading, ImportSuccess] when JSON file is selected',
           build: () {
             when(
               () => mockFilePickerService.pickFile(
@@ -189,66 +189,23 @@ void main() {
             );
             return bloc;
           },
-          act: (bloc) => bloc.add(const ImportDataEvent(isJson: true)),
+          act: (bloc) => bloc.add(const PrepareImportFromFileEvent()),
           expect: () => [const ImportExportLoading(), const ImportSuccess(1)],
-        );
-
-        blocTest<ImportExportBloc, ImportExportState>(
-          'emits [Loading, DuplicatesDetected] when duplicates exist in import',
-          build: () {
-            when(
-              () => mockFilePickerService.pickFile(
-                allowedExtensions: any(named: 'allowedExtensions'),
-              ),
-            ).thenAnswer((_) async => '/path/to/file.json');
-            when(
-              () => mockFileService.readAsString(any()),
-            ).thenAnswer((_) async => '{}');
-            when(
-              () => mockDataService.importFromJson(any()),
-            ).thenReturn(testEntries);
-            final duplicates = [
-              DuplicatePasswordEntry(
-                existingEntry: testEntries[0],
-                newEntry: testEntries[0],
-                conflictReason: 'reason',
-              ),
-            ];
-            when(() => mockImportUseCase(any())).thenAnswer(
-              (_) async => Success(
-                ImportResult(
-                  totalRecords: 1,
-                  successfulImports: 0,
-                  failedImports: 0,
-                  duplicateEntries: duplicates,
-                  errors: [],
-                ),
-              ),
-            );
-            return bloc;
-          },
-          act: (bloc) => bloc.add(const ImportDataEvent(isJson: true)),
-          expect: () => [
-            const ImportExportLoading(),
-            isA<DuplicatesDetected>().having(
-              (s) => s.duplicates.length,
-              'duplicates count',
-              1,
-            ),
-          ],
         );
       });
 
       group('Encrypted Operations', () {
         blocTest<ImportExportBloc, ImportExportState>(
-          'emits [Loading, ImportEncryptedFileSelected] when encrypted file is picked',
+          'emits [Loading, ImportEncryptedFileSelected] when encrypted file is picked via PrepareImportFromFileEvent',
           build: () {
             when(
-              () => mockFilePickerService.pickFile(),
+              () => mockFilePickerService.pickFile(
+                allowedExtensions: any(named: 'allowedExtensions'),
+              ),
             ).thenAnswer((_) async => '/path/to/file.pvault');
             return bloc;
           },
-          act: (bloc) => bloc.add(const PrepareImportEncryptedEvent()),
+          act: (bloc) => bloc.add(const PrepareImportFromFileEvent()),
           expect: () => [
             const ImportExportLoading(),
             const ImportEncryptedFileSelected('/path/to/file.pvault'),

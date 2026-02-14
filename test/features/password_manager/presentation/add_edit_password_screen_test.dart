@@ -1,6 +1,6 @@
 import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/add_edit_password_screen.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_bloc.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_bloc.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 
 import '../../../helpers/test_helpers.dart';

@@ -57,6 +57,6 @@ class ExportVaultRobot {
   }
 
   void expectSnackBarContaining(String text) {
-    expect(find.textContaining(text), findsOneWidget);
+    expect(find.textContaining(text, skipOffstage: false), findsOneWidget);
   }
 }

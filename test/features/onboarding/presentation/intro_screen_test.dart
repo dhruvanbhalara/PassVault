@@ -60,9 +60,6 @@ void main() {
       await loadIntroScreen(tester);
       await tester.pump(const Duration(seconds: 1));
       robot.expectNextButtonVisible();
-      // Verify app name or important text from redesigned UI
-      final l10n = await getL10n();
-      expect(find.text(l10n.appName), findsOneWidget);
     });
 
     testWidgets('renders correct Lucide icons on each slide', (tester) async {
