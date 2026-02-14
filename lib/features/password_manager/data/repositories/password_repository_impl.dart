@@ -33,6 +33,16 @@ class PasswordRepositoryImpl implements PasswordRepository {
   }
 
   @override
+  Future<Result<PasswordEntry?>> getPassword(String id) async {
+    try {
+      final model = await _localDataSource.getPassword(id);
+      return Success(model?.toEntity());
+    } catch (e) {
+      return Error(DatabaseFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Result<void>> savePassword(PasswordEntry entry) async {
     try {
       final model = PasswordEntryModel.fromEntity(entry);

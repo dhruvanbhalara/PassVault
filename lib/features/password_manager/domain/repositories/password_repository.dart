@@ -5,6 +5,7 @@ import 'package:passvault/features/password_manager/domain/entities/password_ent
 
 abstract class PasswordRepository {
   Future<Result<List<PasswordEntry>>> getPasswords();
+  Future<Result<PasswordEntry?>> getPassword(String id);
   Future<Result<void>> savePassword(PasswordEntry entry);
   Future<Result<void>> deletePassword(String id);
 
