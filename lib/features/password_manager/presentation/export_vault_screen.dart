@@ -17,7 +17,19 @@ class ExportVaultScreen extends StatefulWidget {
 class _ExportVaultScreenState extends State<ExportVaultScreen> {
   bool _isJsonSelected = true;
   bool _encryptExport = true;
-  final TextEditingController _passwordController = TextEditingController();
+  late final TextEditingController _passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +100,7 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
                     // Format Selection
                     _SectionHeader(title: l10n.exportFormat),
                     AppRadioOptionCard(
+                      key: const Key('export_format_json_option'),
                       icon: LucideIcons.fileCode,
                       title: l10n.jsonRecommended,
                       description: l10n.jsonDesc,
@@ -96,6 +109,7 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
                     ),
                     const SizedBox(height: AppSpacing.s),
                     AppRadioOptionCard(
+                      key: const Key('export_format_csv_option'),
                       icon: LucideIcons.fileSpreadsheet,
                       title: l10n.csvSpreadsheet,
                       description: l10n.csvDesc,
@@ -111,6 +125,7 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
                         vertical: AppSpacing.s,
                       ),
                       child: SwitchListTile(
+                        key: const Key('export_encrypt_switch'),
                         title: Text(l10n.encryptWithPassword),
                         subtitle: Text(l10n.encryptDesc),
                         value: _encryptExport,
@@ -121,6 +136,7 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
                     if (_encryptExport) ...[
                       const SizedBox(height: AppSpacing.l),
                       AppTextField(
+                        key: const Key('export_password_field'),
                         label: l10n.encryptionPassword,
                         hint: l10n.encryptionPassword,
                         controller: _passwordController,
@@ -131,6 +147,7 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
                     ],
                     const SizedBox(height: AppSpacing.xxl),
                     AppButton(
+                      key: const Key('export_button'),
                       text: l10n.exportNow,
                       onPressed: () => _handleExport(context),
                       hasGlow: isAmoled,

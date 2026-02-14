@@ -22,8 +22,14 @@ class PasswordProtectedDialog extends StatefulWidget {
 }
 
 class _PasswordProtectedDialogState extends State<PasswordProtectedDialog> {
-  final _passwordController = TextEditingController();
+  late final TextEditingController _passwordController;
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordController = TextEditingController();
+  }
 
   @override
   void dispose() {
