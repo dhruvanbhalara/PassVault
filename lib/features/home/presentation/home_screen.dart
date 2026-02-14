@@ -6,7 +6,7 @@ import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/utils/app_semantics.dart';
-import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
+import 'package:passvault/features/home/presentation/bloc/password/password_bloc.dart';
 import 'package:passvault/features/home/presentation/widgets/empty_password_state.dart';
 import 'package:passvault/features/home/presentation/widgets/password_list_tile.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';

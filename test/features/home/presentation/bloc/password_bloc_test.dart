@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/error/failures.dart';
 import 'package:passvault/core/error/result.dart';
-import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
+import 'package:passvault/features/home/presentation/bloc/password/password_bloc.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/domain/repositories/password_repository.dart';
 import 'package:passvault/features/password_manager/domain/usecases/password_usecases.dart';

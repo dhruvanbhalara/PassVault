@@ -1,15 +1,15 @@
 import 'dart:async';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/core/utils/app_logger.dart';
-import 'package:passvault/features/home/presentation/bloc/password_event.dart';
-import 'package:passvault/features/home/presentation/bloc/password_state.dart';
+import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/domain/repositories/password_repository.dart';
 import 'package:passvault/features/password_manager/domain/usecases/password_usecases.dart';
 
-export 'password_event.dart';
-export 'password_state.dart';
+part 'password_event.dart';
+part 'password_state.dart';
 
 @lazySingleton
 class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {

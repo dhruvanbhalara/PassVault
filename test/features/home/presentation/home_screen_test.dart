@@ -1,4 +1,4 @@
-import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
+import 'package:passvault/features/home/presentation/bloc/password/password_bloc.dart';
 import 'package:passvault/features/home/presentation/home_screen.dart';
 
 import '../../../fixtures/password_fixtures.dart';
