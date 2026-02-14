@@ -5,7 +5,7 @@ import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_bloc.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_bloc.dart';
 import 'package:uuid/uuid.dart';
 
 import 'widgets/password_field_section.dart';

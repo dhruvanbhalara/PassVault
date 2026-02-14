@@ -6,9 +6,9 @@ import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/duplicate_resolution/duplicate_resolution_bloc.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_state.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_bloc.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_event.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_state.dart';
 import 'package:passvault/features/password_manager/presentation/widgets/bulk_resolution_header.dart';
 import 'package:passvault/features/password_manager/presentation/widgets/duplicate_card.dart';
 
