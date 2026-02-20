@@ -8,11 +8,6 @@ import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
 
-/// Persistent bottom navigation shell that wraps the three main tabs:
-/// Home (vault list), Generator, and Settings.
-///
-/// Uses [StatefulNavigationShell] from go_router to preserve each tab's
-/// navigation stack when switching between tabs.
 class MainShell extends StatefulWidget {
   const MainShell({required this.navigationShell, super.key});
 
@@ -47,7 +42,7 @@ class _MainShellState extends State<MainShell> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     // Reserve space for the floating bar (60 height + 16 bottom padding + extra buffer)
-    const reserveSpace = 112.0;
+    const reserveSpace = kBottomNavigationBarHeight + AppSpacing.m;
 
     return Scaffold(
       body: NotificationListener<ScrollNotification>(
@@ -57,7 +52,7 @@ class _MainShellState extends State<MainShell> {
         },
         child: Stack(
           children: [
-            // Background Content - No longer rebuilds on navbar toggle
+            // Background Content
             MediaQuery(
               data: mediaQuery.copyWith(
                 padding: mediaQuery.padding.copyWith(
@@ -70,7 +65,7 @@ class _MainShellState extends State<MainShell> {
               child: widget.navigationShell,
             ),
 
-            // Floating Navigation Bar - Only this part rebuilds
+            // Floating Navigation Bar
             ValueListenableBuilder<bool>(
               valueListenable: _isVisibleNotifier,
               builder: (context, isVisible, child) {
@@ -86,7 +81,12 @@ class _MainShellState extends State<MainShell> {
               child: SafeArea(
                 top: false,
                 child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.m),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.m,
+                    0,
+                    AppSpacing.m,
+                    AppSpacing.m,
+                  ),
                   child: Align(
                     alignment: Alignment.bottomCenter,
                     child: ConstrainedBox(
@@ -130,38 +130,43 @@ class _BottomNavBar extends StatelessWidget {
     final themeType = _resolveThemeType(context);
     final l10n = context.l10n;
 
-    return Container(
-      height: 60,
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m),
-      decoration: _buildDecoration(colors, themeType),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _NavItem(
-            icon: LucideIcons.house,
-            semanticsLabel: l10n.tabSemanticsLabel(l10n.vault),
-            isActive: currentIndex == 0,
-            activeColor: colors.primary,
-            inactiveColor: _inactiveColor(colors, isAmoled),
-            onTap: () => onTap(0),
+    return SizedBox(
+      height: kBottomNavigationBarHeight,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m),
+        child: DecoratedBox(
+          decoration: _buildDecoration(colors, themeType),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _NavItem(
+                icon: LucideIcons.house,
+                semanticsLabel: l10n.tabSemanticsLabel(l10n.vault),
+                isActive: currentIndex == 0,
+                activeColor: colors.primary,
+                inactiveColor: _inactiveColor(colors, isAmoled),
+                onTap: () => onTap(0),
+              ),
+              _NavItem(
+                icon: LucideIcons.shield,
+                semanticsLabel: l10n.tabSemanticsLabel(l10n.generator),
+                isActive: currentIndex == 1,
+                activeColor: colors.primary,
+                inactiveColor: _inactiveColor(colors, isAmoled),
+                onTap: () => onTap(1),
+              ),
+              _NavItem(
+                icon: LucideIcons.settings,
+                semanticsLabel: l10n.tabSemanticsLabel(l10n.settings),
+                isActive: currentIndex == 2,
+                activeColor: colors.primary,
+                inactiveColor: _inactiveColor(colors, isAmoled),
+                onTap: () => onTap(2),
+              ),
+            ],
           ),
-          _NavItem(
-            icon: LucideIcons.shield,
-            semanticsLabel: l10n.tabSemanticsLabel(l10n.generator),
-            isActive: currentIndex == 1,
-            activeColor: colors.primary,
-            inactiveColor: _inactiveColor(colors, isAmoled),
-            onTap: () => onTap(1),
-          ),
-          _NavItem(
-            icon: LucideIcons.settings,
-            semanticsLabel: l10n.tabSemanticsLabel(l10n.settings),
-            isActive: currentIndex == 2,
-            activeColor: colors.primary,
-            inactiveColor: _inactiveColor(colors, isAmoled),
-            onTap: () => onTap(2),
-          ),
-        ],
+        ),
       ),
     );
   }
