@@ -47,36 +47,41 @@ class DuplicateResolutionScreen extends StatelessWidget {
 
             return switch (state) {
               DuplicateResolutionInitial(:final resolutions) => Scaffold(
+                extendBody: true,
                 bottomNavigationBar: SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.l),
-                    child: AppButton(
-                      key: const Key('resolve_duplicates_button'),
-                      text: '${l10n.apply} (${resolutions.length})',
-                      isLoading: isLoading,
-                      onPressed: state.hasUnresolved
-                          ? null
-                          : () => _handleResolve(context, state),
-                      hasGlow: isAmoled,
+                    child: IgnorePointer(
+                      ignoring: state.hasUnresolved,
+                      child: AppButton(
+                        key: const Key('resolve_duplicates_button'),
+                        text: '${l10n.apply} (${resolutions.length})',
+                        isLoading: isLoading,
+                        onPressed: () => _handleResolve(context, state),
+                        hasGlow: isAmoled,
+                      ),
                     ),
                   ),
                 ),
                 body: CustomScrollView(
                   slivers: [
                     SliverAppBar(
-                      centerTitle: true,
                       title: Text(l10n.resolveDuplicatesTitle),
-                      floating: true,
+                      floating: false,
                       pinned: true,
                       scrolledUnderElevation: 0,
-                      surfaceTintColor: Colors.transparent,
+                      backgroundColor: theme.background,
                     ),
-                    SliverToBoxAdapter(
-                      child: _InfoBanner(
-                        count: resolutions.length,
-                        theme: theme,
+                    SliverPersistentHeader(
+                      pinned: false,
+                      floating: true,
+                      delegate: StickyHeaderDelegate(
+                        minHeight: 60.0,
+                        maxHeight: 60.0,
+                        child: _InfoBanner(count: resolutions.length),
                       ),
                     ),
+
                     if (isLoading)
                       const SliverFillRemaining(
                         child: Center(child: AppLoader()),
@@ -84,11 +89,11 @@ class DuplicateResolutionScreen extends StatelessWidget {
                     else
                       SliverPadding(
                         padding: const EdgeInsets.all(AppSpacing.l),
-                        sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
+                        sliver: SliverList.separated(
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: AppSpacing.m),
+                          itemCount: resolutions.length + 1,
+                          itemBuilder: (context, index) {
                             if (index == 0) {
                               return Padding(
                                 padding: const EdgeInsets.only(
@@ -102,25 +107,19 @@ class DuplicateResolutionScreen extends StatelessWidget {
                               );
                             }
                             final duplicate = resolutions[index - 1];
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: AppSpacing.l,
-                              ),
-                              child: DuplicateCard(
-                                key: Key('duplicate_card_${index - 1}'),
-                                duplicate: duplicate,
-                                onChoiceChanged: (choice) =>
-                                    context.read<DuplicateResolutionBloc>().add(
-                                      ResolutionOptionUpdated(
-                                        index - 1,
-                                        choice,
-                                      ),
-                                    ),
-                              ),
+                            return DuplicateCard(
+                              key: Key('duplicate_card_${index - 1}'),
+                              duplicate: duplicate,
+                              onChoiceChanged: (choice) =>
+                                  context.read<DuplicateResolutionBloc>().add(
+                                    ResolutionOptionUpdated(index - 1, choice),
+                                  ),
                             );
-                          }, childCount: resolutions.length + 1),
+                          },
                         ),
                       ),
+                    if (resolutions.isNotEmpty)
+                      const SliverToBoxAdapter(child: SizedBox(height: 100)),
                   ],
                 ),
               ),
@@ -151,12 +150,12 @@ class DuplicateResolutionScreen extends StatelessWidget {
 
 class _InfoBanner extends StatelessWidget {
   final int count;
-  final AppThemeExtension theme;
 
-  const _InfoBanner({required this.count, required this.theme});
+  const _InfoBanner({required this.count});
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.m),
@@ -182,5 +181,39 @@ class _InfoBanner extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  StickyHeaderDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(StickyHeaderDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight ||
+        child != oldDelegate.child;
   }
 }

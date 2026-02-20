@@ -5,7 +5,6 @@ import 'package:passvault/features/password_manager/domain/usecases/generate_pas
 import 'package:passvault/features/password_manager/domain/usecases/get_password_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/password_usecases.dart';
 
-/// Events for the [AddEditPasswordBloc].
 import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_state.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';

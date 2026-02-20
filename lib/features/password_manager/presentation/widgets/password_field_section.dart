@@ -49,7 +49,7 @@ class PasswordFieldSection extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.m),
         if (passwordController.text.isNotEmpty)
-          PasswordStrengthIndicator(strength: state.strength),
+          PasswordStrengthWidget(strength: state.strength),
         const SizedBox(height: AppSpacing.l),
         if (state.settings != null && state.settings!.strategies.isNotEmpty)
           _StrategyDropdown(

@@ -62,7 +62,7 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
               floating: true,
               pinned: true,
               scrolledUnderElevation: 0,
-              backgroundColor: theme.background.withValues(alpha: 0),
+              backgroundColor: theme.background,
             ),
             SliverPadding(
               padding: const EdgeInsets.all(AppSpacing.l),

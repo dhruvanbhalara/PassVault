@@ -41,6 +41,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
   late TextEditingController _appNameController;
   late TextEditingController _usernameController;
   late TextEditingController _passwordController;
+  late ScrollController _scrollController;
   bool _obscurePassword = true;
   String? _lastAppliedGeneratedPassword;
   String? _selectedStrategyId;
@@ -52,6 +53,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
     _usernameController = TextEditingController();
     _passwordController = TextEditingController();
     _passwordController.addListener(_onPasswordChanged);
+    _scrollController = ScrollController();
 
     if (widget.id != null) {
       context.read<AddEditPasswordBloc>().add(LoadEntry(widget.id!));
@@ -70,6 +72,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
     _appNameController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -137,26 +140,30 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
         final isAmoled = context.isAmoled;
 
         return Scaffold(
-          floatingActionButton: FloatingActionButton.extended(
-            key: const Key('add_edit_save_button'),
-            onPressed: state is AddEditSaving
-                ? null
-                : () => _handleSave(context),
-            backgroundColor: theme.primary,
-            foregroundColor: theme.onPrimary,
-            label: Text(
-              widget.id == null ? l10n.savePassword : l10n.updatePassword,
+          bottomNavigationBar: PersistentBottomBar(
+            scrollController: _scrollController,
+            child: FloatingActionButton.extended(
+              key: const Key('add_edit_save_button'),
+              onPressed: state is AddEditSaving
+                  ? null
+                  : () => _handleSave(context),
+              backgroundColor: theme.primary,
+              foregroundColor: theme.onPrimary,
+              icon: state is AddEditSaving
+                  ? const SizedBox(
+                      width: AppIconSize.m,
+                      height: AppIconSize.m,
+                      child: AppLoader(key: Key('add_edit_saving_loader')),
+                    )
+                  : const Icon(LucideIcons.save),
+              label: Text(
+                widget.id == null ? l10n.savePassword : l10n.updatePassword,
+              ),
             ),
-            icon: state is AddEditSaving
-                ? const SizedBox(
-                    width: AppIconSize.m,
-                    height: AppIconSize.m,
-                    child: AppLoader(key: Key('add_edit_saving_loader')),
-                  )
-                : const Icon(LucideIcons.save),
           ),
           body: RepaintBoundary(
             child: CustomScrollView(
+              controller: _scrollController,
               slivers: [
                 SliverAppBar(
                   centerTitle: true,
@@ -166,10 +173,16 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                   floating: true,
                   pinned: true,
                   scrolledUnderElevation: 0,
-                  backgroundColor: theme.background.withValues(alpha: 0),
+                  backgroundColor: theme.background,
                 ),
                 SliverPadding(
-                  padding: const EdgeInsets.all(AppSpacing.l),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.l,
+                    AppSpacing.l,
+                    AppSpacing.l,
+
+                    AppSpacing.l,
+                  ),
                   sliver: SliverToBoxAdapter(
                     child: Form(
                       key: _formKey,
