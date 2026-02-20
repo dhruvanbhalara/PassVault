@@ -14,10 +14,6 @@ class OnboardingSkipped extends OnboardingEvent {
   const OnboardingSkipped();
 }
 
-class OnboardingCompleted extends OnboardingEvent {
-  const OnboardingCompleted();
-}
-
 class BiometricSetupCompleted extends OnboardingEvent {
   final bool enabled;
   const BiometricSetupCompleted({required this.enabled});

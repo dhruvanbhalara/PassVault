@@ -30,7 +30,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<BiometricSetupCompleted>(_onBiometricSetupCompleted);
     on<BiometricAuthRequested>(_onBiometricAuthRequested);
     on<OnboardingSkipped>(_onSkipped);
-    on<OnboardingCompleted>(_onCompleted);
   }
 
   /// Check persisted state and either resume or mark complete.
@@ -103,15 +102,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   /// Skip finishes onboarding immediately.
   Future<void> _onSkipped(
     OnboardingSkipped event,
-    Emitter<OnboardingState> emit,
-  ) async {
-    await _markOnboardingComplete();
-    emit(const OnboardingComplete());
-  }
-
-  /// Direct completion (legacy / programmatic).
-  Future<void> _onCompleted(
-    OnboardingCompleted event,
     Emitter<OnboardingState> emit,
   ) async {
     await _markOnboardingComplete();
