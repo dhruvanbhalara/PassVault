@@ -78,7 +78,7 @@ void main() {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      expect(find.text(l10n.passwordGeneration), findsOneWidget);
+      expect(find.text(l10n.strategy), findsOneWidget);
     });
   });
 }

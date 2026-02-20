@@ -30,13 +30,21 @@ class DuplicateResolutionRobot {
 
   // Assertions
   void expectResolveButtonDisabled() {
-    final button = tester.widget<AppButton>(resolveButtonFinder);
-    expect(button.onPressed, isNull);
+    final ignorePointerFinder = find
+        .ancestor(of: resolveButtonFinder, matching: find.byType(IgnorePointer))
+        .first;
+    expect(ignorePointerFinder, findsOneWidget);
+    final ignorePointer = tester.widget<IgnorePointer>(ignorePointerFinder);
+    expect(ignorePointer.ignoring, isTrue);
   }
 
   void expectResolveButtonEnabled() {
-    final button = tester.widget<AppButton>(resolveButtonFinder);
-    expect(button.onPressed, isNotNull);
+    final ignorePointerFinder = find
+        .ancestor(of: resolveButtonFinder, matching: find.byType(IgnorePointer))
+        .first;
+    expect(ignorePointerFinder, findsOneWidget);
+    final ignorePointer = tester.widget<IgnorePointer>(ignorePointerFinder);
+    expect(ignorePointer.ignoring, isFalse);
   }
 
   void expectResolveButtonLoading() {

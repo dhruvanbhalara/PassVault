@@ -60,10 +60,7 @@ void main() {
 
         expect(find.text(l10n.passwordGenerator), findsOneWidget);
         expect(find.text(l10n.excludeAmbiguous), findsOneWidget);
-        expect(
-          find.byKey(const Key('generator_generate_button')),
-          findsOneWidget,
-        );
+        expect(find.byKey(const Key('generator_generate_fab')), findsOneWidget);
         expect(
           find.byKey(const Key('generator_exclude_ambiguous_toggle')),
           findsOneWidget,
@@ -76,7 +73,7 @@ void main() {
     ) async {
       await loadScreen(tester);
 
-      await tester.tap(find.byKey(const Key('generator_generate_button')));
+      await tester.tap(find.byKey(const Key('generator_generate_fab')));
 
       verify(() => mockGeneratorBloc.add(const GeneratorRequested())).called(1);
     });

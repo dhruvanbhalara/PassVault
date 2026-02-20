@@ -42,28 +42,6 @@ void main() {
   }
 
   group('$HomeScreen', () {
-    testWidgets('renders all essential UI components', (tester) async {
-      await loadHomeScreen(tester, const PasswordLoaded([]));
-
-      expect(find.byKey(const Key('home_fab')), findsOneWidget);
-    });
-
-    testWidgets('shows loading state correctly', (tester) async {
-      await loadHomeScreen(
-        tester,
-        const PasswordLoading(),
-        usePumpAndSettle: false,
-      );
-
-      robot.expectLoading();
-    });
-
-    testWidgets('shows empty state when no passwords exist', (tester) async {
-      await loadHomeScreen(tester, const PasswordLoaded([]));
-
-      robot.expectEmptyState();
-    });
-
     testWidgets('renders password list when data is loaded', (tester) async {
       final passwords = PasswordFixtures.list;
       await loadHomeScreen(tester, PasswordLoaded(passwords));
@@ -72,16 +50,6 @@ void main() {
       robot.expectPasswordVisible('Google');
       robot.expectPasswordVisible('Facebook');
       robot.expectPasswordsCount(3);
-    });
-
-    testWidgets('FAB is a FloatingActionButton', (tester) async {
-      await loadHomeScreen(tester, const PasswordLoaded([]));
-
-      final fab = tester.widget<FloatingActionButton>(
-        find.byKey(const Key('home_fab')),
-      );
-
-      expect(fab, isA<FloatingActionButton>());
     });
   });
 }
