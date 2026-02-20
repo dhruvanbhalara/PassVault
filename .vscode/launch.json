@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "passvault (dev)",
+            "name": "PassValut (dev)",
             "request": "launch",
             "type": "dart",
             "program": "lib/main.dart",
@@ -12,7 +12,28 @@
             ]
         },
         {
-            "name": "passvault (prod)",
+            "name": "PassValut (dev) release",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--flavor",
+                "dev",
+                "--release"
+            ]
+        },
+        {
+            "name": "PassValut (prod)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--flavor",
+                "prod",
+            ]
+        },
+        {
+            "name": "PassValut (prod) release",
             "request": "launch",
             "type": "dart",
             "program": "lib/main.dart",
