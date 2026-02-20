@@ -7,22 +7,39 @@ import 'package:passvault/features/generator/presentation/bloc/generator/generat
 
 import 'widgets/generator_sections.dart';
 
-class GeneratorScreen extends StatelessWidget {
+class GeneratorScreen extends StatefulWidget {
   const GeneratorScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const _GeneratorView();
-  }
+  State<GeneratorScreen> createState() => _GeneratorViewState();
 }
 
-class _GeneratorView extends StatelessWidget {
-  const _GeneratorView();
+class _GeneratorViewState extends State<GeneratorScreen> {
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        key: const Key('generator_generate_fab'),
+        onPressed: () =>
+            context.read<GeneratorBloc>().add(const GeneratorRequested()),
+        child: const Icon(LucideIcons.refreshCw),
+      ),
       body: CustomScrollView(
+        controller: _scrollController,
         slivers: [
           SliverAppBar(
             centerTitle: true,
@@ -30,7 +47,7 @@ class _GeneratorView extends StatelessWidget {
             floating: true,
             pinned: true,
             scrolledUnderElevation: 0,
-            backgroundColor: context.theme.background.withValues(alpha: 0),
+            backgroundColor: context.theme.background,
           ),
           BlocBuilder<GeneratorBloc, GeneratorState>(
             builder: (context, state) {
@@ -60,20 +77,11 @@ class _GeneratorContentSliver extends StatelessWidget {
         AppSpacing.l,
         AppSpacing.m,
         AppSpacing.l,
-        AppSpacing.xxl,
+        AppSpacing.l,
       ),
       sliver: SliverList(
         delegate: SliverChildListDelegate([
           GeneratorGeneratedPasswordCard(state: state),
-          const SizedBox(height: AppSpacing.m),
-          AppButton(
-            key: const Key('generator_generate_button'),
-            text: context.l10n.generateNew,
-            icon: LucideIcons.refreshCw,
-            onPressed: () =>
-                context.read<GeneratorBloc>().add(const GeneratorRequested()),
-            hasGlow: false,
-          ),
           const SizedBox(height: AppSpacing.l),
           GeneratorControlsCard(state: state),
         ]),

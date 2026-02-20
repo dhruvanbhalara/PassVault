@@ -15,36 +15,42 @@ class GeneratorGeneratedPasswordCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    final typography = context.typography;
     final l10n = context.l10n;
-
+    final password = state.generatedPassword.isEmpty
+        ? l10n.hintPassword
+        : state.generatedPassword;
     return AppCard(
-      hasGlow: false,
+      hasGlow: context.isAmoled,
       padding: const EdgeInsets.all(AppSpacing.l),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 136, maxHeight: 168),
+        constraints: const BoxConstraints(minHeight: 40, maxHeight: 150),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          spacing: AppSpacing.m,
+          mainAxisSize: MainAxisSize.min,
           children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: PasswordStrengthWidget(strength: state.strength),
+            ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: SelectableText(
-                    state.generatedPassword.isEmpty
-                        ? l10n.hintPassword
-                        : state.generatedPassword,
-                    maxLines: 2,
+                    password,
+                    minLines: 1,
+                    maxLines: 5,
                     style: theme.passwordText.copyWith(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
                       color: theme.primary,
                       height: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.m),
+
                 IconButton(
                   key: const Key('generator_copy_icon_button'),
                   tooltip: l10n.copyPassword,
@@ -57,17 +63,6 @@ class GeneratorGeneratedPasswordCard extends StatelessWidget {
                   icon: const Icon(LucideIcons.copy),
                 ),
               ],
-            ),
-            PasswordStrengthIndicator(
-              strength: state.strength,
-              showLabel: true,
-            ),
-            Text(
-              _strengthText(state.strength, l10n),
-              style: typography.labelMedium?.copyWith(
-                color: _strengthColor(state.strength, theme),
-                fontWeight: FontWeight.w600,
-              ),
             ),
           ],
         ),
@@ -84,24 +79,6 @@ class GeneratorGeneratedPasswordCard extends StatelessWidget {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(context.l10n.passwordCopied)));
-  }
-
-  String _strengthText(double strength, AppLocalizations l10n) {
-    if (strength <= 0.15) return l10n.strengthVeryWeak;
-    if (strength <= 0.35) return l10n.strengthWeak;
-    if (strength <= 0.55) return l10n.strengthFair;
-    if (strength <= 0.75) return l10n.strengthGood;
-    if (strength <= 0.90) return l10n.strengthStrong;
-    return l10n.strengthVeryStrong;
-  }
-
-  Color _strengthColor(double strength, AppThemeExtension theme) {
-    if (strength <= 0.15) return theme.strengthVeryWeak;
-    if (strength <= 0.35) return theme.strengthWeak;
-    if (strength <= 0.55) return theme.strengthFair;
-    if (strength <= 0.75) return theme.strengthGood;
-    if (strength <= 0.90) return theme.strengthStrong;
-    return theme.strengthVeryStrong;
   }
 }
 
@@ -162,7 +139,7 @@ class PasswordGenerationControlsCard extends StatelessWidget {
     final canIncrease = length < 64;
 
     return AppCard(
-      hasGlow: false,
+      hasGlow: context.isAmoled,
       padding: const EdgeInsets.all(AppSpacing.l),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,56 +148,53 @@ class PasswordGenerationControlsCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  l10n.passwordLength,
-                  style: context.typography.labelLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                  ),
+                  l10n.lengthLabel,
+                  style: context.typography.labelMedium,
                 ),
               ),
-              LengthStepperButton(
-                key: Key('${controlsPrefix}_length_decrease'),
-                icon: LucideIcons.minus,
-                isEnabled: canDecrease,
-                onTap: () => onLengthChanged(length - 1),
-              ),
-              const SizedBox(width: AppSpacing.xs),
-              Container(
-                key: Key('${controlsPrefix}_length_badge'),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.m,
-                  vertical: AppSpacing.xs,
-                ),
+              DecoratedBox(
                 decoration: BoxDecoration(
                   color: context.theme.primaryContainer,
-                  borderRadius: BorderRadius.circular(AppRadius.full),
+                  borderRadius: BorderRadius.circular(AppRadius.m),
                 ),
-                child: Text(
-                  length.toString(),
-                  style: context.typography.labelMedium?.copyWith(
-                    color: context.theme.onPrimaryContainer,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Row(
+                  children: [
+                    LengthStepperButton(
+                      key: Key('${controlsPrefix}_length_decrease'),
+                      icon: LucideIcons.minus,
+                      isEnabled: canDecrease,
+                      onTap: () => onLengthChanged(length - 1),
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Container(
+                      key: Key('${controlsPrefix}_length_badge'),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.m,
+                        vertical: AppSpacing.xs,
+                      ),
+                      decoration: BoxDecoration(
+                        color: context.theme.primaryContainer,
+                        borderRadius: BorderRadius.circular(AppRadius.full),
+                      ),
+                      child: Text(
+                        length.toString(),
+                        style: context.typography.labelMedium?.copyWith(
+                          color: context.theme.onPrimaryContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    LengthStepperButton(
+                      key: Key('${controlsPrefix}_length_increase'),
+                      icon: LucideIcons.plus,
+                      isEnabled: canIncrease,
+                      onTap: () => onLengthChanged(length + 1),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: AppSpacing.xs),
-              LengthStepperButton(
-                key: Key('${controlsPrefix}_length_increase'),
-                icon: LucideIcons.plus,
-                isEnabled: canIncrease,
-                onTap: () => onLengthChanged(length + 1),
               ),
             ],
-          ),
-          const SizedBox(height: AppSpacing.s),
-          Slider(
-            key: Key('${controlsPrefix}_length_slider'),
-            value: length.toDouble(),
-            min: 16,
-            max: 64,
-            divisions: 48,
-            label: length.toString(),
-            onChanged: (value) => onLengthChanged(value.toInt()),
           ),
           const Divider(height: AppSpacing.l),
           GeneratorToggleTile(
