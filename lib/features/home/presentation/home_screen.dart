@@ -21,10 +21,8 @@ class HomeScreen extends StatelessWidget {
     final l10n = context.l10n;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        key: const Key('home_fab'),
+        key: const Key('home_add_password_fab'),
         onPressed: () => context.push(AppRoutes.addPassword),
-        backgroundColor: theme.primary,
-        foregroundColor: theme.onPrimary,
         child: const Icon(LucideIcons.plus),
       ),
       body: CustomScrollView(
@@ -35,7 +33,7 @@ class HomeScreen extends StatelessWidget {
             floating: true,
             pinned: true,
             scrolledUnderElevation: 0,
-            backgroundColor: theme.background.withValues(alpha: 0),
+            backgroundColor: theme.background,
           ),
           BlocBuilder<PasswordBloc, PasswordState>(
             builder: (context, state) {
@@ -55,8 +53,19 @@ class HomeScreen extends StatelessWidget {
 
                 return SliverPadding(
                   key: const Key('home_password_list'),
-                  padding: EdgeInsets.all(
-                    context.responsive(AppSpacing.l, tablet: AppSpacing.xl),
+                  padding: EdgeInsets.only(
+                    left: context.responsive(
+                      AppSpacing.l,
+                      tablet: AppSpacing.xl,
+                    ),
+                    right: context.responsive(
+                      AppSpacing.l,
+                      tablet: AppSpacing.xl,
+                    ),
+                    bottom:
+                        AppSpacing.xxl +
+                        56 +
+                        MediaQuery.paddingOf(context).bottom,
                   ),
                   sliver: context.isDesktop || context.isTablet
                       ? _HomeScreenGrid(passwords: state.passwords)
@@ -117,23 +126,19 @@ class _HomeScreenList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) => Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.m),
-          child: AppAnimatedListItem(
-            index: index,
-            child: PasswordListTile(
-              entry: passwords[index],
-              onTap: () =>
-                  context.push(AppRoutes.editPassword, extra: passwords[index]),
-              onDismissed: () => context.read<PasswordBloc>().add(
-                DeletePassword(passwords[index].id),
-              ),
-            ),
+    return SliverList.separated(
+      separatorBuilder: (context, index) =>
+          const SizedBox(height: AppSpacing.m),
+      itemCount: passwords.length,
+      itemBuilder: (context, index) => RepaintBoundary(
+        child: PasswordListTile(
+          entry: passwords[index],
+          onTap: () =>
+              context.push(AppRoutes.editPassword, extra: passwords[index]),
+          onDismissed: () => context.read<PasswordBloc>().add(
+            DeletePassword(passwords[index].id),
           ),
         ),
-        childCount: passwords.length,
       ),
     );
   }
