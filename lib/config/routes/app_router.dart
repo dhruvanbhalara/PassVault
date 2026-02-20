@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/config/routes/app_routes.dart';
+import 'package:passvault/core/design_system/components/error/app_error_page.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/core/observers/go_router_observer.dart';
 import 'package:passvault/features/auth/presentation/auth_screen.dart';
@@ -22,7 +23,8 @@ import 'package:passvault/features/password_manager/presentation/export_vault_sc
 import 'package:passvault/features/settings/domain/usecases/biometrics_usecases.dart';
 import 'package:passvault/features/settings/domain/usecases/onboarding_usecases.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
-import 'package:passvault/features/settings/presentation/screens/password_generation_settings_screen.dart';
+import 'package:passvault/features/settings/presentation/screens/strategy_editor_screen.dart';
+import 'package:passvault/features/settings/presentation/screens/strategy_screen.dart';
 import 'package:passvault/features/settings/presentation/settings_screen.dart';
 import 'package:passvault/features/shell/presentation/main_shell.dart';
 
@@ -42,6 +44,7 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     debugLogDiagnostics: kDebugMode,
     observers: kDebugMode ? [GoRouterObserver()] : [],
+    errorBuilder: (context, state) => AppErrorPage(error: state.error),
     initialLocation: AppRoutes.auth,
     redirect: (context, state) {
       final onboardingComplete = _getOnboardingCompleteUseCase().fold(
@@ -118,6 +121,7 @@ class AppRouter {
                     routes: [
                       GoRoute(
                         path: AppRoutes.addPasswordRoute,
+                        parentNavigatorKey: _rootNavigatorKey,
                         pageBuilder: (context, state) => _slideTransition(
                           const AddEditPasswordScreen(),
                           state,
@@ -125,6 +129,7 @@ class AppRouter {
                       ),
                       GoRoute(
                         path: AppRoutes.editPasswordRoute,
+                        parentNavigatorKey: _rootNavigatorKey,
                         pageBuilder: (context, state) => _slideTransition(
                           AddEditPasswordScreen(
                             id: (state.extra as PasswordEntry?)?.id,
@@ -206,15 +211,32 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: AppRoutes.passwordGeneration,
+        path: AppRoutes.strategy,
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) => _slideTransition(
           BlocProvider.value(
             value: getIt<SettingsBloc>(),
-            child: const PasswordGenerationSettingsScreen(),
+            child: const StrategyScreen(),
           ),
           state,
         ),
+        routes: [
+          GoRoute(
+            path: AppRoutes.strategyEditorRoute,
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) {
+              final strategyId =
+                  (state.extra as Map<String, String>)['strategyId'];
+              return _slideTransition(
+                BlocProvider.value(
+                  value: getIt<SettingsBloc>(),
+                  child: StrategyEditorScreen(strategyId: strategyId),
+                ),
+                state,
+              );
+            },
+          ),
+        ],
       ),
     ],
   );
