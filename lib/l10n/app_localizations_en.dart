@@ -189,7 +189,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importFailed => 'Failed to import data';
 
   @override
-  String get passwordGeneration => 'Password Generation';
+  String get strategy => 'Strategy';
 
   @override
   String get passwordLength => 'Password Length';
@@ -398,7 +398,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get maxLabel => '64';
 
   @override
-  String get passwordGenerationSubtitle =>
+  String get strategySubtitle =>
       'Manage your custom presets used for generating secure passwords.';
 
   @override
@@ -468,7 +468,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordGenerator => 'Password Generator';
 
   @override
-  String get lengthLabel => 'LENGTH';
+  String get lengthLabel => 'Length';
 
   @override
   String get uppercaseLabel => 'Uppercase (A-Z)';
@@ -581,6 +581,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get continueDisabledFixErrors =>
       'Continue button disabled, fix password errors first';
+
+  @override
+  String get strength => 'Strength';
 
   @override
   String get strengthVeryWeak => 'Very weak';

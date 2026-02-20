@@ -448,11 +448,11 @@ abstract class AppLocalizations {
   /// **'Failed to import data'**
   String get importFailed;
 
-  /// No description provided for @passwordGeneration.
+  /// No description provided for @strategy.
   ///
   /// In en, this message translates to:
-  /// **'Password Generation'**
-  String get passwordGeneration;
+  /// **'Strategy'**
+  String get strategy;
 
   /// No description provided for @passwordLength.
   ///
@@ -850,11 +850,11 @@ abstract class AppLocalizations {
   /// **'64'**
   String get maxLabel;
 
-  /// No description provided for @passwordGenerationSubtitle.
+  /// No description provided for @strategySubtitle.
   ///
   /// In en, this message translates to:
   /// **'Manage your custom presets used for generating secure passwords.'**
-  String get passwordGenerationSubtitle;
+  String get strategySubtitle;
 
   /// No description provided for @noStrategiesDescription.
   ///
@@ -985,7 +985,7 @@ abstract class AppLocalizations {
   /// No description provided for @lengthLabel.
   ///
   /// In en, this message translates to:
-  /// **'LENGTH'**
+  /// **'Length'**
   String get lengthLabel;
 
   /// No description provided for @uppercaseLabel.
@@ -1197,6 +1197,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue button disabled, fix password errors first'**
   String get continueDisabledFixErrors;
+
+  /// No description provided for @strength.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength'**
+  String get strength;
 
   /// No description provided for @strengthVeryWeak.
   ///
