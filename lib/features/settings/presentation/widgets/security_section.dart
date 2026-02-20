@@ -30,10 +30,10 @@ class SecuritySection extends StatelessWidget {
               ListTile(
                 key: const Key('settings_password_gen_tile'),
                 leading: const Icon(LucideIcons.keyRound),
-                title: Text(l10n.passwordGeneration),
+                title: Text(l10n.strategy),
                 trailing: const Icon(LucideIcons.chevronRight),
                 onTap: () => context.push(
-                  AppRoutes.passwordGeneration,
+                  AppRoutes.strategy,
                   extra: context.read<SettingsBloc>(),
                 ),
               ),

@@ -55,7 +55,7 @@ class SettingsGroup extends StatelessWidget {
             ),
           ),
         AppCard(
-          hasGlow: false,
+          hasGlow: context.isAmoled,
           padding: EdgeInsets.zero,
           child: Column(children: sectionChildren),
         ),

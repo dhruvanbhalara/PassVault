@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 
 import '../widgets/active_strategy_card.dart';
 import '../widgets/empty_strategies_placeholder.dart';
 import '../widgets/saved_strategy_list_item.dart';
-import '../widgets/strategy_editor_sheet.dart';
 
 /// Screen to configure password generation preferences.
-class PasswordGenerationSettingsScreen extends StatelessWidget {
-  const PasswordGenerationSettingsScreen({super.key});
+class StrategyScreen extends StatelessWidget {
+  const StrategyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +24,8 @@ class PasswordGenerationSettingsScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         key: const Key('add_strategy_fab'),
         onPressed: () {
-          _showEditor(
-            context,
-            strategy: PasswordGenerationStrategy.create(name: l10n.newStrategy),
-            isNew: true,
-          );
+          _showEditor(context, 'new');
         },
-        backgroundColor: theme.primary,
-        foregroundColor: theme.onPrimary,
         child: const Icon(LucideIcons.plus),
       ),
       body: BlocBuilder<SettingsBloc, SettingsState>(
@@ -41,12 +35,12 @@ class PasswordGenerationSettingsScreen extends StatelessWidget {
           return CustomScrollView(
             slivers: [
               SliverAppBar(
-                title: Text(l10n.passwordGeneration),
+                title: Text(l10n.strategy),
                 centerTitle: true,
                 floating: true,
                 pinned: true,
                 scrolledUnderElevation: 0,
-                backgroundColor: theme.background.withValues(alpha: 0),
+                backgroundColor: theme.background,
               ),
               if (settings.strategies.isEmpty)
                 EmptyStrategiesPlaceholder(l10n: l10n, theme: theme)
@@ -54,15 +48,13 @@ class PasswordGenerationSettingsScreen extends StatelessWidget {
                 ActiveStrategySection(
                   settings: settings,
                   l10n: l10n,
-                  onEdit: (strategy) =>
-                      _showEditor(context, strategy: strategy, isNew: false),
+                  onEdit: (strategy) => _showEditor(context, strategy.id),
                 ),
                 if (settings.strategies.length > 1)
                   SavedStrategiesSection(
                     settings: settings,
                     l10n: l10n,
-                    onEdit: (strategy) =>
-                        _showEditor(context, strategy: strategy, isNew: false),
+                    onEdit: (strategy) => _showEditor(context, strategy.id),
                   ),
               ],
             ],
@@ -72,22 +64,7 @@ class PasswordGenerationSettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showEditor(
-    BuildContext context, {
-    required PasswordGenerationStrategy strategy,
-    required bool isNew,
-  }) {
-    final settingsBloc = context.read<SettingsBloc>();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (context) {
-        return BlocProvider.value(
-          value: settingsBloc,
-          child: StrategyEditorSheet(strategy: strategy, isNew: isNew),
-        );
-      },
-    );
+  void _showEditor(BuildContext context, String strategyId) {
+    context.push(AppRoutes.strategyEditor, extra: {'strategyId': strategyId});
   }
 }

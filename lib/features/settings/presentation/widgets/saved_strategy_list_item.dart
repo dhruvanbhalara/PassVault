@@ -32,8 +32,11 @@ class SavedStrategiesSection extends StatelessWidget {
         AppSpacing.l,
         AppSpacing.x4xl + 56,
       ),
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate((context, index) {
+      sliver: SliverList.separated(
+        separatorBuilder: (context, index) =>
+            const SizedBox(height: AppSpacing.m),
+        itemCount: nonDefaultStrategies.length + 1,
+        itemBuilder: (context, index) {
           if (index == 0) {
             return _SavedHeader(l10n: l10n);
           }
@@ -45,7 +48,7 @@ class SavedStrategiesSection extends StatelessWidget {
             l10n: l10n,
             onEdit: () => onEdit(strategy),
           );
-        }, childCount: nonDefaultStrategies.length + 1),
+        },
       ),
     );
   }
@@ -76,19 +79,42 @@ class StrategyListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.m),
+    final typography = context.typography;
+
+    return Dismissible(
+      key: Key(strategy.id),
+      background: _DismissibleBackground(strategy: strategy),
+      direction: DismissDirection.endToStart,
+      onDismissed: (_) =>
+          context.read<SettingsBloc>().add(DeleteStrategy(strategy.id)),
       child: AppCard(
-        hasOutline: true,
-        onTap: () =>
-            context.read<SettingsBloc>().add(SetDefaultStrategy(strategy.id)),
-        padding: const EdgeInsets.all(AppSpacing.m),
+        hasGlow: false,
         child: Row(
           children: [
-            _TrailingIconPlaceholder(theme: theme),
-            const SizedBox(width: AppSpacing.m),
-            _ListItemInfo(strategy: strategy, l10n: l10n),
-            _ListItemActions(strategy: strategy, l10n: l10n, onEdit: onEdit),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    strategy.name,
+                    style: typography.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    '${l10n.passwordLength}: ${strategy.length}',
+                    style: typography.bodyMedium?.copyWith(
+                      color: theme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            _EditButton(
+              onPressed: onEdit,
+              key: Key('edit_saved_strategy_${strategy.id}'),
+            ),
           ],
         ),
       ),
@@ -96,112 +122,43 @@ class StrategyListItem extends StatelessWidget {
   }
 }
 
-class _TrailingIconPlaceholder extends StatelessWidget {
-  final AppThemeExtension theme;
-  const _TrailingIconPlaceholder({required this.theme});
+class _EditButton extends StatelessWidget {
+  const _EditButton({super.key, required this.onPressed});
+
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.s),
+    return IconButton(
+      icon: const Icon(LucideIcons.pencil),
+      onPressed: onPressed,
+    );
+  }
+}
+
+class _DismissibleBackground extends StatelessWidget {
+  final PasswordGenerationStrategy strategy;
+
+  const _DismissibleBackground({required this.strategy});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
       decoration: BoxDecoration(
-        color: theme.primary.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(AppRadius.m),
-        border: Border.all(color: theme.primary.withValues(alpha: 0.18)),
+        color: context.colorScheme.errorContainer,
+        borderRadius: BorderRadius.circular(AppRadius.l),
       ),
-      child: Icon(
-        LucideIcons.slidersHorizontal,
-        color: theme.primary,
-        size: 18,
-      ),
-    );
-  }
-}
-
-class _ListItemInfo extends StatelessWidget {
-  final PasswordGenerationStrategy strategy;
-  final AppLocalizations l10n;
-
-  const _ListItemInfo({required this.strategy, required this.l10n});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            strategy.name,
-            style: context.typography.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            '${l10n.passwordLength}: ${strategy.length}',
-            style: context.typography.bodySmall?.copyWith(
-              color: context.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ListItemActions extends StatelessWidget {
-  final PasswordGenerationStrategy strategy;
-  final AppLocalizations l10n;
-  final VoidCallback onEdit;
-
-  const _ListItemActions({
-    required this.strategy,
-    required this.l10n,
-    required this.onEdit,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.theme;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          icon: Icon(
-            LucideIcons.arrowUpFromLine,
-            size: AppDimensions.strategyIconSmall,
-            color: theme.primary,
-          ),
-          tooltip: l10n.setAsDefault,
-          onPressed: () =>
-              context.read<SettingsBloc>().add(SetDefaultStrategy(strategy.id)),
-        ),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-          width: 1,
-          height: AppSpacing.l,
-          color: theme.outline.withValues(alpha: 0.2),
-        ),
-        IconButton(
-          key: Key('edit_saved_strategy_${strategy.id}'),
-          icon: Icon(
-            LucideIcons.pencil,
-            size: AppDimensions.strategyIconSmall,
-            color: context.colorScheme.onSurface,
-          ),
-          onPressed: onEdit,
-        ),
-        IconButton(
-          icon: Icon(
+      child: Padding(
+        padding: const EdgeInsets.only(right: AppSpacing.l),
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Icon(
+            key: Key('delete_saved_strategy_${strategy.id}'),
             LucideIcons.trash2,
-            size: AppDimensions.strategyIconSmall,
-            color: theme.error,
+            color: context.colorScheme.onErrorContainer,
           ),
-          onPressed: () =>
-              context.read<SettingsBloc>().add(DeleteStrategy(strategy.id)),
         ),
-      ],
+      ),
     );
   }
 }
