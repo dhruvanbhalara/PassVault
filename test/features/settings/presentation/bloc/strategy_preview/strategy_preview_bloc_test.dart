@@ -21,7 +21,7 @@ void main() {
     bloc.close();
   });
 
-  group('StrategyPreviewBloc', () {
+  group(r'$StrategyPreviewBloc', () {
     final settings = PasswordGenerationStrategy.create(name: 'Test');
     const generatedPassword = 'mockPassword123';
 

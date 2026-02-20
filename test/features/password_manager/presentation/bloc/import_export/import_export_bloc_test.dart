@@ -350,5 +350,48 @@ void main() {
         );
       });
     });
+
+    group('ImportExportEvent props', () {
+      test('props are correct', () {
+        expect(const ExportDataEvent().props, [true]);
+        expect(const ExportEncryptedEvent('pass').props, ['pass']);
+        expect(const PrepareImportFromFileEvent().props, isEmpty);
+        expect(const ImportEncryptedEvent('pass', filePath: 'path').props, [
+          'pass',
+          'path',
+        ]);
+
+        final duplicates = [
+          DuplicatePasswordEntry(
+            existingEntry: testEntries.first,
+            newEntry: testEntries.first,
+            conflictReason: '',
+          ),
+        ];
+        expect(ResolveDuplicatesEvent(duplicates).props, [duplicates]);
+
+        expect(const ClearDatabaseEvent().props, isEmpty);
+        expect(const ResetMigrationStatus().props, isEmpty);
+      });
+    });
+
+    group('ImportExportState props', () {
+      test('props are correct', () {
+        expect(const ImportExportInitial().props, isEmpty);
+        expect(const ImportExportLoading().props, isEmpty);
+        expect(const ExportSuccess('path').props, ['path']);
+        expect(const ImportSuccess(1).props, [1]);
+        expect(const ImportEncryptedFileSelected('path').props, ['path']);
+        expect(
+          const DuplicatesResolved(totalResolved: 1, totalImported: 2).props,
+          [1, 2],
+        );
+        expect(const ClearDatabaseSuccess().props, isEmpty);
+        expect(
+          const ImportExportFailure(DataMigrationError.unknown, 'msg').props,
+          [DataMigrationError.unknown, 'msg'],
+        );
+      });
+    });
   });
 }

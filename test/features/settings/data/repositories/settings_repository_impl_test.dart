@@ -19,7 +19,7 @@ void main() {
   });
 
   group('$SettingsRepositoryImpl', () {
-    group('getTheme', () {
+    group(r'$getTheme', () {
       test('should return theme from database', () {
         when(
           () => mockDatabaseService.read(
@@ -56,7 +56,7 @@ void main() {
       });
     });
 
-    group('saveTheme', () {
+    group(r'$saveTheme', () {
       test('should save theme to database', () async {
         when(
           () => mockDatabaseService.write(any(), any(), any()),
@@ -75,7 +75,7 @@ void main() {
       });
     });
 
-    group('Biometrics', () {
+    group(r'$Biometrics', () {
       test('getBiometricsEnabled should return value', () {
         when(
           () => mockDatabaseService.read(
@@ -101,7 +101,7 @@ void main() {
       });
     });
 
-    group('Onboarding', () {
+    group(r'$Onboarding', () {
       test('getOnboardingComplete should return value', () {
         when(
           () => mockDatabaseService.read(
@@ -127,7 +127,7 @@ void main() {
       });
     });
 
-    group('PasswordGenerationSettings', () {
+    group(r'$PasswordGenerationSettings', () {
       final tStrategy = PasswordGenerationStrategy.create(
         name: 'Custom',
         length: 12,

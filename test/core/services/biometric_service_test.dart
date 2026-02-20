@@ -14,8 +14,8 @@ void main() {
     biometricService = BiometricService(auth: mockAuth);
   });
 
-  group('BiometricService', () {
-    group('isBiometricAvailable', () {
+  group(r'$BiometricService', () {
+    group(r'$isBiometricAvailable', () {
       test(
         'should return true when hardware supports and can check biometrics',
         () async {
@@ -40,7 +40,7 @@ void main() {
       });
     });
 
-    group('authenticate', () {
+    group(r'$authenticate', () {
       test('should return true when authentication succeeds', () async {
         when(
           () => mockAuth.authenticate(

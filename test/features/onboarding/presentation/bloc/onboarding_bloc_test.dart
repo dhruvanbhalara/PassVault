@@ -61,7 +61,7 @@ void main() {
       expect(bloc.state, isA<OnboardingInitial>());
     });
 
-    group('OnboardingStarted', () {
+    group(r'$OnboardingStarted', () {
       blocTest<OnboardingBloc, OnboardingState>(
         'emits OnboardingComplete when onboarding was already done',
         setUp: () {
@@ -83,7 +83,7 @@ void main() {
       );
     });
 
-    group('BiometricSetupCompleted', () {
+    group(r'$BiometricSetupCompleted', () {
       blocTest<OnboardingBloc, OnboardingState>(
         'saves biometrics, marks onboarding complete, and cleans up steps',
         setUp: () {
@@ -108,7 +108,7 @@ void main() {
       );
     });
 
-    group('OnboardingSkipped', () {
+    group(r'$OnboardingSkipped', () {
       blocTest<OnboardingBloc, OnboardingState>(
         'marks onboarding complete and emits OnboardingComplete',
         setUp: () {
@@ -128,7 +128,7 @@ void main() {
       );
     });
 
-    group('BiometricAuthRequested', () {
+    group(r'$BiometricAuthRequested', () {
       blocTest<OnboardingBloc, OnboardingState>(
         'emits [BiometricAuthInProgress, OnboardingComplete] on success',
         setUp: () {

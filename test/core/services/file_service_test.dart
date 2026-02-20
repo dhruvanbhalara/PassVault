@@ -12,7 +12,7 @@ void main() {
     fileService = FileServiceImpl();
   });
 
-  group('FileServiceImpl', () {
+  group(r'$FileServiceImpl', () {
     // These tests are difficult to run as pure unit tests because they use dart:io File.
     // They are more like smoke tests or integration tests.
     // However, to satisfy the Mirror Rule, we provide the file.

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -146,5 +148,154 @@ void main() {
       act: (bloc) => bloc.add(const LoadPasswords()),
       expect: () => [const PasswordLoading(), const PasswordError('error')],
     );
+
+    group('Error and Fallback branches', () {
+      blocTest<PasswordBloc, PasswordState>(
+        'on AddPassword should reload if state is not PasswordLoaded',
+        build: () {
+          when(
+            () => mockSavePassword(any()),
+          ).thenAnswer((_) async => const Success(null));
+          when(
+            () => mockGetPasswords(),
+          ).thenAnswer((_) async => Success([tEntry]));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(AddPassword(tEntry)),
+        expect: () => [
+          const PasswordLoading(),
+          PasswordLoaded([tEntry]),
+        ],
+        verify: (_) {
+          verify(() => mockSavePassword(any())).called(1);
+          verify(() => mockGetPasswords()).called(1);
+        },
+      );
+
+      blocTest<PasswordBloc, PasswordState>(
+        'on UpdatePassword should reload if state is not PasswordLoaded',
+        build: () {
+          when(
+            () => mockSavePassword(any()),
+          ).thenAnswer((_) async => const Success(null));
+          when(
+            () => mockGetPasswords(),
+          ).thenAnswer((_) async => Success([tEntry]));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(UpdatePassword(tEntry)),
+        expect: () => [
+          const PasswordLoading(),
+          PasswordLoaded([tEntry]),
+        ],
+      );
+
+      blocTest<PasswordBloc, PasswordState>(
+        'on DeletePassword should reload if state is not PasswordLoaded',
+        build: () {
+          when(
+            () => mockDeletePassword(any()),
+          ).thenAnswer((_) async => const Success(null));
+          when(
+            () => mockGetPasswords(),
+          ).thenAnswer((_) async => Success([tEntry]));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(const DeletePassword('1')),
+        expect: () => [
+          const PasswordLoading(),
+          PasswordLoaded([tEntry]),
+        ],
+      );
+
+      blocTest<PasswordBloc, PasswordState>(
+        'on AddPassword emits PasswordError on failure',
+        build: () {
+          when(
+            () => mockSavePassword(any()),
+          ).thenAnswer((_) async => const Error(DatabaseFailure('fail')));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(AddPassword(tEntry)),
+        expect: () => [const PasswordError('fail')],
+      );
+
+      blocTest<PasswordBloc, PasswordState>(
+        'on UpdatePassword emits PasswordError on failure',
+        build: () {
+          when(
+            () => mockSavePassword(any()),
+          ).thenAnswer((_) async => const Error(DatabaseFailure('fail')));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(UpdatePassword(tEntry)),
+        expect: () => [const PasswordError('fail')],
+      );
+
+      blocTest<PasswordBloc, PasswordState>(
+        'on DeletePassword emits PasswordError on failure',
+        build: () {
+          when(
+            () => mockDeletePassword(any()),
+          ).thenAnswer((_) async => const Error(DatabaseFailure('fail')));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(const DeletePassword('1')),
+        expect: () => [const PasswordError('fail')],
+      );
+    });
+
+    group('External Data Changes & Close', () {
+      test(
+        'listens to repository dataChanges and fires LoadPasswords',
+        () async {
+          // We need a proper StreamController to emit events
+          final controller = StreamController<void>();
+          when(
+            () => mockRepository.dataChanges,
+          ).thenAnswer((_) => controller.stream);
+          when(
+            () => mockGetPasswords(),
+          ).thenAnswer((_) async => Success([tEntry]));
+
+          // Re-init bloc to pick up the mocked stream
+          final testBloc = PasswordBloc(
+            mockGetPasswords,
+            mockSavePassword,
+            mockDeletePassword,
+            mockRepository,
+          );
+
+          // Emit an event on the stream and wait for bloc to process it
+          controller.add(null);
+          await Future.delayed(Duration.zero);
+
+          verify(() => mockGetPasswords()).called(1);
+          await testBloc.close();
+          await controller.close();
+        },
+      );
+
+      test('close() cleans up subscriptions properly', () async {
+        final b = PasswordBloc(
+          mockGetPasswords,
+          mockSavePassword,
+          mockDeletePassword,
+          mockRepository,
+        );
+        await b.close();
+        // Just verify it doesn't crash on close
+        expect(b.state, isA<PasswordState>());
+      });
+    });
+
+    group('PasswordEvent props', () {
+      test('props are correct', () {
+        expect(const LoadPasswords().props, isEmpty);
+        expect(AddPassword(tEntry).props, [tEntry]);
+        expect(UpdatePassword(tEntry).props, [tEntry]);
+        expect(const DeletePassword('1').props, ['1']);
+      });
+    });
   });
 }

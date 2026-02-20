@@ -41,7 +41,43 @@ void main() {
       expect(settings.defaultStrategy.length, 16);
     });
 
-    group('copyWith', () {
+    group('PasswordGenerationStrategy', () {
+      test('copyWith updates fields correctly', () {
+        final strategy = PasswordGenerationStrategy.create(name: 'Initial');
+        final updated = strategy.copyWith(
+          name: 'Updated',
+          length: 20,
+          useNumbers: false,
+          useSpecialChars: false,
+          useUppercase: false,
+          useLowercase: false,
+          excludeAmbiguousChars: true,
+        );
+
+        expect(updated.name, 'Updated');
+        expect(updated.length, 20);
+        expect(updated.useNumbers, false);
+        expect(updated.useSpecialChars, false);
+        expect(updated.useUppercase, false);
+        expect(updated.useLowercase, false);
+        expect(updated.excludeAmbiguousChars, true);
+        expect(updated.id, strategy.id); // ID shouldn't change
+      });
+
+      test('fromJson uses defaults when fields are missing', () {
+        final strategy = PasswordGenerationStrategy.fromJson(const {});
+        expect(strategy.name, 'Custom');
+        expect(strategy.length, 16);
+        expect(strategy.useNumbers, true);
+        expect(strategy.useSpecialChars, true);
+        expect(strategy.useUppercase, true);
+        expect(strategy.useLowercase, true);
+        expect(strategy.excludeAmbiguousChars, false);
+        expect(strategy.id, isNotEmpty);
+      });
+    });
+
+    group(r'$copyWith', () {
       test('copies with new strategies', () {
         final strategy1 = PasswordGenerationStrategy.create(name: 's1');
         final strategy2 = PasswordGenerationStrategy.create(name: 's2');
@@ -106,6 +142,18 @@ void main() {
         expect(settings.defaultStrategyId, isNotEmpty);
       });
 
+      test('fromJson handles legacy format gracefully', () {
+        final legacyJson = <String, dynamic>{'length': 24, 'useNumbers': false};
+        final settings = PasswordGenerationSettings.fromJson(legacyJson);
+
+        expect(settings.strategies.length, 1);
+        final strategy = settings.strategies.first;
+        expect(strategy.name, 'Default');
+        expect(strategy.length, 24);
+        expect(strategy.useNumbers, false);
+        expect(settings.defaultStrategyId, strategy.id);
+      });
+
       test(
         'fromJson handles untyped List and Maps correctly (Hive generic output)',
         () {
@@ -126,7 +174,7 @@ void main() {
       );
     });
 
-    group('equality', () {
+    group(r'$equality', () {
       test('equal settings are equal', () {
         final strategy = PasswordGenerationStrategy.create(name: 'Test');
         final settings1 = PasswordGenerationSettings(

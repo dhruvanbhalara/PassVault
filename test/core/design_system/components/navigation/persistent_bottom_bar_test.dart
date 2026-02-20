@@ -3,7 +3,7 @@ import 'package:passvault/core/design_system/components/navigation/persistent_bo
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
-  group('PersistentBottomBar', () {
+  group(r'$PersistentBottomBar', () {
     late ScrollController scrollController;
 
     setUp(() {

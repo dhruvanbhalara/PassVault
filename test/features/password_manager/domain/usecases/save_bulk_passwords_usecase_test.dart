@@ -38,57 +38,45 @@ void main() {
     test(
       'should call repository.saveBulkPasswords with correct entries',
       () async {
-        // Arrange
         when(
           () => mockRepository.saveBulkPasswords(any()),
         ).thenAnswer((_) async => const Success(null));
 
-        // Act
         await useCase(testEntries);
 
-        // Assert
         verify(() => mockRepository.saveBulkPasswords(testEntries)).called(1);
       },
     );
 
     test('should return Success when repository succeeds', () async {
-      // Arrange
       when(
         () => mockRepository.saveBulkPasswords(any()),
       ).thenAnswer((_) async => const Success(null));
 
-      // Act
       final result = await useCase(testEntries);
 
-      // Assert
       expect(result, isA<Success<void>>());
     });
 
     test('should return Error when repository fails', () async {
-      // Arrange
       final failure = const DatabaseFailure('Save failed');
       when(
         () => mockRepository.saveBulkPasswords(any()),
       ).thenAnswer((_) async => Error(failure));
 
-      // Act
       final result = await useCase(testEntries);
 
-      // Assert
       expect(result, isA<Error<void>>());
       expect((result as Error).failure, failure);
     });
 
     test('should handle empty list', () async {
-      // Arrange
       when(
         () => mockRepository.saveBulkPasswords(any()),
       ).thenAnswer((_) async => const Success(null));
 
-      // Act
       final result = await useCase(<PasswordEntry>[]);
 
-      // Assert
       verify(
         () => mockRepository.saveBulkPasswords(<PasswordEntry>[]),
       ).called(1);
@@ -96,7 +84,6 @@ void main() {
     });
 
     test('should handle large list of entries', () async {
-      // Arrange
       final largeList = List<PasswordEntry>.generate(
         1000,
         (i) => PasswordEntry(
@@ -111,10 +98,8 @@ void main() {
         () => mockRepository.saveBulkPasswords(any()),
       ).thenAnswer((_) async => const Success(null));
 
-      // Act
       final result = await useCase(largeList);
 
-      // Assert
       verify(() => mockRepository.saveBulkPasswords(largeList)).called(1);
       expect(result, isA<Success<void>>());
     });

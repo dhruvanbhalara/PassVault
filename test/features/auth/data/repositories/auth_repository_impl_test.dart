@@ -16,7 +16,7 @@ void main() {
   });
 
   group('$AuthRepositoryImpl', () {
-    group('authenticate', () {
+    group(r'$authenticate', () {
       test('should delegate to BiometricService', () async {
         when(
           () => mockBiometricService.authenticate(),
@@ -36,7 +36,7 @@ void main() {
       });
     });
 
-    group('isBiometricAvailable', () {
+    group(r'$isBiometricAvailable', () {
       test('should delegate to BiometricService', () async {
         when(
           () => mockBiometricService.isBiometricAvailable,

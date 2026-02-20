@@ -3,7 +3,7 @@ import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 import '../../../helpers/test_helpers.dart';
 
 void main() {
-  group('Tokens', () {
+  group(r'$Tokens', () {
     test('$AppSpacing should follow 4/8px grid', () {
       expect(AppSpacing.xs, 4.0);
       expect(AppSpacing.s, 8.0);
