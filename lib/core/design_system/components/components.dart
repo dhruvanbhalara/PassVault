@@ -14,7 +14,7 @@ export 'common/app_icon_badge.dart';
 export 'common/app_list_option.dart';
 export 'common/app_radio_option_card.dart';
 export 'common/app_section_header.dart';
-export 'common/password_strength_indicator.dart';
+export 'common/password_strength_widget.dart';
 export 'common/strategy_option_tile.dart';
 // Feedback
 export 'feedback/app_loader.dart';
@@ -23,3 +23,5 @@ export 'feedback/app_shimmer_loading.dart';
 export 'inputs/app_text_field.dart';
 // Layout
 export 'layout/app_card.dart';
+// Navigation
+export 'navigation/persistent_bottom_bar.dart';

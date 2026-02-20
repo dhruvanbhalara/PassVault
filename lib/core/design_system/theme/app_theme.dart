@@ -212,6 +212,10 @@ class AppTheme {
           return scheme.outline;
         }),
       ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
+      ),
     );
   }
 }
