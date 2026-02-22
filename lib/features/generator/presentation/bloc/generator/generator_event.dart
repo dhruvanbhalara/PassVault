@@ -62,3 +62,11 @@ final class GeneratorExcludeAmbiguousToggled extends GeneratorEvent {
   @override
   List<Object?> get props => [value];
 }
+
+final class GeneratorStrategySelected extends GeneratorEvent {
+  final String strategyId;
+  const GeneratorStrategySelected(this.strategyId);
+
+  @override
+  List<Object?> get props => [strategyId];
+}

@@ -28,6 +28,7 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
     on<GeneratorNumbersToggled>(_onNumbersToggled);
     on<GeneratorSymbolsToggled>(_onSymbolsToggled);
     on<GeneratorExcludeAmbiguousToggled>(_onExcludeAmbiguousToggled);
+    on<GeneratorStrategySelected>(_onStrategySelected);
 
     add(const GeneratorStarted());
   }
@@ -38,12 +39,12 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
       (failure) => PasswordGenerationSettings.initial(),
       (value) => value,
     );
-    emit(_buildGeneratedState(settings.defaultStrategy));
+    emit(_buildGeneratedState(settings.defaultStrategy, settings: settings));
   }
 
   void _onRequested(GeneratorRequested event, Emitter<GeneratorState> emit) {
-    if (state case GeneratorLoaded(:final strategy)) {
-      emit(_buildGeneratedState(strategy));
+    if (state case GeneratorLoaded(:final strategy, :final settings)) {
+      emit(_buildGeneratedState(strategy, settings: settings));
     }
   }
 
@@ -51,8 +52,13 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
     GeneratorLengthChanged event,
     Emitter<GeneratorState> emit,
   ) {
-    if (state case GeneratorLoaded(:final strategy)) {
-      emit(_buildGeneratedState(strategy.copyWith(length: event.length)));
+    if (state case GeneratorLoaded(:final strategy, :final settings)) {
+      emit(
+        _buildGeneratedState(
+          strategy.copyWith(length: event.length),
+          settings: settings,
+        ),
+      );
     }
   }
 
@@ -60,8 +66,13 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
     GeneratorUppercaseToggled event,
     Emitter<GeneratorState> emit,
   ) {
-    if (state case GeneratorLoaded(:final strategy)) {
-      emit(_buildGeneratedState(strategy.copyWith(useUppercase: event.value)));
+    if (state case GeneratorLoaded(:final strategy, :final settings)) {
+      emit(
+        _buildGeneratedState(
+          strategy.copyWith(useUppercase: event.value),
+          settings: settings,
+        ),
+      );
     }
   }
 
@@ -69,8 +80,13 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
     GeneratorLowercaseToggled event,
     Emitter<GeneratorState> emit,
   ) {
-    if (state case GeneratorLoaded(:final strategy)) {
-      emit(_buildGeneratedState(strategy.copyWith(useLowercase: event.value)));
+    if (state case GeneratorLoaded(:final strategy, :final settings)) {
+      emit(
+        _buildGeneratedState(
+          strategy.copyWith(useLowercase: event.value),
+          settings: settings,
+        ),
+      );
     }
   }
 
@@ -78,8 +94,13 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
     GeneratorNumbersToggled event,
     Emitter<GeneratorState> emit,
   ) {
-    if (state case GeneratorLoaded(:final strategy)) {
-      emit(_buildGeneratedState(strategy.copyWith(useNumbers: event.value)));
+    if (state case GeneratorLoaded(:final strategy, :final settings)) {
+      emit(
+        _buildGeneratedState(
+          strategy.copyWith(useNumbers: event.value),
+          settings: settings,
+        ),
+      );
     }
   }
 
@@ -87,9 +108,12 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
     GeneratorSymbolsToggled event,
     Emitter<GeneratorState> emit,
   ) {
-    if (state case GeneratorLoaded(:final strategy)) {
+    if (state case GeneratorLoaded(:final strategy, :final settings)) {
       emit(
-        _buildGeneratedState(strategy.copyWith(useSpecialChars: event.value)),
+        _buildGeneratedState(
+          strategy.copyWith(useSpecialChars: event.value),
+          settings: settings,
+        ),
       );
     }
   }
@@ -98,16 +122,36 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
     GeneratorExcludeAmbiguousToggled event,
     Emitter<GeneratorState> emit,
   ) {
-    if (state case GeneratorLoaded(:final strategy)) {
+    if (state case GeneratorLoaded(:final strategy, :final settings)) {
       emit(
         _buildGeneratedState(
           strategy.copyWith(excludeAmbiguousChars: event.value),
+          settings: settings,
         ),
       );
     }
   }
 
-  GeneratorLoaded _buildGeneratedState(PasswordGenerationStrategy strategy) {
+  void _onStrategySelected(
+    GeneratorStrategySelected event,
+    Emitter<GeneratorState> emit,
+  ) {
+    if (state case GeneratorLoaded(:final strategy, :final settings)) {
+      if (settings == null) return;
+      if (strategy.id == event.strategyId) return;
+
+      final selectedStrategy = settings.strategies.firstWhere(
+        (s) => s.id == event.strategyId,
+        orElse: () => settings.defaultStrategy,
+      );
+      emit(_buildGeneratedState(selectedStrategy, settings: settings));
+    }
+  }
+
+  GeneratorLoaded _buildGeneratedState(
+    PasswordGenerationStrategy strategy, {
+    PasswordGenerationSettings? settings,
+  }) {
     final hasCharacterSet =
         strategy.useUppercase ||
         strategy.useLowercase ||
@@ -119,6 +163,7 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
         strategy: strategy,
         generatedPassword: '',
         strength: 0.0,
+        settings: settings,
       );
     }
 
@@ -136,6 +181,7 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
       strategy: strategy,
       generatedPassword: generatedPassword,
       strength: strength,
+      settings: settings,
     );
   }
 }

@@ -15,13 +15,15 @@ final class GeneratorLoaded extends GeneratorState {
   final PasswordGenerationStrategy strategy;
   final String generatedPassword;
   final double strength;
+  final PasswordGenerationSettings? settings;
 
   const GeneratorLoaded({
     required this.strategy,
     required this.generatedPassword,
     required this.strength,
+    this.settings,
   });
 
   @override
-  List<Object?> get props => [strategy, generatedPassword, strength];
+  List<Object?> get props => [strategy, generatedPassword, strength, settings];
 }

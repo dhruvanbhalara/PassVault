@@ -1,6 +1,7 @@
 import 'package:passvault/features/generator/presentation/bloc/generator/generator_bloc.dart';
 import 'package:passvault/features/generator/presentation/generator_screen.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
+import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 
 import '../../../helpers/test_helpers.dart';
 
@@ -9,8 +10,14 @@ class MockGeneratorBloc extends Mock implements GeneratorBloc {
   Stream<GeneratorState> get stream => Stream.value(state);
 }
 
+class MockSettingsBloc extends Mock implements SettingsBloc {
+  @override
+  Stream<SettingsState> get stream => Stream.value(state);
+}
+
 void main() {
   late MockGeneratorBloc mockGeneratorBloc;
+  late MockSettingsBloc mockSettingsBloc;
   late AppLocalizations l10n;
 
   const strategy = PasswordGenerationStrategy(
@@ -24,10 +31,26 @@ void main() {
     excludeAmbiguousChars: true,
   );
 
+  const anotherStrategy = PasswordGenerationStrategy(
+    id: 'another',
+    name: 'Another',
+  );
+
+  const settings = PasswordGenerationSettings(
+    strategies: [strategy, anotherStrategy],
+    defaultStrategyId: 'strategy',
+  );
+
   const loadedState = GeneratorLoaded(
     strategy: strategy,
     generatedPassword: 'Abc123\$%',
     strength: 0.8,
+    settings: settings,
+  );
+
+  const settingsState = SettingsLoaded(
+    useBiometrics: false,
+    passwordSettings: settings,
   );
 
   setUpAll(() async {
@@ -35,18 +58,25 @@ void main() {
     registerFallbackValue(const GeneratorRequested());
     registerFallbackValue(const GeneratorExcludeAmbiguousToggled(false));
     registerFallbackValue(const GeneratorLengthChanged(17));
+    registerFallbackValue(const GeneratorStrategySelected('another'));
   });
 
   setUp(() {
     mockGeneratorBloc = MockGeneratorBloc();
+    mockSettingsBloc = MockSettingsBloc();
     when(() => mockGeneratorBloc.state).thenReturn(loadedState);
     when(() => mockGeneratorBloc.close()).thenAnswer((_) async {});
+    when(() => mockSettingsBloc.state).thenReturn(settingsState);
+    when(() => mockSettingsBloc.close()).thenAnswer((_) async {});
   });
 
   Future<void> loadScreen(WidgetTester tester) async {
     await tester.pumpApp(
-      BlocProvider<GeneratorBloc>.value(
-        value: mockGeneratorBloc,
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<GeneratorBloc>.value(value: mockGeneratorBloc),
+          BlocProvider<SettingsBloc>.value(value: mockSettingsBloc),
+        ],
         child: const GeneratorScreen(),
       ),
     );
@@ -108,6 +138,27 @@ void main() {
 
       verify(
         () => mockGeneratorBloc.add(const GeneratorLengthChanged(17)),
+      ).called(1);
+    });
+
+    testWidgets('dispatches strategy change event on dropdown select', (
+      tester,
+    ) async {
+      await loadScreen(tester);
+
+      final dropdownFinder = find.byKey(
+        const Key('generator_strategy_dropdown'),
+      );
+      expect(dropdownFinder, findsOneWidget);
+
+      await tester.tap(dropdownFinder);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Another').last);
+      await tester.pumpAndSettle();
+
+      verify(
+        () => mockGeneratorBloc.add(const GeneratorStrategySelected('another')),
       ).called(1);
     });
   });

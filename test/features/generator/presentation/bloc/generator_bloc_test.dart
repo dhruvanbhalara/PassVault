@@ -104,5 +104,72 @@ void main() {
         }
       },
     );
+
+    blocTest<GeneratorBloc, GeneratorState>(
+      'emits new strategy on GeneratorStrategySelected',
+      build: () {
+        when(() => mockGetSettingsUseCase()).thenReturn(
+          const Success(
+            PasswordGenerationSettings(
+              strategies: [
+                PasswordGenerationStrategy(
+                  id: 'default-strategy',
+                  name: 'Default',
+                ),
+                PasswordGenerationStrategy(
+                  id: 'custom-strategy',
+                  name: 'Custom',
+                  length: 32,
+                ),
+              ],
+              defaultStrategyId: 'default-strategy',
+            ),
+          ),
+        );
+        return GeneratorBloc(
+          mockGeneratePasswordUseCase,
+          mockEstimatePasswordStrengthUseCase,
+          mockGetSettingsUseCase,
+        );
+      },
+      act: (bloc) =>
+          bloc.add(const GeneratorStrategySelected('custom-strategy')),
+      verify: (bloc) {
+        if (bloc.state case GeneratorLoaded(:final strategy)) {
+          expect(strategy.id, 'custom-strategy');
+          expect(strategy.length, 32);
+        } else {
+          fail('State should be GeneratorLoaded');
+        }
+      },
+    );
+
+    blocTest<GeneratorBloc, GeneratorState>(
+      'does not emit new state when same strategy is selected',
+      build: () {
+        when(() => mockGetSettingsUseCase()).thenReturn(
+          const Success(
+            PasswordGenerationSettings(
+              strategies: [
+                PasswordGenerationStrategy(
+                  id: 'default-strategy',
+                  name: 'Default',
+                ),
+              ],
+              defaultStrategyId: 'default-strategy',
+            ),
+          ),
+        );
+        return GeneratorBloc(
+          mockGeneratePasswordUseCase,
+          mockEstimatePasswordStrengthUseCase,
+          mockGetSettingsUseCase,
+        );
+      },
+      act: (bloc) =>
+          bloc.add(const GeneratorStrategySelected('default-strategy')),
+      skip: 1,
+      expect: () => <GeneratorState>[],
+    );
   });
 }
