@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -18,26 +17,6 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
-  final ValueNotifier<bool> _isVisibleNotifier = ValueNotifier<bool>(true);
-
-  @override
-  void dispose() {
-    _isVisibleNotifier.dispose();
-    super.dispose();
-  }
-
-  void _onScroll(ScrollNotification notification) {
-    if (notification is UserScrollNotification) {
-      if (notification.direction == ScrollDirection.reverse &&
-          _isVisibleNotifier.value) {
-        _isVisibleNotifier.value = false;
-      } else if (notification.direction == ScrollDirection.forward &&
-          !_isVisibleNotifier.value) {
-        _isVisibleNotifier.value = true;
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -45,63 +24,49 @@ class _MainShellState extends State<MainShell> {
     const reserveSpace = kBottomNavigationBarHeight + AppSpacing.m;
 
     return Scaffold(
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (notification) {
-          _onScroll(notification);
-          return false;
-        },
-        child: Stack(
-          children: [
-            // Background Content
-            MediaQuery(
-              data: mediaQuery.copyWith(
-                padding: mediaQuery.padding.copyWith(
-                  bottom: mediaQuery.padding.bottom + reserveSpace,
-                ),
-                viewPadding: mediaQuery.viewPadding.copyWith(
-                  bottom: mediaQuery.viewPadding.bottom + reserveSpace,
-                ),
+      body: Stack(
+        children: [
+          // Background Content
+          MediaQuery(
+            data: mediaQuery.copyWith(
+              padding: mediaQuery.padding.copyWith(
+                bottom: mediaQuery.padding.bottom + reserveSpace,
               ),
-              child: widget.navigationShell,
+              viewPadding: mediaQuery.viewPadding.copyWith(
+                bottom: mediaQuery.viewPadding.bottom + reserveSpace,
+              ),
             ),
+            child: widget.navigationShell,
+          ),
 
-            // Floating Navigation Bar
-            ValueListenableBuilder<bool>(
-              valueListenable: _isVisibleNotifier,
-              builder: (context, isVisible, child) {
-                return AnimatedPositioned(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  left: 0,
-                  right: 0,
-                  bottom: isVisible ? 0 : -reserveSpace,
-                  child: child!,
-                );
-              },
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.m,
-                    0,
-                    AppSpacing.m,
-                    AppSpacing.m,
-                  ),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 400),
-                      child: _BottomNavBar(
-                        currentIndex: widget.navigationShell.currentIndex,
-                        onTap: (index) => _onTabTapped(context, index),
-                      ),
+          // Floating Navigation Bar (Permanently Visible)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.m,
+                  0,
+                  AppSpacing.m,
+                  AppSpacing.m,
+                ),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 400),
+                    child: _BottomNavBar(
+                      currentIndex: widget.navigationShell.currentIndex,
+                      onTap: (index) => _onTabTapped(context, index),
                     ),
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
