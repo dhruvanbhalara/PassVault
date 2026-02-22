@@ -148,8 +148,11 @@ class AppRouter {
             routes: [
               ShellRoute(
                 builder: (context, state, child) {
-                  return BlocProvider(
-                    create: (_) => getIt<GeneratorBloc>(),
+                  return MultiBlocProvider(
+                    providers: [
+                      BlocProvider(create: (_) => getIt<GeneratorBloc>()),
+                      BlocProvider.value(value: getIt<SettingsBloc>()),
+                    ],
                     child: child,
                   );
                 },
