@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/config/routes/app_routes.dart';
+import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 
@@ -23,6 +24,7 @@ class StrategyScreen extends StatelessWidget {
       backgroundColor: theme.background,
       floatingActionButton: FloatingActionButton(
         key: const Key('add_strategy_fab'),
+        heroTag: 'add_strategy_fab',
         onPressed: () {
           _showEditor(context, 'new');
         },
@@ -34,13 +36,23 @@ class StrategyScreen extends StatelessWidget {
 
           return CustomScrollView(
             slivers: [
-              SliverAppBar(
-                title: Text(l10n.strategy),
-                centerTitle: true,
-                floating: true,
-                pinned: true,
-                scrolledUnderElevation: 0,
-                backgroundColor: theme.background,
+              SliverToBoxAdapter(
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.l,
+                      AppSpacing.m,
+                      AppSpacing.l,
+                      AppSpacing.s,
+                    ),
+                    child: PageHeader(
+                      title: l10n.strategy,
+                      showBack: true,
+                      onBack: () => context.pop(),
+                    ),
+                  ),
+                ),
               ),
               if (settings.strategies.isEmpty)
                 EmptyStrategiesPlaceholder(l10n: l10n, theme: theme)

@@ -69,9 +69,28 @@ class _StrategyEditorScreenState extends State<StrategyEditorScreen> {
 
     if (!_initialized) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.errorOccurred)),
-        body: Center(
-          child: Text('${l10n.errorOccurred}: ${l10n.noStrategiesFound}'),
+        body: SafeArea(
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.l,
+              AppSpacing.m,
+              AppSpacing.l,
+              AppSpacing.m,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PageHeader(
+                  title: l10n.errorOccurred,
+                  showBack: true,
+                  onBack: () => context.pop(),
+                ),
+                const SizedBox(height: AppSpacing.l),
+                Text('${l10n.errorOccurred}: ${l10n.noStrategiesFound}'),
+              ],
+            ),
+          ),
         ),
       );
     }
@@ -85,6 +104,7 @@ class _StrategyEditorScreenState extends State<StrategyEditorScreen> {
             scrollController: _scrollController,
             child: FloatingActionButton.extended(
               key: const Key('strategy_editor_save_fab'),
+              heroTag: 'strategy_editor_save_fab',
               onPressed: state is SettingsLoading ? null : _saveStrategy,
               backgroundColor: theme.primary,
               foregroundColor: theme.onPrimary,
@@ -101,13 +121,23 @@ class _StrategyEditorScreenState extends State<StrategyEditorScreen> {
           body: CustomScrollView(
             controller: _scrollController,
             slivers: [
-              SliverAppBar(
-                centerTitle: true,
-                title: Text(title),
-                floating: true,
-                pinned: true,
-                scrolledUnderElevation: 0,
-                backgroundColor: theme.background,
+              SliverToBoxAdapter(
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.l,
+                      AppSpacing.m,
+                      AppSpacing.l,
+                      AppSpacing.s,
+                    ),
+                    child: PageHeader(
+                      title: title,
+                      showBack: true,
+                      onBack: () => context.pop(),
+                    ),
+                  ),
+                ),
               ),
               SliverPadding(
                 padding: const EdgeInsets.all(AppSpacing.l),

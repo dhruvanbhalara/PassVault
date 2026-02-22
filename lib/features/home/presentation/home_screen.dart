@@ -17,23 +17,29 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
     final l10n = context.l10n;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         key: const Key('home_add_password_fab'),
+        heroTag: 'home_add_password_fab',
         onPressed: () => context.push(AppRoutes.addPassword),
         child: const Icon(LucideIcons.plus),
       ),
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            centerTitle: true,
-            title: Text(l10n.vault),
-            floating: true,
-            pinned: true,
-            scrolledUnderElevation: 0,
-            backgroundColor: theme.background,
+          SliverToBoxAdapter(
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.l,
+                  AppSpacing.m,
+                  AppSpacing.l,
+                  AppSpacing.s,
+                ),
+                child: PageHeader(title: l10n.vault),
+              ),
+            ),
           ),
           BlocBuilder<PasswordBloc, PasswordState>(
             builder: (context, state) {

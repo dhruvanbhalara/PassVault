@@ -144,6 +144,7 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
             scrollController: _scrollController,
             child: FloatingActionButton.extended(
               key: const Key('add_edit_save_button'),
+              heroTag: 'add_edit_save_button',
               onPressed: state is AddEditSaving
                   ? null
                   : () => _handleSave(context),
@@ -165,15 +166,25 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
             child: CustomScrollView(
               controller: _scrollController,
               slivers: [
-                SliverAppBar(
-                  centerTitle: true,
-                  title: Text(
-                    widget.id == null ? l10n.addPassword : l10n.editPassword,
+                SliverToBoxAdapter(
+                  child: SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.l,
+                        AppSpacing.m,
+                        AppSpacing.l,
+                        AppSpacing.s,
+                      ),
+                      child: PageHeader(
+                        title: widget.id == null
+                            ? l10n.addPassword
+                            : l10n.editPassword,
+                        showBack: true,
+                        onBack: () => Navigator.of(context).maybePop(),
+                      ),
+                    ),
                   ),
-                  floating: true,
-                  pinned: true,
-                  scrolledUnderElevation: 0,
-                  backgroundColor: theme.background,
                 ),
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(

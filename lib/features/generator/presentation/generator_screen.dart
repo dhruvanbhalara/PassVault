@@ -7,47 +7,34 @@ import 'package:passvault/features/generator/presentation/bloc/generator/generat
 
 import 'widgets/generator_sections.dart';
 
-class GeneratorScreen extends StatefulWidget {
+class GeneratorScreen extends StatelessWidget {
   const GeneratorScreen({super.key});
-
-  @override
-  State<GeneratorScreen> createState() => _GeneratorViewState();
-}
-
-class _GeneratorViewState extends State<GeneratorScreen> {
-  late ScrollController _scrollController;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         key: const Key('generator_generate_fab'),
+        heroTag: 'generator_generate_fab',
         onPressed: () =>
             context.read<GeneratorBloc>().add(const GeneratorRequested()),
         child: const Icon(LucideIcons.refreshCw),
       ),
       body: CustomScrollView(
-        controller: _scrollController,
         slivers: [
-          SliverAppBar(
-            centerTitle: true,
-            title: Text(context.l10n.passwordGenerator),
-            floating: true,
-            pinned: true,
-            scrolledUnderElevation: 0,
-            backgroundColor: context.theme.background,
+          SliverToBoxAdapter(
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.l,
+                  AppSpacing.m,
+                  AppSpacing.l,
+                  AppSpacing.s,
+                ),
+                child: PageHeader(title: context.l10n.passwordGenerator),
+              ),
+            ),
           ),
           BlocBuilder<GeneratorBloc, GeneratorState>(
             builder: (context, state) {

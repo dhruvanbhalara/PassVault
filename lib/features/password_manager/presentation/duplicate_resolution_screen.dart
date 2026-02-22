@@ -16,7 +16,6 @@ class DuplicateResolutionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
     final isAmoled = context.isAmoled;
     final l10n = context.l10n;
 
@@ -65,12 +64,23 @@ class DuplicateResolutionScreen extends StatelessWidget {
                 ),
                 body: CustomScrollView(
                   slivers: [
-                    SliverAppBar(
-                      title: Text(l10n.resolveDuplicatesTitle),
-                      floating: false,
-                      pinned: true,
-                      scrolledUnderElevation: 0,
-                      backgroundColor: theme.background,
+                    SliverToBoxAdapter(
+                      child: SafeArea(
+                        bottom: false,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            AppSpacing.l,
+                            AppSpacing.m,
+                            AppSpacing.l,
+                            AppSpacing.s,
+                          ),
+                          child: PageHeader(
+                            title: l10n.resolveDuplicatesTitle,
+                            showBack: true,
+                            onBack: () => context.pop(),
+                          ),
+                        ),
+                      ),
                     ),
                     SliverPersistentHeader(
                       pinned: false,

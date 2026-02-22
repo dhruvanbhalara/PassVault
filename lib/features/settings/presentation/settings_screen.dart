@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/config/routes/app_routes.dart';
+import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_bloc.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
@@ -65,15 +66,19 @@ class SettingsScreen extends StatelessWidget {
       child: Scaffold(
         body: CustomScrollView(
           slivers: [
-            // App Bar
-            SliverAppBar(
-              centerTitle: true,
-              title: Text(l10n.settings),
-              floating: true,
-              snap: true,
-              pinned: false,
-              scrolledUnderElevation: 0,
-              backgroundColor: theme.background,
+            SliverToBoxAdapter(
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.l,
+                    AppSpacing.m,
+                    AppSpacing.l,
+                    AppSpacing.s,
+                  ),
+                  child: PageHeader(title: l10n.settings),
+                ),
+              ),
             ),
 
             // Security Section

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:passvault/core/design_system/theme/app_animations.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
@@ -94,6 +95,7 @@ class _BottomNavBar extends StatelessWidget {
     final isAmoled = context.isAmoled;
     final themeType = _resolveThemeType(context);
     final l10n = context.l10n;
+    const itemCount = 3;
 
     return SizedBox(
       height: kBottomNavigationBarHeight,
@@ -101,35 +103,71 @@ class _BottomNavBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m),
         child: DecoratedBox(
           decoration: _buildDecoration(colors, themeType),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _NavItem(
-                icon: LucideIcons.house,
-                semanticsLabel: l10n.tabSemanticsLabel(l10n.vault),
-                isActive: currentIndex == 0,
-                activeColor: colors.primary,
-                inactiveColor: _inactiveColor(colors, isAmoled),
-                onTap: () => onTap(0),
-              ),
-              _NavItem(
-                icon: LucideIcons.shield,
-                semanticsLabel: l10n.tabSemanticsLabel(l10n.generator),
-                isActive: currentIndex == 1,
-                activeColor: colors.primary,
-                inactiveColor: _inactiveColor(colors, isAmoled),
-                onTap: () => onTap(1),
-              ),
-              _NavItem(
-                icon: LucideIcons.settings,
-                semanticsLabel: l10n.tabSemanticsLabel(l10n.settings),
-                isActive: currentIndex == 2,
-                activeColor: colors.primary,
-                inactiveColor: _inactiveColor(colors, isAmoled),
-                onTap: () => onTap(2),
-              ),
-            ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final itemWidth = constraints.maxWidth / itemCount;
+              const indicatorSize = AppIconSize.xxxl;
+              final indicatorOffset =
+                  (itemWidth - indicatorSize) / 2 + itemWidth * currentIndex;
+
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  AnimatedPositioned(
+                    duration: AppDuration.slow,
+                    curve: AppCurves.emphasizeEntrance,
+                    left: indicatorOffset,
+                    child: Container(
+                      width: indicatorSize,
+                      height: indicatorSize,
+                      decoration: BoxDecoration(
+                        color: colors.primary.withValues(alpha: 0.16),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: colors.primary.withValues(alpha: 0.25),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _NavItem(
+                        width: itemWidth,
+                        icon: LucideIcons.house,
+                        semanticsLabel: l10n.tabSemanticsLabel(l10n.vault),
+                        isActive: currentIndex == 0,
+                        activeColor: colors.primary,
+                        inactiveColor: _inactiveColor(colors, isAmoled),
+                        onTap: () => onTap(0),
+                      ),
+                      _NavItem(
+                        width: itemWidth,
+                        icon: LucideIcons.shield,
+                        semanticsLabel: l10n.tabSemanticsLabel(l10n.generator),
+                        isActive: currentIndex == 1,
+                        activeColor: colors.primary,
+                        inactiveColor: _inactiveColor(colors, isAmoled),
+                        onTap: () => onTap(1),
+                      ),
+                      _NavItem(
+                        width: itemWidth,
+                        icon: LucideIcons.settings,
+                        semanticsLabel: l10n.tabSemanticsLabel(l10n.settings),
+                        isActive: currentIndex == 2,
+                        activeColor: colors.primary,
+                        inactiveColor: _inactiveColor(colors, isAmoled),
+                        onTap: () => onTap(2),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -180,7 +218,7 @@ class _BottomNavBar extends StatelessWidget {
           border: Border.all(color: colors.outline.withValues(alpha: 0.5)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
+              color: colors.cardShadow.color.withValues(alpha: 0.35),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -206,6 +244,7 @@ class _BottomNavBar extends StatelessWidget {
 /// A single bottom navigation item with icon and label.
 class _NavItem extends StatelessWidget {
   const _NavItem({
+    required this.width,
     required this.icon,
     required this.semanticsLabel,
     required this.isActive,
@@ -214,6 +253,7 @@ class _NavItem extends StatelessWidget {
     required this.onTap,
   });
 
+  final double width;
   final IconData icon;
   final String semanticsLabel;
   final bool isActive;
@@ -234,9 +274,21 @@ class _NavItem extends StatelessWidget {
         containedInkWell: true,
         highlightShape: BoxShape.rectangle,
         child: SizedBox(
-          height: 60,
-          width: 80,
-          child: Center(child: Icon(icon, size: 24, color: color)),
+          height: kBottomNavigationBarHeight,
+          width: width,
+          child: Center(
+            child: AnimatedSlide(
+              duration: AppDuration.normal,
+              curve: AppCurves.standard,
+              offset: Offset(0, isActive ? -0.08 : 0),
+              child: AnimatedScale(
+                duration: AppDuration.normal,
+                curve: AppCurves.standard,
+                scale: isActive ? 1.15 : 1,
+                child: Icon(icon, size: 24, color: color),
+              ),
+            ),
+          ),
         ),
       ),
     );

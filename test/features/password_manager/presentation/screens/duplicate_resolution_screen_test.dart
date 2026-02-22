@@ -76,10 +76,7 @@ void main() {
 
       await loadScreen(tester, [testDuplicate]);
 
-      expect(
-        find.widgetWithText(AppBar, l10n.resolveDuplicatesTitle),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.resolveDuplicatesTitle), findsOneWidget);
       robot.expectTextVisible('Google');
       robot.expectTextVisible('user@gmail.com');
       robot.expectTextVisible(l10n.keepExistingTitle);
