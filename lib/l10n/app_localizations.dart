@@ -100,18 +100,6 @@ abstract class AppLocalizations {
   /// **'PassVault'**
   String get appName;
 
-  /// No description provided for @locked.
-  ///
-  /// In en, this message translates to:
-  /// **'Locked'**
-  String get locked;
-
-  /// No description provided for @unlockWithBiometrics.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlock with Biometrics'**
-  String get unlockWithBiometrics;
-
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:
@@ -147,12 +135,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password copied to clipboard'**
   String get passwordCopied;
-
-  /// No description provided for @delete.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete'**
-  String get delete;
 
   /// No description provided for @appearance.
   ///
@@ -208,12 +190,6 @@ abstract class AppLocalizations {
   /// **'Data Management'**
   String get dataManagement;
 
-  /// No description provided for @exportData.
-  ///
-  /// In en, this message translates to:
-  /// **'Export Data (JSON/CSV)'**
-  String get exportData;
-
   /// No description provided for @importData.
   ///
   /// In en, this message translates to:
@@ -262,60 +238,6 @@ abstract class AppLocalizations {
   /// **'An error occurred'**
   String get errorOccurred;
 
-  /// No description provided for @databaseError.
-  ///
-  /// In en, this message translates to:
-  /// **'Database error occurred'**
-  String get databaseError;
-
-  /// No description provided for @authError.
-  ///
-  /// In en, this message translates to:
-  /// **'Authentication error'**
-  String get authError;
-
-  /// No description provided for @securityError.
-  ///
-  /// In en, this message translates to:
-  /// **'Security violation or error'**
-  String get securityError;
-
-  /// No description provided for @migrationError.
-  ///
-  /// In en, this message translates to:
-  /// **'Data migration failed'**
-  String get migrationError;
-
-  /// No description provided for @fileReadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not read the file'**
-  String get fileReadError;
-
-  /// No description provided for @invalidFormatError.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid file format'**
-  String get invalidFormatError;
-
-  /// No description provided for @parsingError.
-  ///
-  /// In en, this message translates to:
-  /// **'Error parsing file content'**
-  String get parsingError;
-
-  /// No description provided for @noDataFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No valid data found'**
-  String get noDataFound;
-
-  /// No description provided for @success.
-  ///
-  /// In en, this message translates to:
-  /// **'Success'**
-  String get success;
-
   /// No description provided for @exportSuccess.
   ///
   /// In en, this message translates to:
@@ -327,42 +249,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Data imported successfully'**
   String get importSuccess;
-
-  /// No description provided for @biometricsNotSetup.
-  ///
-  /// In en, this message translates to:
-  /// **'Biometrics not set up or not available.'**
-  String get biometricsNotSetup;
-
-  /// No description provided for @enterAppWithoutBiometrics.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter without Biometrics'**
-  String get enterAppWithoutBiometrics;
-
-  /// No description provided for @exportJson.
-  ///
-  /// In en, this message translates to:
-  /// **'Export as JSON'**
-  String get exportJson;
-
-  /// No description provided for @exportCsv.
-  ///
-  /// In en, this message translates to:
-  /// **'Export as CSV'**
-  String get exportCsv;
-
-  /// No description provided for @importJson.
-  ///
-  /// In en, this message translates to:
-  /// **'Import from JSON'**
-  String get importJson;
-
-  /// No description provided for @importCsv.
-  ///
-  /// In en, this message translates to:
-  /// **'Import from CSV'**
-  String get importCsv;
 
   /// No description provided for @onboardingTitle1.
   ///
@@ -387,18 +273,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Access your credentials anywhere, anytime, without an internet connection. Total control, total privacy.'**
   String get onboardingDesc2;
-
-  /// No description provided for @onboardingTitle3.
-  ///
-  /// In en, this message translates to:
-  /// **'Biometric Access'**
-  String get onboardingTitle3;
-
-  /// No description provided for @onboardingDesc3.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlock your vault with a touch or a glance. Seamless security integrated with your device\'s biometric authentication.'**
-  String get onboardingDesc3;
 
   /// No description provided for @skip.
   ///
@@ -436,18 +310,6 @@ abstract class AppLocalizations {
   /// **'Biometrics not available'**
   String get biometricsNotAvailable;
 
-  /// No description provided for @noDataToExport.
-  ///
-  /// In en, this message translates to:
-  /// **'No password data to export'**
-  String get noDataToExport;
-
-  /// No description provided for @importFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to import data'**
-  String get importFailed;
-
   /// No description provided for @strategy.
   ///
   /// In en, this message translates to:
@@ -459,36 +321,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password Length'**
   String get passwordLength;
-
-  /// No description provided for @uppercase.
-  ///
-  /// In en, this message translates to:
-  /// **'Uppercase'**
-  String get uppercase;
-
-  /// No description provided for @lowercase.
-  ///
-  /// In en, this message translates to:
-  /// **'Lowercase'**
-  String get lowercase;
-
-  /// No description provided for @numbers.
-  ///
-  /// In en, this message translates to:
-  /// **'Numbers'**
-  String get numbers;
-
-  /// No description provided for @specialCharacters.
-  ///
-  /// In en, this message translates to:
-  /// **'Special Characters'**
-  String get specialCharacters;
-
-  /// No description provided for @characters.
-  ///
-  /// In en, this message translates to:
-  /// **'Characters'**
-  String get characters;
 
   /// No description provided for @excludeAmbiguous.
   ///
@@ -502,53 +334,11 @@ abstract class AppLocalizations {
   /// **'I, l, 1, O, 0'**
   String get excludeAmbiguousHint;
 
-  /// No description provided for @characterSets.
-  ///
-  /// In en, this message translates to:
-  /// **'Character Sets'**
-  String get characterSets;
-
   /// No description provided for @preview.
   ///
   /// In en, this message translates to:
   /// **'Preview'**
   String get preview;
-
-  /// No description provided for @refreshPreview.
-  ///
-  /// In en, this message translates to:
-  /// **'Refresh Preview'**
-  String get refreshPreview;
-
-  /// No description provided for @jsonBackupFormat.
-  ///
-  /// In en, this message translates to:
-  /// **'Structured format for backups'**
-  String get jsonBackupFormat;
-
-  /// No description provided for @csvSpreadsheetFormat.
-  ///
-  /// In en, this message translates to:
-  /// **'Spreadsheet compatible format'**
-  String get csvSpreadsheetFormat;
-
-  /// No description provided for @importFromJsonBackup.
-  ///
-  /// In en, this message translates to:
-  /// **'Import from JSON backup'**
-  String get importFromJsonBackup;
-
-  /// No description provided for @importFromSpreadsheet.
-  ///
-  /// In en, this message translates to:
-  /// **'Import from spreadsheet'**
-  String get importFromSpreadsheet;
-
-  /// No description provided for @options.
-  ///
-  /// In en, this message translates to:
-  /// **'Options'**
-  String get options;
 
   /// No description provided for @hintAppName.
   ///
@@ -568,36 +358,6 @@ abstract class AppLocalizations {
   /// **'••••••••••••'**
   String get hintPassword;
 
-  /// No description provided for @uppercaseHint.
-  ///
-  /// In en, this message translates to:
-  /// **'A-Z'**
-  String get uppercaseHint;
-
-  /// No description provided for @lowercaseHint.
-  ///
-  /// In en, this message translates to:
-  /// **'a-z'**
-  String get lowercaseHint;
-
-  /// No description provided for @numbersHint.
-  ///
-  /// In en, this message translates to:
-  /// **'0-9'**
-  String get numbersHint;
-
-  /// No description provided for @specialCharsHint.
-  ///
-  /// In en, this message translates to:
-  /// **'!@#\$%^&*'**
-  String get specialCharsHint;
-
-  /// No description provided for @wrongPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Incorrect password. Please try again.'**
-  String get wrongPassword;
-
   /// No description provided for @exportEncrypted.
   ///
   /// In en, this message translates to:
@@ -615,12 +375,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import from Encrypted (.pvault)'**
   String get importEncrypted;
-
-  /// No description provided for @importFromEncryptedBackup.
-  ///
-  /// In en, this message translates to:
-  /// **'Import password-protected backup'**
-  String get importFromEncryptedBackup;
 
   /// No description provided for @enterExportPassword.
   ///
@@ -652,35 +406,17 @@ abstract class AppLocalizations {
   /// **'Import'**
   String get import;
 
-  /// No description provided for @processing.
-  ///
-  /// In en, this message translates to:
-  /// **'Processing...'**
-  String get processing;
-
   /// No description provided for @databaseCleared.
   ///
   /// In en, this message translates to:
   /// **'Database cleared successfully'**
   String get databaseCleared;
 
-  /// No description provided for @fileNotFound.
-  ///
-  /// In en, this message translates to:
-  /// **'File not found'**
-  String get fileNotFound;
-
   /// No description provided for @clearDatabase.
   ///
   /// In en, this message translates to:
   /// **'Clear Database'**
   String get clearDatabase;
-
-  /// No description provided for @debugDeleteAllPasswords.
-  ///
-  /// In en, this message translates to:
-  /// **'Debug: Delete all passwords'**
-  String get debugDeleteAllPasswords;
 
   /// No description provided for @clearDatabaseTitle.
   ///
@@ -705,18 +441,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resolve Duplicates'**
   String get resolveDuplicatesTitle;
-
-  /// No description provided for @resolveRemainingDuplicates.
-  ///
-  /// In en, this message translates to:
-  /// **'Please resolve all {count} remaining duplicates'**
-  String resolveRemainingDuplicates(int count);
-
-  /// No description provided for @resolveCountDuplicates.
-  ///
-  /// In en, this message translates to:
-  /// **'Resolve {count} Duplicates'**
-  String resolveCountDuplicates(int count);
 
   /// No description provided for @duplicatesFoundCount.
   ///
@@ -814,12 +538,6 @@ abstract class AppLocalizations {
   /// **'Edit Strategy'**
   String get editStrategy;
 
-  /// No description provided for @setAsDefault.
-  ///
-  /// In en, this message translates to:
-  /// **'Set as Default'**
-  String get setAsDefault;
-
   /// No description provided for @generationStrategy.
   ///
   /// In en, this message translates to:
@@ -837,24 +555,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'e.g. High Security, PIN'**
   String get hintStrategyName;
-
-  /// No description provided for @minLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'16'**
-  String get minLabel;
-
-  /// No description provided for @maxLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'64'**
-  String get maxLabel;
-
-  /// No description provided for @strategySubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage your custom presets used for generating secure passwords.'**
-  String get strategySubtitle;
 
   /// No description provided for @noStrategiesDescription.
   ///
@@ -874,12 +574,6 @@ abstract class AppLocalizations {
   /// **'Create custom password presets for different needs. PINs, high-security phrases, or legacy formats—managed your way.'**
   String get onboardingDesc4;
 
-  /// No description provided for @activeDefaultLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Active Strategy'**
-  String get activeDefaultLabel;
-
   /// No description provided for @activeConfiguration.
   ///
   /// In en, this message translates to:
@@ -897,18 +591,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export Vault'**
   String get exportVault;
-
-  /// No description provided for @entryDetails.
-  ///
-  /// In en, this message translates to:
-  /// **'Entry Details'**
-  String get entryDetails;
-
-  /// No description provided for @resolveConflicts.
-  ///
-  /// In en, this message translates to:
-  /// **'Resolve Conflicts'**
-  String get resolveConflicts;
 
   /// No description provided for @resolveConflictsDesc.
   ///
@@ -1012,53 +694,11 @@ abstract class AppLocalizations {
   /// **'Symbols (!@#\$)'**
   String get symbolsLabel;
 
-  /// No description provided for @generateNew.
-  ///
-  /// In en, this message translates to:
-  /// **'Generate New'**
-  String get generateNew;
-
   /// No description provided for @copyPassword.
   ///
   /// In en, this message translates to:
   /// **'Copy Password'**
   String get copyPassword;
-
-  /// No description provided for @excellentSecurity.
-  ///
-  /// In en, this message translates to:
-  /// **'EXCELLENT SECURITY'**
-  String get excellentSecurity;
-
-  /// No description provided for @usernameEmailLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'USERNAME / EMAIL'**
-  String get usernameEmailLabel;
-
-  /// No description provided for @createdOnLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'CREATED ON'**
-  String get createdOnLabel;
-
-  /// No description provided for @lastModifiedLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'LAST MODIFIED'**
-  String get lastModifiedLabel;
-
-  /// No description provided for @launchWebsite.
-  ///
-  /// In en, this message translates to:
-  /// **'Launch Website'**
-  String get launchWebsite;
-
-  /// No description provided for @enableBiometricLogin.
-  ///
-  /// In en, this message translates to:
-  /// **'Enable Biometric Login'**
-  String get enableBiometricLogin;
 
   /// No description provided for @headingEnableBiometrics.
   ///
@@ -1083,120 +723,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enable Now'**
   String get enableNow;
-
-  /// No description provided for @skipForNow.
-  ///
-  /// In en, this message translates to:
-  /// **'Skip for Now'**
-  String get skipForNow;
-
-  /// No description provided for @biometricNotSupported.
-  ///
-  /// In en, this message translates to:
-  /// **'Your device does not support biometric authentication.'**
-  String get biometricNotSupported;
-
-  /// No description provided for @noBiometricsEnrolled.
-  ///
-  /// In en, this message translates to:
-  /// **'No Biometrics Enrolled'**
-  String get noBiometricsEnrolled;
-
-  /// No description provided for @noBiometricsEnrolledDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Please enroll a fingerprint or face in your device settings first, then try again.'**
-  String get noBiometricsEnrolledDesc;
-
-  /// No description provided for @confirmBiometricReason.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm your biometric to enable quick unlock'**
-  String get confirmBiometricReason;
-
-  /// No description provided for @biometricAuthFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Biometric authentication failed. Please try again.'**
-  String get biometricAuthFailed;
-
-  /// No description provided for @biometricSetupError.
-  ///
-  /// In en, this message translates to:
-  /// **'An error occurred during biometric setup.'**
-  String get biometricSetupError;
-
-  /// No description provided for @masterPasswordSetupTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Create Master Password'**
-  String get masterPasswordSetupTitle;
-
-  /// No description provided for @masterPasswordStepIndicator.
-  ///
-  /// In en, this message translates to:
-  /// **'Step 1 of 2'**
-  String get masterPasswordStepIndicator;
-
-  /// No description provided for @masterPasswordLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Create Password'**
-  String get masterPasswordLabel;
-
-  /// No description provided for @masterPasswordHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter your master password'**
-  String get masterPasswordHint;
-
-  /// No description provided for @showPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Show password'**
-  String get showPassword;
-
-  /// No description provided for @hidePassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Hide password'**
-  String get hidePassword;
-
-  /// No description provided for @confirmPasswordLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm Password'**
-  String get confirmPasswordLabel;
-
-  /// No description provided for @confirmPasswordHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Repeat your master password'**
-  String get confirmPasswordHint;
-
-  /// No description provided for @passwordsMatchError.
-  ///
-  /// In en, this message translates to:
-  /// **'Passwords don\'t match'**
-  String get passwordsMatchError;
-
-  /// No description provided for @masterPasswordSecurityTips.
-  ///
-  /// In en, this message translates to:
-  /// **'Use 12+ characters, mix upper/lowercase, numbers, and symbols for a strong password.'**
-  String get masterPasswordSecurityTips;
-
-  /// No description provided for @continueToBiometrics.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue to biometric setup'**
-  String get continueToBiometrics;
-
-  /// No description provided for @continueDisabledFixErrors.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue button disabled, fix password errors first'**
-  String get continueDisabledFixErrors;
 
   /// No description provided for @strength.
   ///
@@ -1252,24 +778,6 @@ abstract class AppLocalizations {
   /// **'Danger Zone'**
   String get dangerZone;
 
-  /// No description provided for @logout.
-  ///
-  /// In en, this message translates to:
-  /// **'Logout from PassVault'**
-  String get logout;
-
-  /// No description provided for @masterAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Master Account'**
-  String get masterAccount;
-
-  /// No description provided for @lastSyncedMock.
-  ///
-  /// In en, this message translates to:
-  /// **'Last synched: 2 mins ago'**
-  String get lastSyncedMock;
-
   /// No description provided for @tapToAuthenticate.
   ///
   /// In en, this message translates to:
@@ -1288,30 +796,6 @@ abstract class AppLocalizations {
   /// **'Biometric authentication is required to access your passwords.'**
   String get biometricAuthRequired;
 
-  /// No description provided for @searchPasswords.
-  ///
-  /// In en, this message translates to:
-  /// **'Search passwords...'**
-  String get searchPasswords;
-
-  /// No description provided for @searchPasswordsSemantics.
-  ///
-  /// In en, this message translates to:
-  /// **'Search passwords'**
-  String get searchPasswordsSemantics;
-
-  /// No description provided for @clearSearch.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear search'**
-  String get clearSearch;
-
-  /// No description provided for @searchYourVault.
-  ///
-  /// In en, this message translates to:
-  /// **'Search your vault'**
-  String get searchYourVault;
-
   /// No description provided for @vault.
   ///
   /// In en, this message translates to:
@@ -1329,36 +813,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Language'**
   String get language;
-
-  /// No description provided for @filterAll.
-  ///
-  /// In en, this message translates to:
-  /// **'All'**
-  String get filterAll;
-
-  /// No description provided for @filterFavorites.
-  ///
-  /// In en, this message translates to:
-  /// **'Favorites'**
-  String get filterFavorites;
-
-  /// No description provided for @filterWork.
-  ///
-  /// In en, this message translates to:
-  /// **'Work'**
-  String get filterWork;
-
-  /// No description provided for @filterSocial.
-  ///
-  /// In en, this message translates to:
-  /// **'Social'**
-  String get filterSocial;
-
-  /// No description provided for @filterPersonal.
-  ///
-  /// In en, this message translates to:
-  /// **'Personal'**
-  String get filterPersonal;
 
   /// No description provided for @optionIcon.
   ///
@@ -1413,30 +867,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'not selected'**
   String get notSelectedState;
-
-  /// No description provided for @serviceNameLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Service Name'**
-  String get serviceNameLabel;
-
-  /// No description provided for @enterServiceName.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter service name'**
-  String get enterServiceName;
-
-  /// No description provided for @enterUsername.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter username'**
-  String get enterUsername;
-
-  /// No description provided for @enterPasswordValidator.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter password'**
-  String get enterPasswordValidator;
 
   /// No description provided for @savePassword.
   ///
