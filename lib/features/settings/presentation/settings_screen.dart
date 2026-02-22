@@ -209,8 +209,15 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
 
-            // Bottom Padding
-            const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xxl)),
+            // Bottom Padding (reserve space for floating nav bar + safe area)
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height:
+                    AppSpacing.xxl +
+                    kBottomNavigationBarHeight +
+                    MediaQuery.paddingOf(context).bottom,
+              ),
+            ),
           ],
         ),
       ),

@@ -71,30 +71,37 @@ class _IntroScreenState extends State<IntroScreen>
       },
       child: Scaffold(
         body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: PageView(
-                  key: const Key('intro_page_view'),
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                  },
-                  children: slides,
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: true,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: PageView(
+                        key: const Key('intro_page_view'),
+                        controller: _pageController,
+                        onPageChanged: (index) {
+                          setState(() {
+                            _currentPage = index;
+                          });
+                        },
+                        children: slides,
+                      ),
+                    ),
+                    NavigationRow(
+                      currentPage: _currentPage,
+                      totalPages: slides.length,
+                      onSkip: _skipBiometric,
+                      onNext: () {
+                        _pageController.nextPage(
+                          duration: AppDuration.normal,
+                          curve: AppCurves.standard,
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              NavigationRow(
-                currentPage: _currentPage,
-                totalPages: slides.length,
-                onSkip: _skipBiometric,
-                onNext: () {
-                  _pageController.nextPage(
-                    duration: AppDuration.normal,
-                    curve: AppCurves.standard,
-                  );
-                },
               ),
             ],
           ),

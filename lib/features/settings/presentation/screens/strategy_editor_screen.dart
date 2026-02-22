@@ -71,25 +71,32 @@ class _StrategyEditorScreenState extends State<StrategyEditorScreen> {
       return Scaffold(
         body: SafeArea(
           bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.l,
-              AppSpacing.m,
-              AppSpacing.l,
-              AppSpacing.m,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                PageHeader(
-                  title: l10n.errorOccurred,
-                  showBack: true,
-                  onBack: () => context.pop(),
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.l,
+                    AppSpacing.m,
+                    AppSpacing.l,
+                    AppSpacing.m,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      PageHeader(
+                        title: l10n.errorOccurred,
+                        showBack: true,
+                        onBack: () => context.pop(),
+                      ),
+                      const SizedBox(height: AppSpacing.l),
+                      Text('${l10n.errorOccurred}: ${l10n.noStrategiesFound}'),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.l),
-                Text('${l10n.errorOccurred}: ${l10n.noStrategiesFound}'),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );

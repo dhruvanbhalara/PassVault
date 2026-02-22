@@ -221,7 +221,8 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                                   state: state,
                                   selectedStrategyId: _selectedStrategyId,
                                   onStrategyChanged: (value) {
-                                    if (value != null) {
+                                    if (value != null &&
+                                        value != _selectedStrategyId) {
                                       setState(
                                         () => _selectedStrategyId = value,
                                       );

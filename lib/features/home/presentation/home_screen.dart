@@ -18,76 +18,91 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    const fabSize = 56.0;
+    final fabBottomOffset =
+        AppSpacing.m + (kBottomNavigationBarHeight - fabSize) / 2 + bottomInset;
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        key: const Key('home_add_password_fab'),
-        heroTag: 'home_add_password_fab',
-        onPressed: () => context.push(AppRoutes.addPassword),
-        child: const Icon(LucideIcons.plus),
-      ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.l,
-                  AppSpacing.m,
-                  AppSpacing.l,
-                  AppSpacing.s,
+      body: Stack(
+        children: [
+          CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.l,
+                      AppSpacing.m,
+                      AppSpacing.l,
+                      AppSpacing.s,
+                    ),
+                    child: PageHeader(title: l10n.vault),
+                  ),
                 ),
-                child: PageHeader(title: l10n.vault),
+              ),
+              BlocBuilder<PasswordBloc, PasswordState>(
+                builder: (context, state) {
+                  if (state is PasswordLoading) {
+                    return SliverFillRemaining(
+                      child: Center(
+                        child: AppSemantics.loading(
+                          label: context.l10n.loadingPasswords,
+                          child: const AppLoader(key: Key('home_loading')),
+                        ),
+                      ),
+                    );
+                  } else if (state is PasswordLoaded) {
+                    if (state.passwords.isEmpty) {
+                      return const SliverFillRemaining(
+                        child: EmptyPasswordState(),
+                      );
+                    }
+
+                    return SliverPadding(
+                      key: const Key('home_password_list'),
+                      padding: EdgeInsets.only(
+                        left: context.responsive(
+                          AppSpacing.l,
+                          tablet: AppSpacing.xl,
+                        ),
+                        right: context.responsive(
+                          AppSpacing.l,
+                          tablet: AppSpacing.xl,
+                        ),
+                        bottom: AppSpacing.xxl + fabBottomOffset + fabSize,
+                      ),
+                      sliver: context.isDesktop || context.isTablet
+                          ? _HomeScreenGrid(passwords: state.passwords)
+                          : _HomeScreenList(passwords: state.passwords),
+                    );
+                  } else if (state is PasswordError) {
+                    return SliverFillRemaining(
+                      child: Center(
+                        child: Text(
+                          '${context.l10n.errorOccurred}: ${state.message}',
+                        ),
+                      ),
+                    );
+                  }
+                  return const SliverToBoxAdapter(child: SizedBox.shrink());
+                },
+              ),
+            ],
+          ),
+          Positioned(
+            right: AppSpacing.m,
+            bottom: fabBottomOffset,
+            child: SizedBox(
+              width: fabSize,
+              height: fabSize,
+              child: FloatingActionButton(
+                key: const Key('home_add_password_fab'),
+                heroTag: 'home_add_password_fab',
+                onPressed: () => context.push(AppRoutes.addPassword),
+                child: const Icon(LucideIcons.plus),
               ),
             ),
-          ),
-          BlocBuilder<PasswordBloc, PasswordState>(
-            builder: (context, state) {
-              if (state is PasswordLoading) {
-                return SliverFillRemaining(
-                  child: Center(
-                    child: AppSemantics.loading(
-                      label: context.l10n.loadingPasswords,
-                      child: const AppLoader(key: Key('home_loading')),
-                    ),
-                  ),
-                );
-              } else if (state is PasswordLoaded) {
-                if (state.passwords.isEmpty) {
-                  return const SliverFillRemaining(child: EmptyPasswordState());
-                }
-
-                return SliverPadding(
-                  key: const Key('home_password_list'),
-                  padding: EdgeInsets.only(
-                    left: context.responsive(
-                      AppSpacing.l,
-                      tablet: AppSpacing.xl,
-                    ),
-                    right: context.responsive(
-                      AppSpacing.l,
-                      tablet: AppSpacing.xl,
-                    ),
-                    bottom:
-                        AppSpacing.xxl +
-                        56 +
-                        MediaQuery.paddingOf(context).bottom,
-                  ),
-                  sliver: context.isDesktop || context.isTablet
-                      ? _HomeScreenGrid(passwords: state.passwords)
-                      : _HomeScreenList(passwords: state.passwords),
-                );
-              } else if (state is PasswordError) {
-                return SliverFillRemaining(
-                  child: Center(
-                    child: Text(
-                      '${context.l10n.errorOccurred}: ${state.message}',
-                    ),
-                  ),
-                );
-              }
-              return const SliverToBoxAdapter(child: SizedBox.shrink());
-            },
           ),
         ],
       ),
