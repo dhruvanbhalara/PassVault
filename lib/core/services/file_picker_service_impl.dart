@@ -37,9 +37,10 @@ class FilePickerServiceImpl implements IFilePickerService {
 
   @override
   Future<String?> pickFile({List<String>? allowedExtensions}) async {
+    final useCustomType = _shouldUseCustomType(allowedExtensions);
     final result = await FilePicker.platform.pickFiles(
-      type: allowedExtensions != null ? FileType.custom : FileType.any,
-      allowedExtensions: allowedExtensions,
+      type: useCustomType ? FileType.custom : FileType.any,
+      allowedExtensions: useCustomType ? allowedExtensions : null,
     );
     return result?.files.single.path;
   }
@@ -61,6 +62,17 @@ class FilePickerServiceImpl implements IFilePickerService {
     }
 
     return '';
+  }
+
+  bool _shouldUseCustomType(List<String>? allowedExtensions) {
+    if (allowedExtensions == null || allowedExtensions.isEmpty) {
+      return false;
+    }
+
+    const safeCustomExtensions = {'json', 'csv'};
+    return allowedExtensions
+        .map((extension) => extension.toLowerCase())
+        .every(safeCustomExtensions.contains);
   }
 
   /// Removes the extension from the filename.

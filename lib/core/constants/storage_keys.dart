@@ -9,4 +9,7 @@ class StorageKeys {
   static const String passwordSettings = 'password_settings';
   static const String themeMode = 'theme_mode';
   static const String onboardingComplete = 'onboarding_complete';
+
+  // Onboarding keys
+  static const String onboardingStep = 'onboarding_step';
 }

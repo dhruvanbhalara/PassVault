@@ -14,7 +14,7 @@ void main() {
     databaseService = DatabaseService(mockSettingsBox);
   });
 
-  group('DatabaseService', () {
+  group(r'$DatabaseService', () {
     const boxName = 'settings';
     const key = 'test_key';
     const value = 'test_value';

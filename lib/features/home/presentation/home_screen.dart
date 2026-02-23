@@ -5,9 +5,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/core/utils/app_semantics.dart';
-import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
+import 'package:passvault/features/home/presentation/bloc/password/password_bloc.dart';
 import 'package:passvault/features/home/presentation/widgets/empty_password_state.dart';
 import 'package:passvault/features/home/presentation/widgets/password_list_tile.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
@@ -18,98 +17,95 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: getIt<PasswordBloc>()..add(const LoadPasswords()),
-      child: const HomeView(),
-    );
-  }
-}
-
-class HomeView extends StatelessWidget {
-  const HomeView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    const fabSize = 56.0;
+    final fabBottomOffset =
+        AppSpacing.m + (kBottomNavigationBarHeight - fabSize) / 2 + bottomInset;
     return Scaffold(
-      floatingActionButton: AppSemantics.button(
-        label: l10n.addPassword,
-        hint: 'Creates a new password entry',
-        child: FloatingActionButton(
-          key: const Key('home_fab'),
-          onPressed: () => context.push(AppRoutes.addPassword),
-          child: const Icon(LucideIcons.plus),
-        ),
-      ),
-      body: CustomScrollView(
-        slivers: [
-          _HomeAppBar(),
-          BlocBuilder<PasswordBloc, PasswordState>(
-            builder: (context, state) {
-              if (state is PasswordLoading) {
-                return SliverFillRemaining(
-                  child: Center(
-                    child: AppSemantics.loading(
-                      label: 'Loading passwords',
-                      child: const AppLoader(key: Key('home_loading')),
+      body: Stack(
+        children: [
+          CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.l,
+                      AppSpacing.m,
+                      AppSpacing.l,
+                      AppSpacing.s,
                     ),
+                    child: PageHeader(title: l10n.vault),
                   ),
-                );
-              } else if (state is PasswordLoaded) {
-                if (state.passwords.isEmpty) {
-                  return const SliverFillRemaining(child: EmptyPasswordState());
-                }
+                ),
+              ),
+              BlocBuilder<PasswordBloc, PasswordState>(
+                builder: (context, state) {
+                  if (state is PasswordLoading) {
+                    return SliverFillRemaining(
+                      child: Center(
+                        child: AppSemantics.loading(
+                          label: context.l10n.loadingPasswords,
+                          child: const AppLoader(key: Key('home_loading')),
+                        ),
+                      ),
+                    );
+                  } else if (state is PasswordLoaded) {
+                    if (state.passwords.isEmpty) {
+                      return const SliverFillRemaining(
+                        child: EmptyPasswordState(),
+                      );
+                    }
 
-                return SliverPadding(
-                  key: const Key('home_password_list'),
-                  padding: EdgeInsets.all(
-                    context.responsive(AppSpacing.m, tablet: AppSpacing.l),
-                  ),
-                  sliver: context.isDesktop || context.isTablet
-                      ? _HomeScreenGrid(passwords: state.passwords)
-                      : _HomeScreenList(passwords: state.passwords),
-                );
-              } else if (state is PasswordError) {
-                return SliverFillRemaining(
-                  child: Center(
-                    child: Text(
-                      '${context.l10n.errorOccurred}: ${state.message}',
-                    ),
-                  ),
-                );
-              }
-              return const SliverToBoxAdapter(child: SizedBox.shrink());
-            },
+                    return SliverPadding(
+                      key: const Key('home_password_list'),
+                      padding: EdgeInsets.only(
+                        left: context.responsive(
+                          AppSpacing.l,
+                          tablet: AppSpacing.xl,
+                        ),
+                        right: context.responsive(
+                          AppSpacing.l,
+                          tablet: AppSpacing.xl,
+                        ),
+                        bottom: AppSpacing.xxl + fabBottomOffset + fabSize,
+                      ),
+                      sliver: context.isDesktop || context.isTablet
+                          ? _HomeScreenGrid(passwords: state.passwords)
+                          : _HomeScreenList(passwords: state.passwords),
+                    );
+                  } else if (state is PasswordError) {
+                    return SliverFillRemaining(
+                      child: Center(
+                        child: Text(
+                          '${context.l10n.errorOccurred}: ${state.message}',
+                        ),
+                      ),
+                    );
+                  }
+                  return const SliverToBoxAdapter(child: SizedBox.shrink());
+                },
+              ),
+            ],
+          ),
+          Positioned(
+            right: AppSpacing.m,
+            bottom: fabBottomOffset,
+            child: SizedBox(
+              width: fabSize,
+              height: fabSize,
+              child: FloatingActionButton(
+                key: const Key('home_add_password_fab'),
+                heroTag: 'home_add_password_fab',
+                onPressed: () => context.push(AppRoutes.addPassword),
+                child: const Icon(LucideIcons.plus),
+              ),
+            ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _HomeAppBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.theme;
-    final l10n = context.l10n;
-    return SliverAppBar(
-      floating: true,
-      pinned: true,
-      centerTitle: true,
-      scrolledUnderElevation: 0,
-      backgroundColor: Colors.transparent,
-      title: Text(l10n.appName),
-      actions: [
-        AppSemantics.button(
-          label: 'Settings',
-          hint: 'Opens application settings',
-          child: IconButton(
-            key: const Key('home_settings_button'),
-            icon: Icon(LucideIcons.settings, color: theme.onVaultGradient),
-            onPressed: () => context.push(AppRoutes.settings),
-          ),
-        ),
-      ],
     );
   }
 }
@@ -151,23 +147,19 @@ class _HomeScreenList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) => Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.m),
-          child: AppAnimatedListItem(
-            index: index,
-            child: PasswordListTile(
-              entry: passwords[index],
-              onTap: () =>
-                  context.push(AppRoutes.editPassword, extra: passwords[index]),
-              onDismissed: () => context.read<PasswordBloc>().add(
-                DeletePassword(passwords[index].id),
-              ),
-            ),
+    return SliverList.separated(
+      separatorBuilder: (context, index) =>
+          const SizedBox(height: AppSpacing.m),
+      itemCount: passwords.length,
+      itemBuilder: (context, index) => RepaintBoundary(
+        child: PasswordListTile(
+          entry: passwords[index],
+          onTap: () =>
+              context.push(AppRoutes.editPassword, extra: passwords[index]),
+          onDismissed: () => context.read<PasswordBloc>().add(
+            DeletePassword(passwords[index].id),
           ),
         ),
-        childCount: passwords.length,
       ),
     );
   }

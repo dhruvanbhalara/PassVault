@@ -9,24 +9,26 @@ class AmoledThemePreset {
   static AppThemeExtension get extension {
     final scheme = AmoledThemePreset.colorScheme;
     return AppThemeExtension(
-      primary: AppColors.primaryDark,
-      onPrimary: AppColors.bgDark,
-      secondary: AppColors.secondaryDark,
-      onSecondary: AppColors.bgDark,
+      primary: AppColors.primaryAmoled,
+      onPrimary: AppColors.bgAmoled,
+      secondary: AppColors.secondaryAmoled,
+      onSecondary: AppColors.bgAmoled,
       surface: AppColors.bgAmoled,
       onSurface: AppColors.textDarkPrimary,
       background: AppColors.bgAmoled,
-      error: AppColors.error,
-      success: AppColors.success,
+      error: AppColors.errorAmoled,
+      success: AppColors.successAmoled,
       warning: AppColors.warning,
       surfaceDim: AppColors.surfaceAmoled,
-      surfaceHighlight: AppColors.primaryDark.withValues(alpha: 0.15),
+      surfaceHighlight: AppColors.primaryAmoled.withValues(alpha: 0.15),
       securitySurface: AppColors.surfaceAmoled,
+      strengthVeryWeak: AppColors.strengthVeryWeak,
       strengthWeak: AppColors.strengthWeak,
       strengthFair: AppColors.strengthFair,
       strengthGood: AppColors.strengthGood,
       strengthStrong: AppColors.strengthStrong,
-      outline: AppColors.borderDark,
+      strengthVeryStrong: AppColors.strengthVeryStrong,
+      outline: AppColors.borderAmoled,
       primaryContainer: scheme.primaryContainer,
       onPrimaryContainer: scheme.onPrimaryContainer,
       cardShadow: BoxShadow(
@@ -50,16 +52,43 @@ class AmoledThemePreset {
       ),
       onVaultGradient: Colors.white,
       inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.dark),
+      // AMOLED glow effects – subtle outer glow for accent elements on
+      // pure-black backgrounds.  Blur 12, spread 1, accent at ~40% opacity.
+      primaryGlow: BoxShadow(
+        color: AppColors.primaryAmoled.withValues(alpha: 0.40),
+        blurRadius: 12,
+        spreadRadius: 1,
+      ),
+      secondaryGlow: BoxShadow(
+        color: AppColors.secondaryAmoled.withValues(alpha: 0.35),
+        blurRadius: 10,
+        spreadRadius: 1,
+      ),
+      errorGlow: BoxShadow(
+        color: AppColors.errorAmoled.withValues(alpha: 0.35),
+        blurRadius: 10,
+        spreadRadius: 1,
+      ),
+      successGlow: BoxShadow(
+        color: AppColors.successAmoled.withValues(alpha: 0.35),
+        blurRadius: 10,
+        spreadRadius: 1,
+      ),
+      accentGlow: BoxShadow(
+        color: AppColors.primaryAmoled.withValues(alpha: 0.30),
+        blurRadius: 8,
+        spreadRadius: 0,
+      ),
     );
   }
 
   static ColorScheme get colorScheme => ColorScheme.fromSeed(
-    seedColor: AppColors.primaryLight,
+    seedColor: AppColors.primaryAmoled,
     brightness: Brightness.dark,
-    primary: AppColors.primaryDark,
-    onPrimary: AppColors.bgDark,
-    secondary: AppColors.secondaryDark,
-    onSecondary: AppColors.bgDark,
+    primary: AppColors.primaryAmoled,
+    onPrimary: AppColors.bgAmoled,
+    secondary: AppColors.secondaryAmoled,
+    onSecondary: AppColors.bgAmoled,
     surface: AppColors.bgAmoled,
     onSurface: AppColors.textDarkPrimary,
     surfaceDim: Colors.black,
@@ -68,8 +97,8 @@ class AmoledThemePreset {
     surfaceContainer: AppColors.amoledSurfaceContainer,
     surfaceContainerHigh: AppColors.amoledSurfaceContainerHigh,
     surfaceContainerHighest: AppColors.amoledSurfaceContainerHighest,
-    onSurfaceVariant: AppColors.textDarkSecondary,
-    outline: AppColors.borderDark,
+    onSurfaceVariant: AppColors.textAmoledSecondary,
+    outline: AppColors.borderAmoled,
     outlineVariant: AppColors.amoledSurfaceContainerHighest,
   );
 }

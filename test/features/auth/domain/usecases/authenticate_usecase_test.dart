@@ -17,15 +17,12 @@ void main() {
 
   group('$AuthenticateUseCase', () {
     test('should call repository.authenticate', () async {
-      // Arrange
       when(
         () => mockRepository.authenticate(),
       ).thenAnswer((_) async => const Success(true));
 
-      // Act
       final result = await useCase();
 
-      // Assert
       expect(result, const Success(true));
       verify(() => mockRepository.authenticate()).called(1);
     });

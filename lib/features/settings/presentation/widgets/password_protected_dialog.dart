@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_bloc.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/import_export_event.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_bloc.dart';
 
 class PasswordProtectedDialog extends StatefulWidget {
   final ImportExportBloc bloc;
   final bool isExport;
+  final String? filePath;
 
   const PasswordProtectedDialog({
     super.key,
     required this.bloc,
     required this.isExport,
+    this.filePath,
   });
 
   @override
@@ -20,8 +21,14 @@ class PasswordProtectedDialog extends StatefulWidget {
 }
 
 class _PasswordProtectedDialogState extends State<PasswordProtectedDialog> {
-  final _passwordController = TextEditingController();
+  late final TextEditingController _passwordController;
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordController = TextEditingController();
+  }
 
   @override
   void dispose() {
@@ -72,7 +79,9 @@ class _PasswordProtectedDialogState extends State<PasswordProtectedDialog> {
               if (widget.isExport) {
                 widget.bloc.add(ExportEncryptedEvent(password));
               } else {
-                widget.bloc.add(ImportEncryptedEvent(password: password));
+                widget.bloc.add(
+                  ImportEncryptedEvent(password, filePath: widget.filePath),
+                );
               }
             }
           },

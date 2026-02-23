@@ -34,7 +34,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byType(ListTile));
+      await tester.tap(find.text(testEntry.appName));
 
       verify(() => onTap()).called(1);
     });

@@ -8,6 +8,9 @@ abstract class PasswordLocalDataSource {
   /// Retrieves all stored password entries.
   Future<List<PasswordEntryModel>> getPasswords();
 
+  /// Retrieves a specific password entry by its ID.
+  Future<PasswordEntryModel?> getPassword(String id);
+
   /// Saves a password entry to local storage.
   Future<void> savePassword(PasswordEntryModel entry);
 
@@ -49,6 +52,15 @@ class PasswordLocalDataSourceImpl implements PasswordLocalDataSource {
       tag: 'HiveDataSource',
     );
     return entries;
+  }
+
+  @override
+  Future<PasswordEntryModel?> getPassword(String id) async {
+    final value = _box.get(id);
+    if (value != null && value is PasswordEntryModel) {
+      return value;
+    }
+    return null;
   }
 
   @override

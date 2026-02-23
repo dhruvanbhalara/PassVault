@@ -16,6 +16,10 @@ import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 ///   prefixIcon: LucideIcons.user,
 /// )
 /// ```
+/// A Design System Input Field that encapsulates labeling, styling, and validation.
+///
+/// This atom unifies the input field experience by coupling the label with
+/// the input decoration logic, ensuring consistent spacing and typography.
 class AppTextField extends StatelessWidget {
   /// The label displayed above the input field.
   final String label;
@@ -47,6 +51,12 @@ class AppTextField extends StatelessWidget {
   /// Callback when text changes.
   final ValueChanged<String>? onChanged;
 
+  /// Whether to use the monospaced password text style.
+  final bool usePasswordStyle;
+
+  /// Whether to show a focus glow (useful for AMOLED).
+  final bool hasFocusGlow;
+
   const AppTextField({
     super.key,
     required this.label,
@@ -59,44 +69,31 @@ class AppTextField extends StatelessWidget {
     this.keyboardType,
     this.textInputAction,
     this.onChanged,
+    this.usePasswordStyle = false,
+    this.hasFocusGlow = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    final typography = context.typography;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: AppSpacing.xs),
-          child: Text(
-            label.toUpperCase(),
-            style: typography.labelSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.0,
-              color: theme.primary,
-            ),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.s),
-        TextFormField(
-          controller: controller,
-          validator: validator,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          onChanged: onChanged,
-          style: obscureText ? null : theme.passwordText,
-          decoration: InputDecoration(
-            hintText: hint,
-            prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
-            suffixIcon: suffixIcon,
-          ),
-        ),
-      ],
+    return TextFormField(
+      controller: controller,
+      validator: validator,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      onChanged: onChanged,
+      style: usePasswordStyle ? theme.passwordText : null,
+      decoration: InputDecoration(
+        hintText: hint,
+        labelText: label,
+        floatingLabelBehavior: FloatingLabelBehavior.auto,
+        prefixIcon: prefixIcon != null
+            ? Icon(prefixIcon, size: AppIconSize.m)
+            : null,
+        suffixIcon: suffixIcon,
+      ),
     );
   }
 }

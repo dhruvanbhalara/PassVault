@@ -44,10 +44,8 @@ void main() {
     test(
       'should return ImportExportFailure when userChoice is missing',
       () async {
-        // Act
         final result = await useCase([tDuplicateUnresolved]);
 
-        // Assert
         expect(
           result,
           isA<Error<void>>().having(
@@ -62,31 +60,25 @@ void main() {
     test(
       'should call repository.resolveDuplicates when all resolved',
       () async {
-        // Arrange
         when(
           () => mockRepository.resolveDuplicates(any()),
         ).thenAnswer((_) async => const Success(null));
 
-        // Act
         final result = await useCase([tDuplicate]);
 
-        // Assert
         expect(result, const Success<void>(null));
         verify(() => mockRepository.resolveDuplicates([tDuplicate])).called(1);
       },
     );
 
     test('should return Error when repository fails', () async {
-      // Arrange
       const tFailure = DataMigrationFailure('Repository failed');
       when(
         () => mockRepository.resolveDuplicates(any()),
       ).thenAnswer((_) async => const Error(tFailure));
 
-      // Act
       final result = await useCase([tDuplicate]);
 
-      // Assert
       expect(result, const Error<void>(tFailure));
       verify(() => mockRepository.resolveDuplicates([tDuplicate])).called(1);
     });

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 
+enum AppButtonVariant { primary, outlined }
+
 /// A primary button used for main actions in the application.
 ///
 /// Wraps [ElevatedButton] with standardized styling, loading state,
@@ -11,14 +13,9 @@ class AppButton extends StatelessWidget {
   final String text;
 
   /// The callback when the button is pressed.
-  ///
-  /// If null, the button will be disabled.
   final VoidCallback? onPressed;
 
   /// Whether the button is currently in a loading state.
-  ///
-  /// When true, a [CircularProgressIndicator] is shown instead of text/icon,
-  /// and the button is disabled.
   final bool isLoading;
 
   /// An optional icon to display before the text.
@@ -26,6 +23,12 @@ class AppButton extends StatelessWidget {
 
   /// Whether the button should take up the full available width.
   final bool isFullWidth;
+
+  /// The variant of the button (primary or outlined).
+  final AppButtonVariant variant;
+
+  /// Whether to show a glow effect (mandatory for some AMOLED designs).
+  final bool hasGlow;
 
   /// Optional background color override.
   final Color? backgroundColor;
@@ -41,6 +44,8 @@ class AppButton extends StatelessWidget {
     this.isLoading = false,
     this.icon,
     this.isFullWidth = true,
+    this.variant = AppButtonVariant.primary,
+    this.hasGlow = false,
     this.backgroundColor,
     this.foregroundColor,
   });
@@ -49,16 +54,40 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.theme;
 
-    final button = ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
-      style: _getButtonStyle(context, theme),
-      child: _ButtonContent(
-        isLoading: isLoading,
-        text: text,
-        icon: icon,
-        foregroundColor: foregroundColor,
-      ),
+    final child = _ButtonContent(
+      isLoading: isLoading,
+      text: text,
+      icon: icon,
+      foregroundColor: foregroundColor,
+      isOutlined: variant == AppButtonVariant.outlined,
     );
+
+    Widget button;
+    if (variant == AppButtonVariant.outlined) {
+      button = OutlinedButton(
+        onPressed: isLoading ? null : onPressed,
+        style: _getOutlinedButtonStyle(context, theme),
+        child: child,
+      );
+    } else {
+      button = ElevatedButton(
+        onPressed: isLoading ? null : onPressed,
+        style: _getElevatedButtonStyle(context, theme),
+        child: child,
+      );
+    }
+
+    if (hasGlow &&
+        variant == AppButtonVariant.primary &&
+        theme.primaryGlow != null) {
+      button = Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppRadius.m),
+          boxShadow: [theme.primaryGlow!],
+        ),
+        child: button,
+      );
+    }
 
     if (isFullWidth) {
       return SizedBox(width: double.infinity, child: button);
@@ -67,12 +96,37 @@ class AppButton extends StatelessWidget {
     return button;
   }
 
-  ButtonStyle _getButtonStyle(BuildContext context, AppThemeExtension theme) {
+  ButtonStyle _getElevatedButtonStyle(
+    BuildContext context,
+    AppThemeExtension theme,
+  ) {
     return ElevatedButton.styleFrom(
       backgroundColor: backgroundColor ?? theme.primary,
       foregroundColor: foregroundColor ?? theme.onPrimary,
       disabledBackgroundColor: theme.primary.withValues(alpha: 0.5),
       disabledForegroundColor: theme.onPrimary.withValues(alpha: 0.5),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.m,
+        horizontal: AppSpacing.l,
+      ),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.m),
+      ),
+      textStyle: context.typography.labelLarge?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  ButtonStyle _getOutlinedButtonStyle(
+    BuildContext context,
+    AppThemeExtension theme,
+  ) {
+    final color = backgroundColor ?? theme.primary;
+    return OutlinedButton.styleFrom(
+      foregroundColor: color,
+      side: BorderSide(color: color, width: 1.5),
       padding: const EdgeInsets.symmetric(
         vertical: AppSpacing.m,
         horizontal: AppSpacing.l,
@@ -92,17 +146,21 @@ class _ButtonContent extends StatelessWidget {
   final String text;
   final IconData? icon;
   final Color? foregroundColor;
+  final bool isOutlined;
 
   const _ButtonContent({
     required this.isLoading,
     required this.text,
     this.icon,
     this.foregroundColor,
+    required this.isOutlined,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
+    final color =
+        foregroundColor ?? (isOutlined ? theme.primary : theme.onPrimary);
 
     if (isLoading) {
       return SizedBox(
@@ -110,9 +168,7 @@ class _ButtonContent extends StatelessWidget {
         width: AppIconSize.m,
         child: CircularProgressIndicator(
           strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            foregroundColor ?? theme.onPrimary,
-          ),
+          valueColor: AlwaysStoppedAnimation<Color>(color),
         ),
       );
     }

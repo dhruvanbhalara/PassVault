@@ -92,6 +92,35 @@ void main() {
       },
     );
 
+    test(
+      'pickFile falls back to FileType.any when extensions include pvault',
+      () async {
+        final mockResult = MockFilePickerResult();
+        final mockFile = MockPlatformFile();
+
+        when(() => mockFile.path).thenReturn('/path/to/file.pvault');
+        when(() => mockResult.files).thenReturn([mockFile]);
+        when(
+          () => mockFilePicker.pickFiles(
+            type: any(named: 'type'),
+            allowedExtensions: any(named: 'allowedExtensions'),
+          ),
+        ).thenAnswer((_) async => mockResult);
+
+        final result = await service.pickFile(
+          allowedExtensions: ['json', 'csv', 'pvault'],
+        );
+
+        expect(result, '/path/to/file.pvault');
+        verify(
+          () => mockFilePicker.pickFiles(
+            type: FileType.any,
+            allowedExtensions: null,
+          ),
+        ).called(1);
+      },
+    );
+
     test('pickDirectory calls FilePicker.platform.getDirectoryPath', () async {
       when(
         () => mockFilePicker.getDirectoryPath(),

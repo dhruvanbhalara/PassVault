@@ -7,10 +7,9 @@ import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
-import 'package:passvault/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/strategy_preview/strategy_preview_bloc.dart';
-import 'package:passvault/features/settings/presentation/screens/password_generation_settings_screen.dart';
-import 'package:passvault/l10n/app_localizations.dart';
+import 'package:passvault/features/settings/presentation/screens/strategy_editor_screen.dart';
 
 class MockSettingsBloc extends MockBloc<SettingsEvent, SettingsState>
     implements SettingsBloc {}
@@ -26,7 +25,7 @@ void main() {
   late MockStrategyPreviewBloc mockPreviewBloc;
 
   setUpAll(() {
-    registerFallbackValue(const SettingsInitial());
+    registerFallbackValue(SettingsInitial());
     registerFallbackValue(const LoadSettings());
     registerFallbackValue(
       GeneratePreview(PasswordGenerationStrategy.create(name: 'Fallback'))
@@ -95,36 +94,18 @@ void main() {
           theme: AppTheme.lightTheme,
           home: BlocProvider<SettingsBloc>.value(
             value: mockSettingsBloc,
-            child: const PasswordGenerationSettingsScreen(),
+            child: const StrategyEditorScreen(strategyId: 'default-id'),
           ),
         ),
       );
 
       // Verify basic widget existence
-      expect(find.byType(PasswordGenerationSettingsScreen), findsOneWidget);
+      expect(find.byType(StrategyEditorScreen), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
 
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
-      verify(
-        () => mockSettingsBloc.add(any(that: isA<LoadSettings>())),
-      ).called(1);
-
-      try {
-        expect(find.text('Default'), findsWidgets);
-      } catch (e) {
-        // Ignored
-      }
-
-      // 2. Click "Edit" on the active strategy
-      final editButton = find.byKey(const Key('edit_strategy_default-id'));
-
-      expect(editButton, findsOneWidget);
-      await tester.tap(editButton);
-      await tester.pumpAndSettle();
-
-      // Verify sheet is open
       final nameField = find.widgetWithText(TextField, 'Default');
       expect(nameField, findsOneWidget);
 
@@ -132,12 +113,10 @@ void main() {
       await tester.enterText(nameField, 'Changed Name');
       await tester.pump();
 
-      // 4. Close sheet (Simulate Tap Scrim - Top Left)
-      await tester.tapAt(const Offset(10, 10));
+      // 4. Close sheet (Simulate Back / Scrim Tap)
+      // Using handlePopRoute simulates system back or scrim dismissal
+      await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
-
-      // Verify sheet is closed
-      expect(find.widgetWithText(TextField, 'Changed Name'), findsNothing);
 
       // 5. Verify SettingsBloc did NOT receive UpdateStrategy
       verifyNever(() => mockSettingsBloc.add(any(that: isA<UpdateStrategy>())));

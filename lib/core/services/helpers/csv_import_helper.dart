@@ -79,7 +79,7 @@ class CsvImportHelper {
       'user',
     ]);
     final passwordIdx = _findHeaderIdx(headers, ['password', 'pass', 'key']);
-    final urlIdx = _findHeaderIdx(headers, ['url', 'website', 'link']);
+    final urlIdx = _findHeaderIdx(headers, ['url', 'website', 'link', 'uri']);
     final notesIdx = _findHeaderIdx(headers, [
       'note',
       'notes',
@@ -100,6 +100,8 @@ class CsvImportHelper {
     final entries = <PasswordEntry>[];
     for (final row in dataRows) {
       if (row.length < 2) continue;
+      // Skip if all fields are empty strings or whitespace
+      if (row.every((cell) => cell.toString().trim().isEmpty)) continue;
 
       final appName = appNameIdx != -1 && appNameIdx < row.length
           ? row[appNameIdx].toString()

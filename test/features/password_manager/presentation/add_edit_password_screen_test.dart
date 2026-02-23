@@ -1,6 +1,7 @@
-import 'package:passvault/features/home/presentation/bloc/password_bloc.dart';
+import 'package:passvault/features/home/presentation/bloc/password/password_bloc.dart';
 import 'package:passvault/features/password_manager/presentation/add_edit_password_screen.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_bloc.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_bloc.dart';
+import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 
 import '../../../helpers/test_helpers.dart';
 import '../../../robots/add_edit_robot.dart';
@@ -29,7 +30,7 @@ void main() {
     when(() => mockPasswordBloc.state).thenReturn(const PasswordInitial());
   });
 
-  Future<void> loadScreen(WidgetTester tester) async {
+  Future<void> loadScreen(WidgetTester tester, {String? id}) async {
     robot = AddEditRobot(tester);
     await tester.pumpApp(
       MultiBlocProvider(
@@ -37,17 +38,16 @@ void main() {
           BlocProvider<AddEditPasswordBloc>.value(value: mockAddEditBloc),
           BlocProvider<PasswordBloc>.value(value: mockPasswordBloc),
         ],
-        child: const AddEditPasswordView(),
+        child: AddEditPasswordView(id: id),
       ),
     );
   }
 
   group('$AddEditPasswordScreen', () {
-    testWidgets('Save button and FAB exist', (tester) async {
+    testWidgets('Save button exists', (tester) async {
       await loadScreen(tester);
 
       robot.expectSaveButtonVisible();
-      expect(find.byType(FloatingActionButton), findsOneWidget);
     });
 
     testWidgets('Input fields have correct keys', (tester) async {
@@ -111,6 +111,63 @@ void main() {
         find.byKey(const Key('add_edit_visibility_toggle')),
         findsOneWidget,
       );
+    });
+
+    testWidgets('shows generation strategies from settings', (tester) async {
+      const defaultStrategy = PasswordGenerationStrategy(
+        id: 'default-id',
+        name: 'Default',
+      );
+      const pinStrategy = PasswordGenerationStrategy(
+        id: 'pin-id',
+        name: 'PIN',
+        length: 8,
+      );
+      final settings = PasswordGenerationSettings(
+        strategies: [defaultStrategy, pinStrategy],
+        defaultStrategyId: defaultStrategy.id,
+      );
+      when(
+        () => mockAddEditBloc.state,
+      ).thenReturn(AddEditInitial(settings: settings));
+
+      await loadScreen(tester);
+
+      expect(find.byType(DropdownButtonFormField<String>), findsOneWidget);
+      expect(find.text(defaultStrategy.name), findsOneWidget);
+    });
+
+    testWidgets('generate uses selected strategy id', (tester) async {
+      const defaultStrategy = PasswordGenerationStrategy(
+        id: 'default-id',
+        name: 'Default',
+      );
+      const pinStrategy = PasswordGenerationStrategy(
+        id: 'pin-id',
+        name: 'PIN',
+        length: 8,
+      );
+      final settings = PasswordGenerationSettings(
+        strategies: [defaultStrategy, pinStrategy],
+        defaultStrategyId: defaultStrategy.id,
+      );
+      when(
+        () => mockAddEditBloc.state,
+      ).thenReturn(AddEditInitial(settings: settings));
+
+      await loadScreen(tester);
+
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(pinStrategy.name).last);
+      await tester.pumpAndSettle();
+      await robot.tapGenerateButton();
+
+      verify(
+        () => mockAddEditBloc.add(
+          GenerateStrongPassword(strategyId: pinStrategy.id),
+        ),
+      ).called(greaterThanOrEqualTo(1));
     });
   });
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 
 import 'app_colors.dart';
 import 'app_dimensions.dart';
+import 'app_text_theme_builder.dart';
 import 'app_theme_extension.dart';
 import 'presets/amoled_theme_preset.dart';
 import 'presets/dark_theme_preset.dart';
@@ -54,9 +56,10 @@ class AppTheme {
     return _buildTheme(
       AmoledThemePreset.colorScheme,
       AppColors.bgAmoled,
-      AppColors.bgAmoled,
+      AppColors.surfaceAmoled,
       true,
       AmoledThemePreset.extension,
+      isAmoled: true,
     );
   }
 
@@ -65,20 +68,25 @@ class AppTheme {
     Color bg,
     Color surface,
     bool isDark,
-    AppThemeExtension extension,
-  ) {
+    AppThemeExtension extension, {
+    bool isAmoled = false,
+  }) {
     final textPrimary = isDark
         ? AppColors.textDarkPrimary
         : AppColors.textLightPrimary;
     final textSecondary = isDark
         ? AppColors.textDarkSecondary
         : AppColors.textLightSecondary;
+    final inputBorderColor = isAmoled
+        ? Colors.white24
+        : scheme.outline.withValues(alpha: isDark ? 0.62 : 0.58);
+    final inputDisabledBorderColor = isAmoled
+        ? Colors.white24.withValues(alpha: 0.45)
+        : scheme.outline.withValues(alpha: isDark ? 0.40 : 0.36);
 
-    final baseTextTheme = Typography.material2021().black.apply(
-      fontFamily: _fontFamily,
-      displayColor: textPrimary,
-      bodyColor: textPrimary,
-    );
+    final textTheme = const AppTextThemeBuilder(
+      _fontFamily,
+    ).build(textPrimary, textSecondary);
 
     return ThemeData(
       useMaterial3: true,
@@ -86,21 +94,7 @@ class AppTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor: bg,
       extensions: [extension],
-      textTheme: baseTextTheme.copyWith(
-        headlineLarge: TextStyle(
-          color: textPrimary,
-          fontWeight: FontWeight.bold,
-        ),
-        headlineMedium: TextStyle(
-          color: textPrimary,
-          fontWeight: FontWeight.bold,
-        ),
-        titleLarge: TextStyle(color: textPrimary, fontWeight: FontWeight.bold),
-        titleMedium: TextStyle(color: textPrimary, fontWeight: FontWeight.w600),
-        bodyLarge: TextStyle(color: textPrimary, fontSize: 16),
-        bodyMedium: TextStyle(color: textSecondary, fontSize: 14),
-        bodySmall: TextStyle(color: textSecondary, fontSize: 12),
-      ),
+      textTheme: textTheme,
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         foregroundColor: textPrimary,
@@ -117,6 +111,10 @@ class AppTheme {
           color: textPrimary,
         ),
       ),
+      actionIconTheme: ActionIconThemeData(
+        backButtonIconBuilder: (BuildContext context) =>
+            const Icon(LucideIcons.chevronLeft),
+      ),
       cardTheme: CardThemeData(
         color: surface,
         elevation: 0,
@@ -124,7 +122,11 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
-          side: BorderSide(color: scheme.outline.withValues(alpha: 0.1)),
+          side: BorderSide(
+            color: isAmoled
+                ? Colors.white.withValues(alpha: 0.1)
+                : scheme.outline.withValues(alpha: 0.1),
+          ),
         ),
       ),
       bottomSheetTheme: BottomSheetThemeData(
@@ -144,15 +146,27 @@ class AppTheme {
         hintStyle: TextStyle(color: textSecondary.withValues(alpha: 0.5)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: inputBorderColor, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: inputBorderColor, width: 2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
           borderSide: BorderSide(color: extension.inputFocusedBorder, width: 2),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.m),
+          borderSide: BorderSide(color: inputDisabledBorderColor, width: 1.0),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.m),
+          borderSide: BorderSide(color: scheme.error, width: 1.2),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.m),
+          borderSide: BorderSide(color: scheme.error, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.m,
@@ -197,6 +211,10 @@ class AppTheme {
           }
           return scheme.outline;
         }),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
       ),
     );
   }

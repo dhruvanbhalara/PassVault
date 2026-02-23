@@ -34,15 +34,12 @@ void main() {
 
   group('$GetPasswordsUseCase', () {
     test('should call repository.getPasswords', () async {
-      // Arrange
       when(
         () => mockRepository.getPasswords(),
       ).thenAnswer((_) async => Success([tEntry]));
 
-      // Act
       final result = await getPasswordsUseCase();
 
-      // Assert
       expect(result, Success([tEntry]));
       verify(() => mockRepository.getPasswords()).called(1);
     });
@@ -50,30 +47,24 @@ void main() {
 
   group('$SavePasswordUseCase', () {
     test('should call repository.savePassword', () async {
-      // Arrange
       when(
         () => mockRepository.savePassword(any()),
       ).thenAnswer((_) async => const Success(null));
 
-      // Act
       await savePasswordUseCase(tEntry);
 
-      // Assert
       verify(() => mockRepository.savePassword(tEntry)).called(1);
     });
   });
 
   group('$DeletePasswordUseCase', () {
     test('should call repository.deletePassword', () async {
-      // Arrange
       when(
         () => mockRepository.deletePassword(any()),
       ).thenAnswer((_) async => const Success(null));
 
-      // Act
       await deletePasswordUseCase('1');
 
-      // Assert
       verify(() => mockRepository.deletePassword('1')).called(1);
     });
   });

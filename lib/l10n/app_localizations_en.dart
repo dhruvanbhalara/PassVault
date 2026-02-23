@@ -12,12 +12,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'PassVault';
 
   @override
-  String get locked => 'Locked';
-
-  @override
-  String get unlockWithBiometrics => 'Unlock with Biometrics';
-
-  @override
   String get settings => 'Settings';
 
   @override
@@ -34,9 +28,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordCopied => 'Password copied to clipboard';
-
-  @override
-  String get delete => 'Delete';
 
   @override
   String get appearance => 'Appearance';
@@ -66,13 +57,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dataManagement => 'Data Management';
 
   @override
-  String get exportData => 'Export Data (JSON/CSV)';
-
-  @override
   String get importData => 'Import Data';
 
   @override
   String get save => 'Save';
+
+  @override
+  String get apply => 'Apply';
 
   @override
   String get cancel => 'Cancel';
@@ -90,55 +81,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorOccurred => 'An error occurred';
 
   @override
-  String get databaseError => 'Database error occurred';
-
-  @override
-  String get authError => 'Authentication error';
-
-  @override
-  String get securityError => 'Security violation or error';
-
-  @override
-  String get migrationError => 'Data migration failed';
-
-  @override
-  String get fileReadError => 'Could not read the file';
-
-  @override
-  String get invalidFormatError => 'Invalid file format';
-
-  @override
-  String get parsingError => 'Error parsing file content';
-
-  @override
-  String get noDataFound => 'No valid data found';
-
-  @override
-  String get success => 'Success';
-
-  @override
   String get exportSuccess => 'Data exported successfully';
 
   @override
   String get importSuccess => 'Data imported successfully';
-
-  @override
-  String get biometricsNotSetup => 'Biometrics not set up or not available.';
-
-  @override
-  String get enterAppWithoutBiometrics => 'Enter without Biometrics';
-
-  @override
-  String get exportJson => 'Export as JSON';
-
-  @override
-  String get exportCsv => 'Export as CSV';
-
-  @override
-  String get importJson => 'Import from JSON';
-
-  @override
-  String get importCsv => 'Import from CSV';
 
   @override
   String get onboardingTitle1 => 'Secure Storage';
@@ -153,13 +99,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onboardingDesc2 =>
       'Access your credentials anywhere, anytime, without an internet connection. Total control, total privacy.';
-
-  @override
-  String get onboardingTitle3 => 'Biometric Access';
-
-  @override
-  String get onboardingDesc3 =>
-      'Unlock your vault with a touch or a glance. Seamless security integrated with your device\'s biometric authentication.';
 
   @override
   String get skip => 'Skip';
@@ -180,61 +119,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get biometricsNotAvailable => 'Biometrics not available';
 
   @override
-  String get noDataToExport => 'No password data to export';
-
-  @override
-  String get importFailed => 'Failed to import data';
-
-  @override
-  String get passwordGeneration => 'Password Generation';
+  String get strategy => 'Strategy';
 
   @override
   String get passwordLength => 'Password Length';
 
   @override
-  String get uppercase => 'Uppercase';
-
-  @override
-  String get lowercase => 'Lowercase';
-
-  @override
-  String get numbers => 'Numbers';
-
-  @override
-  String get specialCharacters => 'Special Characters';
-
-  @override
-  String get characters => 'Characters';
-
-  @override
   String get excludeAmbiguous => 'Exclude Ambiguous';
 
   @override
-  String get excludeAmbiguousHint => 'Avoid i, l, 1, L, o, 0, O';
-
-  @override
-  String get characterSets => 'Character Sets';
+  String get excludeAmbiguousHint => 'I, l, 1, O, 0';
 
   @override
   String get preview => 'Preview';
-
-  @override
-  String get refreshPreview => 'Refresh Preview';
-
-  @override
-  String get jsonBackupFormat => 'Structured format for backups';
-
-  @override
-  String get csvSpreadsheetFormat => 'Spreadsheet compatible format';
-
-  @override
-  String get importFromJsonBackup => 'Import from JSON backup';
-
-  @override
-  String get importFromSpreadsheet => 'Import from spreadsheet';
-
-  @override
-  String get options => 'Options';
 
   @override
   String get hintAppName => 'e.g. Netflix, Github';
@@ -246,21 +143,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hintPassword => '••••••••••••';
 
   @override
-  String get uppercaseHint => 'A-Z';
-
-  @override
-  String get lowercaseHint => 'a-z';
-
-  @override
-  String get numbersHint => '0-9';
-
-  @override
-  String get specialCharsHint => '!@#\$%^&*';
-
-  @override
-  String get wrongPassword => 'Incorrect password. Please try again.';
-
-  @override
   String get exportEncrypted => 'Export Encrypted (.pvault)';
 
   @override
@@ -268,9 +150,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get importEncrypted => 'Import from Encrypted (.pvault)';
-
-  @override
-  String get importFromEncryptedBackup => 'Import password-protected backup';
 
   @override
   String get enterExportPassword => 'Enter a password to protect your backup';
@@ -288,19 +167,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get import => 'Import';
 
   @override
-  String get processing => 'Processing...';
-
-  @override
   String get databaseCleared => 'Database cleared successfully';
 
   @override
-  String get fileNotFound => 'File not found';
-
-  @override
   String get clearDatabase => 'Clear Database';
-
-  @override
-  String get debugDeleteAllPasswords => 'Debug: Delete all passwords';
 
   @override
   String get clearDatabaseTitle => 'Clear Database?';
@@ -314,16 +184,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resolveDuplicatesTitle => 'Resolve Duplicates';
-
-  @override
-  String resolveRemainingDuplicates(int count) {
-    return 'Please resolve all $count remaining duplicates';
-  }
-
-  @override
-  String resolveCountDuplicates(int count) {
-    return 'Resolve $count Duplicates';
-  }
 
   @override
   String duplicatesFoundCount(int count) {
@@ -377,9 +237,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editStrategy => 'Edit Strategy';
 
   @override
-  String get setAsDefault => 'Set as Default';
-
-  @override
   String get generationStrategy => 'Generation Strategy';
 
   @override
@@ -387,16 +244,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hintStrategyName => 'e.g. High Security, PIN';
-
-  @override
-  String get minLabel => '16';
-
-  @override
-  String get maxLabel => '64';
-
-  @override
-  String get passwordGenerationSubtitle =>
-      'Manage your custom presets used for generating secure passwords.';
 
   @override
   String get noStrategiesDescription =>
@@ -410,11 +257,164 @@ class AppLocalizationsEn extends AppLocalizations {
       'Create custom password presets for different needs. PINs, high-security phrases, or legacy formats—managed your way.';
 
   @override
-  String get activeDefaultLabel => 'Active Strategy';
-
-  @override
   String get activeConfiguration => 'Active Configuration';
 
   @override
   String get savedStrategies => 'Saved Strategies';
+
+  @override
+  String get exportVault => 'Export Vault';
+
+  @override
+  String get resolveConflictsDesc => 'Please resolve all remaining duplicates';
+
+  @override
+  String get exportFormat => 'EXPORT FORMAT';
+
+  @override
+  String get jsonRecommended => 'JSON (Recommended)';
+
+  @override
+  String get jsonDesc => 'Structured data, easy to import back.';
+
+  @override
+  String get csvSpreadsheet => 'CSV Spreadsheet';
+
+  @override
+  String get csvDesc => 'Viewable in Excel or Google Sheets.';
+
+  @override
+  String get encryptWithPassword => 'Encrypt with Password';
+
+  @override
+  String get encryptDesc => 'Highly recommended for security.';
+
+  @override
+  String get encryptionPassword => 'Encryption Password';
+
+  @override
+  String get exportNow => 'Export Now';
+
+  @override
+  String get warningSensitiveData =>
+      'Exported files contain your sensitive data. Keep them secure or delete them after use.';
+
+  @override
+  String get passwordGenerator => 'Password Generator';
+
+  @override
+  String get lengthLabel => 'Length';
+
+  @override
+  String get uppercaseLabel => 'Uppercase (A-Z)';
+
+  @override
+  String get lowercaseLabel => 'Lowercase (a-z)';
+
+  @override
+  String get numbersLabel => 'Numbers (0-9)';
+
+  @override
+  String get symbolsLabel => 'Symbols (!@#\$)';
+
+  @override
+  String get copyPassword => 'Copy Password';
+
+  @override
+  String get headingEnableBiometrics => 'Enable Biometrics';
+
+  @override
+  String get descEnableBiometrics =>
+      'Unlock your vault faster with fingerprint or FaceID';
+
+  @override
+  String get privacyNotice => 'Your biometric data stays on your device';
+
+  @override
+  String get enableNow => 'Enable Now';
+
+  @override
+  String get strength => 'Strength';
+
+  @override
+  String get strengthVeryWeak => 'Very weak';
+
+  @override
+  String get strengthWeak => 'Weak';
+
+  @override
+  String get strengthFair => 'Fair';
+
+  @override
+  String get strengthGood => 'Good';
+
+  @override
+  String get strengthStrong => 'Strong';
+
+  @override
+  String get strengthVeryStrong => 'Very strong';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get dangerZone => 'Danger Zone';
+
+  @override
+  String get tapToAuthenticate => 'Tap to Authenticate';
+
+  @override
+  String get unlockVaultTitle => 'Unlock Your Vault';
+
+  @override
+  String get biometricAuthRequired =>
+      'Biometric authentication is required to access your passwords.';
+
+  @override
+  String get vault => 'Vault';
+
+  @override
+  String get generator => 'Generator';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get optionIcon => 'Option icon';
+
+  @override
+  String get loading => 'Loading';
+
+  @override
+  String tabSemanticsLabel(String label) {
+    return '$label tab';
+  }
+
+  @override
+  String get loadingPasswords => 'Loading passwords';
+
+  @override
+  String filterChipSemantics(String label) {
+    return 'Filter by $label';
+  }
+
+  @override
+  String filterChipSelectedSemantics(String label) {
+    return 'Filter by $label, selected';
+  }
+
+  @override
+  String get radioButtonSemanticsPrefix => 'Radio button';
+
+  @override
+  String get selectedState => 'selected';
+
+  @override
+  String get notSelectedState => 'not selected';
+
+  @override
+  String get savePassword => 'Save Password';
+
+  @override
+  String get updatePassword => 'Update Password';
 }

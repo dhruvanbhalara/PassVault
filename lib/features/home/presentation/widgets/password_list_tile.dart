@@ -19,7 +19,8 @@ class PasswordListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = context.typography;
+    final theme = context.theme;
+    final typography = context.typography;
 
     return Dismissible(
       key: Key(entry.id),
@@ -27,16 +28,37 @@ class PasswordListTile extends StatelessWidget {
       direction: DismissDirection.endToStart,
       onDismissed: (_) => onDismissed(),
       child: AppCard(
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.m,
-            vertical: AppSpacing.s,
-          ),
-          leading: _PasswordLeadingIcon(appName: entry.appName),
-          title: Text(entry.appName, style: textTheme.titleMedium),
-          subtitle: Text(entry.username, style: textTheme.bodyMedium),
-          trailing: _CopyButton(password: entry.password),
+        hasGlow: false,
+        child: InkWell(
           onTap: onTap,
+          borderRadius: BorderRadius.circular(AppRadius.m),
+          child: Row(
+            children: [
+              _PasswordLeadingIcon(appName: entry.appName),
+              const SizedBox(width: AppSpacing.m),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      entry.appName,
+                      style: typography.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      entry.username,
+                      style: typography.bodyMedium?.copyWith(
+                        color: theme.onSurface.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              _CopyButton(password: entry.password),
+            ],
+          ),
         ),
       ),
     );

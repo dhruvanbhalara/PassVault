@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:passvault/features/home/presentation/widgets/password_list_tile.dart';
 
 class HomeRobot {
   final WidgetTester tester;
@@ -42,8 +43,6 @@ class HomeRobot {
   }
 
   void expectPasswordsCount(int count) {
-    // This assumes specific items are rendered, maybe checking by type
-    // or looking for children in the scroll view
-    expect(find.byType(ListTile), findsNWidgets(count));
+    expect(find.byType(PasswordListTile), findsNWidgets(count));
   }
 }

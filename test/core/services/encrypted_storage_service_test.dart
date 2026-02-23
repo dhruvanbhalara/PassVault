@@ -19,18 +19,15 @@ void main() {
   });
 
   group('$EncryptedStorageService', () {
-    group('getOrCreateEncryptionKey', () {
+    group(r'$getOrCreateEncryptionKey', () {
       test('returns existing key when present', () async {
-        // Arrange
         const storedKey = 'dGVzdGtleTEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2';
         when(
           () => mockSecureStorage.read(key: keyName),
         ).thenAnswer((_) async => storedKey);
 
-        // Act
         final result = await service.getOrCreateEncryptionKey();
 
-        // Assert
         expect(result, isA<Uint8List>());
         expect(result.length, greaterThan(0));
         verify(() => mockSecureStorage.read(key: keyName)).called(1);
@@ -43,7 +40,6 @@ void main() {
       });
 
       test('generates and stores new key when not present', () async {
-        // Arrange
         when(
           () => mockSecureStorage.read(key: keyName),
         ).thenAnswer((_) async => null);
@@ -54,10 +50,8 @@ void main() {
           ),
         ).thenAnswer((_) async {});
 
-        // Act
         final result = await service.getOrCreateEncryptionKey();
 
-        // Assert
         expect(result, isA<Uint8List>());
         expect(result.length, equals(32)); // 256 bits = 32 bytes
         verify(() => mockSecureStorage.read(key: keyName)).called(1);
@@ -70,45 +64,36 @@ void main() {
       });
     });
 
-    group('hasEncryptionKey', () {
+    group(r'$hasEncryptionKey', () {
       test('returns true when key exists', () async {
-        // Arrange
         when(
           () => mockSecureStorage.read(key: keyName),
         ).thenAnswer((_) async => 'someKey');
 
-        // Act
         final result = await service.hasEncryptionKey();
 
-        // Assert
         expect(result, isTrue);
       });
 
       test('returns false when key does not exist', () async {
-        // Arrange
         when(
           () => mockSecureStorage.read(key: keyName),
         ).thenAnswer((_) async => null);
 
-        // Act
         final result = await service.hasEncryptionKey();
 
-        // Assert
         expect(result, isFalse);
       });
     });
 
-    group('deleteEncryptionKey', () {
+    group(r'$deleteEncryptionKey', () {
       test('deletes key from secure storage', () async {
-        // Arrange
         when(
           () => mockSecureStorage.delete(key: keyName),
         ).thenAnswer((_) async {});
 
-        // Act
         await service.deleteEncryptionKey();
 
-        // Assert
         verify(() => mockSecureStorage.delete(key: keyName)).called(1);
       });
     });

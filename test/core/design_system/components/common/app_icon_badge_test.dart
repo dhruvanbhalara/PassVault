@@ -9,7 +9,7 @@ void main() {
       WidgetTester tester,
     ) async {
       const icon = LucideIcons.lock;
-      const color = Colors.blue;
+      const color = AppColors.primaryLight;
 
       await tester.pumpApp(const AppIconBadge(icon: icon, color: color));
 
@@ -30,7 +30,11 @@ void main() {
 
       for (final size in sizes) {
         await tester.pumpApp(
-          AppIconBadge(icon: LucideIcons.lock, color: Colors.blue, size: size),
+          AppIconBadge(
+            icon: LucideIcons.lock,
+            color: AppColors.primaryLight,
+            size: size,
+          ),
         );
 
         expect(find.byType(AppIconBadge), findsOneWidget);
@@ -41,7 +45,10 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpApp(
-        const AppIconBadge(icon: LucideIcons.lock, color: Colors.blue),
+        const AppIconBadge(
+          icon: LucideIcons.lock,
+          color: AppColors.primaryLight,
+        ),
       );
 
       final badge = tester.widget<AppIconBadge>(find.byType(AppIconBadge));

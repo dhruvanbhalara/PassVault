@@ -3,9 +3,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
-import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password_bloc.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_bloc.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_state.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
-import 'package:passvault/l10n/app_localizations.dart';
 
 class PasswordFieldSection extends StatelessWidget {
   final AppLocalizations l10n;
@@ -49,7 +49,7 @@ class PasswordFieldSection extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.m),
         if (passwordController.text.isNotEmpty)
-          PasswordStrengthIndicator(strength: state.strength),
+          PasswordStrengthWidget(strength: state.strength),
         const SizedBox(height: AppSpacing.l),
         if (state.settings != null && state.settings!.strategies.isNotEmpty)
           _StrategyDropdown(

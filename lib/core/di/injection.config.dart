@@ -15,6 +15,7 @@ import 'package:hive_ce_flutter/hive_flutter.dart' as _i919;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:local_auth/local_auth.dart' as _i152;
 
+import '../../config/routes/app_router.dart' as _i20;
 import '../../features/auth/data/repositories/auth_repository_impl.dart'
     as _i153;
 import '../../features/auth/domain/repositories/auth_repository.dart' as _i787;
@@ -22,10 +23,13 @@ import '../../features/auth/domain/usecases/authenticate_usecase.dart'
     as _i1045;
 import '../../features/auth/domain/usecases/check_biometrics_usecase.dart'
     as _i458;
-import '../../features/auth/presentation/bloc/auth_bloc.dart' as _i797;
-import '../../features/home/presentation/bloc/password_bloc.dart' as _i552;
-import '../../features/onboarding/presentation/bloc/onboarding_bloc.dart'
-    as _i792;
+import '../../features/auth/presentation/bloc/auth/auth_bloc.dart' as _i469;
+import '../../features/generator/presentation/bloc/generator/generator_bloc.dart'
+    as _i578;
+import '../../features/home/presentation/bloc/password/password_bloc.dart'
+    as _i847;
+import '../../features/onboarding/presentation/bloc/onboarding/onboarding_bloc.dart'
+    as _i231;
 import '../../features/password_manager/data/datasources/password_local_data_source.dart'
     as _i385;
 import '../../features/password_manager/data/exporters/csv_exporter.dart'
@@ -42,6 +46,8 @@ import '../../features/password_manager/domain/usecases/export_passwords_usecase
     as _i145;
 import '../../features/password_manager/domain/usecases/generate_password_usecase.dart'
     as _i16;
+import '../../features/password_manager/domain/usecases/get_password_usecase.dart'
+    as _i13;
 import '../../features/password_manager/domain/usecases/import_passwords_usecase.dart'
     as _i823;
 import '../../features/password_manager/domain/usecases/password_usecases.dart'
@@ -50,10 +56,10 @@ import '../../features/password_manager/domain/usecases/resolve_duplicates_useca
     as _i649;
 import '../../features/password_manager/domain/usecases/save_bulk_passwords_usecase.dart'
     as _i537;
-import '../../features/password_manager/presentation/bloc/add_edit_password_bloc.dart'
-    as _i683;
-import '../../features/password_manager/presentation/bloc/import_export_bloc.dart'
-    as _i404;
+import '../../features/password_manager/presentation/bloc/add_edit_password/add_edit_password_bloc.dart'
+    as _i590;
+import '../../features/password_manager/presentation/bloc/import_export/import_export_bloc.dart'
+    as _i454;
 import '../../features/settings/data/repositories/settings_repository_impl.dart'
     as _i955;
 import '../../features/settings/domain/repositories/settings_repository.dart'
@@ -67,7 +73,10 @@ import '../../features/settings/domain/usecases/password_settings_usecases.dart'
     as _i739;
 import '../../features/settings/domain/usecases/set_theme_usecase.dart'
     as _i986;
-import '../../features/settings/presentation/bloc/settings_bloc.dart' as _i585;
+import '../../features/settings/presentation/bloc/locale/locale_bloc.dart'
+    as _i221;
+import '../../features/settings/presentation/bloc/settings/settings_bloc.dart'
+    as _i228;
 import '../../features/settings/presentation/bloc/strategy_preview/strategy_preview_bloc.dart'
     as _i309;
 import '../../features/settings/presentation/bloc/theme/theme_bloc.dart'
@@ -106,6 +115,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i16.GeneratePasswordUseCase>(
       () => _i16.GeneratePasswordUseCase(),
     );
+    gh.lazySingleton<_i221.LocaleBloc>(() => _i221.LocaleBloc());
     gh.lazySingleton<_i367.FileService>(() => _i276.FileServiceImpl());
     gh.lazySingleton<_i108.IFilePickerService>(
       () => _i988.FilePickerServiceImpl(),
@@ -167,6 +177,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i145.ExportPasswordsUseCase>(
       () => _i145.ExportPasswordsUseCase(gh<_i580.PasswordRepository>()),
     );
+    gh.lazySingleton<_i13.GetPasswordUseCase>(
+      () => _i13.GetPasswordUseCase(gh<_i580.PasswordRepository>()),
+    );
     gh.lazySingleton<_i823.ImportPasswordsUseCase>(
       () => _i823.ImportPasswordsUseCase(gh<_i580.PasswordRepository>()),
     );
@@ -188,8 +201,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i537.SaveBulkPasswordsUseCase>(
       () => _i537.SaveBulkPasswordsUseCase(gh<_i580.PasswordRepository>()),
     );
-    gh.factory<_i585.SettingsBloc>(
-      () => _i585.SettingsBloc(gh<_i674.SettingsRepository>()),
+    gh.lazySingleton<_i228.SettingsBloc>(
+      () => _i228.SettingsBloc(gh<_i674.SettingsRepository>()),
     );
     gh.lazySingleton<_i360.GetBiometricsEnabledUseCase>(
       () => _i360.GetBiometricsEnabledUseCase(gh<_i674.SettingsRepository>()),
@@ -206,6 +219,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i830.SetOnboardingCompleteUseCase>(
       () => _i830.SetOnboardingCompleteUseCase(gh<_i674.SettingsRepository>()),
     );
+    gh.lazySingleton<_i830.GetOnboardingStepUseCase>(
+      () => _i830.GetOnboardingStepUseCase(gh<_i674.SettingsRepository>()),
+    );
+    gh.lazySingleton<_i830.SetOnboardingStepUseCase>(
+      () => _i830.SetOnboardingStepUseCase(gh<_i674.SettingsRepository>()),
+    );
+    gh.lazySingleton<_i830.DeleteOnboardingStepUseCase>(
+      () => _i830.DeleteOnboardingStepUseCase(gh<_i674.SettingsRepository>()),
+    );
     gh.lazySingleton<_i739.GetPasswordGenerationSettingsUseCase>(
       () => _i739.GetPasswordGenerationSettingsUseCase(
         gh<_i674.SettingsRepository>(),
@@ -219,21 +241,27 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i986.SetThemeUseCase>(
       () => _i986.SetThemeUseCase(gh<_i674.SettingsRepository>()),
     );
+    gh.lazySingleton<_i20.AppRouter>(
+      () => _i20.AppRouter(
+        gh<_i830.GetOnboardingCompleteUseCase>(),
+        gh<_i360.GetBiometricsEnabledUseCase>(),
+      ),
+    );
     gh.lazySingleton<_i242.ThemeBloc>(
       () => _i242.ThemeBloc(
         gh<_i6.GetThemeUseCase>(),
         gh<_i986.SetThemeUseCase>(),
       ),
     );
-    gh.factory<_i797.AuthBloc>(
-      () => _i797.AuthBloc(
+    gh.factory<_i469.AuthBloc>(
+      () => _i469.AuthBloc(
         gh<_i1045.AuthenticateUseCase>(),
         gh<_i787.AuthRepository>(),
         gh<_i360.GetBiometricsEnabledUseCase>(),
       ),
     );
-    gh.factory<_i404.ImportExportBloc>(
-      () => _i404.ImportExportBloc(
+    gh.lazySingleton<_i454.ImportExportBloc>(
+      () => _i454.ImportExportBloc(
         gh<_i823.ImportPasswordsUseCase>(),
         gh<_i649.ResolveDuplicatesUseCase>(),
         gh<_i766.ClearAllPasswordsUseCase>(),
@@ -243,23 +271,38 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i108.IFilePickerService>(),
       ),
     );
-    gh.factory<_i792.OnboardingBloc>(
-      () => _i792.OnboardingBloc(gh<_i830.SetOnboardingCompleteUseCase>()),
-    );
-    gh.lazySingleton<_i552.PasswordBloc>(
-      () => _i552.PasswordBloc(
+    gh.lazySingleton<_i847.PasswordBloc>(
+      () => _i847.PasswordBloc(
         gh<_i969.GetPasswordsUseCase>(),
         gh<_i969.SavePasswordUseCase>(),
         gh<_i969.DeletePasswordUseCase>(),
         gh<_i580.PasswordRepository>(),
       ),
     );
-    gh.factory<_i683.AddEditPasswordBloc>(
-      () => _i683.AddEditPasswordBloc(
+    gh.factory<_i590.AddEditPasswordBloc>(
+      () => _i590.AddEditPasswordBloc(
         gh<_i16.GeneratePasswordUseCase>(),
         gh<_i371.EstimatePasswordStrengthUseCase>(),
         gh<_i739.GetPasswordGenerationSettingsUseCase>(),
         gh<_i969.SavePasswordUseCase>(),
+        gh<_i13.GetPasswordUseCase>(),
+      ),
+    );
+    gh.factory<_i231.OnboardingBloc>(
+      () => _i231.OnboardingBloc(
+        gh<_i830.GetOnboardingCompleteUseCase>(),
+        gh<_i830.SetOnboardingCompleteUseCase>(),
+        gh<_i360.SetBiometricsEnabledUseCase>(),
+        gh<_i458.CheckBiometricsUseCase>(),
+        gh<_i1045.AuthenticateUseCase>(),
+        gh<_i830.DeleteOnboardingStepUseCase>(),
+      ),
+    );
+    gh.factory<_i578.GeneratorBloc>(
+      () => _i578.GeneratorBloc(
+        gh<_i16.GeneratePasswordUseCase>(),
+        gh<_i371.EstimatePasswordStrengthUseCase>(),
+        gh<_i739.GetPasswordGenerationSettingsUseCase>(),
       ),
     );
     return this;

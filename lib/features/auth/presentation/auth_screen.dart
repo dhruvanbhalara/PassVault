@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
-import 'package:passvault/core/di/injection.dart';
-import 'package:passvault/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:passvault/features/auth/presentation/bloc/auth/auth_bloc.dart';
 
 /// Screen responsible for biometric and local authentication.
 ///
@@ -14,19 +13,6 @@ import 'package:passvault/features/auth/presentation/bloc/auth_bloc.dart';
 /// is authenticated before accessing the vault.
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<AuthBloc>()..add(AuthCheckRequested()),
-      child: const AuthView(),
-    );
-  }
-}
-
-/// The stateful UI for the authentication gate.
-class AuthView extends StatelessWidget {
-  const AuthView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +59,18 @@ class AuthView extends StatelessWidget {
   }
 }
 
-class _AuthContent extends StatelessWidget {
+class _AuthContent extends StatefulWidget {
   const _AuthContent();
+
+  @override
+  State<_AuthContent> createState() => _AuthContentState();
+}
+
+class _AuthContentState extends State<_AuthContent> {
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,110 +79,119 @@ class _AuthContent extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthLoading) {
-          return AppLoader(
-            key: const Key('auth_loading'),
-            color: theme.onVaultGradient,
-          );
+          return const AppLoader(key: Key('auth_loading'));
         }
 
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const _AuthAnimation(),
-            SizedBox(
-              height: context.responsive(AppSpacing.xl, tablet: AppSpacing.xxl),
-            ),
-            const _AuthHeader(),
-            SizedBox(
-              height: context.responsive(
-                AppSpacing.xxl,
-                tablet: AppSpacing.xxxl,
+        final isAmoled = theme.primaryGlow != null;
+
+        return CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
+                    // App Logo (shield)
+                    _AppLogo(isAmoled: isAmoled),
+                    const SizedBox(height: AppSpacing.xxl),
+                    // Header
+                    Text(
+                      context.l10n.unlockVaultTitle,
+                      style: context.typography.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isAmoled ? theme.onPrimary : theme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.m),
+                    Text(
+                      context.l10n.biometricAuthRequired,
+                      style: context.typography.bodyMedium?.copyWith(
+                        color: (isAmoled ? theme.onPrimary : theme.onSurface)
+                            .withValues(alpha: 0.7),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.xxxl),
+                    // Biometric Shortcut
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: onBiometricTap,
+                      child: Column(
+                        children: [
+                          Center(
+                            child: Hero(
+                              tag: 'biometric_icon',
+                              child: IconButton(
+                                key: const Key('auth_unlock_button'),
+                                iconSize: 80,
+                                icon: Icon(
+                                  LucideIcons.fingerprintPattern,
+                                  color: theme.primary,
+                                ),
+                                onPressed: onBiometricTap,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.xl),
+                          // Unlock Button replacement or label
+                          Text(
+                            context.l10n.tapToAuthenticate,
+                            style: context.typography.labelLarge?.copyWith(
+                              color: theme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xxl),
+                  ],
+                ),
               ),
             ),
-            const _AuthButton(),
           ],
         );
       },
     );
   }
-}
 
-class _AuthAnimation extends StatelessWidget {
-  const _AuthAnimation();
-
-  @override
-  Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: SizedBox(
-        height: context.responsive(
-          AppDimensions.authAnimationHeight,
-          tablet: AppDimensions.authAnimationHeightTablet,
-        ),
-        child: Lottie.asset(
-          'assets/animations/fingerprint.json',
-          repeat: true,
-          animate: true,
-        ),
-      ),
-    );
+  void onBiometricTap() {
+    context.read<AuthBloc>().add(const AuthLoginRequested());
   }
 }
 
-class _AuthHeader extends StatelessWidget {
-  const _AuthHeader();
+class _AppLogo extends StatelessWidget {
+  final bool isAmoled;
+
+  const _AppLogo({required this.isAmoled});
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
 
-    return Column(
-      children: [
-        Text(
-          context.l10n.appName,
-          key: const Key('auth_title'),
-          style: context.typography.headlineLarge?.copyWith(
-            color: theme.onVaultGradient,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.s),
-        Text(
-          context.l10n.locked,
-          key: const Key('auth_locked_text'),
-          style: context.typography.bodyMedium?.copyWith(
-            color: theme.onVaultGradient.withValues(alpha: 0.7),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _AuthButton extends StatelessWidget {
-  const _AuthButton();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.theme;
-
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: context.responsive(AppSpacing.xxl, tablet: AppSpacing.xxxl),
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        color: isAmoled
+            ? theme.background.withValues(alpha: 0)
+            : theme.primary.withValues(alpha: 0.1),
+        shape: BoxShape.circle,
+        border: isAmoled ? Border.all(color: theme.primary, width: 2) : null,
+        boxShadow: isAmoled
+            ? [
+                BoxShadow(
+                  color: theme.primary.withValues(alpha: 0.4),
+                  blurRadius: 16,
+                  spreadRadius: 2,
+                ),
+              ]
+            : null,
       ),
-      child: SizedBox(
-        width: context.responsive(
-          double.infinity,
-          tablet: AppDimensions.maxContentWidthTablet,
-        ),
-        child: AppButton(
-          key: const Key('auth_unlock_button'),
-          text: context.l10n.unlockWithBiometrics,
-          backgroundColor: theme.onVaultGradient,
-          foregroundColor: theme.primary,
-          onPressed: () {
-            context.read<AuthBloc>().add(AuthLoginRequested());
-          },
-        ),
-      ),
+      child: Icon(LucideIcons.shield, size: 40, color: theme.primary),
     );
   }
 }

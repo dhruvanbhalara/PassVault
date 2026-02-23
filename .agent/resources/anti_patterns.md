@@ -8,9 +8,11 @@
 
 ### 2. 🏗️ Architectural Leakage
 -   **❌ UI Logic Hubs**: Putting business logic (like manual JSON parsing) inside a `build()` method. Use BLoC.
+-   **❌ Flat BLoC Directory**: Putting multiple BLoC files directly in `bloc/` without sub-folders.
 -   **❌ Repository in Page**: Directly calling `Hive.box` or a repository from a Widget. Widgets should only know about Blocs.
 -   **❌ Global Variables**: Using global variables for state. Use `GetIt` for services and BLoC for state.
 -   **❌ Direct Bloc Access**: Calling `bloc.method()` directly. ALWAYS use `bloc.add(Event)`.
+-   **❌ Exporting BLoC Components**: Using `export` for `_event.dart` and `_state.dart` instead of the official `part`/`part of` pattern.
 
 ### 3. 🎨 UI & Performance
 -   **❌ Magic Numbers**: Using raw `16.0` instead of `AppSpacing.md`.

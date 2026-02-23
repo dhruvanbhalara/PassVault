@@ -31,16 +31,42 @@ trigger: always_on
 -   **Feature-First 2.0**: Enforce strict separation of `DataSources` (External/Raw) vs `Repositories` (Domain abstraction).
 
 ## 3. Advanced State Management (Bloc Event-State)
--   **Sealed States**: Always use `sealed class` for States to ensure exhaustive UI handling.
+-   **Sealed States & Events**: Always use `sealed class` for both States and Events to ensure exhaustive UI handling and compile-time safety.
 -   **Immutability**: All States, Events, and Domain Entities MUST be immutable (using `final` and `Equatable` or `freezed`).
+-   **Official BLoC Part-Part Of Pattern**: Every `_bloc.dart` file MUST include its corresponding `_event.dart` and `_state.dart` files using `part` directives. Each event/state file MUST have a `part of` directive pointing back to the bloc file. This ensures a single library scope and shared private members.
+    ```dart
+    // auth_bloc.dart
+    part 'auth_event.dart';
+    part 'auth_state.dart';
+
+    class AuthBloc extends Bloc<AuthEvent, AuthState> { ... }
+
+    // auth_event.dart
+    part of 'auth_bloc.dart';
+
+    // auth_state.dart
+    part of 'auth_bloc.dart';
+    ```
+-   **Mandatory Directory Structure**: Every BLoC feature set MUST reside in its own sub-directory within the `bloc/` folder. Flat `bloc/` directories are STRICTLY prohibited.
+    ```text
+    presentation/bloc/
+    └── <bloc_name>/
+        ├── <bloc_name>_bloc.dart
+        ├── <bloc_name>_event.dart
+        └── <bloc_name>_state.dart
+    ```
+-   **Standardized Injection**:
+    -   Use `@injectable` for screen-specific BLoCs to ensure a fresh instance per screen access.
+    -   Use `@lazySingleton` for global or shared BLoCs (e.g., `AuthBloc`, `ThemeBloc`, `SettingsBloc`, `PasswordBloc`).
 -   **Concurrency**: Use `transformers` (e.g., `restartable()`, `droppable()`) for events requiring debouncing (search) or throttling (buttons).
--   **Zero-Logic UI**: Widgets should ONLY call `bloc.add(Event)`. No logical branching in `build()`.
+-   **Zero-Logic UI**: Widgets MUST NOT contain business logic, orchestration logic, or direct calls to external services. They should ONLY dispatch events and build UI based on BLoC states.
 
 ## 4. UI Performance & Design System
 -   **Atoms Tokens**: Use `AppSpacing`, `AppRadius`, and `AppColors`. No hardcoded pixel values.
 -   **Const-First**: Every widget that can be `const` MUST be `const`.
 -   **Widget Extraction**: STRICTLY prohibit private `_build*()` methods that return widgets. Extract them into separate `StatelessWidget` or `StatefulWidget` classes (can be private with `_` prefix). This ensures better testability, reusability, and composition.
--   **Lazy Rendering**: Mandatory `ListView.builder` for any list exceeding 10 items.
+-   **Lazy Rendering**: Mandatory use of lazy-loading constructs (`SliverList.builder` or `SliverGrid.builder`) for any list exceeding 10 items.
+-   **Sliver Preference**: Prefer `CustomScrollView` with `Slivers` over `SingleChildScrollView` for any non-trivial scrollable layout to ensure lazy loading and avoid jank. Use `SliverList.builder` or `SilverList.seperated` and `SliverGrid.builder` for mixed content types.
 -   **Repaint Boundaries**: Wrap complex animations or heavy UI sections in `RepaintBoundary` to optimize Impeller frame budget.
 -   **Isolate Parsing**: Mandate `compute()` or `Isolate` for JSON parsing exceeding 1MB to avoid main-thread jank.
 -   **Theme Access**: ALWAYS use `context` extensions (e.g., `context.colorScheme`, `context.theme`).
@@ -48,7 +74,7 @@ trigger: always_on
 ## 5. Quality Assurance & Advanced Testing (The Mirror Rule)
 -   **Mirror Test Rule**: 100% logic and widget coverage. No code without a test.
 -   **Test Naming**: Use string interpolation for test group names: `group('$ClassName',` not `group('ClassName',`. This ensures consistency and allows for better tooling support.
--   **Test Structure**: Mandate the `Given-When-Then` pattern within `test()` blocks for readability (e.g., `// Given`, `// When`, `// Then`).
+- [ ] **Test Structure**: Tests MUST follow a logical `Given-When-Then` sequence without explicit comments. The structure should be inherent in the code flow (e.g., setup, act, expect).
 -   **Coverage Targets**: Target 100% logic coverage for `domain` and `bloc` layers.
 -   **Mocking Protocol**: Use `mocktail` for all dependency mocking. STRICTLY prohibit using real implementation dependencies in unit tests.
 -   **Mirror Organization**: Test files MUST strictly mirror the `lib/` directory structure and end with `_test.dart`.
@@ -78,9 +104,22 @@ trigger: always_on
 -   **Meaningful Naming**: Use intention-revealing names. Boolean variables MUST use prefixes like `is`, `has`, `should`.
 -   **Strong Typing**: Strictly prohibit `dynamic`. Use `Object?` or explicit types.
 -   **Cascade Pattern**: Use cascade notation (`..`) for cleaner initialization of complex objects where appropriate.
+-   **Disposable Lifecycle**: `TextEditingController`, `ScrollController`, `FocusNode`, `StreamSubscription`, `AnimationController`, etc. MUST be `late` initialized in `initState()` and disposed in `dispose()`. Inline initialization is STRICTLY prohibited to prevent memory leaks and ensure proper lifecycle management.
 
 ## 9. Agent Guardrails
 -   **ALWAYS**: Run `flutter analyze` and `dart format` before committing.
 -   **ALWAYS**: Check `implementation_plan.md` status before completing a task.
 -   **ASK FIRST**: Before changing global themes, updating critical dependencies, or deleting files. 
 -   **NEVER**: Commit raw API keys, secrets, or hardcoded sensitive data.
+
+## 10. Navigation & Dependency Injection Standards
+-   **Dynamic Routes**: STRICTLY prohibit hardcoded route strings in `GoRouter` configuration. Use static constants in `AppRoutes`.
+-   **Centralized BLoCs**: BLoC providers MUST be injected via `ShellRoute` or `BlocProvider` in `app_router.dart` when shared across multiple screens or within a feature branch.
+-   **No Local Providers**: Avoid `BlocProvider` in individual screen `build()` methods if the BLoC is needed by a feature set.
+-   **Primitive Route Arguments**: STRICTLY prohibit passing complex objects (BLoCs, ChangeNotifiers, Entity instances) as route arguments. Pass only primitive IDs/Keys and fetch data in the destination screen using `Repository` or `Bloc` injection.
+
+## 11. UI Consistency & Interaction Patterns
+-   **FAB Usage**: Use Floating Action Buttons (FAB) for primary positive actions (Add, Create, Generate, Save) on a screen. Avoid inline primary buttons when a FAB is more appropriate for the screen context.
+-   **Scroll Padding**: ALWAYS add dynamic bottom padding to `SliverList.builder` or `SingleChildScrollView` when a FAB or Bottom Navigation Bar is present. Use `MediaQuery.of(context).padding.bottom + kFloatingActionButtonMargin + 56` (or `AppSpacing.xxl`) to prevent content overlap.
+-   **Screen vs Sheet**: Prefer full `Scaffold` screens over `ModalBottomSheet` for complex forms, especially those with text inputs, to ensure proper keyboard handling and deep linking capability.
+-   **Deep Linking**: Complex flows should be addressable via deep links (e.g., `/strategy/:id` instead of just a bottom sheet).

@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:passvault/features/password_manager/domain/entities/duplicate_password_entry.dart';
+part of 'duplicate_resolution_bloc.dart';
 
 sealed class DuplicateResolutionState extends Equatable {
   final List<DuplicatePasswordEntry> resolutions;

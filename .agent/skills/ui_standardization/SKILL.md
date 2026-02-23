@@ -34,6 +34,11 @@ This skill enforces the "UI Performance & Design System" rules from `flutter_rul
 -   Are raw colors (`Colors.blue`) used?
 -   Replace with `ThemeExtension` or `ColorScheme` references.
 
+### 5. Interaction & Layout Audit
+-   **FAB Presence**: Does the screen have a primary action? Is it a FAB?
+-   **Scroll Padding**: If FAB is present, does the scroll view have sufficient bottom padding (`AppSpacing.xxl` + safe area)?
+-   **Input Handling**: Are complex forms in full screens rather than bottom sheets?
+
 ## Implementation Examples
 
 ### Good: Widget Extraction & Spacing Tokens

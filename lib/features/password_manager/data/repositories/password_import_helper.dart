@@ -12,15 +12,18 @@ class PasswordImportHelper {
     final toImport = <PasswordEntry>[];
 
     for (final entry in entries) {
-      final duplicate = existing.firstWhere(
+      // Find matches by appName and username
+      final existingDuplicate = existing.any(
         (e) => e.appName == entry.appName && e.username == entry.username,
-        orElse: () => entry,
       );
 
-      if (duplicate != entry) {
+      if (existingDuplicate) {
+        final existingEntry = existing.firstWhere(
+          (e) => e.appName == entry.appName && e.username == entry.username,
+        );
         duplicates.add(
           DuplicatePasswordEntry(
-            existingEntry: duplicate,
+            existingEntry: existingEntry,
             newEntry: entry,
             conflictReason: 'Same appName and username',
           ),
@@ -66,7 +69,7 @@ class PasswordImportHelper {
       case DuplicateResolutionChoice.keepBoth:
         return PasswordEntry(
           id: resolution.newEntry.id,
-          appName: '${resolution.newEntry.appName} (imported)',
+          appName: resolution.newEntry.appName,
           username: resolution.newEntry.username,
           password: resolution.newEntry.password,
           lastUpdated: resolution.newEntry.lastUpdated,

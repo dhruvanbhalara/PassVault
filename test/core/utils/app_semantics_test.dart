@@ -1,20 +1,27 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/utils/app_semantics.dart';
 
 import '../../helpers/test_helpers.dart';
 
 void main() {
   group('$AppSemantics', () {
+    late AppLocalizations l10n;
+
+    setUpAll(() async {
+      l10n = await getL10n();
+    });
+
     testWidgets('button wrapper renders child widget', (
       WidgetTester tester,
     ) async {
       await tester.pumpApp(
         AppSemantics.button(
-          label: 'Save',
-          child: const ElevatedButton(onPressed: null, child: Text('Save')),
+          label: l10n.save,
+          child: ElevatedButton(onPressed: null, child: Text(l10n.save)),
         ),
       );
 
-      expect(find.text('Save'), findsOneWidget);
+      expect(find.text(l10n.save), findsOneWidget);
       expect(find.byType(ElevatedButton), findsOneWidget);
     });
 
@@ -22,23 +29,24 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpApp(
-        AppSemantics.header(label: 'Security', child: const Text('Security')),
+        AppSemantics.header(label: l10n.security, child: Text(l10n.security)),
       );
 
-      expect(find.text('Security'), findsOneWidget);
+      expect(find.text(l10n.security), findsOneWidget);
     });
 
     testWidgets('listItem wrapper renders child widget', (
       WidgetTester tester,
     ) async {
+      final itemLabel = l10n.appName;
       await tester.pumpApp(
         AppSemantics.listItem(
-          label: 'Password entry',
-          child: const ListTile(title: Text('example.com')),
+          label: itemLabel,
+          child: ListTile(title: Text(itemLabel)),
         ),
       );
 
-      expect(find.text('example.com'), findsOneWidget);
+      expect(find.text(itemLabel), findsOneWidget);
       expect(find.byType(ListTile), findsOneWidget);
     });
 
@@ -46,7 +54,7 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpApp(
-        AppSemantics.input(label: 'Password', child: const TextField()),
+        AppSemantics.input(label: l10n.passwordLabel, child: const TextField()),
       );
 
       expect(find.byType(TextField), findsOneWidget);
@@ -66,8 +74,12 @@ void main() {
     testWidgets('image wrapper renders child widget', (
       WidgetTester tester,
     ) async {
+      final imageLabel = l10n.appName;
       await tester.pumpApp(
-        AppSemantics.image(label: 'Icon', child: const Icon(Icons.security)),
+        AppSemantics.image(
+          label: imageLabel,
+          child: const Icon(LucideIcons.shield),
+        ),
       );
 
       expect(find.byType(Icon), findsOneWidget);
@@ -76,30 +88,33 @@ void main() {
     testWidgets('link wrapper renders child widget', (
       WidgetTester tester,
     ) async {
+      final linkText = l10n.privacyNotice;
       await tester.pumpApp(
-        AppSemantics.link(label: 'Privacy', child: const Text('Privacy')),
+        AppSemantics.link(label: linkText, child: Text(linkText)),
       );
 
-      expect(find.text('Privacy'), findsOneWidget);
+      expect(find.text(linkText), findsOneWidget);
     });
 
     testWidgets('announce does not throw exception', (
       WidgetTester tester,
     ) async {
+      final announceText = l10n.importData;
+      final announceMessage = l10n.importSuccess;
       await tester.pumpApp(
         Builder(
           builder: (context) {
             return ElevatedButton(
-              onPressed: () => AppSemantics.announce(context, 'Test message'),
-              child: const Text('Announce'),
+              onPressed: () => AppSemantics.announce(context, announceMessage),
+              child: Text(announceText),
             );
           },
         ),
       );
 
-      await tester.tap(find.text('Announce'));
+      await tester.tap(find.text(announceText));
       await tester.pumpAndSettle();
-      expect(find.text('Announce'), findsOneWidget);
+      expect(find.text(announceText), findsOneWidget);
     });
   });
 }

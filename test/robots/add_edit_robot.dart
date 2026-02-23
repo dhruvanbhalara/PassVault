@@ -44,6 +44,8 @@ class AddEditRobot {
   Future<void> tapGenerateButton() async {
     final button = find.byKey(const Key('add_edit_generate_button'));
     expect(button, findsOneWidget);
+    await tester.ensureVisible(button);
+    await tester.pumpAndSettle();
     await tester.tap(button);
     await tester.pump();
   }

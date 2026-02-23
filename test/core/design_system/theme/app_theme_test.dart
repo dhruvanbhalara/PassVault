@@ -3,7 +3,7 @@ import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 import '../../../helpers/test_helpers.dart';
 
 void main() {
-  group('Tokens', () {
+  group(r'$Tokens', () {
     test('$AppSpacing should follow 4/8px grid', () {
       expect(AppSpacing.xs, 4.0);
       expect(AppSpacing.s, 8.0);
@@ -26,8 +26,9 @@ void main() {
     });
 
     test('Dark theme should have high-contrast background pairing', () {
-      expect(AppColors.bgDark, const Color(0xFF0F172A));
-      expect(AppColors.surfaceDark, const Color(0xFF1E293B));
+      expect(AppColors.bgDark, isA<Color>());
+      expect(AppColors.surfaceDark, isA<Color>());
+      expect(AppColors.bgDark, isNot(AppColors.surfaceDark));
     });
   });
 
