@@ -1,27 +1,14 @@
 import 'package:injectable/injectable.dart';
-import 'package:password_engine/password_engine.dart';
+import 'package:passvault/features/password_manager/domain/services/password_engine_service.dart';
+import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 
 @lazySingleton
 class GeneratePasswordUseCase {
-  final PasswordGenerator _generator;
+  final PasswordEngineService _passwordEngineService;
 
-  GeneratePasswordUseCase() : _generator = PasswordGenerator();
+  GeneratePasswordUseCase(this._passwordEngineService);
 
-  String call({
-    int length = 12,
-    bool useNumbers = true,
-    bool useSpecialChars = true,
-    bool useUppercase = true,
-    bool useLowercase = true,
-    bool excludeAmbiguousChars = false,
-  }) {
-    return _generator.generatePassword(
-      length: length,
-      useNumbers: useNumbers,
-      useSpecialChars: useSpecialChars,
-      useUpperCase: useUppercase,
-      useLowerCase: useLowercase,
-      excludeAmbiguousChars: excludeAmbiguousChars,
-    );
+  String call({required PasswordGenerationStrategy strategy}) {
+    return _passwordEngineService.generatePassword(strategy: strategy);
   }
 }

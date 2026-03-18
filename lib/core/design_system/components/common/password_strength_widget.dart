@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
+import 'package:passvault/features/password_manager/domain/entities/password_feedback.dart';
+import 'package:password_engine/password_engine.dart' show PasswordStrength;
 
 /// A widget for displaying password strength with semantic colors.
 class PasswordStrengthWidget extends StatelessWidget {
-  final double strength;
+  final PasswordFeedback strength;
+  final Color? labelColor;
 
-  const PasswordStrengthWidget({super.key, required this.strength});
+  const PasswordStrengthWidget({
+    super.key,
+    required this.strength,
+    this.labelColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,28 +20,44 @@ class PasswordStrengthWidget extends StatelessWidget {
     final l10n = context.l10n;
     final typography = context.typography;
 
+    final color = _strengthColor(strength.strength, theme);
+    final text = _strengthText(strength.strength, l10n);
+
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          l10n.strength,
-          style: typography.labelLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: _strengthColor(strength, theme).withAlpha(30),
-            borderRadius: BorderRadius.circular(AppSpacing.s),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.m,
-              vertical: AppSpacing.xs,
+        Expanded(
+          child: Text(
+            l10n.strength,
+            overflow: TextOverflow.ellipsis,
+            style: typography.labelLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: labelColor,
             ),
-            child: Text(
-              _strengthText(strength, l10n),
-              style: typography.labelMedium?.copyWith(
-                color: _strengthColor(strength, theme),
-                fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(width: AppSpacing.s),
+        Flexible(
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSpacing.s),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.m,
+                  vertical: AppSpacing.xs,
+                ),
+                child: Text(
+                  text,
+                  key: ValueKey(text),
+                  overflow: TextOverflow.ellipsis,
+                  style: typography.labelMedium?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ),
@@ -43,21 +66,23 @@ class PasswordStrengthWidget extends StatelessWidget {
     );
   }
 
-  String _strengthText(double strength, AppLocalizations l10n) {
-    if (strength <= 0.15) return l10n.strengthVeryWeak;
-    if (strength <= 0.35) return l10n.strengthWeak;
-    if (strength <= 0.55) return l10n.strengthFair;
-    if (strength <= 0.75) return l10n.strengthGood;
-    if (strength <= 0.90) return l10n.strengthStrong;
-    return l10n.strengthVeryStrong;
+  String _strengthText(PasswordStrength strength, AppLocalizations l10n) {
+    return switch (strength) {
+      PasswordStrength.veryWeak => l10n.strengthVeryWeak,
+      PasswordStrength.weak => l10n.strengthWeak,
+      PasswordStrength.medium => l10n.strengthFair,
+      PasswordStrength.strong => l10n.strengthStrong,
+      PasswordStrength.veryStrong => l10n.strengthVeryStrong,
+    };
   }
 
-  Color _strengthColor(double strength, AppThemeExtension theme) {
-    if (strength <= 0.15) return theme.strengthVeryWeak;
-    if (strength <= 0.35) return theme.strengthWeak;
-    if (strength <= 0.55) return theme.strengthFair;
-    if (strength <= 0.75) return theme.strengthGood;
-    if (strength <= 0.90) return theme.strengthStrong;
-    return theme.strengthVeryStrong;
+  Color _strengthColor(PasswordStrength strength, AppThemeExtension theme) {
+    return switch (strength) {
+      PasswordStrength.veryWeak => theme.strengthVeryWeak,
+      PasswordStrength.weak => theme.strengthWeak,
+      PasswordStrength.medium => theme.strengthFair,
+      PasswordStrength.strong => theme.strengthStrong,
+      PasswordStrength.veryStrong => theme.strengthVeryStrong,
+    };
   }
 }

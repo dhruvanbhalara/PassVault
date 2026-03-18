@@ -1,20 +1,41 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:passvault/features/password_manager/domain/entities/password_feedback.dart';
+import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/presentation/bloc/strategy_preview/strategy_preview_bloc.dart';
+import 'package:password_engine/password_engine.dart' hide PasswordFeedback;
 
 class MockGeneratePasswordUseCase extends Mock
     implements GeneratePasswordUseCase {}
 
+class MockEstimatePasswordStrengthUseCase extends Mock
+    implements EstimatePasswordStrengthUseCase {}
+
 void main() {
   late MockGeneratePasswordUseCase mockGeneratePasswordUseCase;
+  late MockEstimatePasswordStrengthUseCase mockEstimateStrengthUseCase;
   late StrategyPreviewBloc bloc;
+
+  setUpAll(() {
+    registerFallbackValue(
+      const PasswordGenerationStrategy(
+        id: 'fallback',
+        name: 'Fallback',
+        length: 16,
+      ),
+    );
+  });
 
   setUp(() {
     mockGeneratePasswordUseCase = MockGeneratePasswordUseCase();
-    bloc = StrategyPreviewBloc(mockGeneratePasswordUseCase);
+    mockEstimateStrengthUseCase = MockEstimatePasswordStrengthUseCase();
+    bloc = StrategyPreviewBloc(
+      mockGeneratePasswordUseCase,
+      mockEstimateStrengthUseCase,
+    );
   });
 
   tearDown(() {
@@ -33,21 +54,20 @@ void main() {
       'emits [loading, success] when GeneratePreview event succeeds',
       build: () {
         when(
-          () => mockGeneratePasswordUseCase(
-            length: any(named: 'length'),
-            useNumbers: any(named: 'useNumbers'),
-            useSpecialChars: any(named: 'useSpecialChars'),
-            useUppercase: any(named: 'useUppercase'),
-            useLowercase: any(named: 'useLowercase'),
-            excludeAmbiguousChars: any(named: 'excludeAmbiguousChars'),
-          ),
+          () => mockGeneratePasswordUseCase(strategy: any(named: 'strategy')),
         ).thenReturn(generatedPassword);
+        when(
+          () => mockEstimateStrengthUseCase(any()),
+        ).thenReturn(const PasswordFeedback(strength: PasswordStrength.medium));
         return bloc;
       },
       act: (bloc) => bloc.add(GeneratePreview(settings)),
       expect: () => [
         const StrategyPreviewLoading(),
-        const StrategyPreviewSuccess(password: generatedPassword),
+        const StrategyPreviewSuccess(
+          password: generatedPassword,
+          strength: PasswordFeedback(strength: PasswordStrength.medium),
+        ),
       ],
     );
 
@@ -55,14 +75,7 @@ void main() {
       'emits [loading, failure] when GeneratePreview event fails',
       build: () {
         when(
-          () => mockGeneratePasswordUseCase(
-            length: any(named: 'length'),
-            useNumbers: any(named: 'useNumbers'),
-            useSpecialChars: any(named: 'useSpecialChars'),
-            useUppercase: any(named: 'useUppercase'),
-            useLowercase: any(named: 'useLowercase'),
-            excludeAmbiguousChars: any(named: 'excludeAmbiguousChars'),
-          ),
+          () => mockGeneratePasswordUseCase(strategy: any(named: 'strategy')),
         ).thenThrow(Exception('Generation Failed'));
         return bloc;
       },

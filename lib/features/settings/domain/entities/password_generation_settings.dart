@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:passvault/features/settings/domain/entities/password_strategy_type.dart';
 import 'package:uuid/uuid.dart';
 
 /// Represents a single password generation strategy with configurable options.
@@ -8,7 +9,10 @@ import 'package:uuid/uuid.dart';
 class PasswordGenerationStrategy extends Equatable {
   final String id;
   final String name;
+  final PasswordStrategyType type;
   final int length;
+  final int wordCount;
+  final String separator;
   final bool useNumbers;
   final bool useSpecialChars;
   final bool useUppercase;
@@ -18,7 +22,10 @@ class PasswordGenerationStrategy extends Equatable {
   const PasswordGenerationStrategy({
     required this.id,
     required this.name,
+    this.type = PasswordStrategyType.random,
     this.length = 16,
+    this.wordCount = 4,
+    this.separator = '-',
     this.useNumbers = true,
     this.useSpecialChars = true,
     this.useUppercase = true,
@@ -28,7 +35,10 @@ class PasswordGenerationStrategy extends Equatable {
 
   factory PasswordGenerationStrategy.create({
     required String name,
+    PasswordStrategyType type = PasswordStrategyType.random,
     int length = 16,
+    int wordCount = 4,
+    String separator = '-',
     bool useNumbers = true,
     bool useSpecialChars = true,
     bool useUppercase = true,
@@ -38,7 +48,10 @@ class PasswordGenerationStrategy extends Equatable {
     return PasswordGenerationStrategy(
       id: const Uuid().v7(),
       name: name,
+      type: type,
       length: length,
+      wordCount: wordCount,
+      separator: separator,
       useNumbers: useNumbers,
       useSpecialChars: useSpecialChars,
       useUppercase: useUppercase,
@@ -49,7 +62,10 @@ class PasswordGenerationStrategy extends Equatable {
 
   PasswordGenerationStrategy copyWith({
     String? name,
+    PasswordStrategyType? type,
     int? length,
+    int? wordCount,
+    String? separator,
     bool? useNumbers,
     bool? useSpecialChars,
     bool? useUppercase,
@@ -59,7 +75,10 @@ class PasswordGenerationStrategy extends Equatable {
     return PasswordGenerationStrategy(
       id: id,
       name: name ?? this.name,
+      type: type ?? this.type,
       length: length ?? this.length,
+      wordCount: wordCount ?? this.wordCount,
+      separator: separator ?? this.separator,
       useNumbers: useNumbers ?? this.useNumbers,
       useSpecialChars: useSpecialChars ?? this.useSpecialChars,
       useUppercase: useUppercase ?? this.useUppercase,
@@ -73,7 +92,10 @@ class PasswordGenerationStrategy extends Equatable {
     return {
       'id': id,
       'name': name,
+      'type': type.name,
       'length': length,
+      'wordCount': wordCount,
+      'separator': separator,
       'useNumbers': useNumbers,
       'useSpecialChars': useSpecialChars,
       'useUppercase': useUppercase,
@@ -86,7 +108,12 @@ class PasswordGenerationStrategy extends Equatable {
     return PasswordGenerationStrategy(
       id: json['id'] as String? ?? const Uuid().v7(),
       name: json['name'] as String? ?? 'Custom',
+      type: json['type'] != null
+          ? PasswordStrategyType.values.byName(json['type'] as String)
+          : PasswordStrategyType.random,
       length: json['length'] as int? ?? 16,
+      wordCount: json['wordCount'] as int? ?? 4,
+      separator: json['separator'] as String? ?? '-',
       useNumbers: json['useNumbers'] as bool? ?? true,
       useSpecialChars: json['useSpecialChars'] as bool? ?? true,
       useUppercase: json['useUppercase'] as bool? ?? true,
@@ -99,7 +126,10 @@ class PasswordGenerationStrategy extends Equatable {
   List<Object> get props => [
     id,
     name,
+    type,
     length,
+    wordCount,
+    separator,
     useNumbers,
     useSpecialChars,
     useUppercase,
@@ -124,12 +154,20 @@ class PasswordGenerationSettings extends Equatable {
   /// Migrates old settings format or creates default
   factory PasswordGenerationSettings.initial() {
     const defaultId = 'default-strategy';
+    const memorableId = 'memorable-strategy';
     final defaultStrategy = const PasswordGenerationStrategy(
       id: defaultId,
       name: 'Default',
     );
+    final memorableStrategy = const PasswordGenerationStrategy(
+      id: memorableId,
+      name: 'Memorable',
+      type: PasswordStrategyType.memorable,
+      wordCount: 4,
+      separator: '-',
+    );
     return PasswordGenerationSettings(
-      strategies: [defaultStrategy],
+      strategies: [defaultStrategy, memorableStrategy],
       defaultStrategyId: defaultId,
     );
   }

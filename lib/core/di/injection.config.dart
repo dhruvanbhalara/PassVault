@@ -36,8 +36,12 @@ import '../../features/password_manager/data/exporters/csv_exporter.dart'
     as _i288;
 import '../../features/password_manager/data/repositories/password_repository_impl.dart'
     as _i826;
+import '../../features/password_manager/data/services/password_engine_service_impl.dart'
+    as _i337;
 import '../../features/password_manager/domain/repositories/password_repository.dart'
     as _i580;
+import '../../features/password_manager/domain/services/password_engine_service.dart'
+    as _i239;
 import '../../features/password_manager/domain/usecases/clear_all_passwords_usecase.dart'
     as _i766;
 import '../../features/password_manager/domain/usecases/estimate_password_strength_usecase.dart'
@@ -109,16 +113,13 @@ extension GetItInjectableX on _i174.GetIt {
       () => storageModule.localAuthentication,
     );
     gh.lazySingleton<_i288.CsvExporter>(() => _i288.CsvExporter());
-    gh.lazySingleton<_i371.EstimatePasswordStrengthUseCase>(
-      () => _i371.EstimatePasswordStrengthUseCase(),
-    );
-    gh.lazySingleton<_i16.GeneratePasswordUseCase>(
-      () => _i16.GeneratePasswordUseCase(),
-    );
     gh.lazySingleton<_i221.LocaleBloc>(() => _i221.LocaleBloc());
     gh.lazySingleton<_i367.FileService>(() => _i276.FileServiceImpl());
     gh.lazySingleton<_i108.IFilePickerService>(
       () => _i988.FilePickerServiceImpl(),
+    );
+    gh.lazySingleton<_i239.PasswordEngineService>(
+      () => _i337.PasswordEngineServiceImpl(),
     );
     gh.lazySingleton<_i311.EncryptedStorageService>(
       () => _i311.EncryptedStorageService(gh<_i558.FlutterSecureStorage>()),
@@ -133,9 +134,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i636.DataService>(
       () => _i636.DataService(gh<_i1024.CryptoService>()),
-    );
-    gh.factory<_i309.StrategyPreviewBloc>(
-      () => _i309.StrategyPreviewBloc(gh<_i16.GeneratePasswordUseCase>()),
     );
     await gh.singletonAsync<_i919.Box<dynamic>>(
       () => storageModule.openSettingsBox(
@@ -153,6 +151,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i919.Box<dynamic>>(instanceName: 'passwordBox'),
       ),
     );
+    gh.lazySingleton<_i371.EstimatePasswordStrengthUseCase>(
+      () => _i371.EstimatePasswordStrengthUseCase(
+        gh<_i239.PasswordEngineService>(),
+      ),
+    );
+    gh.lazySingleton<_i16.GeneratePasswordUseCase>(
+      () => _i16.GeneratePasswordUseCase(gh<_i239.PasswordEngineService>()),
+    );
     gh.lazySingleton<_i665.DatabaseService>(
       () => _i665.DatabaseService(
         gh<_i919.Box<dynamic>>(instanceName: 'settingsBox'),
@@ -163,6 +169,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i458.CheckBiometricsUseCase>(
       () => _i458.CheckBiometricsUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.factory<_i309.StrategyPreviewBloc>(
+      () => _i309.StrategyPreviewBloc(
+        gh<_i16.GeneratePasswordUseCase>(),
+        gh<_i371.EstimatePasswordStrengthUseCase>(),
+      ),
     );
     gh.lazySingleton<_i674.SettingsRepository>(
       () => _i955.SettingsRepositoryImpl(gh<_i665.DatabaseService>()),

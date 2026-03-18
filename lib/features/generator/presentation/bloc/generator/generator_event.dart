@@ -63,6 +63,22 @@ final class GeneratorExcludeAmbiguousToggled extends GeneratorEvent {
   List<Object?> get props => [value];
 }
 
+final class GeneratorWordCountChanged extends GeneratorEvent {
+  final int count;
+  const GeneratorWordCountChanged(this.count);
+
+  @override
+  List<Object?> get props => [count];
+}
+
+final class GeneratorSeparatorChanged extends GeneratorEvent {
+  final String separator;
+  const GeneratorSeparatorChanged(this.separator);
+
+  @override
+  List<Object?> get props => [separator];
+}
+
 final class GeneratorStrategySelected extends GeneratorEvent {
   final String strategyId;
   const GeneratorStrategySelected(this.strategyId);
