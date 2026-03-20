@@ -6,6 +6,7 @@ import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_bloc.dart';
+import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_error_codes.dart';
 import 'package:uuid/uuid.dart';
 
 import 'widgets/password_field_section.dart';
@@ -117,7 +118,12 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
           case AddEditFailure(:final errorMessage):
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(errorMessage),
+                content: Text(
+                  AddEditPasswordErrorCodes.localizedMessage(
+                    errorMessage,
+                    context.l10n,
+                  ),
+                ),
                 backgroundColor: theme.error,
                 behavior: SnackBarBehavior.floating,
                 duration: AppDuration.normal,

@@ -3,10 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/error/error.dart';
 import 'package:passvault/features/generator/presentation/bloc/generator/generator_bloc.dart';
+import 'package:passvault/features/password_manager/domain/entities/password_feedback.dart';
 import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
+import 'package:passvault/features/settings/domain/entities/password_strategy_type.dart';
 import 'package:passvault/features/settings/domain/usecases/password_settings_usecases.dart';
+import 'package:password_engine/password_engine.dart' hide PasswordFeedback;
 
 class MockGeneratePasswordUseCase extends Mock
     implements GeneratePasswordUseCase {}
@@ -23,6 +26,16 @@ void main() {
   late MockEstimatePasswordStrengthUseCase mockEstimatePasswordStrengthUseCase;
   late MockGetPasswordGenerationSettingsUseCase mockGetSettingsUseCase;
 
+  setUpAll(() {
+    registerFallbackValue(
+      const PasswordGenerationStrategy(
+        id: 'fallback',
+        name: 'Fallback',
+        length: 16,
+      ),
+    );
+  });
+
   setUp(() {
     mockGeneratePasswordUseCase = MockGeneratePasswordUseCase();
     mockEstimatePasswordStrengthUseCase = MockEstimatePasswordStrengthUseCase();
@@ -33,17 +46,12 @@ void main() {
     ).thenReturn(Success(PasswordGenerationSettings.initial()));
 
     when(
-      () => mockGeneratePasswordUseCase(
-        length: any(named: 'length'),
-        useNumbers: any(named: 'useNumbers'),
-        useSpecialChars: any(named: 'useSpecialChars'),
-        useUppercase: any(named: 'useUppercase'),
-        useLowercase: any(named: 'useLowercase'),
-        excludeAmbiguousChars: any(named: 'excludeAmbiguousChars'),
-      ),
+      () => mockGeneratePasswordUseCase(strategy: any(named: 'strategy')),
     ).thenReturn('generatedPassword');
 
-    when(() => mockEstimatePasswordStrengthUseCase(any())).thenReturn(0.8);
+    when(
+      () => mockEstimatePasswordStrengthUseCase(any()),
+    ).thenReturn(const PasswordFeedback(strength: PasswordStrength.strong));
 
     bloc = GeneratorBloc(
       mockGeneratePasswordUseCase,
@@ -80,14 +88,7 @@ void main() {
       act: (bloc) => bloc.add(const GeneratorRequested()),
       verify: (bloc) {
         verify(
-          () => mockGeneratePasswordUseCase(
-            length: any(named: 'length'),
-            useNumbers: any(named: 'useNumbers'),
-            useSpecialChars: any(named: 'useSpecialChars'),
-            useUppercase: any(named: 'useUppercase'),
-            useLowercase: any(named: 'useLowercase'),
-            excludeAmbiguousChars: any(named: 'excludeAmbiguousChars'),
-          ),
+          () => mockGeneratePasswordUseCase(strategy: any(named: 'strategy')),
         ).called(2); // One for initial started, one for requested
       },
     );
@@ -99,6 +100,74 @@ void main() {
       verify: (bloc) {
         if (bloc.state case GeneratorLoaded(:final strategy)) {
           expect(strategy.useUppercase, false);
+        } else {
+          fail('State should be GeneratorLoaded');
+        }
+      },
+    );
+
+    blocTest<GeneratorBloc, GeneratorState>(
+      'updates word count when GeneratorWordCountChanged is added',
+      build: () {
+        when(() => mockGetSettingsUseCase()).thenReturn(
+          const Success(
+            PasswordGenerationSettings(
+              strategies: [
+                PasswordGenerationStrategy(
+                  id: 'memorable-strategy',
+                  name: 'Memorable',
+                  type: PasswordStrategyType.memorable,
+                  wordCount: 4,
+                ),
+              ],
+              defaultStrategyId: 'memorable-strategy',
+            ),
+          ),
+        );
+        return GeneratorBloc(
+          mockGeneratePasswordUseCase,
+          mockEstimatePasswordStrengthUseCase,
+          mockGetSettingsUseCase,
+        );
+      },
+      act: (bloc) => bloc.add(const GeneratorWordCountChanged(6)),
+      verify: (bloc) {
+        if (bloc.state case GeneratorLoaded(:final strategy)) {
+          expect(strategy.wordCount, 6);
+        } else {
+          fail('State should be GeneratorLoaded');
+        }
+      },
+    );
+
+    blocTest<GeneratorBloc, GeneratorState>(
+      'updates separator when GeneratorSeparatorChanged is added',
+      build: () {
+        when(() => mockGetSettingsUseCase()).thenReturn(
+          const Success(
+            PasswordGenerationSettings(
+              strategies: [
+                PasswordGenerationStrategy(
+                  id: 'memorable-strategy',
+                  name: 'Memorable',
+                  type: PasswordStrategyType.memorable,
+                  separator: '-',
+                ),
+              ],
+              defaultStrategyId: 'memorable-strategy',
+            ),
+          ),
+        );
+        return GeneratorBloc(
+          mockGeneratePasswordUseCase,
+          mockEstimatePasswordStrengthUseCase,
+          mockGetSettingsUseCase,
+        );
+      },
+      act: (bloc) => bloc.add(const GeneratorSeparatorChanged('_')),
+      verify: (bloc) {
+        if (bloc.state case GeneratorLoaded(:final strategy)) {
+          expect(strategy.separator, '_');
         } else {
           fail('State should be GeneratorLoaded');
         }

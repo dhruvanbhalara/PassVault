@@ -1,9 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:passvault/features/password_manager/domain/entities/password_feedback.dart';
 import 'package:passvault/features/password_manager/domain/usecases/estimate_password_strength_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
+import 'package:passvault/features/settings/domain/entities/password_strategy_type.dart';
 import 'package:passvault/features/settings/domain/usecases/password_settings_usecases.dart';
 
 part 'generator_event.dart';
@@ -28,6 +30,8 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
     on<GeneratorNumbersToggled>(_onNumbersToggled);
     on<GeneratorSymbolsToggled>(_onSymbolsToggled);
     on<GeneratorExcludeAmbiguousToggled>(_onExcludeAmbiguousToggled);
+    on<GeneratorWordCountChanged>(_onWordCountChanged);
+    on<GeneratorSeparatorChanged>(_onSeparatorChanged);
     on<GeneratorStrategySelected>(_onStrategySelected);
 
     add(const GeneratorStarted());
@@ -132,6 +136,34 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
     }
   }
 
+  void _onWordCountChanged(
+    GeneratorWordCountChanged event,
+    Emitter<GeneratorState> emit,
+  ) {
+    if (state case GeneratorLoaded(:final strategy, :final settings)) {
+      emit(
+        _buildGeneratedState(
+          strategy.copyWith(wordCount: event.count),
+          settings: settings,
+        ),
+      );
+    }
+  }
+
+  void _onSeparatorChanged(
+    GeneratorSeparatorChanged event,
+    Emitter<GeneratorState> emit,
+  ) {
+    if (state case GeneratorLoaded(:final strategy, :final settings)) {
+      emit(
+        _buildGeneratedState(
+          strategy.copyWith(separator: event.separator),
+          settings: settings,
+        ),
+      );
+    }
+  }
+
   void _onStrategySelected(
     GeneratorStrategySelected event,
     Emitter<GeneratorState> emit,
@@ -158,29 +190,24 @@ class GeneratorBloc extends Bloc<GeneratorEvent, GeneratorState> {
         strategy.useNumbers ||
         strategy.useSpecialChars;
 
-    if (!hasCharacterSet) {
+    if (!hasCharacterSet && strategy.type == PasswordStrategyType.random) {
       return GeneratorLoaded(
         strategy: strategy,
         generatedPassword: '',
-        strength: 0.0,
+        strength: const PasswordFeedback.empty(),
         settings: settings,
       );
     }
 
-    final generatedPassword = _generatePasswordUseCase(
-      length: strategy.length,
-      useNumbers: strategy.useNumbers,
-      useSpecialChars: strategy.useSpecialChars,
-      useUppercase: strategy.useUppercase,
-      useLowercase: strategy.useLowercase,
-      excludeAmbiguousChars: strategy.excludeAmbiguousChars,
-    );
+    final generatedPassword = _generatePasswordUseCase(strategy: strategy);
 
-    final strength = _estimatePasswordStrengthUseCase(generatedPassword);
+    final strengthFeedback = _estimatePasswordStrengthUseCase(
+      generatedPassword,
+    );
     return GeneratorLoaded(
       strategy: strategy,
       generatedPassword: generatedPassword,
-      strength: strength,
+      strength: strengthFeedback,
       settings: settings,
     );
   }

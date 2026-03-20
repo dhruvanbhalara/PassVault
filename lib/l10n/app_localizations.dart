@@ -879,6 +879,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update Password'**
   String get updatePassword;
+
+  /// No description provided for @entryNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Password entry not found'**
+  String get entryNotFound;
 }
 
 class _AppLocalizationsDelegate

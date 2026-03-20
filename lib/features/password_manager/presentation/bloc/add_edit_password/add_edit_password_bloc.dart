@@ -4,7 +4,7 @@ import 'package:passvault/features/password_manager/domain/usecases/estimate_pas
 import 'package:passvault/features/password_manager/domain/usecases/generate_password_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/get_password_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/password_usecases.dart';
-
+import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_error_codes.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_event.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/add_edit_password/add_edit_password_state.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
@@ -45,7 +45,13 @@ class AddEditPasswordBloc
     LoadEntry event,
     Emitter<AddEditPasswordState> emit,
   ) async {
-    emit(const AddEditLoading());
+    emit(
+      AddEditLoading(
+        generatedPassword: state.generatedPassword,
+        strength: state.strength,
+        settings: state.settings,
+      ),
+    );
     final result = await _getPasswordUseCase(event.id);
     result.fold(
       (failure) => emit(
@@ -58,18 +64,19 @@ class AddEditPasswordBloc
       ),
       (entry) {
         if (entry != null) {
+          final strength = _estimateStrengthUseCase(entry.password);
           emit(
             AddEditLoaded(
               entry: entry,
               generatedPassword: state.generatedPassword,
-              strength: state.strength,
+              strength: strength,
               settings: state.settings,
             ),
           );
         } else {
           emit(
             AddEditFailure(
-              errorMessage: 'Entry not found',
+              errorMessage: AddEditPasswordErrorCodes.entryNotFound,
               generatedPassword: state.generatedPassword,
               strength: state.strength,
               settings: state.settings,
@@ -119,14 +126,7 @@ class AddEditPasswordBloc
     }
 
     // Generate password using use case
-    final password = _generatePasswordUseCase(
-      length: strategy.length,
-      useSpecialChars: strategy.useSpecialChars,
-      useNumbers: strategy.useNumbers,
-      useUppercase: strategy.useUppercase,
-      useLowercase: strategy.useLowercase,
-      excludeAmbiguousChars: strategy.excludeAmbiguousChars,
-    );
+    final password = _generatePasswordUseCase(strategy: strategy);
 
     // Calculate strength for the newly generated password
     final strength = _estimateStrengthUseCase(password);

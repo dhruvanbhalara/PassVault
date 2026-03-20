@@ -1,15 +1,16 @@
 import 'package:equatable/equatable.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
+import 'package:passvault/features/password_manager/domain/entities/password_feedback.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 
 sealed class AddEditPasswordState extends Equatable {
   final String generatedPassword;
-  final double strength;
+  final PasswordFeedback strength;
   final PasswordGenerationSettings? settings;
 
   const AddEditPasswordState({
     this.generatedPassword = '',
-    this.strength = 0.0,
+    this.strength = const PasswordFeedback.empty(),
     this.settings,
   });
 
@@ -20,7 +21,7 @@ sealed class AddEditPasswordState extends Equatable {
 final class AddEditInitial extends AddEditPasswordState {
   const AddEditInitial({
     super.generatedPassword,
-    super.strength,
+    super.strength = const PasswordFeedback.empty(),
     super.settings,
   });
 }
@@ -36,7 +37,7 @@ final class AddEditGenerated extends AddEditPasswordState {
 final class AddEditSaving extends AddEditPasswordState {
   const AddEditSaving({
     super.generatedPassword,
-    super.strength,
+    required super.strength,
     super.settings,
   });
 }
@@ -44,7 +45,7 @@ final class AddEditSaving extends AddEditPasswordState {
 final class AddEditSuccess extends AddEditPasswordState {
   const AddEditSuccess({
     super.generatedPassword,
-    super.strength,
+    required super.strength,
     super.settings,
   });
 }
@@ -55,7 +56,7 @@ final class AddEditFailure extends AddEditPasswordState {
   const AddEditFailure({
     required this.errorMessage,
     super.generatedPassword,
-    super.strength,
+    required super.strength,
     super.settings,
   });
 
@@ -66,7 +67,7 @@ final class AddEditFailure extends AddEditPasswordState {
 final class AddEditLoading extends AddEditPasswordState {
   const AddEditLoading({
     super.generatedPassword,
-    super.strength,
+    required super.strength,
     super.settings,
   });
 }
@@ -76,7 +77,7 @@ final class AddEditLoaded extends AddEditPasswordState {
   const AddEditLoaded({
     required this.entry,
     super.generatedPassword,
-    super.strength,
+    required super.strength,
     super.settings,
   });
   @override

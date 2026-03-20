@@ -139,7 +139,11 @@ void main() {
           () => mockSettingsRepository.savePasswordGenerationSettings(
             any(
               that: isA<PasswordGenerationSettings>()
-                  .having((s) => s.strategies.length, 'strategies count', 2)
+                  .having(
+                    (s) => s.strategies.length,
+                    'strategies count',
+                    PasswordGenerationSettings.initial().strategies.length + 1,
+                  )
                   .having((s) => s.strategies.last, 'last strategy', tStrategy),
             ),
           ),

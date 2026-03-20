@@ -14,7 +14,7 @@ final class GeneratorLoading extends GeneratorState {
 final class GeneratorLoaded extends GeneratorState {
   final PasswordGenerationStrategy strategy;
   final String generatedPassword;
-  final double strength;
+  final PasswordFeedback strength;
   final PasswordGenerationSettings? settings;
 
   const GeneratorLoaded({

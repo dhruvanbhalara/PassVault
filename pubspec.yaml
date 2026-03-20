@@ -58,10 +58,8 @@ dependencies:
   csv: ^6.0.0
   path_provider: ^2.1.5
 
-  # Password Logic (Git)
-  password_engine:
-    git:
-      url: https://github.com/dhruvanbhalara/password_engine.git
+  # Password Logic
+  password_engine: ^1.0.0
   hive_ce: ^2.16.0
   hive_ce_flutter: ^2.3.3
   uuid: ^4.5.2
@@ -78,6 +76,9 @@ dev_dependencies:
   mocktail: ^1.0.4
   bloc_test: ^10.0.0
   plugin_platform_interface: ^2.1.8
+
+dependency_overrides:
+  build: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

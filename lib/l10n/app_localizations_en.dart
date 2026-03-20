@@ -417,4 +417,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updatePassword => 'Update Password';
+
+  @override
+  String get entryNotFound => 'Password entry not found';
 }
