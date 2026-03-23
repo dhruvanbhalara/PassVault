@@ -885,6 +885,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password entry not found'**
   String get entryNotFound;
+
+  /// No description provided for @wordCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Word Count'**
+  String get wordCountLabel;
+
+  /// No description provided for @separatorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Separator'**
+  String get separatorLabel;
+
+  /// No description provided for @separatorNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get separatorNone;
+
+  /// No description provided for @memorableStrategy.
+  ///
+  /// In en, this message translates to:
+  /// **'Memorable (Passphrase)'**
+  String get memorableStrategy;
+
+  /// No description provided for @randomStrategy.
+  ///
+  /// In en, this message translates to:
+  /// **'Random (Characters)'**
+  String get randomStrategy;
+
+  /// No description provided for @randomStrategyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Random'**
+  String get randomStrategyTitle;
+
+  /// No description provided for @randomStrategySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Characters'**
+  String get randomStrategySubtitle;
+
+  /// No description provided for @memorableStrategyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Memorable'**
+  String get memorableStrategyTitle;
+
+  /// No description provided for @memorableStrategySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Passphrase'**
+  String get memorableStrategySubtitle;
+
+  /// No description provided for @strategyTypeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'({value})'**
+  String strategyTypeSubtitle(String value);
 }
 
 class _AppLocalizationsDelegate
