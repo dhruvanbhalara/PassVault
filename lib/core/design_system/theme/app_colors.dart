@@ -7,6 +7,15 @@ import 'package:flutter/material.dart';
 /// Instead, access semantic colors via `context.theme` or `context.colors`
 /// provided by [AppThemeExtension].
 abstract class AppColors {
+  /// Opaque white token.
+  static const Color white = Color(0xFFFFFFFF);
+
+  /// Opaque black token.
+  static const Color black = Color(0xFF000000);
+
+  /// Fully transparent token.
+  static const Color transparent = Color(0x00000000);
+
   // Brand / Core
 
   /// Primary brand color for light theme (Blue).
@@ -36,7 +45,7 @@ abstract class AppColors {
   static const Color bgDark = Color(0xFF121212);
 
   /// Pure black background for AMOLED support (#000000).
-  static const Color bgAmoled = Colors.black;
+  static const Color bgAmoled = black;
 
   /// Default surface color (cards, sheets) for light theme.
   static const Color surfaceLight = Color(0xFFF5F5F5);

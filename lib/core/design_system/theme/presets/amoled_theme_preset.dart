@@ -32,7 +32,7 @@ class AmoledThemePreset {
       primaryContainer: scheme.primaryContainer,
       onPrimaryContainer: scheme.onPrimaryContainer,
       cardShadow: BoxShadow(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: AppColors.white.withValues(alpha: 0.05),
         blurRadius: 15,
         offset: const Offset(0, 0),
       ),
@@ -46,11 +46,11 @@ class AmoledThemePreset {
       ),
       bodyRelaxed: const TextStyle(height: 1.6, letterSpacing: 0.2),
       vaultGradient: const LinearGradient(
-        colors: [AppColors.vaultGradientDarkEnd, Colors.black],
+        colors: [AppColors.vaultGradientDarkEnd, AppColors.black],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
-      onVaultGradient: Colors.white,
+      onVaultGradient: AppColors.white,
       inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.dark),
       // AMOLED glow effects – subtle outer glow for accent elements on
       // pure-black backgrounds.  Blur 12, spread 1, accent at ~40% opacity.
@@ -91,8 +91,8 @@ class AmoledThemePreset {
     onSecondary: AppColors.bgAmoled,
     surface: AppColors.bgAmoled,
     onSurface: AppColors.textDarkPrimary,
-    surfaceDim: Colors.black,
-    surfaceContainerLowest: Colors.black,
+    surfaceDim: AppColors.black,
+    surfaceContainerLowest: AppColors.black,
     surfaceContainerLow: AppColors.amoledSurfaceContainerLow,
     surfaceContainer: AppColors.amoledSurfaceContainer,
     surfaceContainerHigh: AppColors.amoledSurfaceContainerHigh,
