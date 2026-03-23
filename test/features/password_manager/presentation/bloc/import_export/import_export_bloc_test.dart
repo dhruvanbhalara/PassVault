@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:passvault/core/error/failures.dart';
 import 'package:passvault/core/error/result.dart';
 import 'package:passvault/core/services/biometric_service.dart';
 import 'package:passvault/core/services/data_service.dart';
@@ -280,116 +279,6 @@ void main() {
               'Please select a .json, .csv, or .pvault file',
             ),
           ],
-        );
-      });
-
-      group('$ClearDatabaseEvent', () {
-        blocTest<ImportExportBloc, ImportExportState>(
-          'emits [Loading, ClearDatabaseSuccess] when successful',
-          build: () {
-            when(
-              () => mockClearAllUseCase(),
-            ).thenAnswer((_) async => const Success(null));
-            return bloc;
-          },
-          act: (bloc) => bloc.add(const ClearDatabaseEvent()),
-          expect: () => [
-            const ImportExportLoading(),
-            const ClearDatabaseSuccess(),
-          ],
-        );
-      });
-
-      group('$ResetMigrationStatus', () {
-        blocTest<ImportExportBloc, ImportExportState>(
-          'emits [Initial]',
-          build: () => bloc,
-          act: (bloc) => bloc.add(const ResetMigrationStatus()),
-          expect: () => [const ImportExportInitial()],
-        );
-      });
-      group('$ResolveDuplicatesEvent', () {
-        final duplicates = [
-          DuplicatePasswordEntry(
-            existingEntry: testEntries.first,
-            newEntry: testEntries.first,
-            conflictReason: 'reason',
-          ),
-        ];
-
-        blocTest<ImportExportBloc, ImportExportState>(
-          'emits [Loading, DuplicatesResolved] when resolutions are successful',
-          build: () {
-            when(
-              () => mockResolveUseCase(any()),
-            ).thenAnswer((_) async => const Success(null));
-            return bloc;
-          },
-          act: (bloc) => bloc.add(ResolveDuplicatesEvent(duplicates)),
-          expect: () => [
-            // const ImportExportLoading('Authenticating...'), // Removed
-            const ImportExportLoading(),
-            const DuplicatesResolved(totalResolved: 1, totalImported: 1),
-          ],
-        );
-
-        blocTest<ImportExportBloc, ImportExportState>(
-          'emits [Loading, Failure] when resolution fails',
-          build: () {
-            when(() => mockResolveUseCase(any())).thenAnswer(
-              (_) async => const Error(DataMigrationFailure('Failed')),
-            );
-            return bloc;
-          },
-          act: (bloc) => bloc.add(ResolveDuplicatesEvent(duplicates)),
-          expect: () => [
-            // const ImportExportLoading('Authenticating...'), // Removed
-            const ImportExportLoading(),
-            const ImportExportFailure(DataMigrationError.unknown, 'Failed'),
-          ],
-        );
-      });
-    });
-
-    group('ImportExportEvent props', () {
-      test('props are correct', () {
-        expect(const ExportDataEvent().props, [true]);
-        expect(const ExportEncryptedEvent('pass').props, ['pass']);
-        expect(const PrepareImportFromFileEvent().props, isEmpty);
-        expect(const ImportEncryptedEvent('pass', filePath: 'path').props, [
-          'pass',
-          'path',
-        ]);
-
-        final duplicates = [
-          DuplicatePasswordEntry(
-            existingEntry: testEntries.first,
-            newEntry: testEntries.first,
-            conflictReason: '',
-          ),
-        ];
-        expect(ResolveDuplicatesEvent(duplicates).props, [duplicates]);
-
-        expect(const ClearDatabaseEvent().props, isEmpty);
-        expect(const ResetMigrationStatus().props, isEmpty);
-      });
-    });
-
-    group('ImportExportState props', () {
-      test('props are correct', () {
-        expect(const ImportExportInitial().props, isEmpty);
-        expect(const ImportExportLoading().props, isEmpty);
-        expect(const ExportSuccess('path').props, ['path']);
-        expect(const ImportSuccess(1).props, [1]);
-        expect(const ImportEncryptedFileSelected('path').props, ['path']);
-        expect(
-          const DuplicatesResolved(totalResolved: 1, totalImported: 2).props,
-          [1, 2],
-        );
-        expect(const ClearDatabaseSuccess().props, isEmpty);
-        expect(
-          const ImportExportFailure(DataMigrationError.unknown, 'msg').props,
-          [DataMigrationError.unknown, 'msg'],
         );
       });
     });

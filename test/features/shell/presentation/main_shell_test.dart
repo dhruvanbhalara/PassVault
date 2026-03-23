@@ -20,6 +20,11 @@ class MockThemeBloc extends MockBloc<ThemeEvent, ThemeState>
 
 void main() {
   late MockThemeBloc mockThemeBloc;
+  late AppLocalizations l10n;
+
+  setUpAll(() async {
+    l10n = await AppLocalizations.delegate.load(const Locale('en'));
+  });
 
   setUp(() {
     mockThemeBloc = MockThemeBloc();
@@ -45,7 +50,7 @@ void main() {
               routes: [
                 GoRoute(
                   path: '/a',
-                  builder: (context, state) => const Text('Vault'),
+                  builder: (context, state) => Text(l10n.vault),
                 ),
               ],
             ),
@@ -53,7 +58,7 @@ void main() {
               routes: [
                 GoRoute(
                   path: '/b',
-                  builder: (context, state) => const Text('Generator'),
+                  builder: (context, state) => Text(l10n.generator),
                 ),
               ],
             ),
@@ -61,7 +66,7 @@ void main() {
               routes: [
                 GoRoute(
                   path: '/c',
-                  builder: (context, state) => const Text('Settings'),
+                  builder: (context, state) => Text(l10n.settings),
                 ),
               ],
             ),
@@ -89,7 +94,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(Icon), findsNWidgets(3));
-      expect(find.text('Vault'), findsOneWidget);
+      expect(find.text(l10n.vault), findsOneWidget);
     });
 
     testWidgets('switches tabs on tap', (tester) async {
@@ -100,13 +105,13 @@ void main() {
       await tester.tap(find.byType(Icon).at(1));
       await tester.pumpAndSettle();
 
-      expect(find.text('Generator'), findsOneWidget);
+      expect(find.text(l10n.generator), findsOneWidget);
 
       // Tap Settings tab
       await tester.tap(find.byType(Icon).at(2));
       await tester.pumpAndSettle();
 
-      expect(find.text('Settings'), findsOneWidget);
+      expect(find.text(l10n.settings), findsOneWidget);
     });
 
     testWidgets('dynamic decoration matches AMOLED theme', (tester) async {

@@ -4,11 +4,12 @@ import 'package:passvault/core/design_system/components/common/app_filter_chips.
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
-  const labels = ['All', 'Recently Added', 'Most Used', 'Favorites'];
   late AppLocalizations l10n;
+  late List<String> labels;
 
   setUpAll(() async {
     l10n = await getL10n();
+    labels = [l10n.vault, l10n.generator, l10n.settings, l10n.security];
   });
 
   group('$AppFilterChips', () {
@@ -27,13 +28,13 @@ void main() {
     ) async {
       await tester.pumpApp(
         AppFilterChips(
-          labels: const ['All'],
+          labels: [labels.first],
           selectedIndex: 0,
           onSelected: (_) {},
         ),
       );
 
-      expect(find.text('All'), findsOneWidget);
+      expect(find.text(labels.first), findsOneWidget);
     });
 
     testWidgets('calls onSelected with correct index when tapped', (
@@ -49,7 +50,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Most Used'));
+      await tester.tap(find.text(labels[2]));
       await tester.pumpAndSettle();
 
       expect(tappedIndex, 2);
@@ -58,12 +59,10 @@ void main() {
     testWidgets('does not crash when onSelected is null', (
       WidgetTester tester,
     ) async {
-      await tester.pumpApp(
-        const AppFilterChips(labels: labels, selectedIndex: 0),
-      );
+      await tester.pumpApp(AppFilterChips(labels: labels, selectedIndex: 0));
 
       // Should not throw
-      await tester.tap(find.text('Favorites'));
+      await tester.tap(find.text(labels[3]));
       await tester.pumpAndSettle();
     });
 
@@ -86,7 +85,7 @@ void main() {
         AppFilterChips(labels: labels, selectedIndex: 0, onSelected: (_) {}),
       );
 
-      await tester.tap(find.text('Recently Added'));
+      await tester.tap(find.text(labels[1]));
       await tester.pumpAndSettle();
 
       expect(
@@ -112,10 +111,10 @@ void main() {
         AppFilterChips(labels: labels, selectedIndex: 0, onSelected: (_) {}),
       );
 
-      final selectedSemantics = tester.getSemantics(find.text('All'));
+      final selectedSemantics = tester.getSemantics(find.text(labels.first));
       expect(
         selectedSemantics.label,
-        contains(l10n.filterChipSemantics('All')),
+        contains(l10n.filterChipSemantics(labels.first)),
       );
       expect(selectedSemantics.label, contains(l10n.selectedState));
     });
@@ -127,12 +126,10 @@ void main() {
         AppFilterChips(labels: labels, selectedIndex: 0, onSelected: (_) {}),
       );
 
-      final unselectedSemantics = tester.getSemantics(
-        find.text('Recently Added'),
-      );
+      final unselectedSemantics = tester.getSemantics(find.text(labels[1]));
       expect(
         unselectedSemantics.label,
-        contains(l10n.filterChipSemantics('Recently Added')),
+        contains(l10n.filterChipSemantics(labels[1])),
       );
       expect(unselectedSemantics.label, isNot(contains(l10n.selectedState)));
     });
@@ -164,7 +161,10 @@ void main() {
     });
 
     testWidgets('handles many chips (scrollable)', (WidgetTester tester) async {
-      final manyLabels = List.generate(20, (i) => 'Category $i');
+      final manyLabels = List.generate(
+        20,
+        (i) => '${l10n.passwordGenerator} $i',
+      );
 
       await tester.pumpApp(
         AppFilterChips(
@@ -175,20 +175,25 @@ void main() {
       );
 
       // First chips visible
-      expect(find.text('Category 0'), findsOneWidget);
+      expect(find.text(manyLabels.first), findsOneWidget);
 
       // Later chips exist in widget tree but may be off-screen
-      expect(find.text('Category 19'), findsOneWidget);
+      expect(find.text(manyLabels.last), findsOneWidget);
     });
 
     testWidgets('handles long label with ellipsis', (
       WidgetTester tester,
     ) async {
-      const longLabel = 'This is a very long filter label that should truncate';
+      final longLabel = [
+        l10n.passwordGenerator,
+        l10n.passwordGenerator,
+        l10n.passwordGenerator,
+        l10n.passwordGenerator,
+      ].join(' ');
 
       await tester.pumpApp(
         AppFilterChips(
-          labels: [longLabel, 'Short'],
+          labels: [longLabel, l10n.save],
           selectedIndex: 0,
           onSelected: (_) {},
         ),

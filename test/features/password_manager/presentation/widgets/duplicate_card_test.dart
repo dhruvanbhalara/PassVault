@@ -24,7 +24,7 @@ void main() {
         id: 'new_id',
         password: 'new_password',
       ),
-      conflictReason: 'Username already exists',
+      conflictReason: l10n.resolveConflictsDesc,
     );
   });
 
@@ -43,7 +43,7 @@ void main() {
         find.textContaining(testDuplicate.existingEntry.username),
         findsOneWidget,
       );
-      expect(find.text('Username already exists'), findsOneWidget);
+      expect(find.text(testDuplicate.conflictReason), findsOneWidget);
     });
 
     testWidgets('calls onChoiceChanged when a resolution is selected', (

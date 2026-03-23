@@ -1,5 +1,7 @@
+import 'package:animations/animations.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:passvault/features/password_manager/domain/entities/password_feedback.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/presentation/bloc/strategy_preview/strategy_preview_bloc.dart';
 import 'package:passvault/features/settings/presentation/screens/strategy_editor.dart';
@@ -53,17 +55,19 @@ void main() {
 
     await tester.pumpApp(
       Scaffold(
-        body: StatefulBuilder(
-          builder: (context, setState) {
-            return StrategyEditor(
-              strategy: strategy,
-              onChanged: (newStrategy) {
-                setState(() {
-                  strategy = newStrategy;
-                });
-              },
-            );
-          },
+        body: SingleChildScrollView(
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return StrategyEditor(
+                strategy: strategy,
+                onChanged: (newStrategy) {
+                  setState(() {
+                    strategy = newStrategy;
+                  });
+                },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -151,4 +155,35 @@ void main() {
       ).called(1);
     },
   );
+
+  testWidgets('uses shared-axis transition container for strategy controls', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    when(() => mockBloc.state).thenReturn(
+      const StrategyPreviewSuccess(
+        password: 'preview',
+        strength: PasswordFeedback.empty(),
+      ),
+    );
+    when(() => mockBloc.add(any())).thenReturn(null);
+
+    await tester.pumpApp(
+      SingleChildScrollView(
+        child: StrategyEditor(
+          strategy: PasswordGenerationStrategy.create(name: 'Initial'),
+          onChanged: (_) {},
+        ),
+      ),
+    );
+
+    expect(find.byType(PageTransitionSwitcher), findsWidgets);
+    expect(find.byType(SharedAxisTransition), findsWidgets);
+  });
 }
