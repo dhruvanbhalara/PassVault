@@ -1,10 +1,14 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/generator/presentation/bloc/generator/generator_bloc.dart';
+import 'package:passvault/features/generator/presentation/widgets/password_feedback_view.dart';
+import 'package:passvault/features/generator/presentation/widgets/password_generation_controls_card.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 
 class GeneratorGeneratedPasswordCard extends StatelessWidget {
@@ -16,55 +20,100 @@ class GeneratorGeneratedPasswordCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.theme;
     final l10n = context.l10n;
+    final colorScheme = context.colorScheme;
     final password = state.generatedPassword.isEmpty
         ? l10n.hintPassword
         : state.generatedPassword;
-    return AppCard(
-      hasGlow: context.isAmoled,
-      padding: const EdgeInsets.all(AppSpacing.l),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 40, maxHeight: 150),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSpacing.m,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: PasswordStrengthWidget(strength: state.strength),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: SelectableText(
-                    password,
-                    minLines: 1,
-                    maxLines: 5,
-                    style: theme.passwordText.copyWith(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                      color: theme.primary,
-                      height: 1,
-                      overflow: TextOverflow.ellipsis,
+    return RepaintBoundary(
+      child: AppCard(
+        hasGlow: context.isAmoled,
+        padding: const EdgeInsets.all(AppSpacing.l),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 40),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: AppSpacing.m,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: PasswordStrengthWidget(strength: state.strength),
+              ),
+              PasswordFeedbackView(feedback: state.strength),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 76,
+                      child: PageTransitionSwitcher(
+                        duration: const Duration(milliseconds: 320),
+                        layoutBuilder: (entries) => Stack(children: entries),
+                        transitionBuilder:
+                            (child, primaryAnimation, secondaryAnimation) =>
+                                SharedAxisTransition(
+                                  animation: primaryAnimation,
+                                  secondaryAnimation: secondaryAnimation,
+                                  transitionType:
+                                      SharedAxisTransitionType.vertical,
+                                  fillColor: colorScheme.surface.withValues(
+                                    alpha: 0,
+                                  ),
+                                  child: child,
+                                ),
+                        child: Align(
+                          key: ValueKey(password),
+                          alignment: Alignment.centerLeft,
+                          child:
+                              SelectableText(
+                                    password,
+                                    minLines: 1,
+                                    maxLines: 2,
+                                    style: theme.passwordText.copyWith(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                      color: theme.primary,
+                                      height: 1.2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  )
+                                  .animate(key: ValueKey(password))
+                                  .fadeIn(
+                                    duration: 320.ms,
+                                    curve: Curves.easeOut,
+                                  )
+                                  .slideX(
+                                    begin: 0.08,
+                                    end: 0,
+                                    duration: 320.ms,
+                                    curve: Curves.easeOutQuad,
+                                  )
+                                  .shimmer(
+                                    delay: 250.ms,
+                                    duration: 850.ms,
+                                    color: theme.onSurface.withValues(
+                                      alpha: 0.22,
+                                    ),
+                                  ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-
-                IconButton(
-                  key: const Key('generator_copy_icon_button'),
-                  tooltip: l10n.copyPassword,
-                  onPressed: state.generatedPassword.isEmpty
-                      ? null
-                      : () => _copyPassword(
-                          context,
-                          password: state.generatedPassword,
-                        ),
-                  icon: const Icon(LucideIcons.copy),
-                ),
-              ],
-            ),
-          ],
+                  IconButton(
+                    key: const Key('generator_copy_icon_button'),
+                    tooltip: l10n.copyPassword,
+                    onPressed: state.generatedPassword.isEmpty
+                        ? null
+                        : () => _copyPassword(
+                            context,
+                            password: state.generatedPassword,
+                          ),
+                    icon: const Icon(LucideIcons.copy),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -124,6 +173,12 @@ class GeneratorControlsCard extends StatelessWidget {
           onExcludeAmbiguousChanged: (value) => context
               .read<GeneratorBloc>()
               .add(GeneratorExcludeAmbiguousToggled(value)),
+          onWordCountChanged: (count) => context.read<GeneratorBloc>().add(
+            GeneratorWordCountChanged(count),
+          ),
+          onSeparatorChanged: (separator) => context.read<GeneratorBloc>().add(
+            GeneratorSeparatorChanged(separator),
+          ),
         ),
       ],
     );
@@ -159,181 +214,6 @@ class _GeneratorStrategyDropdown extends StatelessWidget {
         return DropdownMenuItem(value: strategy.id, child: Text(strategy.name));
       }).toList(),
       onChanged: onChanged,
-    );
-  }
-}
-
-class PasswordGenerationControlsCard extends StatelessWidget {
-  final PasswordGenerationStrategy strategy;
-  final String controlsPrefix;
-  final ValueChanged<int> onLengthChanged;
-  final ValueChanged<bool> onUppercaseChanged;
-  final ValueChanged<bool> onLowercaseChanged;
-  final ValueChanged<bool> onNumbersChanged;
-  final ValueChanged<bool> onSymbolsChanged;
-  final ValueChanged<bool> onExcludeAmbiguousChanged;
-
-  const PasswordGenerationControlsCard({
-    super.key,
-    required this.strategy,
-    required this.controlsPrefix,
-    required this.onLengthChanged,
-    required this.onUppercaseChanged,
-    required this.onLowercaseChanged,
-    required this.onNumbersChanged,
-    required this.onSymbolsChanged,
-    required this.onExcludeAmbiguousChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final length = strategy.length;
-    final canDecrease = length > 16;
-    final canIncrease = length < 64;
-
-    return AppCard(
-      hasGlow: context.isAmoled,
-      padding: const EdgeInsets.all(AppSpacing.l),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  l10n.lengthLabel,
-                  style: context.typography.labelMedium,
-                ),
-              ),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: context.theme.primaryContainer,
-                  borderRadius: BorderRadius.circular(AppRadius.m),
-                ),
-                child: Row(
-                  children: [
-                    LengthStepperButton(
-                      key: Key('${controlsPrefix}_length_decrease'),
-                      icon: LucideIcons.minus,
-                      isEnabled: canDecrease,
-                      onTap: () => onLengthChanged(length - 1),
-                    ),
-                    const SizedBox(width: AppSpacing.xs),
-                    Container(
-                      key: Key('${controlsPrefix}_length_badge'),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.m,
-                        vertical: AppSpacing.xs,
-                      ),
-                      decoration: BoxDecoration(
-                        color: context.theme.primaryContainer,
-                        borderRadius: BorderRadius.circular(AppRadius.full),
-                      ),
-                      child: Text(
-                        length.toString(),
-                        style: context.typography.labelMedium?.copyWith(
-                          color: context.theme.onPrimaryContainer,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.xs),
-                    LengthStepperButton(
-                      key: Key('${controlsPrefix}_length_increase'),
-                      icon: LucideIcons.plus,
-                      isEnabled: canIncrease,
-                      onTap: () => onLengthChanged(length + 1),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const Divider(height: AppSpacing.l),
-          GeneratorToggleTile(
-            key: Key('${controlsPrefix}_uppercase_toggle'),
-            label: l10n.uppercaseLabel,
-            value: strategy.useUppercase,
-            onChanged: onUppercaseChanged,
-          ),
-          GeneratorToggleTile(
-            key: Key('${controlsPrefix}_lowercase_toggle'),
-            label: l10n.lowercaseLabel,
-            value: strategy.useLowercase,
-            onChanged: onLowercaseChanged,
-          ),
-          GeneratorToggleTile(
-            key: Key('${controlsPrefix}_numbers_toggle'),
-            label: l10n.numbersLabel,
-            value: strategy.useNumbers,
-            onChanged: onNumbersChanged,
-          ),
-          GeneratorToggleTile(
-            key: Key('${controlsPrefix}_symbols_toggle'),
-            label: l10n.symbolsLabel,
-            value: strategy.useSpecialChars,
-            onChanged: onSymbolsChanged,
-          ),
-          GeneratorToggleTile(
-            key: Key('${controlsPrefix}_exclude_ambiguous_toggle'),
-            label: l10n.excludeAmbiguous,
-            subtitle: l10n.excludeAmbiguousHint,
-            value: strategy.excludeAmbiguousChars,
-            onChanged: onExcludeAmbiguousChanged,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class LengthStepperButton extends StatelessWidget {
-  final IconData icon;
-  final bool isEnabled;
-  final VoidCallback onTap;
-
-  const LengthStepperButton({
-    super.key,
-    required this.icon,
-    required this.isEnabled,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: isEnabled ? onTap : null,
-      icon: Icon(icon, size: AppIconSize.m),
-      visualDensity: VisualDensity.compact,
-    );
-  }
-}
-
-class GeneratorToggleTile extends StatelessWidget {
-  final String label;
-  final String? subtitle;
-  final bool value;
-  final ValueChanged<bool> onChanged;
-
-  const GeneratorToggleTile({
-    super.key,
-    required this.label,
-    this.subtitle,
-    required this.value,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SwitchListTile(
-      title: Text(label),
-      subtitle: subtitle == null ? null : Text(subtitle!),
-      value: value,
-      onChanged: onChanged,
-      contentPadding: EdgeInsets.zero,
-      dense: true,
-      visualDensity: const VisualDensity(vertical: -2),
     );
   }
 }
