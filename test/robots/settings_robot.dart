@@ -12,6 +12,9 @@ class SettingsRobot {
   final exportTileFinder = find.byKey(const Key('settings_export_tile'));
   final importTileFinder = find.byKey(const Key('settings_import_tile'));
   final clearDbTileFinder = find.byKey(const Key('settings_clear_db_tile'));
+  final screenPrivacySwitchFinder = find.byKey(
+    const Key('settings_screen_privacy_switch'),
+  );
 
   // Actions
   Future<void> tapTheme() async {
@@ -77,6 +80,28 @@ class SettingsRobot {
     await tester.pumpAndSettle();
     await tester.tap(clearDbTileFinder);
     await tester.pumpAndSettle();
+  }
+
+  Future<void> scrollToScreenPrivacySwitch() async {
+    await tester.scrollUntilVisible(
+      screenPrivacySwitchFinder,
+      50.0,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(screenPrivacySwitchFinder);
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> tapScreenPrivacySwitch() async {
+    await scrollToScreenPrivacySwitch();
+    await tester.tap(screenPrivacySwitchFinder);
+    await tester.pump();
+  }
+
+  bool screenPrivacySwitchValue() {
+    final tile = tester.widget<SwitchListTile>(screenPrivacySwitchFinder);
+    return tile.value;
   }
 
   // Assertions

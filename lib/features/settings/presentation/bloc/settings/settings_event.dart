@@ -19,6 +19,14 @@ class ToggleBiometrics extends SettingsEvent {
   List<Object?> get props => [value];
 }
 
+class ToggleScreenPrivacy extends SettingsEvent {
+  final bool value;
+  const ToggleScreenPrivacy(this.value);
+
+  @override
+  List<Object?> get props => [value];
+}
+
 class UpdatePasswordSettings extends SettingsEvent {
   final PasswordGenerationSettings settings;
   const UpdatePasswordSettings(this.settings);

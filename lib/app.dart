@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:passvault/features/settings/domain/entities/theme_type.dart';
 import 'package:passvault/features/settings/presentation/bloc/locale/locale_bloc.dart';
+import 'package:passvault/features/settings/presentation/bloc/settings/settings_bloc.dart';
 import 'package:passvault/features/settings/presentation/bloc/theme/theme_bloc.dart';
 
 import 'config/routes/app_router.dart';
@@ -18,6 +19,7 @@ class PassVaultApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => getIt<ThemeBloc>()),
         BlocProvider(create: (_) => getIt<LocaleBloc>()),
+        BlocProvider(create: (_) => getIt<SettingsBloc>()),
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {

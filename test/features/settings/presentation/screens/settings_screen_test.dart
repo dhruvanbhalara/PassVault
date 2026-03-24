@@ -69,6 +69,7 @@ void main() {
     when(() => mockSettingsBloc.state).thenReturn(
       SettingsLoaded(
         useBiometrics: false,
+        useScreenPrivacy: true,
         passwordSettings: SettingsFixtures.initialSettings,
       ),
     );
@@ -236,6 +237,90 @@ void main() {
 
       expect(find.byKey(const Key('locale_option_system')), findsOneWidget);
       expect(find.byKey(const Key('locale_option_en')), findsOneWidget);
+    });
+
+    group('Screen privacy toggle', () {
+      testWidgets('renders screen privacy switch', (tester) async {
+        await loadSettingsScreen(tester);
+
+        await robot.scrollToScreenPrivacySwitch();
+
+        expect(robot.screenPrivacySwitchFinder, findsOneWidget);
+      });
+
+      testWidgets('switch is checked when useScreenPrivacy is true', (
+        tester,
+      ) async {
+        when(() => mockSettingsBloc.state).thenReturn(
+          SettingsLoaded(
+            useBiometrics: false,
+            useScreenPrivacy: true,
+            passwordSettings: SettingsFixtures.initialSettings,
+          ),
+        );
+        await loadSettingsScreen(tester);
+
+        await robot.scrollToScreenPrivacySwitch();
+
+        expect(robot.screenPrivacySwitchValue(), isTrue);
+      });
+
+      testWidgets('switch is unchecked when useScreenPrivacy is false', (
+        tester,
+      ) async {
+        when(() => mockSettingsBloc.state).thenReturn(
+          SettingsLoaded(
+            useBiometrics: false,
+            useScreenPrivacy: false,
+            passwordSettings: SettingsFixtures.initialSettings,
+          ),
+        );
+        await loadSettingsScreen(tester);
+
+        await robot.scrollToScreenPrivacySwitch();
+
+        expect(robot.screenPrivacySwitchValue(), isFalse);
+      });
+
+      testWidgets(
+        'tapping toggle when enabled dispatches ToggleScreenPrivacy(false)',
+        (tester) async {
+          when(() => mockSettingsBloc.state).thenReturn(
+            SettingsLoaded(
+              useBiometrics: false,
+              useScreenPrivacy: true,
+              passwordSettings: SettingsFixtures.initialSettings,
+            ),
+          );
+          await loadSettingsScreen(tester);
+
+          await robot.tapScreenPrivacySwitch();
+
+          verify(
+            () => mockSettingsBloc.add(const ToggleScreenPrivacy(false)),
+          ).called(1);
+        },
+      );
+
+      testWidgets(
+        'tapping toggle when disabled dispatches ToggleScreenPrivacy(true)',
+        (tester) async {
+          when(() => mockSettingsBloc.state).thenReturn(
+            SettingsLoaded(
+              useBiometrics: false,
+              useScreenPrivacy: false,
+              passwordSettings: SettingsFixtures.initialSettings,
+            ),
+          );
+          await loadSettingsScreen(tester);
+
+          await robot.tapScreenPrivacySwitch();
+
+          verify(
+            () => mockSettingsBloc.add(const ToggleScreenPrivacy(true)),
+          ).called(1);
+        },
+      );
     });
   });
 }
