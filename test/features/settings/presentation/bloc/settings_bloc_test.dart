@@ -6,6 +6,7 @@ import 'package:passvault/core/error/result.dart';
 import 'package:passvault/core/services/data_service.dart';
 import 'package:passvault/core/services/file_picker_service.dart';
 import 'package:passvault/core/services/file_service.dart';
+import 'package:passvault/core/services/screen_privacy_service.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/domain/repositories/password_repository.dart';
 import 'package:passvault/features/password_manager/domain/usecases/import_passwords_usecase.dart';
@@ -18,6 +19,8 @@ class MockImportPasswordsUseCase extends Mock
 
 class MockSettingsRepository extends Mock implements SettingsRepository {}
 
+class MockScreenPrivacyService extends Mock implements ScreenPrivacyService {}
+
 class MockDataService extends Mock implements DataService {}
 
 class MockPasswordRepository extends Mock implements PasswordRepository {}
@@ -29,6 +32,7 @@ class MockFilePickerService extends Mock implements IFilePickerService {}
 void main() {
   late SettingsBloc bloc;
   late MockSettingsRepository mockSettingsRepository;
+  late MockScreenPrivacyService mockScreenPrivacyService;
 
   const tSettings = PasswordGenerationSettings(
     strategies: [],
@@ -37,8 +41,15 @@ void main() {
 
   setUp(() {
     mockSettingsRepository = MockSettingsRepository();
+    mockScreenPrivacyService = MockScreenPrivacyService();
+    when(
+      () => mockScreenPrivacyService.enableProtection(),
+    ).thenAnswer((_) async {});
+    when(
+      () => mockScreenPrivacyService.disableProtection(),
+    ).thenAnswer((_) async {});
 
-    bloc = SettingsBloc(mockSettingsRepository);
+    bloc = SettingsBloc(mockSettingsRepository, mockScreenPrivacyService);
   });
 
   setUpAll(() {

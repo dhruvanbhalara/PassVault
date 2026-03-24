@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:passvault/core/services/screen_privacy_service.dart';
 import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 import 'package:passvault/features/settings/domain/repositories/settings_repository.dart';
 
@@ -10,8 +11,10 @@ part 'settings_state.dart';
 @lazySingleton
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final SettingsRepository _settingsRepository;
+  final ScreenPrivacyService _screenPrivacyService;
 
-  SettingsBloc(this._settingsRepository) : super(SettingsInitial()) {
+  SettingsBloc(this._settingsRepository, this._screenPrivacyService)
+    : super(SettingsInitial()) {
     on<LoadSettings>(_onLoadSettings);
     on<ToggleBiometrics>(_onToggleBiometrics);
     on<ToggleScreenPrivacy>(_onToggleScreenPrivacy);
@@ -56,6 +59,13 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         passwordSettings: passwordSettings,
       ),
     );
+
+    // Apply the persisted privacy setting to the native platform layer.
+    if (useScreenPrivacy) {
+      _screenPrivacyService.enableProtection();
+    } else {
+      _screenPrivacyService.disableProtection();
+    }
   }
 
   Future<void> _onToggleBiometrics(
@@ -77,6 +87,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     Emitter<SettingsState> emit,
   ) async {
     await _settingsRepository.setScreenPrivacyEnabled(event.value);
+    if (event.value) {
+      await _screenPrivacyService.enableProtection();
+    } else {
+      await _screenPrivacyService.disableProtection();
+    }
     emit(
       SettingsLoaded(
         useBiometrics: state.useBiometrics,

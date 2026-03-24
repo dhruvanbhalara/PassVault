@@ -4,11 +4,16 @@ import UIKit
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
 
-    // MARK: - Privacy overlay (screen recording / AirPlay / Sidecar)
+    // MARK: - Screen privacy state
 
-    /// Solid-black overlay shown while screen recording or mirroring is active.
-    /// App-switcher protection is handled on the Dart side via AppLifecycleListener.
-    private var privacyOverlay: UIView?
+    /// Invisible UITextField with isSecureTextEntry = true.
+    /// When present in the window, UIKit marks the window as sensitive and
+    /// iOS automatically renders blank content in:
+    ///   - Screenshots (system screenshot gesture)
+    ///   - App-switcher snapshots (SpringBoard renders blank without timing dependency)
+    ///   - Screen recordings (ReplayKit / QuickTime captures blank)
+    ///   - AirPlay / Sidecar mirroring
+    private var secureTextField: UITextField?
 
     // MARK: - App lifecycle
 
@@ -16,7 +21,7 @@ import UIKit
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // Observe screen-capture state changes (recording + AirPlay/Sidecar).
+        // Observe screen-capture state changes for user-visible notification.
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(screenCaptureStatusDidChange),
@@ -32,29 +37,79 @@ import UIKit
             object: nil
         )
 
-        let result = super.application(application, didFinishLaunchingWithOptions: launchOptions)
-
-        // If the app is launched while a capture is already active, apply overlay immediately.
-        if UIScreen.main.isCaptured {
-            showPrivacyOverlay()
-        }
-
-        return result
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
     func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
         GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+        setupScreenPrivacyChannel(engineBridge: engineBridge)
     }
 
-    // MARK: - Screen capture detection
+    // MARK: - MethodChannel setup
 
-    /// Fires whenever `UIScreen.isCaptured` changes on any screen.
-    @objc private func screenCaptureStatusDidChange(_ notification: Notification) {
-        if UIScreen.main.isCaptured {
-            showPrivacyOverlay()
-        } else {
-            hidePrivacyOverlay()
+    private func setupScreenPrivacyChannel(engineBridge: FlutterImplicitEngineBridge) {
+        guard let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "ScreenPrivacy") else { return }
+
+        let channel = FlutterMethodChannel(
+            name: "com.dhruvanbhalara.passvault/screen_privacy",
+            binaryMessenger: registrar.messenger()
+        )
+
+        channel.setMethodCallHandler { [weak self] call, result in
+            DispatchQueue.main.async {
+                switch call.method {
+                case "enableScreenProtection":
+                    self?.enableScreenProtection()
+                    result(nil)
+                case "disableScreenProtection":
+                    self?.disableScreenProtection()
+                    result(nil)
+                default:
+                    result(FlutterMethodNotImplemented)
+                }
+            }
         }
+    }
+
+    // MARK: - Screen protection (UITextField isSecureTextEntry trick)
+
+    /// Adds an invisible 1×1pt UITextField with isSecureTextEntry=true to the key window.
+    /// UIKit marks the window layer as sensitive — iOS renders blank content for ALL
+    /// capture mechanisms (screenshots, app-switcher, recordings) without requiring
+    /// any timing-dependent overlay.
+    private func enableScreenProtection() {
+        guard secureTextField == nil, let window = keyWindow else { return }
+
+        let field = UITextField()
+        field.isSecureTextEntry = true
+        field.isUserInteractionEnabled = false
+        field.alpha = 0
+
+        window.addSubview(field)
+        field.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            field.widthAnchor.constraint(equalToConstant: 1),
+            field.heightAnchor.constraint(equalToConstant: 1),
+            field.centerXAnchor.constraint(equalTo: window.centerXAnchor),
+            field.centerYAnchor.constraint(equalTo: window.centerYAnchor),
+        ])
+
+        secureTextField = field
+    }
+
+    /// Removes the secure text field, restoring normal capture behaviour.
+    private func disableScreenProtection() {
+        secureTextField?.removeFromSuperview()
+        secureTextField = nil
+    }
+
+    // MARK: - Screen capture notification (user warning during recording)
+
+    @objc private func screenCaptureStatusDidChange(_ notification: Notification) {
+        // UIScreen.isCaptured handles recording detection; the UITextField trick already
+        // prevents captures from exposing sensitive content. This observer can be used
+        // to show an in-app banner if desired in future.
+        _ = UIScreen.main.isCaptured
     }
 
     // MARK: - External display detection
@@ -64,7 +119,7 @@ import UIKit
         showExternalDisplayWarning()
     }
 
-    // MARK: - Overlay helpers
+    // MARK: - Helpers
 
     /// Returns the current key window, compatible with iOS 13+ scene-based apps
     /// and the legacy FlutterImplicitEngineBridge window setup.
@@ -76,22 +131,6 @@ import UIKit
                 .first(where: { $0.isKeyWindow })
         }
         return UIApplication.shared.keyWindow
-    }
-
-    private func showPrivacyOverlay() {
-        guard privacyOverlay == nil, let window = keyWindow else { return }
-
-        let overlay = UIView(frame: window.bounds)
-        overlay.backgroundColor = .black
-        overlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        window.addSubview(overlay)
-        window.bringSubviewToFront(overlay)
-        privacyOverlay = overlay
-    }
-
-    private func hidePrivacyOverlay() {
-        privacyOverlay?.removeFromSuperview()
-        privacyOverlay = nil
     }
 
     private func showExternalDisplayWarning() {
