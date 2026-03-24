@@ -73,6 +73,10 @@ void main() {
         ).thenReturn(const Success(true));
 
         when(
+          () => mockSettingsRepository.getScreenPrivacyEnabled(),
+        ).thenReturn(const Success(true));
+
+        when(
           () => mockSettingsRepository.getPasswordGenerationSettings(),
         ).thenReturn(
           const Success(
