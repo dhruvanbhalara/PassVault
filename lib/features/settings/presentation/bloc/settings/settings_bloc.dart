@@ -14,6 +14,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   SettingsBloc(this._settingsRepository) : super(SettingsInitial()) {
     on<LoadSettings>(_onLoadSettings);
     on<ToggleBiometrics>(_onToggleBiometrics);
+    on<ToggleScreenPrivacy>(_onToggleScreenPrivacy);
     on<UpdatePasswordSettings>(_onUpdatePasswordSettings);
     on<UpdateStrategy>(_onUpdateStrategy);
     on<AddStrategy>(_onAddStrategy);
@@ -25,6 +26,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emit(
       SettingsLoading(
         useBiometrics: state.useBiometrics,
+        useScreenPrivacy: state.useScreenPrivacy,
         passwordSettings: state.passwordSettings,
       ),
     );
@@ -32,6 +34,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final biometricsResult = _settingsRepository.getBiometricsEnabled();
     final useBiometrics = biometricsResult.fold(
       (failure) => false,
+      (enabled) => enabled,
+    );
+
+    final screenPrivacyResult = _settingsRepository.getScreenPrivacyEnabled();
+    final useScreenPrivacy = screenPrivacyResult.fold(
+      (failure) => true,
       (enabled) => enabled,
     );
 
@@ -44,6 +52,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emit(
       SettingsLoaded(
         useBiometrics: useBiometrics,
+        useScreenPrivacy: useScreenPrivacy,
         passwordSettings: passwordSettings,
       ),
     );
@@ -57,6 +66,21 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emit(
       SettingsLoaded(
         useBiometrics: event.value,
+        useScreenPrivacy: state.useScreenPrivacy,
+        passwordSettings: state.passwordSettings,
+      ),
+    );
+  }
+
+  Future<void> _onToggleScreenPrivacy(
+    ToggleScreenPrivacy event,
+    Emitter<SettingsState> emit,
+  ) async {
+    await _settingsRepository.setScreenPrivacyEnabled(event.value);
+    emit(
+      SettingsLoaded(
+        useBiometrics: state.useBiometrics,
+        useScreenPrivacy: event.value,
         passwordSettings: state.passwordSettings,
       ),
     );
@@ -70,6 +94,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emit(
       SettingsLoaded(
         useBiometrics: state.useBiometrics,
+        useScreenPrivacy: state.useScreenPrivacy,
         passwordSettings: event.settings,
       ),
     );
@@ -87,6 +112,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emit(
       SettingsLoaded(
         useBiometrics: state.useBiometrics,
+        useScreenPrivacy: state.useScreenPrivacy,
         passwordSettings: newSettings,
       ),
     );
@@ -104,6 +130,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emit(
       SettingsLoaded(
         useBiometrics: state.useBiometrics,
+        useScreenPrivacy: state.useScreenPrivacy,
         passwordSettings: newSettings,
       ),
     );
@@ -133,6 +160,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emit(
       SettingsLoaded(
         useBiometrics: state.useBiometrics,
+        useScreenPrivacy: state.useScreenPrivacy,
         passwordSettings: newSettings,
       ),
     );
@@ -149,6 +177,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emit(
       SettingsLoaded(
         useBiometrics: state.useBiometrics,
+        useScreenPrivacy: state.useScreenPrivacy,
         passwordSettings: newSettings,
       ),
     );

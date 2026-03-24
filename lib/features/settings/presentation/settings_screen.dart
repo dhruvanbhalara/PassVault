@@ -111,6 +111,22 @@ class SettingsScreen extends StatelessWidget {
                         );
                       },
                     ),
+                    BlocBuilder<SettingsBloc, SettingsState>(
+                      builder: (context, state) {
+                        return SwitchListTile(
+                          key: const Key('settings_screen_privacy_switch'),
+                          secondary: const Icon(LucideIcons.eyeOff),
+                          title: Text(l10n.screenPrivacy),
+                          subtitle: Text(l10n.screenPrivacySubtitle),
+                          value: state.useScreenPrivacy,
+                          onChanged: (value) {
+                            context.read<SettingsBloc>().add(
+                              ToggleScreenPrivacy(value),
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),

@@ -10,6 +10,9 @@ class StorageKeys {
   static const String themeMode = 'theme_mode';
   static const String onboardingComplete = 'onboarding_complete';
 
+  // Security keys
+  static const String screenPrivacy = 'screen_privacy';
+
   // Onboarding keys
   static const String onboardingStep = 'onboarding_step';
 }

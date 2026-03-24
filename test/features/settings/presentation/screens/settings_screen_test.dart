@@ -69,6 +69,7 @@ void main() {
     when(() => mockSettingsBloc.state).thenReturn(
       SettingsLoaded(
         useBiometrics: false,
+        useScreenPrivacy: true,
         passwordSettings: SettingsFixtures.initialSettings,
       ),
     );

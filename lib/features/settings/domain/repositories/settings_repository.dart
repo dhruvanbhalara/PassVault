@@ -31,6 +31,12 @@ abstract class SettingsRepository {
   /// Deletes the onboarding step.
   Future<Result<void>> deleteOnboardingStep();
 
+  /// Retrieves whether screen privacy (secure screen) is enabled.
+  Result<bool> getScreenPrivacyEnabled();
+
+  /// Sets whether screen privacy is enabled.
+  Future<Result<void>> setScreenPrivacyEnabled(bool enabled);
+
   /// Retrieves password generation settings.
   Result<PasswordGenerationSettings> getPasswordGenerationSettings();
 

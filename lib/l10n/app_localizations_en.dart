@@ -54,6 +54,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get useBiometrics => 'Biometric Authentication';
 
   @override
+  String get screenPrivacy => 'Screen Privacy Protection';
+
+  @override
+  String get screenPrivacySubtitle =>
+      'Hide vault in app switcher and block screen recording';
+
+  @override
   String get dataManagement => 'Data Management';
 
   @override

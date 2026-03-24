@@ -73,6 +73,34 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
+  Result<bool> getScreenPrivacyEnabled() {
+    try {
+      final enabled = _dbService.read(
+        StorageKeys.settingsBox,
+        StorageKeys.screenPrivacy,
+        defaultValue: true,
+      );
+      return Success(enabled);
+    } catch (e) {
+      return const Error(UnknownFailure());
+    }
+  }
+
+  @override
+  Future<Result<void>> setScreenPrivacyEnabled(bool enabled) async {
+    try {
+      await _dbService.write(
+        StorageKeys.settingsBox,
+        StorageKeys.screenPrivacy,
+        enabled,
+      );
+      return const Success(null);
+    } catch (e) {
+      return const Error(UnknownFailure());
+    }
+  }
+
+  @override
   Result<bool> getOnboardingComplete() {
     try {
       final complete = _dbService.read(
