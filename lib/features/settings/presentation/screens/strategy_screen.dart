@@ -20,7 +20,10 @@ class StrategyScreen extends StatelessWidget {
     final l10n = context.l10n;
     final theme = context.theme;
 
-    return Scaffold(
+    return AppFeatureShell(
+      title: l10n.strategy,
+      showBack: true,
+      onBack: () => context.pop(),
       backgroundColor: theme.background,
       floatingActionButton: FloatingActionButton(
         key: const Key('add_strategy_fab'),
@@ -30,53 +33,53 @@ class StrategyScreen extends StatelessWidget {
         },
         child: const Icon(LucideIcons.plus),
       ),
-      body: BlocBuilder<SettingsBloc, SettingsState>(
-        builder: (context, state) {
-          final settings = state.passwordSettings;
-
-          return CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.l,
-                      AppSpacing.m,
-                      AppSpacing.l,
-                      AppSpacing.s,
-                    ),
-                    child: PageHeader(
-                      title: l10n.strategy,
-                      showBack: true,
-                      onBack: () => context.pop(),
-                    ),
-                  ),
-                ),
-              ),
-              if (settings.strategies.isEmpty)
-                EmptyStrategiesPlaceholder(l10n: l10n, theme: theme)
-              else ...[
-                ActiveStrategySection(
-                  settings: settings,
-                  l10n: l10n,
-                  onEdit: (strategy) => _showEditor(context, strategy.id),
-                ),
-                if (settings.strategies.length > 1)
-                  SavedStrategiesSection(
-                    settings: settings,
-                    l10n: l10n,
-                    onEdit: (strategy) => _showEditor(context, strategy.id),
-                  ),
-              ],
-            ],
-          );
-        },
-      ),
+      slivers: [
+        _StrategyContentSliver(
+          onEdit: (strategyId) => _showEditor(context, strategyId),
+        ),
+      ],
     );
   }
 
   void _showEditor(BuildContext context, String strategyId) {
     context.push(AppRoutes.strategyEditor, extra: {'strategyId': strategyId});
+  }
+}
+
+class _StrategyContentSliver extends StatelessWidget {
+  final ValueChanged<String> onEdit;
+
+  const _StrategyContentSliver({required this.onEdit});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = context.theme;
+
+    return BlocBuilder<SettingsBloc, SettingsState>(
+      builder: (context, state) {
+        final settings = state.passwordSettings;
+
+        if (settings.strategies.isEmpty) {
+          return EmptyStrategiesPlaceholder(l10n: l10n, theme: theme);
+        }
+
+        return SliverMainAxisGroup(
+          slivers: [
+            ActiveStrategySection(
+              settings: settings,
+              l10n: l10n,
+              onEdit: (strategy) => onEdit(strategy.id),
+            ),
+            if (settings.strategies.length > 1)
+              SavedStrategiesSection(
+                settings: settings,
+                l10n: l10n,
+                onEdit: (strategy) => onEdit(strategy.id),
+              ),
+          ],
+        );
+      },
+    );
   }
 }

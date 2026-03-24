@@ -39,7 +39,6 @@ void main() {
     mockDeletePassword = MockDeletePasswordUseCase();
     mockRepository = MockPasswordRepository();
 
-    // Mock the dataChanges stream to return empty stream
     when(
       () => mockRepository.dataChanges,
     ).thenAnswer((_) => const Stream<void>.empty());
@@ -95,7 +94,6 @@ void main() {
       ],
       verify: (_) {
         verify(() => mockSavePassword(any())).called(1);
-        // Verify that getPasswords was NOT called (incremental update)
         verifyNever(() => mockGetPasswords());
       },
     );
@@ -249,7 +247,6 @@ void main() {
       test(
         'listens to repository dataChanges and fires LoadPasswords',
         () async {
-          // We need a proper StreamController to emit events
           final controller = StreamController<void>();
           when(
             () => mockRepository.dataChanges,
@@ -258,7 +255,6 @@ void main() {
             () => mockGetPasswords(),
           ).thenAnswer((_) async => Success([tEntry]));
 
-          // Re-init bloc to pick up the mocked stream
           final testBloc = PasswordBloc(
             mockGetPasswords,
             mockSavePassword,
@@ -266,7 +262,6 @@ void main() {
             mockRepository,
           );
 
-          // Emit an event on the stream and wait for bloc to process it
           controller.add(null);
           await Future.delayed(Duration.zero);
 
@@ -284,7 +279,6 @@ void main() {
           mockRepository,
         );
         await b.close();
-        // Just verify it doesn't crash on close
         expect(b.state, isA<PasswordState>());
       });
     });

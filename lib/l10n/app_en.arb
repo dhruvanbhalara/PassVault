@@ -159,5 +159,22 @@
   "notSelectedState": "not selected",
   "savePassword": "Save Password",
   "updatePassword": "Update Password",
-  "entryNotFound": "Password entry not found"
+  "entryNotFound": "Password entry not found",
+  "wordCountLabel": "Word Count",
+  "separatorLabel": "Separator",
+  "separatorNone": "None",
+  "memorableStrategy": "Memorable (Passphrase)",
+  "randomStrategy": "Random (Characters)",
+  "randomStrategyTitle": "Random",
+  "randomStrategySubtitle": "Characters",
+  "memorableStrategyTitle": "Memorable",
+  "memorableStrategySubtitle": "Passphrase",
+  "strategyTypeSubtitle": "({value})",
+  "@strategyTypeSubtitle": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  }
 }

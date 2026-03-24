@@ -24,5 +24,6 @@ export 'feedback/app_shimmer_loading.dart';
 export 'inputs/app_text_field.dart';
 // Layout
 export 'layout/app_card.dart';
+export 'layout/app_feature_shell.dart';
 // Navigation
 export 'navigation/persistent_bottom_bar.dart';

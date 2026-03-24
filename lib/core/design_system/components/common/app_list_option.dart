@@ -12,7 +12,7 @@ import 'package:passvault/core/design_system/theme/theme.dart';
 /// ```dart
 /// AppListOption(
 ///   icon: LucideIcons.fileText,
-///   iconColor: Colors.blue,
+///   iconColor: context.theme.primary,
 ///   title: 'Import from CSV',
 ///   subtitle: 'Import passwords from a CSV file',
 ///   onTap: () => _handleImport(),

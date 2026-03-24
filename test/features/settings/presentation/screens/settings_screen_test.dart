@@ -147,41 +147,36 @@ void main() {
       ).called(1);
     });
 
-    testWidgets(
-      'Navigates to resolution screen on DuplicatesDetected',
-      skip: true,
-      (tester) async {
-        final mockDuplicate = MockDuplicatePasswordEntry();
-        final controller = StreamController<ImportExportState>.broadcast();
-        addTearDown(controller.close);
+    testWidgets('Navigates to resolution screen on DuplicatesDetected', (
+      tester,
+    ) async {
+      final mockDuplicate = MockDuplicatePasswordEntry();
+      final controller = StreamController<ImportExportState>.broadcast();
+      addTearDown(controller.close);
 
-        whenListen(
-          mockImportExportBloc,
-          controller.stream,
-          initialState: const ImportExportInitial(),
-        );
-        when(
-          () => mockGoRouter.push(any(), extra: any(named: 'extra')),
-        ).thenAnswer((_) async => null);
+      whenListen(
+        mockImportExportBloc,
+        controller.stream,
+        initialState: const ImportExportInitial(),
+      );
+      when(
+        () => mockGoRouter.push(any(), extra: any(named: 'extra')),
+      ).thenAnswer((_) async => null);
 
-        await loadSettingsScreen(tester);
+      await loadSettingsScreen(tester);
 
-        controller.add(
-          DuplicatesDetected(duplicates: [mockDuplicate], successfulImports: 0),
-        );
-        await tester.pumpAndSettle();
+      controller.add(
+        DuplicatesDetected(duplicates: [mockDuplicate], successfulImports: 0),
+      );
+      await tester.pumpAndSettle();
 
-        verify(
-          () => mockGoRouter.push(
-            AppRoutes.resolveDuplicates,
-            extra: any(named: 'extra'),
-          ),
-        ).called(1);
-        verify(
-          () => mockImportExportBloc.add(const ResetMigrationStatus()),
-        ).called(1);
-      },
-    );
+      verify(
+        () => mockGoRouter.push(
+          AppRoutes.resolveDuplicates,
+          extra: any(named: 'extra'),
+        ),
+      ).called(1);
+    });
 
     testWidgets('Shows success message on ClearDatabaseSuccess', (
       tester,

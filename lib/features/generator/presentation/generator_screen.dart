@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/components/components.dart';
@@ -8,73 +9,59 @@ import 'package:passvault/features/settings/presentation/bloc/settings/settings_
 
 import 'widgets/generator_sections.dart';
 
-class GeneratorScreen extends StatelessWidget {
+class GeneratorScreen extends StatefulWidget {
   const GeneratorScreen({super.key});
 
   @override
+  State<GeneratorScreen> createState() => _GeneratorScreenState();
+}
+
+class _GeneratorScreenState extends State<GeneratorScreen> {
+  int _refreshTick = 0;
+
+  void _handleGenerate() {
+    setState(() => _refreshTick++);
+    context.read<GeneratorBloc>().add(const GeneratorRequested());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.paddingOf(context).bottom;
-    const fabSize = 56.0;
-    final fabBottomOffset =
-        AppSpacing.m + (kBottomNavigationBarHeight - fabSize) / 2 + bottomInset;
-    return Scaffold(
-      body: BlocListener<SettingsBloc, SettingsState>(
-        listenWhen: (previous, current) =>
-            previous.passwordSettings != current.passwordSettings,
-        listener: (context, state) {
-          context.read<GeneratorBloc>().add(const GeneratorStarted());
-        },
-        child: Stack(
-          children: [
-            CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: SafeArea(
-                    bottom: false,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.l,
-                        AppSpacing.m,
-                        AppSpacing.l,
-                        AppSpacing.s,
-                      ),
-                      child: PageHeader(title: context.l10n.passwordGenerator),
-                    ),
-                  ),
-                ),
-                BlocBuilder<GeneratorBloc, GeneratorState>(
-                  builder: (context, state) {
-                    return switch (state) {
-                      GeneratorLoading() => const SliverFillRemaining(
-                        child: Center(child: AppLoader()),
-                      ),
-                      GeneratorLoaded() => _GeneratorContentSliver(
-                        state: state,
-                      ),
-                    };
-                  },
-                ),
-              ],
-            ),
-            Positioned(
-              right: AppSpacing.m,
-              bottom: fabBottomOffset,
-              child: SizedBox(
-                width: fabSize,
-                height: fabSize,
-                child: FloatingActionButton(
-                  key: const Key('generator_generate_fab'),
-                  heroTag: 'generator_generate_fab',
-                  onPressed: () => context.read<GeneratorBloc>().add(
-                    const GeneratorRequested(),
-                  ),
-                  child: const Icon(LucideIcons.refreshCw),
-                ),
-              ),
-            ),
-          ],
-        ),
+    return AppFeatureShell(
+      title: context.l10n.passwordGenerator,
+      floatingActionButton: FloatingActionButton(
+        key: const Key('generator_generate_fab'),
+        heroTag: 'generator_generate_fab',
+        onPressed: _handleGenerate,
+        backgroundColor: context.colorScheme.primary,
+        foregroundColor: context.colorScheme.onPrimary,
+        child: Icon(
+          LucideIcons.refreshCw,
+          key: ValueKey(_refreshTick),
+          size: AppIconSize.l,
+        ).animate().rotate(duration: 650.ms, curve: Curves.easeOutCubic),
       ),
+      bodyWrapper: (context, child) {
+        return BlocListener<SettingsBloc, SettingsState>(
+          listenWhen: (previous, current) =>
+              previous.passwordSettings != current.passwordSettings,
+          listener: (context, state) {
+            context.read<GeneratorBloc>().add(const GeneratorStarted());
+          },
+          child: child,
+        );
+      },
+      slivers: [
+        BlocBuilder<GeneratorBloc, GeneratorState>(
+          builder: (context, state) {
+            return switch (state) {
+              GeneratorLoading() => const SliverFillRemaining(
+                child: Center(child: AppLoader()),
+              ),
+              GeneratorLoaded() => _GeneratorContentSliver(state: state),
+            };
+          },
+        ),
+      ],
     );
   }
 }

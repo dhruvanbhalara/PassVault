@@ -420,4 +420,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get entryNotFound => 'Password entry not found';
+
+  @override
+  String get wordCountLabel => 'Word Count';
+
+  @override
+  String get separatorLabel => 'Separator';
+
+  @override
+  String get separatorNone => 'None';
+
+  @override
+  String get memorableStrategy => 'Memorable (Passphrase)';
+
+  @override
+  String get randomStrategy => 'Random (Characters)';
+
+  @override
+  String get randomStrategyTitle => 'Random';
+
+  @override
+  String get randomStrategySubtitle => 'Characters';
+
+  @override
+  String get memorableStrategyTitle => 'Memorable';
+
+  @override
+  String get memorableStrategySubtitle => 'Passphrase';
+
+  @override
+  String strategyTypeSubtitle(String value) {
+    return '($value)';
+  }
 }

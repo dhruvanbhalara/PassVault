@@ -78,10 +78,10 @@ class AppTheme {
         ? AppColors.textDarkSecondary
         : AppColors.textLightSecondary;
     final inputBorderColor = isAmoled
-        ? Colors.white24
+        ? AppColors.white.withValues(alpha: 0.24)
         : scheme.outline.withValues(alpha: isDark ? 0.62 : 0.58);
     final inputDisabledBorderColor = isAmoled
-        ? Colors.white24.withValues(alpha: 0.45)
+        ? AppColors.white.withValues(alpha: 0.11)
         : scheme.outline.withValues(alpha: isDark ? 0.40 : 0.36);
 
     final textTheme = const AppTextThemeBuilder(
@@ -96,11 +96,11 @@ class AppTheme {
       extensions: [extension],
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         foregroundColor: textPrimary,
         elevation: 0,
         centerTitle: true,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: AppColors.transparent,
         systemOverlayStyle: isDark
             ? SystemUiOverlayStyle.light
             : SystemUiOverlayStyle.dark,
@@ -119,19 +119,19 @@ class AppTheme {
         color: surface,
         elevation: 0,
         margin: EdgeInsets.zero,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: AppColors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
           side: BorderSide(
             color: isAmoled
-                ? Colors.white.withValues(alpha: 0.1)
+                ? AppColors.white.withValues(alpha: 0.1)
                 : scheme.outline.withValues(alpha: 0.1),
           ),
         ),
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: surface,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: AppColors.transparent,
         modalBackgroundColor: surface,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
@@ -207,7 +207,7 @@ class AppTheme {
         }),
         trackOutlineColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return Colors.transparent;
+            return AppColors.transparent;
           }
           return scheme.outline;
         }),

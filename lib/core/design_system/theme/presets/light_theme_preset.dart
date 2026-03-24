@@ -10,9 +10,9 @@ class LightThemePreset {
     final scheme = LightThemePreset.colorScheme;
     return AppThemeExtension(
       primary: AppColors.primaryLight,
-      onPrimary: Colors.white,
+      onPrimary: AppColors.white,
       secondary: AppColors.secondaryLight,
-      onSecondary: Colors.white,
+      onSecondary: AppColors.white,
       surface: AppColors.surfaceLight,
       onSurface: AppColors.textLightPrimary,
       background: AppColors.bgLight,
@@ -32,7 +32,7 @@ class LightThemePreset {
       primaryContainer: scheme.primaryContainer,
       onPrimaryContainer: scheme.onPrimaryContainer,
       cardShadow: BoxShadow(
-        color: Colors.black.withValues(alpha: 0.05),
+        color: AppColors.black.withValues(alpha: 0.05),
         blurRadius: 10,
         offset: const Offset(0, 4),
       ),
@@ -53,7 +53,7 @@ class LightThemePreset {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
-      onVaultGradient: Colors.white,
+      onVaultGradient: AppColors.white,
       inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.light),
     );
   }
@@ -62,9 +62,9 @@ class LightThemePreset {
     seedColor: AppColors.primaryLight,
     brightness: Brightness.light,
     primary: AppColors.primaryLight,
-    onPrimary: Colors.white,
+    onPrimary: AppColors.white,
     secondary: AppColors.secondaryLight,
-    onSecondary: Colors.white,
+    onSecondary: AppColors.white,
     surface: AppColors.surfaceLight,
     onSurface: AppColors.textLightPrimary,
     onSurfaceVariant: AppColors.textLightSecondary,

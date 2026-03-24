@@ -11,7 +11,7 @@ import 'package:passvault/core/design_system/theme/theme.dart';
 /// ```dart
 /// AppIconBadge(
 ///   icon: LucideIcons.shield,
-///   color: Colors.green,
+///   color: context.theme.success,
 ///   size: AppIconBadgeSize.medium,
 /// )
 /// ```
@@ -42,7 +42,7 @@ class AppIconBadge extends StatelessWidget {
 
     return Semantics(
       image: true,
-      label: semanticLabel ?? 'Icon',
+      label: semanticLabel ?? context.l10n.optionIcon,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),

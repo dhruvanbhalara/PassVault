@@ -107,23 +107,21 @@ class _StrategyEditorScreenState extends State<StrategyEditorScreen> {
     return BlocBuilder<SettingsBloc, SettingsState>(
       builder: (context, state) {
         return Scaffold(
-          bottomNavigationBar: PersistentBottomBar(
-            scrollController: _scrollController,
-            child: FloatingActionButton.extended(
-              key: const Key('strategy_editor_save_fab'),
-              heroTag: 'strategy_editor_save_fab',
-              onPressed: state is SettingsLoading ? null : _saveStrategy,
-              backgroundColor: theme.primary,
-              foregroundColor: theme.onPrimary,
-              icon: state is SettingsLoading
-                  ? const SizedBox(
-                      width: AppIconSize.m,
-                      height: AppIconSize.m,
-                      child: AppLoader(key: Key('strategy_editor_loader')),
-                    )
-                  : const Icon(LucideIcons.save),
-              label: Text(l10n.save),
-            ),
+          extendBody: true,
+          floatingActionButton: FloatingActionButton.extended(
+            key: const Key('strategy_editor_save_fab'),
+            heroTag: 'strategy_editor_save_fab',
+            onPressed: state is SettingsLoading ? null : _saveStrategy,
+            backgroundColor: theme.primary,
+            foregroundColor: theme.onPrimary,
+            icon: state is SettingsLoading
+                ? const SizedBox(
+                    width: AppIconSize.m,
+                    height: AppIconSize.m,
+                    child: AppLoader(key: Key('strategy_editor_loader')),
+                  )
+                : const Icon(LucideIcons.save),
+            label: Text(l10n.save),
           ),
           body: CustomScrollView(
             controller: _scrollController,
@@ -158,6 +156,9 @@ class _StrategyEditorScreenState extends State<StrategyEditorScreen> {
                     },
                   ),
                 ),
+              ),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: AppDimensions.fabBottomPadding),
               ),
             ],
           ),

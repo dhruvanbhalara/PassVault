@@ -32,7 +32,7 @@ class DarkThemePreset {
       primaryContainer: scheme.primaryContainer,
       onPrimaryContainer: scheme.onPrimaryContainer,
       cardShadow: BoxShadow(
-        color: Colors.black.withValues(alpha: 0.3),
+        color: AppColors.black.withValues(alpha: 0.3),
         blurRadius: 12,
         offset: const Offset(0, 4),
       ),
@@ -53,7 +53,7 @@ class DarkThemePreset {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
-      onVaultGradient: Colors.white,
+      onVaultGradient: AppColors.white,
       inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.dark),
     );
   }
