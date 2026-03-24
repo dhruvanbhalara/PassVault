@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -78,15 +79,16 @@ void main() {
     });
 
     group('$LoadSettings', () {
-      test('loads settings from repository', () {
+      void stubLoadSettings({
+        bool biometrics = false,
+        bool screenPrivacy = true,
+      }) {
         when(
           () => mockSettingsRepository.getBiometricsEnabled(),
-        ).thenReturn(const Success(true));
-
+        ).thenReturn(Success(biometrics));
         when(
           () => mockSettingsRepository.getScreenPrivacyEnabled(),
-        ).thenReturn(const Success(true));
-
+        ).thenReturn(Success(screenPrivacy));
         when(
           () => mockSettingsRepository.getPasswordGenerationSettings(),
         ).thenReturn(
@@ -94,10 +96,14 @@ void main() {
             PasswordGenerationSettings(strategies: [], defaultStrategyId: ''),
           ),
         );
+      }
+
+      test('emits SettingsLoaded with useBiometrics from repository', () async {
+        stubLoadSettings(biometrics: true, screenPrivacy: true);
 
         bloc.add(const LoadSettings());
 
-        expectLater(
+        await expectLater(
           bloc.stream,
           emitsThrough(
             isA<SettingsLoaded>().having(
@@ -108,6 +114,156 @@ void main() {
           ),
         );
       });
+
+      test(
+        'emits useScreenPrivacy: true when repository returns true',
+        () async {
+          stubLoadSettings(screenPrivacy: true);
+
+          bloc.add(const LoadSettings());
+
+          await expectLater(
+            bloc.stream,
+            emitsThrough(
+              isA<SettingsLoaded>().having(
+                (s) => s.useScreenPrivacy,
+                'useScreenPrivacy',
+                true,
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'emits useScreenPrivacy: false when repository returns false',
+        () async {
+          stubLoadSettings(screenPrivacy: false);
+
+          bloc.add(const LoadSettings());
+
+          await expectLater(
+            bloc.stream,
+            emitsThrough(
+              isA<SettingsLoaded>().having(
+                (s) => s.useScreenPrivacy,
+                'useScreenPrivacy',
+                false,
+              ),
+            ),
+          );
+        },
+      );
+
+      test('calls enableProtection when screenPrivacy is enabled', () async {
+        stubLoadSettings(screenPrivacy: true);
+
+        bloc.add(const LoadSettings());
+        await Future.delayed(const Duration(milliseconds: 50));
+
+        verify(() => mockScreenPrivacyService.enableProtection()).called(1);
+        verifyNever(() => mockScreenPrivacyService.disableProtection());
+      });
+
+      test('calls disableProtection when screenPrivacy is disabled', () async {
+        stubLoadSettings(screenPrivacy: false);
+
+        bloc.add(const LoadSettings());
+        await Future.delayed(const Duration(milliseconds: 50));
+
+        verify(() => mockScreenPrivacyService.disableProtection()).called(1);
+        verifyNever(() => mockScreenPrivacyService.enableProtection());
+      });
+    });
+
+    group('$ToggleScreenPrivacy', () {
+      test(
+        'enabling privacy persists true and calls enableProtection',
+        () async {
+          when(
+            () => mockSettingsRepository.setScreenPrivacyEnabled(true),
+          ).thenAnswer((_) async => const Success(null));
+
+          bloc.add(const ToggleScreenPrivacy(true));
+          await Future.delayed(const Duration(milliseconds: 50));
+
+          verify(
+            () => mockSettingsRepository.setScreenPrivacyEnabled(true),
+          ).called(1);
+          verify(() => mockScreenPrivacyService.enableProtection()).called(1);
+          verifyNever(() => mockScreenPrivacyService.disableProtection());
+          expect(bloc.state.useScreenPrivacy, true);
+        },
+      );
+
+      test(
+        'disabling privacy persists false and calls disableProtection',
+        () async {
+          when(
+            () => mockSettingsRepository.setScreenPrivacyEnabled(false),
+          ).thenAnswer((_) async => const Success(null));
+
+          bloc.add(const ToggleScreenPrivacy(false));
+          await Future.delayed(const Duration(milliseconds: 50));
+
+          verify(
+            () => mockSettingsRepository.setScreenPrivacyEnabled(false),
+          ).called(1);
+          verify(() => mockScreenPrivacyService.disableProtection()).called(1);
+          verifyNever(() => mockScreenPrivacyService.enableProtection());
+          expect(bloc.state.useScreenPrivacy, false);
+        },
+      );
+
+      test(
+        'emits SettingsLoaded with updated useScreenPrivacy: true',
+        () async {
+          when(
+            () => mockSettingsRepository.setScreenPrivacyEnabled(true),
+          ).thenAnswer((_) async => const Success(null));
+
+          unawaited(
+            expectLater(
+              bloc.stream,
+              emitsThrough(
+                isA<SettingsLoaded>().having(
+                  (s) => s.useScreenPrivacy,
+                  'useScreenPrivacy',
+                  true,
+                ),
+              ),
+            ),
+          );
+
+          bloc.add(const ToggleScreenPrivacy(true));
+          await Future.delayed(const Duration(milliseconds: 50));
+        },
+      );
+
+      test(
+        'emits SettingsLoaded with updated useScreenPrivacy: false',
+        () async {
+          when(
+            () => mockSettingsRepository.setScreenPrivacyEnabled(false),
+          ).thenAnswer((_) async => const Success(null));
+
+          unawaited(
+            expectLater(
+              bloc.stream,
+              emitsThrough(
+                isA<SettingsLoaded>().having(
+                  (s) => s.useScreenPrivacy,
+                  'useScreenPrivacy',
+                  false,
+                ),
+              ),
+            ),
+          );
+
+          bloc.add(const ToggleScreenPrivacy(false));
+          await Future.delayed(const Duration(milliseconds: 50));
+        },
+      );
     });
 
     group('$ToggleBiometrics', () {
