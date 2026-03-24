@@ -7,13 +7,16 @@ import UIKit
     // MARK: - Screen privacy state
 
     /// Invisible UITextField with isSecureTextEntry = true.
-    /// When present in the window, UIKit marks the window as sensitive and
-    /// iOS automatically renders blank content in:
-    ///   - Screenshots (system screenshot gesture)
-    ///   - App-switcher snapshots (SpringBoard renders blank without timing dependency)
-    ///   - Screen recordings (ReplayKit / QuickTime captures blank)
-    ///   - AirPlay / Sidecar mirroring
+    /// When present in the window, UIKit marks the window as sensitive so iOS
+    /// renders blank content for screenshots and app‑switcher snapshots.
+    ///
+    /// Note: iOS 17+ screen recording (ReplayKit / Control Centre) bypasses UIKit
+    /// window sensitivity. A separate `privacyOverlayWindow` covers that case.
     private var secureTextField: UITextField?
+
+    /// Full‑screen black UIWindow shown during active screen recording.
+    /// Elevated window level ensures it appears above all Flutter content.
+    private var privacyOverlayWindow: UIWindow?
 
     // MARK: - App lifecycle
 
@@ -73,10 +76,9 @@ import UIKit
 
     // MARK: - Screen protection (UITextField isSecureTextEntry trick)
 
-    /// Adds an invisible 1×1pt UITextField with isSecureTextEntry=true to the key window.
-    /// UIKit marks the window layer as sensitive — iOS renders blank content for ALL
-    /// capture mechanisms (screenshots, app-switcher, recordings) without requiring
-    /// any timing-dependent overlay.
+    /// Adds an invisible 1×1pt UITextField with isSecureTextEntry=true to the key window
+    /// (prevents screenshots and app‑switcher snapshots), and also shows the full‑screen
+    /// overlay if a screen recording is already in progress.
     private func enableScreenProtection() {
         guard secureTextField == nil, let window = keyWindow else { return }
 
@@ -95,21 +97,64 @@ import UIKit
         ])
 
         secureTextField = field
+
+        // If recording is already active when protection is enabled, cover immediately.
+        if UIScreen.main.isCaptured {
+            showPrivacyOverlayWindow()
+        }
     }
 
     /// Removes the secure text field, restoring normal capture behaviour.
     private func disableScreenProtection() {
         secureTextField?.removeFromSuperview()
         secureTextField = nil
+        // Always hide the recording overlay when protection is turned off.
+        hidePrivacyOverlayWindow()
     }
 
-    // MARK: - Screen capture notification (user warning during recording)
+    // MARK: - Recording overlay (covers screen during active screen recording)
+
+    /// Shows an opaque black window on top of all content while recording is active.
+    private func showPrivacyOverlayWindow() {
+        guard privacyOverlayWindow == nil else { return }
+
+        let windowScene = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive }
+
+        let overlay: UIWindow
+        if let scene = windowScene {
+            overlay = UIWindow(windowScene: scene)
+        } else {
+            overlay = UIWindow(frame: UIScreen.main.bounds)
+        }
+
+        overlay.windowLevel = .alert + 1
+        overlay.backgroundColor = .black
+        let vc = UIViewController()
+        vc.view.backgroundColor = .black
+        overlay.rootViewController = vc
+        overlay.isHidden = false
+        privacyOverlayWindow = overlay
+    }
+
+    private func hidePrivacyOverlayWindow() {
+        privacyOverlayWindow?.isHidden = true
+        privacyOverlayWindow = nil
+    }
+
+    // MARK: - Screen capture notification (overlay during recording)
 
     @objc private func screenCaptureStatusDidChange(_ notification: Notification) {
-        // UIScreen.isCaptured handles recording detection; the UITextField trick already
-        // prevents captures from exposing sensitive content. This observer can be used
-        // to show an in-app banner if desired in future.
-        _ = UIScreen.main.isCaptured
+        guard UIScreen.main.isCaptured else {
+            // Recording stopped — always hide overlay.
+            hidePrivacyOverlayWindow()
+            return
+        }
+        // Recording started — show overlay only when protection is enabled.
+        if secureTextField != nil {
+            showPrivacyOverlayWindow()
+        }
     }
 
     // MARK: - External display detection
