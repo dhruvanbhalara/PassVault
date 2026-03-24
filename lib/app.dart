@@ -9,8 +9,35 @@ import 'config/routes/app_router.dart';
 import 'core/design_system/theme/theme.dart';
 import 'core/di/injection.dart';
 
-class PassVaultApp extends StatelessWidget {
+class PassVaultApp extends StatefulWidget {
   const PassVaultApp({super.key});
+
+  @override
+  State<PassVaultApp> createState() => _PassVaultAppState();
+}
+
+class _PassVaultAppState extends State<PassVaultApp> {
+  late final AppLifecycleListener _lifecycleListener;
+
+  // True when the app is inactive (moving to background / app-switcher).
+  // Flutter renders a full-black frame at this state so the OS snapshot
+  // captures black instead of vault content.
+  bool _showPrivacyScreen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycleListener = AppLifecycleListener(
+      onInactive: () => setState(() => _showPrivacyScreen = true),
+      onResume: () => setState(() => _showPrivacyScreen = false),
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycleListener.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,21 +62,30 @@ class PassVaultApp extends StatelessWidget {
 
           final locale = context.watch<LocaleBloc>().state.locale;
 
-          return MaterialApp.router(
-            onGenerateTitle: (context) => context.l10n.appName,
-            debugShowCheckedModeBanner: false,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
+          return Stack(
+            textDirection: TextDirection.ltr,
+            children: [
+              MaterialApp.router(
+                onGenerateTitle: (context) => context.l10n.appName,
+                debugShowCheckedModeBanner: false,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: AppLocalizations.supportedLocales,
+                locale: locale,
+                theme: theme,
+                darkTheme: darkThemeData ?? theme,
+                themeMode: themeMode,
+                routerConfig: getIt<AppRouter>().config,
+              ),
+              // Privacy screen: covers Flutter's rendering surface when the app
+              // is inactive so the OS app-switcher snapshot captures black.
+              if (_showPrivacyScreen)
+                const ColoredBox(color: Colors.black, child: SizedBox.expand()),
             ],
-            supportedLocales: AppLocalizations.supportedLocales,
-            locale: locale,
-            theme: theme,
-            darkTheme: darkThemeData ?? theme,
-            themeMode: themeMode,
-            routerConfig: getIt<AppRouter>().config,
           );
         },
       ),

@@ -4,10 +4,10 @@ import UIKit
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
 
-    // MARK: - Privacy overlay
+    // MARK: - Privacy overlay (screen recording / AirPlay / Sidecar)
 
-    /// Solid-black overlay shown during screen recording, mirroring,
-    /// or when the app moves to the background (app-switcher protection).
+    /// Solid-black overlay shown while screen recording or mirroring is active.
+    /// App-switcher protection is handled on the Dart side via AppLifecycleListener.
     private var privacyOverlay: UIView?
 
     // MARK: - App lifecycle
@@ -32,34 +32,18 @@ import UIKit
             object: nil
         )
 
+        let result = super.application(application, didFinishLaunchingWithOptions: launchOptions)
+
         // If the app is launched while a capture is already active, apply overlay immediately.
         if UIScreen.main.isCaptured {
             showPrivacyOverlay()
         }
 
-        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+        return result
     }
 
     func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
         GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
-    }
-
-    // MARK: - App-switcher protection
-
-    /// Called just before the app moves to the background.
-    /// iOS takes its app-switcher snapshot during this window, so we cover the UI.
-    override func applicationWillResignActive(_ application: UIApplication) {
-        showPrivacyOverlay()
-        super.applicationWillResignActive(application)
-    }
-
-    /// Called when the app returns to the foreground.
-    override func applicationDidBecomeActive(_ application: UIApplication) {
-        super.applicationDidBecomeActive(application)
-        // Only remove the overlay if screen is no longer captured.
-        if !UIScreen.main.isCaptured {
-            hidePrivacyOverlay()
-        }
     }
 
     // MARK: - Screen capture detection
@@ -76,22 +60,32 @@ import UIKit
     // MARK: - External display detection
 
     @objc private func externalDisplayDidConnect(_ notification: Notification) {
-        // If more than the built-in screen is connected, warn the user.
         guard UIScreen.screens.count > 1 else { return }
         showExternalDisplayWarning()
     }
 
     // MARK: - Overlay helpers
 
+    /// Returns the current key window, compatible with iOS 13+ scene-based apps
+    /// and the legacy FlutterImplicitEngineBridge window setup.
+    private var keyWindow: UIWindow? {
+        if #available(iOS 13.0, *) {
+            return UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .flatMap({ $0.windows })
+                .first(where: { $0.isKeyWindow })
+        }
+        return UIApplication.shared.keyWindow
+    }
+
     private func showPrivacyOverlay() {
-        guard privacyOverlay == nil else { return }
-        guard let window = self.window else { return }
+        guard privacyOverlay == nil, let window = keyWindow else { return }
 
         let overlay = UIView(frame: window.bounds)
         overlay.backgroundColor = .black
         overlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        // Place above all other subviews including Flutter's surface.
         window.addSubview(overlay)
+        window.bringSubviewToFront(overlay)
         privacyOverlay = overlay
     }
 
@@ -101,8 +95,7 @@ import UIKit
     }
 
     private func showExternalDisplayWarning() {
-        // Find the topmost presented view controller to present the alert.
-        guard let rootVC = window?.rootViewController else { return }
+        guard let rootVC = keyWindow?.rootViewController else { return }
         var topVC = rootVC
         while let presented = topVC.presentedViewController {
             topVC = presented
@@ -117,3 +110,4 @@ import UIKit
         topVC.present(alert, animated: true)
     }
 }
+
