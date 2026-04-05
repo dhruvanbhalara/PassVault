@@ -6,17 +6,17 @@ import UIKit
 
     // MARK: - Screen privacy state
 
-    /// Invisible UITextField with isSecureTextEntry = true.
-    /// When present in the window, UIKit marks the window as sensitive so iOS
-    /// renders blank content for screenshots and app‑switcher snapshots.
-    ///
-    /// Note: iOS 17+ screen recording (ReplayKit / Control Centre) bypasses UIKit
-    /// window sensitivity. A separate `privacyOverlayWindow` covers that case.
-    private var secureTextField: UITextField?
+    var secureTextField: UITextField?
+    var privacyOverlayWindow: UIWindow?
 
-    /// Full‑screen black UIWindow shown during active screen recording.
-    /// Elevated window level ensures it appears above all Flutter content.
-    private var privacyOverlayWindow: UIWindow?
+    /// `true` when screen protection is active.
+    var isScreenProtectionEnabled: Bool { secureTextField != nil }
+
+    /// `true` when the recording-overlay window is visible.
+    var isRecordingOverlayVisible: Bool { privacyOverlayWindow != nil }
+
+    /// Messenger for the screen-privacy MethodChannel; set during engine init.
+    private(set) var screenPrivacyMessenger: FlutterBinaryMessenger?
 
     // MARK: - App lifecycle
 
@@ -24,22 +24,18 @@ import UIKit
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // Observe screen-capture state changes for user-visible notification.
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(screenCaptureStatusDidChange),
             name: UIScreen.capturedDidChangeNotification,
             object: nil
         )
-
-        // Observe external display connect / disconnect.
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(externalDisplayDidConnect),
             name: UIScreen.didConnectNotification,
             object: nil
         )
-
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
@@ -48,16 +44,18 @@ import UIKit
         setupScreenPrivacyChannel(engineBridge: engineBridge)
     }
 
-    // MARK: - MethodChannel setup
+    // MARK: - MethodChannel
 
     private func setupScreenPrivacyChannel(engineBridge: FlutterImplicitEngineBridge) {
         guard let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "ScreenPrivacy") else { return }
 
+        let messenger = registrar.messenger()
+        screenPrivacyMessenger = messenger
+
         let channel = FlutterMethodChannel(
             name: "com.dhruvanbhalara.passvault/screen_privacy",
-            binaryMessenger: registrar.messenger()
+            binaryMessenger: messenger
         )
-
         channel.setMethodCallHandler { [weak self] call, result in
             DispatchQueue.main.async {
                 switch call.method {
@@ -74,12 +72,11 @@ import UIKit
         }
     }
 
-    // MARK: - Screen protection (UITextField isSecureTextEntry trick)
+    // MARK: - Screen protection
 
-    /// Adds an invisible 1×1pt UITextField with isSecureTextEntry=true to the key window
-    /// (prevents screenshots and app‑switcher snapshots), and also shows the full‑screen
-    /// overlay if a screen recording is already in progress.
-    private func enableScreenProtection() {
+    /// Adds an invisible secure UITextField to mark the window as sensitive.
+    /// UIKit prevents screenshots and app-switcher snapshots while it is present.
+    func enableScreenProtection() {
         guard secureTextField == nil, let window = keyWindow else { return }
 
         let field = UITextField()
@@ -95,27 +92,23 @@ import UIKit
             field.centerXAnchor.constraint(equalTo: window.centerXAnchor),
             field.centerYAnchor.constraint(equalTo: window.centerYAnchor),
         ])
-
         secureTextField = field
 
-        // If recording is already active when protection is enabled, cover immediately.
         if UIScreen.main.isCaptured {
             showPrivacyOverlayWindow()
         }
     }
 
-    /// Removes the secure text field, restoring normal capture behaviour.
-    private func disableScreenProtection() {
+    func disableScreenProtection() {
         secureTextField?.removeFromSuperview()
         secureTextField = nil
-        // Always hide the recording overlay when protection is turned off.
         hidePrivacyOverlayWindow()
     }
 
-    // MARK: - Recording overlay (covers screen during active screen recording)
+    // MARK: - Recording overlay
 
-    /// Shows an opaque black window on top of all content while recording is active.
-    private func showPrivacyOverlayWindow() {
+    /// Shows an opaque black overlay above all content during screen recording.
+    func showPrivacyOverlayWindow() {
         guard privacyOverlayWindow == nil else { return }
 
         let windowScene = UIApplication.shared.connectedScenes
@@ -138,26 +131,22 @@ import UIKit
         privacyOverlayWindow = overlay
     }
 
-    private func hidePrivacyOverlayWindow() {
+    func hidePrivacyOverlayWindow() {
         privacyOverlayWindow?.isHidden = true
         privacyOverlayWindow = nil
     }
 
-    // MARK: - Screen capture notification (overlay during recording)
+    // MARK: - Notifications
 
     @objc private func screenCaptureStatusDidChange(_ notification: Notification) {
         guard UIScreen.main.isCaptured else {
-            // Recording stopped — always hide overlay.
             hidePrivacyOverlayWindow()
             return
         }
-        // Recording started — show overlay only when protection is enabled.
         if secureTextField != nil {
             showPrivacyOverlayWindow()
         }
     }
-
-    // MARK: - External display detection
 
     @objc private func externalDisplayDidConnect(_ notification: Notification) {
         guard UIScreen.screens.count > 1 else { return }
@@ -166,9 +155,7 @@ import UIKit
 
     // MARK: - Helpers
 
-    /// Returns the current key window, compatible with iOS 13+ scene-based apps
-    /// and the legacy FlutterImplicitEngineBridge window setup.
-    private var keyWindow: UIWindow? {
+    var keyWindow: UIWindow? {
         if #available(iOS 13.0, *) {
             return UIApplication.shared.connectedScenes
                 .compactMap({ $0 as? UIWindowScene })
@@ -178,7 +165,7 @@ import UIKit
         return UIApplication.shared.keyWindow
     }
 
-    private func showExternalDisplayWarning() {
+    func showExternalDisplayWarning() {
         guard let rootVC = keyWindow?.rootViewController else { return }
         var topVC = rootVC
         while let presented = topVC.presentedViewController {
@@ -194,4 +181,3 @@ import UIKit
         topVC.present(alert, animated: true)
     }
 }
-
