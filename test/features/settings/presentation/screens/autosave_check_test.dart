@@ -45,6 +45,7 @@ void main() {
 
     final successState = const SettingsLoaded(
       useBiometrics: false,
+      useScreenPrivacy: true,
       passwordSettings: PasswordGenerationSettings(
         strategies: [
           PasswordGenerationStrategy(id: 'default-id', name: 'Default'),

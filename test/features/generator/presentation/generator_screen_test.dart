@@ -79,11 +79,13 @@ void main() {
 
   const settingsState = SettingsLoaded(
     useBiometrics: false,
+    useScreenPrivacy: true,
     passwordSettings: settings,
   );
 
   const memorableSettingsState = SettingsLoaded(
     useBiometrics: false,
+    useScreenPrivacy: true,
     passwordSettings: memorableSettings,
   );
 

@@ -184,6 +184,18 @@ abstract class AppLocalizations {
   /// **'Biometric Authentication'**
   String get useBiometrics;
 
+  /// No description provided for @screenPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen Privacy Protection'**
+  String get screenPrivacy;
+
+  /// No description provided for @screenPrivacySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide vault in app switcher and block screen recording'**
+  String get screenPrivacySubtitle;
+
   /// No description provided for @dataManagement.
   ///
   /// In en, this message translates to:

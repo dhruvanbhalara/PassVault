@@ -94,6 +94,7 @@ import '../services/file_picker_service.dart' as _i108;
 import '../services/file_picker_service_impl.dart' as _i988;
 import '../services/file_service.dart' as _i367;
 import '../services/file_service_impl.dart' as _i276;
+import '../services/screen_privacy_service.dart' as _i171;
 import '../services/storage_service.dart' as _i306;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -109,6 +110,9 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.lazySingleton<_i1024.CryptoService>(() => _i1024.CryptoService());
+    gh.lazySingleton<_i171.ScreenPrivacyService>(
+      () => _i171.ScreenPrivacyService(),
+    );
     gh.lazySingleton<_i152.LocalAuthentication>(
       () => storageModule.localAuthentication,
     );
@@ -214,7 +218,10 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i537.SaveBulkPasswordsUseCase(gh<_i580.PasswordRepository>()),
     );
     gh.lazySingleton<_i228.SettingsBloc>(
-      () => _i228.SettingsBloc(gh<_i674.SettingsRepository>()),
+      () => _i228.SettingsBloc(
+        gh<_i674.SettingsRepository>(),
+        gh<_i171.ScreenPrivacyService>(),
+      ),
     );
     gh.lazySingleton<_i360.GetBiometricsEnabledUseCase>(
       () => _i360.GetBiometricsEnabledUseCase(gh<_i674.SettingsRepository>()),

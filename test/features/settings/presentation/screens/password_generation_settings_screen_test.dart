@@ -53,6 +53,7 @@ void main() {
     when(() => mockSettingsBloc.state).thenReturn(
       SettingsLoaded(
         useBiometrics: false,
+        useScreenPrivacy: true,
         passwordSettings: PasswordGenerationSettings(
           strategies: [strategy],
           defaultStrategyId: strategy.id,
