@@ -429,6 +429,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get entryNotFound => 'Password entry not found';
 
   @override
+  String get groupedEntryNotFound => 'Grouped entry not found';
+
+  @override
+  String groupedCredentialCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count accounts',
+      one: '1 account',
+      zero: 'No accounts',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get wordCountLabel => 'Word Count';
 
   @override

@@ -162,6 +162,15 @@
   "savePassword": "Save Password",
   "updatePassword": "Update Password",
   "entryNotFound": "Password entry not found",
+  "groupedEntryNotFound": "Grouped entry not found",
+  "groupedCredentialCount": "{count, plural, =0{No accounts} =1{1 account} other{{count} accounts}}",
+  "@groupedCredentialCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "wordCountLabel": "Word Count",
   "separatorLabel": "Separator",
   "separatorNone": "None",

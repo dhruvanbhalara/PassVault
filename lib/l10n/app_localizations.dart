@@ -898,6 +898,18 @@ abstract class AppLocalizations {
   /// **'Password entry not found'**
   String get entryNotFound;
 
+  /// No description provided for @groupedEntryNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Grouped entry not found'**
+  String get groupedEntryNotFound;
+
+  /// No description provided for @groupedCredentialCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No accounts} =1{1 account} other{{count} accounts}}'**
+  String groupedCredentialCount(int count);
+
   /// No description provided for @wordCountLabel.
   ///
   /// In en, this message translates to:
