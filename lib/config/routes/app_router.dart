@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:passvault/config/routes/app_routes.dart';
+import 'package:passvault/config/routes/router_transitions.dart';
 import 'package:passvault/core/design_system/components/error/app_error_page.dart';
 import 'package:passvault/core/di/injection.dart';
 import 'package:passvault/core/observers/go_router_observer.dart';
@@ -13,6 +14,7 @@ import 'package:passvault/features/generator/presentation/bloc/generator/generat
 import 'package:passvault/features/generator/presentation/generator_screen.dart';
 import 'package:passvault/features/home/presentation/bloc/password/password_bloc.dart';
 import 'package:passvault/features/home/presentation/home_screen.dart';
+import 'package:passvault/features/home/presentation/screens/grouped_password_details_screen.dart';
 import 'package:passvault/features/onboarding/presentation/bloc/onboarding/onboarding_bloc.dart';
 import 'package:passvault/features/onboarding/presentation/intro_screen.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
@@ -86,7 +88,7 @@ class AppRouter {
           GoRoute(
             path: AppRoutes.intro,
             pageBuilder: (context, state) =>
-                _slideTransition(const IntroScreen(), state),
+                buildSlideTransition(const IntroScreen(), state),
           ),
         ],
       ),
@@ -122,7 +124,7 @@ class AppRouter {
                       GoRoute(
                         path: AppRoutes.addPasswordRoute,
                         parentNavigatorKey: _rootNavigatorKey,
-                        pageBuilder: (context, state) => _slideTransition(
+                        pageBuilder: (context, state) => buildSlideTransition(
                           const AddEditPasswordScreen(),
                           state,
                         ),
@@ -130,12 +132,27 @@ class AppRouter {
                       GoRoute(
                         path: AppRoutes.editPasswordRoute,
                         parentNavigatorKey: _rootNavigatorKey,
-                        pageBuilder: (context, state) => _slideTransition(
+                        pageBuilder: (context, state) => buildSlideTransition(
                           AddEditPasswordScreen(
                             id: (state.extra as PasswordEntry?)?.id,
                           ),
                           state,
                         ),
+                      ),
+                      GoRoute(
+                        path: AppRoutes.groupedPasswordDetailsSubRoute,
+                        parentNavigatorKey: _rootNavigatorKey,
+                        pageBuilder: (context, state) {
+                          final groupKey = Uri.decodeComponent(
+                            state.pathParameters[AppRoutes
+                                    .groupedPasswordKeyParam] ??
+                                '',
+                          );
+                          return buildSlideTransition(
+                            GroupedPasswordDetailsScreen(groupKey: groupKey),
+                            state,
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -205,7 +222,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.exportVault,
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => _slideTransition(
+        pageBuilder: (context, state) => buildSlideTransition(
           BlocProvider.value(
             value: getIt<ImportExportBloc>(),
             child: const ExportVaultScreen(),
@@ -216,7 +233,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.strategy,
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => _slideTransition(
+        pageBuilder: (context, state) => buildSlideTransition(
           BlocProvider.value(
             value: getIt<SettingsBloc>(),
             child: const StrategyScreen(),
@@ -230,7 +247,7 @@ class AppRouter {
             pageBuilder: (context, state) {
               final strategyId =
                   (state.extra as Map<String, String>)['strategyId'];
-              return _slideTransition(
+              return buildSlideTransition(
                 BlocProvider.value(
                   value: getIt<SettingsBloc>(),
                   child: StrategyEditorScreen(strategyId: strategyId),
@@ -243,53 +260,4 @@ class AppRouter {
       ),
     ],
   );
-
-  CustomTransitionPage<void> _slideTransition(
-    Widget child,
-    GoRouterState state,
-  ) {
-    return CustomTransitionPage<void>(
-      key: state.pageKey,
-      child: child,
-      transitionDuration: const Duration(milliseconds: 300),
-      reverseTransitionDuration: const Duration(milliseconds: 300),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const curve = Curves.easeInOut;
-
-        final slideIn = Tween<Offset>(
-          begin: const Offset(1.0, 0.0),
-          end: Offset.zero,
-        ).chain(CurveTween(curve: curve));
-
-        final fadeIn = Tween<double>(
-          begin: 0.0,
-          end: 1.0,
-        ).chain(CurveTween(curve: curve));
-
-        final slideOut = Tween<Offset>(
-          begin: Offset.zero,
-          end: const Offset(-0.25, 0.0),
-        ).chain(CurveTween(curve: curve));
-
-        final fadeOut = Tween<double>(
-          begin: 1.0,
-          end: 0.85,
-        ).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: secondaryAnimation.drive(slideOut),
-          child: FadeTransition(
-            opacity: secondaryAnimation.drive(fadeOut),
-            child: SlideTransition(
-              position: animation.drive(slideIn),
-              child: FadeTransition(
-                opacity: animation.drive(fadeIn),
-                child: child,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
 }
