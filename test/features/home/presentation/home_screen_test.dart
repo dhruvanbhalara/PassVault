@@ -103,5 +103,31 @@ void main() {
         ),
       ).called(1);
     });
+
+    testWidgets(
+      'navigates to edit password when single-account group is tapped',
+      (tester) async {
+        when(
+          () => mockGoRouter.push(any(), extra: any(named: 'extra')),
+        ).thenAnswer((_) async => null);
+        await loadHomeScreen(
+          tester,
+          PasswordLoaded(
+            passwords: PasswordFixtures.list,
+            groupedEntries: groupedEntries,
+          ),
+        );
+
+        await tester.tap(find.text(groupedEntries[1].displayName));
+        await tester.pumpAndSettle();
+
+        verify(
+          () => mockGoRouter.push(
+            AppRoutes.editPassword,
+            extra: groupedEntries[1].members.first,
+          ),
+        ).called(1);
+      },
+    );
   });
 }

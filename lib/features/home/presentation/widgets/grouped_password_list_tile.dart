@@ -16,6 +16,11 @@ class GroupedPasswordListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSingleAccount = group.accountCount == 1;
+    final subtitle = isSingleAccount
+        ? ''
+        : context.l10n.groupedCredentialCount(group.accountCount);
+
     return AppCard(
       hasGlow: false,
       child: InkWell(
@@ -36,18 +41,19 @@ class GroupedPasswordListTile extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    context.l10n.groupedCredentialCount(group.accountCount),
-                    style: context.typography.bodyMedium?.copyWith(
-                      color: context.theme.onSurface.withValues(alpha: 0.7),
+                  if (subtitle.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      subtitle,
+                      style: context.typography.bodyMedium?.copyWith(
+                        color: context.theme.onSurface.withValues(alpha: 0.7),
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),
-            if (group.accountCount > 1)
-              _GroupCountBadge(count: group.accountCount),
+            if (!isSingleAccount) _GroupCountBadge(count: group.accountCount),
             const SizedBox(width: AppSpacing.s),
             Icon(
               LucideIcons.chevronRight,

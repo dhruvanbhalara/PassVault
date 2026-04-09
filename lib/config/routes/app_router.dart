@@ -141,7 +141,6 @@ class AppRouter {
                       ),
                       GoRoute(
                         path: AppRoutes.groupedPasswordDetailsSubRoute,
-                        parentNavigatorKey: _rootNavigatorKey,
                         pageBuilder: (context, state) {
                           final groupKey = Uri.decodeComponent(
                             state.pathParameters[AppRoutes

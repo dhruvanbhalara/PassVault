@@ -128,9 +128,7 @@ class _HomeScreenGrid extends StatelessWidget {
           index: index,
           child: GroupedPasswordListTile(
             group: groups[index],
-            onTap: () => context.push(
-              AppRoutes.groupedPasswordDetailsPath(groups[index].canonicalKey),
-            ),
+            onTap: () => _onGroupTap(context, groups[index]),
           ),
         ),
         childCount: groups.length,
@@ -152,11 +150,18 @@ class _HomeScreenList extends StatelessWidget {
       itemBuilder: (context, index) => RepaintBoundary(
         child: GroupedPasswordListTile(
           group: groups[index],
-          onTap: () => context.push(
-            AppRoutes.groupedPasswordDetailsPath(groups[index].canonicalKey),
-          ),
+          onTap: () => _onGroupTap(context, groups[index]),
         ),
       ),
     );
   }
+}
+
+void _onGroupTap(BuildContext context, GroupedHomeEntry group) {
+  if (group.accountCount == 1 && group.members.isNotEmpty) {
+    context.push(AppRoutes.editPassword, extra: group.members.first);
+    return;
+  }
+
+  context.push(AppRoutes.groupedPasswordDetailsPath(group.canonicalKey));
 }

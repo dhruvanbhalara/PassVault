@@ -51,7 +51,11 @@ void main() {
           GroupedPasswordListTile(group: singleEntryGroup, onTap: () {}),
         );
 
-        expect(find.text(l10n.groupedCredentialCount(1)), findsOneWidget);
+        expect(find.text(l10n.groupedCredentialCount(1)), findsNothing);
+        expect(
+          find.text(singleEntryGroup.members.first.username),
+          findsNothing,
+        );
         expect(
           find.byKey(const Key('grouped_password_count_badge')),
           findsNothing,

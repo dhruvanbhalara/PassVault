@@ -75,52 +75,67 @@ class _GroupedDetailsLoadedScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(group.displayName)),
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: SafeArea(
+              bottom: false,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(
                   AppSpacing.l,
                   AppSpacing.m,
                   AppSpacing.l,
-                  AppSpacing.m,
+                  AppSpacing.s,
                 ),
-                child: Text(
-                  context.l10n.groupedCredentialCount(group.accountCount),
-                  key: const Key('grouped_details_count_text'),
-                  style: context.typography.titleMedium,
+                child: PageHeader(
+                  title: group.displayName,
+                  showBack: true,
+                  onBack: () => Navigator.of(context).maybePop(),
                 ),
               ),
             ),
-            SliverPadding(
-              key: const Key('grouped_details_member_list'),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.l,
-                0,
+                AppSpacing.m,
                 AppSpacing.l,
-                AppSpacing.xl,
+                AppSpacing.m,
               ),
-              sliver: SliverList.separated(
-                itemCount: group.members.length,
-                itemBuilder: (context, index) {
-                  final entry = group.members[index];
-                  return PasswordListTile(
-                    entry: entry,
-                    onTap: () =>
-                        context.push(AppRoutes.editPassword, extra: entry),
-                    onDismissed: () => context.read<PasswordBloc>().add(
-                      DeletePassword(entry.id),
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: AppSpacing.m),
+              child: Text(
+                context.l10n.groupedCredentialCount(group.accountCount),
+                key: const Key('grouped_details_count_text'),
+                style: context.typography.titleMedium,
               ),
             ),
-          ],
-        ),
+          ),
+          SliverPadding(
+            key: const Key('grouped_details_member_list'),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.l,
+              0,
+              AppSpacing.l,
+              AppSpacing.xl,
+            ),
+            sliver: SliverList.separated(
+              itemCount: group.members.length,
+              itemBuilder: (context, index) {
+                final entry = group.members[index];
+                return PasswordListTile(
+                  entry: entry,
+                  onTap: () =>
+                      context.push(AppRoutes.editPassword, extra: entry),
+                  onDismissed: () => context.read<PasswordBloc>().add(
+                    DeletePassword(entry.id),
+                  ),
+                );
+              },
+              separatorBuilder: (context, index) =>
+                  const SizedBox(height: AppSpacing.m),
+            ),
+          ),
+        ],
       ),
     );
   }
