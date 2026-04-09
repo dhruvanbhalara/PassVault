@@ -6,10 +6,10 @@ import 'package:passvault/config/routes/app_routes.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/core/utils/app_semantics.dart';
+import 'package:passvault/features/home/domain/entities/grouped_home_entry.dart';
 import 'package:passvault/features/home/presentation/bloc/password/password_bloc.dart';
 import 'package:passvault/features/home/presentation/widgets/empty_password_state.dart';
-import 'package:passvault/features/home/presentation/widgets/password_list_tile.dart';
-import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
+import 'package:passvault/features/home/presentation/widgets/grouped_password_list_tile.dart';
 
 /// Main landing screen of the application after authentication.
 class HomeScreen extends StatelessWidget {
@@ -53,7 +53,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     );
                   } else if (state is PasswordLoaded) {
-                    if (state.passwords.isEmpty) {
+                    if (state.groupedEntries.isEmpty) {
                       return const SliverFillRemaining(
                         child: EmptyPasswordState(),
                       );
@@ -73,8 +73,8 @@ class HomeScreen extends StatelessWidget {
                         bottom: AppSpacing.xxl + fabBottomOffset + fabSize,
                       ),
                       sliver: context.isDesktop || context.isTablet
-                          ? _HomeScreenGrid(passwords: state.passwords)
-                          : _HomeScreenList(passwords: state.passwords),
+                          ? _HomeScreenGrid(groups: state.groupedEntries)
+                          : _HomeScreenList(groups: state.groupedEntries),
                     );
                   } else if (state is PasswordError) {
                     return SliverFillRemaining(
@@ -111,8 +111,8 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _HomeScreenGrid extends StatelessWidget {
-  final List<PasswordEntry> passwords;
-  const _HomeScreenGrid({required this.passwords});
+  final List<GroupedHomeEntry> groups;
+  const _HomeScreenGrid({required this.groups});
 
   @override
   Widget build(BuildContext context) {
@@ -126,38 +126,34 @@ class _HomeScreenGrid extends StatelessWidget {
       delegate: SliverChildBuilderDelegate(
         (context, index) => AppAnimatedListItem(
           index: index,
-          child: PasswordListTile(
-            entry: passwords[index],
-            onTap: () =>
-                context.push(AppRoutes.editPassword, extra: passwords[index]),
-            onDismissed: () => context.read<PasswordBloc>().add(
-              DeletePassword(passwords[index].id),
+          child: GroupedPasswordListTile(
+            group: groups[index],
+            onTap: () => context.push(
+              AppRoutes.groupedPasswordDetailsPath(groups[index].canonicalKey),
             ),
           ),
         ),
-        childCount: passwords.length,
+        childCount: groups.length,
       ),
     );
   }
 }
 
 class _HomeScreenList extends StatelessWidget {
-  final List<PasswordEntry> passwords;
-  const _HomeScreenList({required this.passwords});
+  final List<GroupedHomeEntry> groups;
+  const _HomeScreenList({required this.groups});
 
   @override
   Widget build(BuildContext context) {
     return SliverList.separated(
       separatorBuilder: (context, index) =>
           const SizedBox(height: AppSpacing.m),
-      itemCount: passwords.length,
+      itemCount: groups.length,
       itemBuilder: (context, index) => RepaintBoundary(
-        child: PasswordListTile(
-          entry: passwords[index],
-          onTap: () =>
-              context.push(AppRoutes.editPassword, extra: passwords[index]),
-          onDismissed: () => context.read<PasswordBloc>().add(
-            DeletePassword(passwords[index].id),
+        child: GroupedPasswordListTile(
+          group: groups[index],
+          onTap: () => context.push(
+            AppRoutes.groupedPasswordDetailsPath(groups[index].canonicalKey),
           ),
         ),
       ),
