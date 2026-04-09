@@ -53,7 +53,6 @@ class GroupedPasswordListTile extends StatelessWidget {
                 ],
               ),
             ),
-            if (!isSingleAccount) _GroupCountBadge(count: group.accountCount),
             const SizedBox(width: AppSpacing.s),
             Icon(
               LucideIcons.chevronRight,
@@ -88,36 +87,6 @@ class _GroupLeadingIcon extends StatelessWidget {
             style: context.typography.titleMedium?.copyWith(
               color: context.theme.primary,
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _GroupCountBadge extends StatelessWidget {
-  final int count;
-
-  const _GroupCountBadge({required this.count});
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.theme.primaryContainer,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.s,
-          vertical: AppSpacing.xs,
-        ),
-        child: Text(
-          count.toString(),
-          key: const Key('grouped_password_count_badge'),
-          style: context.typography.labelMedium?.copyWith(
-            color: context.theme.onPrimaryContainer,
-            fontWeight: FontWeight.w600,
           ),
         ),
       ),
