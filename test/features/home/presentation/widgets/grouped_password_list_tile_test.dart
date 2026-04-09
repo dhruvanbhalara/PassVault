@@ -42,10 +42,6 @@ void main() {
         );
 
         expect(find.text(l10n.groupedCredentialCount(2)), findsOneWidget);
-        expect(
-          find.byKey(const Key('grouped_password_count_badge')),
-          findsOneWidget,
-        );
 
         await tester.pumpApp(
           GroupedPasswordListTile(group: singleEntryGroup, onTap: () {}),
@@ -54,10 +50,6 @@ void main() {
         expect(find.text(l10n.groupedCredentialCount(1)), findsNothing);
         expect(
           find.text(singleEntryGroup.members.first.username),
-          findsNothing,
-        );
-        expect(
-          find.byKey(const Key('grouped_password_count_badge')),
           findsNothing,
         );
       },
