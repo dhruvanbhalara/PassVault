@@ -44,7 +44,10 @@ void main() {
   group('$HomeScreen', () {
     testWidgets('renders password list when data is loaded', (tester) async {
       final passwords = PasswordFixtures.list;
-      await loadHomeScreen(tester, PasswordLoaded(passwords));
+      await loadHomeScreen(
+        tester,
+        PasswordLoaded(passwords: passwords, groupedEntries: const []),
+      );
 
       robot.expectPasswordListVisible();
       robot.expectPasswordVisible('Google');
