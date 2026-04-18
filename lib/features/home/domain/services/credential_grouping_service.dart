@@ -1,40 +1,25 @@
 import 'package:passvault/features/home/domain/entities/grouped_home_entry.dart';
+import 'package:passvault/features/home/domain/services/credential_target_parser.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 
 class CredentialGroupingService {
   const CredentialGroupingService();
-  static const Set<String> _subdomainCollapsePrefixes = {
-    'www',
-    'm',
-    'mobile',
-    'accounts',
-    'account',
-    'auth',
-    'login',
-    'signin',
-    'id',
-    'app',
-  };
+
+  static const CredentialTargetParser _targetParser = CredentialTargetParser();
 
   List<GroupedHomeEntry> group(List<PasswordEntry> credentials) {
     final groupedByCanonicalKey = <String, List<PasswordEntry>>{};
-    final displayByCanonicalKey = <String, String>{};
 
     for (final credential in credentials) {
-      final identity = _targetIdentityFor(credential);
-      final canonicalKey = identity.canonicalKey;
+      final canonicalKey = _targetIdentityFor(credential).canonicalKey;
       groupedByCanonicalKey.putIfAbsent(canonicalKey, () => []).add(credential);
-      displayByCanonicalKey.putIfAbsent(
-        canonicalKey,
-        () => identity.displayName,
-      );
     }
 
     final groupedEntries = groupedByCanonicalKey.entries.map((group) {
       final sortedMembers = [...group.value]..sort(_compareMemberEntries);
       return GroupedHomeEntry(
         canonicalKey: group.key,
-        displayName: displayByCanonicalKey[group.key] ?? group.key,
+        displayName: _displayNameForGroup(group.key, sortedMembers),
         members: sortedMembers,
       );
     }).toList();
@@ -43,16 +28,78 @@ class CredentialGroupingService {
     return groupedEntries;
   }
 
-  String canonicalizeTarget(String target) {
-    final trimmed = target.trim();
-    if (trimmed.isEmpty) {
-      return trimmed;
+  String canonicalizeTarget(String target) =>
+      _targetParser.canonicalizeTarget(target);
+
+  String _displayNameForGroup(
+    String canonicalKey,
+    List<PasswordEntry> members,
+  ) {
+    final storedAppName = _bestStoredAppName(members);
+    if (storedAppName != null) {
+      return storedAppName;
     }
 
-    final lowercased = trimmed.toLowerCase();
-    final withoutScheme = lowercased.replaceFirst(RegExp(r'^https?://'), '');
-    final withoutLeadingWww = withoutScheme.replaceFirst(RegExp(r'^www\.'), '');
-    return withoutLeadingWww;
+    if (canonicalKey.startsWith('android:')) {
+      final packageName = canonicalKey.replaceFirst('android:', '');
+      if (packageName.isNotEmpty) {
+        return _targetParser.prettifyPackageLabel(packageName);
+      }
+    }
+
+    return canonicalKey;
+  }
+
+  String? _bestStoredAppName(List<PasswordEntry> members) {
+    final statsByName = <String, _NameStats>{};
+
+    for (final member in members) {
+      final appName = member.appName.trim();
+      if (appName.isEmpty) {
+        continue;
+      }
+
+      final key = appName.toLowerCase();
+      final existing = statsByName[key];
+      if (existing == null) {
+        statsByName[key] = _NameStats(
+          displayName: appName,
+          count: 1,
+          lastUpdated: member.lastUpdated,
+        );
+        continue;
+      }
+
+      final shouldReplaceDisplay = member.lastUpdated.isAfter(
+        existing.lastUpdated,
+      );
+      statsByName[key] = _NameStats(
+        displayName: shouldReplaceDisplay ? appName : existing.displayName,
+        count: existing.count + 1,
+        lastUpdated: shouldReplaceDisplay
+            ? member.lastUpdated
+            : existing.lastUpdated,
+      );
+    }
+
+    if (statsByName.isEmpty) {
+      return null;
+    }
+
+    final candidates = statsByName.entries.toList()
+      ..sort((left, right) {
+        final byCount = right.value.count.compareTo(left.value.count);
+        if (byCount != 0) return byCount;
+
+        final byUpdated = right.value.lastUpdated.compareTo(
+          left.value.lastUpdated,
+        );
+        if (byUpdated != 0) return byUpdated;
+
+        return left.key.compareTo(right.key);
+      });
+
+    return candidates.first.value.displayName;
   }
 
   int _compareGroupedEntries(GroupedHomeEntry left, GroupedHomeEntry right) {
@@ -89,184 +136,40 @@ class CredentialGroupingService {
     final normalizedTarget = canonicalizeTarget(rawTarget);
 
     final androidPackage =
-        _androidPackageFromRealm(normalizedTarget) ??
-        _androidPackageLike(normalizedTarget);
+        _targetParser.androidPackageFromRealm(normalizedTarget) ??
+        _targetParser.androidPackageLike(normalizedTarget);
     if (androidPackage != null && androidPackage.isNotEmpty) {
-      final storedName = entry.appName.trim();
-      return _TargetIdentity(
-        canonicalKey: 'android:$androidPackage',
-        displayName: storedName.isNotEmpty
-            ? storedName
-            : _prettifyPackageLabel(androidPackage),
-      );
+      return _TargetIdentity(canonicalKey: 'android:$androidPackage');
     }
 
-    final host = _hostFromTarget(normalizedTarget);
+    final host = _targetParser.hostFromTarget(normalizedTarget);
     if (host != null && host.isNotEmpty) {
-      return _TargetIdentity(canonicalKey: host, displayName: host);
+      return _TargetIdentity(canonicalKey: host);
     }
 
     final appName = entry.appName.trim();
     if (appName.isNotEmpty) {
-      return _TargetIdentity(
-        canonicalKey: canonicalizeTarget(appName),
-        displayName: appName,
-      );
+      return _TargetIdentity(canonicalKey: canonicalizeTarget(appName));
     }
 
-    return _TargetIdentity(canonicalKey: entry.id, displayName: entry.id);
-  }
-
-  String? _hostFromTarget(String normalizedTarget) {
-    if (normalizedTarget.isEmpty) {
-      return null;
-    }
-    if (normalizedTarget.contains(' ')) {
-      return null;
-    }
-    final hasScheme = normalizedTarget.contains('://');
-    final hasDomainHint = normalizedTarget.contains('.');
-    if (!hasScheme && !hasDomainHint) {
-      return null;
-    }
-
-    Uri? uri = Uri.tryParse(normalizedTarget);
-    if (uri == null || uri.host.isEmpty) {
-      uri = Uri.tryParse('https://$normalizedTarget');
-    }
-    if (uri == null || uri.host.isEmpty) {
-      return null;
-    }
-
-    final normalizedHost = uri.host.toLowerCase().replaceFirst(
-      RegExp(r'^www\.'),
-      '',
-    );
-    return _canonicalWebHost(normalizedHost);
-  }
-
-  String _canonicalWebHost(String host) {
-    final labels = host.split('.');
-    if (labels.length <= 2) {
-      return host;
-    }
-
-    final prefix = labels.first;
-    if (_shouldCollapseSubdomain(prefix)) {
-      return _registrableDomain(host);
-    }
-
-    return host;
-  }
-
-  bool _shouldCollapseSubdomain(String prefix) {
-    if (_subdomainCollapsePrefixes.contains(prefix)) {
-      return true;
-    }
-
-    // Handles common noisy prefixes like ww2.example.com or wwe.example.com.
-    return RegExp(r'^ww[a-z0-9]*$').hasMatch(prefix);
-  }
-
-  String _registrableDomain(String host) {
-    final labels = host.split('.');
-    if (labels.length <= 2) {
-      return host;
-    }
-
-    final last = labels[labels.length - 1];
-    final secondLast = labels[labels.length - 2];
-    final thirdLast = labels[labels.length - 3];
-    final ccTldLike = {'uk', 'jp', 'au', 'nz', 'za', 'in', 'br'};
-    final secondLevelSet = {'co', 'com', 'org', 'net', 'gov', 'ac', 'edu'};
-
-    if (ccTldLike.contains(last) && secondLevelSet.contains(secondLast)) {
-      return '$thirdLast.$secondLast.$last';
-    }
-
-    return '$secondLast.$last';
-  }
-
-  String? _androidPackageFromRealm(String normalizedTarget) {
-    final match = RegExp(
-      r'^android://[^@/]+@([^/]+)/?$',
-      caseSensitive: false,
-    ).firstMatch(normalizedTarget);
-    return match?.group(1)?.trim().toLowerCase();
-  }
-
-  String? _androidPackageLike(String normalizedTarget) {
-    if (normalizedTarget.startsWith('android:')) {
-      return normalizedTarget.replaceFirst('android:', '').trim();
-    }
-    final packageRegex = RegExp(r'^[a-z0-9_]+(\.[a-z0-9_]+){2,}$');
-    if (!packageRegex.hasMatch(normalizedTarget)) {
-      return null;
-    }
-
-    final labels = normalizedTarget.split('.');
-    if (labels.length < 3) {
-      return null;
-    }
-    final knownTlds = {
-      'com',
-      'org',
-      'net',
-      'in',
-      'co',
-      'io',
-      'dev',
-      'app',
-      'uk',
-      'au',
-      'jp',
-      'br',
-      'de',
-      'fr',
-      'us',
-      'ca',
-      'nl',
-      'es',
-      'it',
-      'ru',
-      'xyz',
-    };
-    if (knownTlds.contains(labels.last)) {
-      return null;
-    }
-
-    return normalizedTarget;
-  }
-
-  String _prettifyPackageLabel(String packageName) {
-    final segments = packageName
-        .split('.')
-        .where((segment) => segment.isNotEmpty);
-    final filteredSegments = segments
-        .where(
-          (segment) => segment != 'com' && segment != 'org' && segment != 'net',
-        )
-        .toList();
-    final candidate = filteredSegments.isEmpty
-        ? packageName
-        : filteredSegments.first;
-    final sanitized = candidate
-        .replaceAll(RegExp(r'[_-]+'), ' ')
-        .replaceAll(RegExp(r'android', caseSensitive: false), '')
-        .trim();
-    if (sanitized.isEmpty) {
-      return packageName;
-    }
-    return sanitized[0].toUpperCase() + sanitized.substring(1);
+    return _TargetIdentity(canonicalKey: entry.id);
   }
 }
 
 class _TargetIdentity {
   final String canonicalKey;
-  final String displayName;
 
-  const _TargetIdentity({
-    required this.canonicalKey,
+  const _TargetIdentity({required this.canonicalKey});
+}
+
+class _NameStats {
+  final String displayName;
+  final int count;
+  final DateTime lastUpdated;
+
+  const _NameStats({
     required this.displayName,
+    required this.count,
+    required this.lastUpdated,
   });
 }

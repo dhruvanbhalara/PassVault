@@ -82,7 +82,7 @@ void main() {
     );
 
     test(
-      'extracts host for path-heavy web urls and uses host as display name',
+      'extracts host for path-heavy web urls and prefers appName as display name',
       () {
         final entries = [
           makeEntry(
@@ -104,68 +104,68 @@ void main() {
           (group) => group.canonicalKey == 'moneycontrol.com',
         );
 
-        expect(moneycontrolGroup.displayName, 'moneycontrol.com');
+        expect(moneycontrolGroup.displayName, 'Moneycontrol');
         expect(moneycontrolGroup.accountCount, 2);
       },
     );
 
-    test(
-      'collapses known login-style and ww-prefix subdomains to base domain',
-      () {
-        final entries = [
-          makeEntry(
-            id: 'x-1',
-            appName: 'XYZ',
-            username: 'u1',
-            url: 'https://wwe.xyz.com/signin',
-          ),
-          makeEntry(
-            id: 'x-2',
-            appName: 'XYZ',
-            username: 'u2',
-            url: 'https://xyz.com',
-          ),
-          makeEntry(
-            id: 'x-3',
-            appName: 'XYZ',
-            username: 'u3',
-            url: 'https://accounts.xyz.com/oauth/authorize',
-          ),
-        ];
-
-        final grouped = service.group(entries);
-        final xyzGroup = grouped.firstWhere(
-          (group) => group.canonicalKey == 'xyz.com',
-        );
-
-        expect(xyzGroup.displayName, 'xyz.com');
-        expect(xyzGroup.accountCount, 3);
-      },
-    );
-
-    test('keeps unrelated tenant-style subdomains distinct', () {
+    test('collapses all subdomains to their base registrable domain', () {
       final entries = [
         makeEntry(
-          id: 'tenant-1',
-          appName: 'Tenant',
+          id: 'x-1',
+          appName: 'XYZ',
           username: 'u1',
-          url: 'https://team1.example.com',
+          url: 'https://wwe.xyz.com/signin',
         ),
         makeEntry(
-          id: 'tenant-2',
-          appName: 'Tenant',
+          id: 'x-2',
+          appName: 'XYZ',
           username: 'u2',
-          url: 'https://example.com',
+          url: 'https://xyz.com',
+        ),
+        makeEntry(
+          id: 'x-3',
+          appName: 'XYZ',
+          username: 'u3',
+          url: 'https://accounts.xyz.com/oauth/authorize',
         ),
       ];
 
       final grouped = service.group(entries);
-      expect(grouped.length, 2);
-      expect(
-        grouped.map((group) => group.canonicalKey),
-        containsAll(['team1.example.com', 'example.com']),
+      final xyzGroup = grouped.firstWhere(
+        (group) => group.canonicalKey == 'xyz.com',
       );
+
+      expect(xyzGroup.displayName, 'XYZ');
+      expect(xyzGroup.accountCount, 3);
     });
+
+    test(
+      'collapses tenant-style subdomains to the base registrable domain',
+      () {
+        final entries = [
+          makeEntry(
+            id: 'tenant-1',
+            appName: 'Tenant',
+            username: 'u1',
+            url: 'https://team1.example.com',
+          ),
+          makeEntry(
+            id: 'tenant-2',
+            appName: 'Tenant',
+            username: 'u2',
+            url: 'https://example.com',
+          ),
+        ];
+
+        final grouped = service.group(entries);
+        expect(grouped.length, 1);
+        final exampleGroup = grouped.firstWhere(
+          (group) => group.canonicalKey == 'example.com',
+        );
+        expect(exampleGroup.accountCount, 2);
+      },
+    );
 
     test('parses android credential realm and prettifies app label', () {
       final entries = [
@@ -191,6 +191,40 @@ void main() {
 
       expect(androidGroup.displayName, 'Freelancer');
       expect(androidGroup.accountCount, 2);
+    });
+
+    test('prefers representative stored appName for group display label', () {
+      final entries = [
+        makeEntry(
+          id: 'wish-web',
+          appName: 'wish.com',
+          username: 'u1',
+          url: 'https://wish.com',
+          lastUpdated: DateTime(2026, 1, 3),
+        ),
+        makeEntry(
+          id: 'wish-android',
+          appName: 'Wish',
+          username: 'u2',
+          url: 'android://hash@com.contextlogic.wish/',
+          lastUpdated: DateTime(2026, 1, 4),
+        ),
+        makeEntry(
+          id: 'wish-android-2',
+          appName: 'Wish',
+          username: 'u3',
+          url: 'android://hash2@com.contextlogic.wish/',
+          lastUpdated: DateTime(2026, 1, 5),
+        ),
+      ];
+
+      final grouped = service.group(entries);
+      final wishGroup = grouped.firstWhere(
+        (group) => group.canonicalKey == 'android:com.contextlogic.wish',
+      );
+
+      expect(wishGroup.displayName, 'Wish');
+      expect(wishGroup.accountCount, 2);
     });
 
     test(
@@ -329,6 +363,172 @@ void main() {
 
         expect(orderedGroupKeys, ['alpha.com', 'beta.com', 'gamma.com']);
         expect(gammaMemberIds, ['a', 'b']);
+      },
+    );
+
+    group('Registrable domain collation tests', () {
+      test('collapses deeply nested subdomains to base domain', () {
+        final entries = [
+          makeEntry(
+            id: 'nested',
+            appName: 'Nested',
+            username: 'u1',
+            url: 'https://a.b.c.example.com',
+          ),
+        ];
+        final grouped = service.group(entries);
+        expect(grouped.first.canonicalKey, 'example.com');
+      });
+
+      test(
+        'handles common ccTLDs correctly recognizing the registry suffix',
+        () {
+          final entries = [
+            makeEntry(
+              id: 'cctld',
+              appName: 'UK Site',
+              username: 'u1',
+              url: 'https://app.example.co.uk',
+            ),
+          ];
+          final grouped = service.group(entries);
+          expect(grouped.first.canonicalKey, 'example.co.uk');
+        },
+      );
+
+      test('handles base level domains or local networks without failure', () {
+        final entries = [
+          makeEntry(
+            id: 'local',
+            appName: 'Local',
+            username: 'u1',
+            url: 'http://example.local',
+          ),
+          makeEntry(
+            id: 'base',
+            appName: 'Base',
+            username: 'u2',
+            url: 'https://example.com',
+          ),
+        ];
+        final grouped = service.group(entries);
+        expect(grouped.length, 2);
+        expect(
+          grouped.map((g) => g.canonicalKey),
+          containsAll(['example.local', 'example.com']),
+        );
+      });
+
+      test('collapses previously unhandled obscure subdomains perfectly', () {
+        final entries = [
+          makeEntry(
+            id: 'obscure',
+            appName: 'Obscure',
+            username: 'u1',
+            url: 'https://my-secret-tenant.example.com',
+          ),
+        ];
+        final grouped = service.group(entries);
+        expect(grouped.first.canonicalKey, 'example.com');
+      });
+
+      test('keeps different base domains strictly separate', () {
+        final entries = [
+          makeEntry(
+            id: 'app1',
+            appName: 'App1',
+            username: 'u1',
+            url: 'https://app.example1.com',
+          ),
+          makeEntry(
+            id: 'app2',
+            appName: 'App2',
+            username: 'u2',
+            url: 'https://app.example2.com',
+          ),
+        ];
+        final grouped = service.group(entries);
+        expect(grouped.length, 2);
+        expect(
+          grouped.map((g) => g.canonicalKey),
+          containsAll(['example1.com', 'example2.com']),
+        );
+      });
+    });
+
+    group(
+      'Android package prettification tests (without hardcoded overrides)',
+      () {
+        test('prettifies simple android package name missing appName', () {
+          final entries = [
+            makeEntry(
+              id: 'simple',
+              appName: '',
+              username: 'u1',
+              url: 'android://hash@com.freelancer.android.messenger/',
+            ),
+          ];
+          final grouped = service.group(entries);
+          expect(grouped.first.displayName, 'Freelancer');
+        });
+
+        test(
+          'prettifies dot-separated names like cris.org.in.prs.ima gracefully',
+          () {
+            final entries = [
+              makeEntry(
+                id: 'cris',
+                appName: '',
+                username: 'u1',
+                url: 'android://hash@cris.org.in.prs.ima/',
+              ),
+            ];
+            final grouped = service.group(entries);
+            expect(grouped.first.displayName, 'Cris');
+          },
+        );
+
+        test('prettifies complex package with underscores and hyphens', () {
+          final entries = [
+            makeEntry(
+              id: 'complex',
+              appName: '',
+              username: 'u1',
+              url: 'android://hash@com.my_app-corp.mobile/',
+            ),
+          ];
+          final grouped = service.group(entries);
+          expect(grouped.first.displayName, 'My app corp');
+        });
+
+        test(
+          'prettifies package containing the word android in different casing',
+          () {
+            final entries = [
+              makeEntry(
+                id: 'android-case',
+                appName: '',
+                username: 'u1',
+                url: 'android://hash@com.AnDroiDCorp.app/',
+              ),
+            ];
+            final grouped = service.group(entries);
+            expect(grouped.first.displayName, 'Corp');
+          },
+        );
+
+        test('returns raw package strictly if stripping leaves it empty', () {
+          final entries = [
+            makeEntry(
+              id: 'empty',
+              appName: '',
+              username: 'u1',
+              url: 'android://hash@com.android.org/',
+            ),
+          ];
+          final grouped = service.group(entries);
+          expect(grouped.first.displayName, 'com.android.org');
+        });
       },
     );
   });
