@@ -12,6 +12,10 @@ abstract class AppRoutes {
   // Sub-routes (Relative Paths)
   static const String addPasswordRoute = 'add-password';
   static const String editPasswordRoute = 'edit-password';
+  static const String groupedPasswordDetailsRoute = 'group';
+  static const String groupedPasswordKeyParam = 'groupKey';
+  static const String groupedPasswordDetailsSubRoute =
+      '$groupedPasswordDetailsRoute/:$groupedPasswordKeyParam';
   static const String exportVaultRoute = 'export';
   static const String strategyRoute = 'strategy';
   static const String strategyEditorRoute = 'strategy-editor';
@@ -19,6 +23,8 @@ abstract class AppRoutes {
   // Full Paths (for Navigation)
   static const String addPassword = '$home/$addPasswordRoute';
   static const String editPassword = '$home/$editPasswordRoute';
+  static String groupedPasswordDetailsPath(String groupKey) =>
+      '$home/$groupedPasswordDetailsRoute/${Uri.encodeComponent(groupKey)}';
   static const String exportVault = '$settings/$exportVaultRoute';
   static const String strategy = '$settings/$strategyRoute';
   static const String strategyEditor =

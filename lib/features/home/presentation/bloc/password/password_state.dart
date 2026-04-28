@@ -17,10 +17,27 @@ class PasswordLoading extends PasswordState {
 
 class PasswordLoaded extends PasswordState {
   final List<PasswordEntry> passwords;
-  const PasswordLoaded(this.passwords);
+  final List<GroupedHomeEntry> groupedEntries;
+  final String searchQuery;
+  final String? folderFilter;
+  final bool favoritesOnly;
+
+  const PasswordLoaded({
+    required this.passwords,
+    required this.groupedEntries,
+    this.searchQuery = '',
+    this.folderFilter,
+    this.favoritesOnly = false,
+  });
 
   @override
-  List<Object?> get props => [passwords];
+  List<Object?> get props => [
+    passwords,
+    groupedEntries,
+    searchQuery,
+    folderFilter,
+    favoritesOnly,
+  ];
 }
 
 class PasswordError extends PasswordState {

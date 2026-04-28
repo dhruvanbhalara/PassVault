@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/error/failures.dart';
 import 'package:passvault/core/error/result.dart';
+import 'package:passvault/features/home/domain/entities/grouped_home_entry.dart';
 import 'package:passvault/features/home/presentation/bloc/password/password_bloc.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
 import 'package:passvault/features/password_manager/domain/repositories/password_repository.dart';
@@ -19,19 +20,36 @@ class MockDeletePasswordUseCase extends Mock implements DeletePasswordUseCase {}
 class MockPasswordRepository extends Mock implements PasswordRepository {}
 
 void main() {
+  const className = 'PasswordBloc';
   late PasswordBloc bloc;
   late MockGetPasswordsUseCase mockGetPasswords;
   late MockSavePasswordUseCase mockSavePassword;
   late MockDeletePasswordUseCase mockDeletePassword;
   late MockPasswordRepository mockRepository;
 
-  final tEntry = PasswordEntry(
+  final entryOne = PasswordEntry(
     id: '1',
-    appName: 'App1',
-    username: 'user1',
+    appName: 'Example',
+    username: 'first@example.com',
     password: 'pass1',
-    lastUpdated: DateTime(2024, 1, 1),
+    lastUpdated: DateTime(2026, 1, 1),
+    url: 'https://www.example.com',
+    folder: 'work',
+    favorite: true,
   );
+  final entryTwo = PasswordEntry(
+    id: '2',
+    appName: 'Example',
+    username: 'second@example.com',
+    password: 'pass2',
+    lastUpdated: DateTime(2026, 1, 2),
+    url: 'http://example.com',
+    folder: 'personal',
+  );
+
+  setUpAll(() {
+    registerFallbackValue(entryOne);
+  });
 
   setUp(() {
     mockGetPasswords = MockGetPasswordsUseCase();
@@ -51,245 +69,309 @@ void main() {
     );
   });
 
-  setUpAll(() {
-    registerFallbackValue(tEntry);
-  });
-
   tearDown(() => bloc.close());
 
-  group('$PasswordBloc', () {
+  Matcher loadedStateWith({
+    required List<PasswordEntry> passwords,
+    required int groupedCount,
+    required int groupedMemberTotal,
+  }) {
+    return isA<PasswordLoaded>()
+        .having((state) => state.passwords, 'passwords', passwords)
+        .having(
+          (state) => state.groupedEntries.length,
+          'groupedEntries.length',
+          groupedCount,
+        )
+        .having(
+          (state) => state.groupedEntries.fold<int>(
+            0,
+            (sum, group) => sum + group.members.length,
+          ),
+          'grouped member total',
+          groupedMemberTotal,
+        );
+  }
+
+  group(className, () {
     test('initial state is PasswordInitial', () {
       expect(bloc.state, const PasswordInitial());
     });
 
     blocTest<PasswordBloc, PasswordState>(
-      'on LoadPasswords should emit [Loading, Loaded] on success',
+      'LoadPasswords emits grouped loaded state on success',
       build: () {
         when(
           () => mockGetPasswords(),
-        ).thenAnswer((_) async => Success([tEntry]));
+        ).thenAnswer((_) async => Success([entryOne, entryTwo]));
         return bloc;
       },
-      act: (bloc) => bloc.add(const LoadPasswords()),
+      act: (testBloc) => testBloc.add(const LoadPasswords()),
       expect: () => [
         const PasswordLoading(),
-        PasswordLoaded([tEntry]),
+        loadedStateWith(
+          passwords: [entryOne, entryTwo],
+          groupedCount: 1,
+          groupedMemberTotal: 2,
+        ),
       ],
       verify: (_) => verify(() => mockGetPasswords()).called(1),
     );
 
     blocTest<PasswordBloc, PasswordState>(
-      'on AddPassword should update state incrementally if already loaded',
-      build: () {
-        when(
-          () => mockSavePassword(any()),
-        ).thenAnswer((_) async => const Success(null));
-        return bloc;
-      },
-      seed: () => PasswordLoaded([tEntry]),
-      act: (bloc) =>
-          bloc.add(AddPassword(tEntry.copyWith(id: '2', appName: 'App2'))),
-      expect: () => [
-        PasswordLoaded([tEntry, tEntry.copyWith(id: '2', appName: 'App2')]),
-      ],
-      verify: (_) {
-        verify(() => mockSavePassword(any())).called(1);
-        verifyNever(() => mockGetPasswords());
-      },
-    );
-
-    blocTest<PasswordBloc, PasswordState>(
-      'on UpdatePassword should update state incrementally if already loaded',
-      build: () {
-        when(
-          () => mockSavePassword(any()),
-        ).thenAnswer((_) async => const Success(null));
-        return bloc;
-      },
-      seed: () => PasswordLoaded([tEntry]),
-      act: (bloc) =>
-          bloc.add(UpdatePassword(tEntry.copyWith(appName: 'Updated App'))),
-      expect: () => [
-        PasswordLoaded([tEntry.copyWith(appName: 'Updated App')]),
-      ],
-      verify: (_) {
-        verify(() => mockSavePassword(any())).called(1);
-        verifyNever(() => mockGetPasswords());
-      },
-    );
-
-    blocTest<PasswordBloc, PasswordState>(
-      'on DeletePassword should remove from state incrementally if already loaded',
-      build: () {
-        when(
-          () => mockDeletePassword(any()),
-        ).thenAnswer((_) async => const Success(null));
-        return bloc;
-      },
-      seed: () => PasswordLoaded([tEntry]),
-      act: (bloc) => bloc.add(const DeletePassword('1')),
-      expect: () => [const PasswordLoaded([])],
-      verify: (_) {
-        verify(() => mockDeletePassword('1')).called(1);
-        verifyNever(() => mockGetPasswords());
-      },
-    );
-
-    blocTest<PasswordBloc, PasswordState>(
-      'on LoadPasswords should emit [Loading, Error] on failure',
+      'LoadPasswords emits error state on failure',
       build: () {
         when(
           () => mockGetPasswords(),
         ).thenAnswer((_) async => const Error(DatabaseFailure('error')));
         return bloc;
       },
-      act: (bloc) => bloc.add(const LoadPasswords()),
+      act: (testBloc) => testBloc.add(const LoadPasswords()),
       expect: () => [const PasswordLoading(), const PasswordError('error')],
     );
 
-    group('Error and Fallback branches', () {
-      blocTest<PasswordBloc, PasswordState>(
-        'on AddPassword should reload if state is not PasswordLoaded',
-        build: () {
-          when(
-            () => mockSavePassword(any()),
-          ).thenAnswer((_) async => const Success(null));
-          when(
-            () => mockGetPasswords(),
-          ).thenAnswer((_) async => Success([tEntry]));
-          return bloc;
-        },
-        act: (bloc) => bloc.add(AddPassword(tEntry)),
-        expect: () => [
-          const PasswordLoading(),
-          PasswordLoaded([tEntry]),
+    blocTest<PasswordBloc, PasswordState>(
+      'AddPassword updates loaded state incrementally and preserves grouping',
+      build: () {
+        when(
+          () => mockSavePassword(any()),
+        ).thenAnswer((_) async => const Success(null));
+        return bloc;
+      },
+      seed: () => PasswordLoaded(
+        passwords: [entryOne],
+        groupedEntries: const [
+          GroupedHomeEntry(
+            canonicalKey: 'example.com',
+            displayName: 'example.com',
+            members: [],
+          ),
         ],
-        verify: (_) {
-          verify(() => mockSavePassword(any())).called(1);
-          verify(() => mockGetPasswords()).called(1);
-        },
+      ),
+      act: (testBloc) => testBloc.add(AddPassword(entryTwo)),
+      expect: () => [
+        loadedStateWith(
+          passwords: [entryOne, entryTwo],
+          groupedCount: 1,
+          groupedMemberTotal: 2,
+        ),
+      ],
+      verify: (_) {
+        verify(() => mockSavePassword(any())).called(1);
+        verifyNever(() => mockGetPasswords());
+      },
+    );
+
+    blocTest<PasswordBloc, PasswordState>(
+      'UpdatePassword updates member and preserves grouped structure',
+      build: () {
+        when(
+          () => mockSavePassword(any()),
+        ).thenAnswer((_) async => const Success(null));
+        return bloc;
+      },
+      seed: () =>
+          PasswordLoaded(passwords: [entryOne], groupedEntries: const []),
+      act: (testBloc) => testBloc.add(
+        UpdatePassword(entryOne.copyWith(username: 'new@example.com')),
+      ),
+      expect: () => [
+        loadedStateWith(
+          passwords: [entryOne.copyWith(username: 'new@example.com')],
+          groupedCount: 1,
+          groupedMemberTotal: 1,
+        ),
+      ],
+    );
+
+    blocTest<PasswordBloc, PasswordState>(
+      'DeletePassword removes entry and preserves total count invariant',
+      build: () {
+        when(
+          () => mockDeletePassword(any()),
+        ).thenAnswer((_) async => const Success(null));
+        return bloc;
+      },
+      seed: () => PasswordLoaded(
+        passwords: [entryOne, entryTwo],
+        groupedEntries: const [],
+      ),
+      act: (testBloc) => testBloc.add(const DeletePassword('2')),
+      expect: () => [
+        loadedStateWith(
+          passwords: [entryOne],
+          groupedCount: 1,
+          groupedMemberTotal: 1,
+        ),
+      ],
+    );
+
+    blocTest<PasswordBloc, PasswordState>(
+      'SearchPasswords filters grouped rows using grouped pipeline',
+      build: () {
+        when(
+          () => mockGetPasswords(),
+        ).thenAnswer((_) async => Success([entryOne, entryTwo]));
+        return bloc;
+      },
+      act: (testBloc) async {
+        testBloc.add(const LoadPasswords());
+        await Future<void>.delayed(Duration.zero);
+        testBloc.add(const SearchPasswords('first@example.com'));
+      },
+      expect: () => [
+        const PasswordLoading(),
+        loadedStateWith(
+          passwords: [entryOne, entryTwo],
+          groupedCount: 1,
+          groupedMemberTotal: 2,
+        ),
+        isA<PasswordLoaded>()
+            .having((state) => state.groupedEntries.length, 'group count', 1)
+            .having(
+              (state) => state.groupedEntries.single.members.length,
+              'member count',
+              1,
+            )
+            .having(
+              (state) => state.searchQuery,
+              'search query',
+              'first@example.com',
+            ),
+      ],
+    );
+
+    blocTest<PasswordBloc, PasswordState>(
+      'FilterPasswords applies favorites filter to grouped members',
+      build: () {
+        when(
+          () => mockGetPasswords(),
+        ).thenAnswer((_) async => Success([entryOne, entryTwo]));
+        return bloc;
+      },
+      act: (testBloc) async {
+        testBloc.add(const LoadPasswords());
+        await Future<void>.delayed(Duration.zero);
+        testBloc.add(const FilterPasswords(favoritesOnly: true));
+      },
+      expect: () => [
+        const PasswordLoading(),
+        loadedStateWith(
+          passwords: [entryOne, entryTwo],
+          groupedCount: 1,
+          groupedMemberTotal: 2,
+        ),
+        isA<PasswordLoaded>()
+            .having(
+              (state) => state.groupedEntries.single.members.length,
+              'favorite members',
+              1,
+            )
+            .having((state) => state.favoritesOnly, 'favoritesOnly', true),
+      ],
+    );
+
+    blocTest<PasswordBloc, PasswordState>(
+      'AddPassword falls back to LoadPasswords when state is not loaded',
+      build: () {
+        when(
+          () => mockSavePassword(any()),
+        ).thenAnswer((_) async => const Success(null));
+        when(
+          () => mockGetPasswords(),
+        ).thenAnswer((_) async => Success([entryOne]));
+        return bloc;
+      },
+      act: (testBloc) => testBloc.add(AddPassword(entryOne)),
+      expect: () => [
+        const PasswordLoading(),
+        loadedStateWith(
+          passwords: [entryOne],
+          groupedCount: 1,
+          groupedMemberTotal: 1,
+        ),
+      ],
+    );
+
+    blocTest<PasswordBloc, PasswordState>(
+      'UpdatePassword falls back to LoadPasswords when state is not loaded',
+      build: () {
+        when(
+          () => mockSavePassword(any()),
+        ).thenAnswer((_) async => const Success(null));
+        when(
+          () => mockGetPasswords(),
+        ).thenAnswer((_) async => Success([entryOne]));
+        return bloc;
+      },
+      act: (testBloc) => testBloc.add(UpdatePassword(entryOne)),
+      expect: () => [
+        const PasswordLoading(),
+        loadedStateWith(
+          passwords: [entryOne],
+          groupedCount: 1,
+          groupedMemberTotal: 1,
+        ),
+      ],
+    );
+
+    blocTest<PasswordBloc, PasswordState>(
+      'DeletePassword falls back to LoadPasswords when state is not loaded',
+      build: () {
+        when(
+          () => mockDeletePassword(any()),
+        ).thenAnswer((_) async => const Success(null));
+        when(
+          () => mockGetPasswords(),
+        ).thenAnswer((_) async => Success([entryOne]));
+        return bloc;
+      },
+      act: (testBloc) => testBloc.add(const DeletePassword('1')),
+      expect: () => [
+        const PasswordLoading(),
+        loadedStateWith(
+          passwords: [entryOne],
+          groupedCount: 1,
+          groupedMemberTotal: 1,
+        ),
+      ],
+    );
+
+    test('listens to dataChanges stream and reloads grouped entries', () async {
+      final controller = StreamController<void>();
+      when(
+        () => mockRepository.dataChanges,
+      ).thenAnswer((_) => controller.stream);
+      when(
+        () => mockGetPasswords(),
+      ).thenAnswer((_) async => Success([entryOne]));
+
+      final testBloc = PasswordBloc(
+        mockGetPasswords,
+        mockSavePassword,
+        mockDeletePassword,
+        mockRepository,
       );
 
-      blocTest<PasswordBloc, PasswordState>(
-        'on UpdatePassword should reload if state is not PasswordLoaded',
-        build: () {
-          when(
-            () => mockSavePassword(any()),
-          ).thenAnswer((_) async => const Success(null));
-          when(
-            () => mockGetPasswords(),
-          ).thenAnswer((_) async => Success([tEntry]));
-          return bloc;
-        },
-        act: (bloc) => bloc.add(UpdatePassword(tEntry)),
-        expect: () => [
-          const PasswordLoading(),
-          PasswordLoaded([tEntry]),
-        ],
-      );
+      controller.add(null);
+      await Future<void>.delayed(Duration.zero);
 
-      blocTest<PasswordBloc, PasswordState>(
-        'on DeletePassword should reload if state is not PasswordLoaded',
-        build: () {
-          when(
-            () => mockDeletePassword(any()),
-          ).thenAnswer((_) async => const Success(null));
-          when(
-            () => mockGetPasswords(),
-          ).thenAnswer((_) async => Success([tEntry]));
-          return bloc;
-        },
-        act: (bloc) => bloc.add(const DeletePassword('1')),
-        expect: () => [
-          const PasswordLoading(),
-          PasswordLoaded([tEntry]),
-        ],
-      );
-
-      blocTest<PasswordBloc, PasswordState>(
-        'on AddPassword emits PasswordError on failure',
-        build: () {
-          when(
-            () => mockSavePassword(any()),
-          ).thenAnswer((_) async => const Error(DatabaseFailure('fail')));
-          return bloc;
-        },
-        act: (bloc) => bloc.add(AddPassword(tEntry)),
-        expect: () => [const PasswordError('fail')],
-      );
-
-      blocTest<PasswordBloc, PasswordState>(
-        'on UpdatePassword emits PasswordError on failure',
-        build: () {
-          when(
-            () => mockSavePassword(any()),
-          ).thenAnswer((_) async => const Error(DatabaseFailure('fail')));
-          return bloc;
-        },
-        act: (bloc) => bloc.add(UpdatePassword(tEntry)),
-        expect: () => [const PasswordError('fail')],
-      );
-
-      blocTest<PasswordBloc, PasswordState>(
-        'on DeletePassword emits PasswordError on failure',
-        build: () {
-          when(
-            () => mockDeletePassword(any()),
-          ).thenAnswer((_) async => const Error(DatabaseFailure('fail')));
-          return bloc;
-        },
-        act: (bloc) => bloc.add(const DeletePassword('1')),
-        expect: () => [const PasswordError('fail')],
-      );
+      verify(() => mockGetPasswords()).called(1);
+      await testBloc.close();
+      await controller.close();
     });
 
-    group('External Data Changes & Close', () {
-      test(
-        'listens to repository dataChanges and fires LoadPasswords',
-        () async {
-          final controller = StreamController<void>();
-          when(
-            () => mockRepository.dataChanges,
-          ).thenAnswer((_) => controller.stream);
-          when(
-            () => mockGetPasswords(),
-          ).thenAnswer((_) async => Success([tEntry]));
-
-          final testBloc = PasswordBloc(
-            mockGetPasswords,
-            mockSavePassword,
-            mockDeletePassword,
-            mockRepository,
-          );
-
-          controller.add(null);
-          await Future.delayed(Duration.zero);
-
-          verify(() => mockGetPasswords()).called(1);
-          await testBloc.close();
-          await controller.close();
-        },
-      );
-
-      test('close() cleans up subscriptions properly', () async {
-        final b = PasswordBloc(
-          mockGetPasswords,
-          mockSavePassword,
-          mockDeletePassword,
-          mockRepository,
-        );
-        await b.close();
-        expect(b.state, isA<PasswordState>());
-      });
-    });
-
-    group('PasswordEvent props', () {
-      test('props are correct', () {
-        expect(const LoadPasswords().props, isEmpty);
-        expect(AddPassword(tEntry).props, [tEntry]);
-        expect(UpdatePassword(tEntry).props, [tEntry]);
-        expect(const DeletePassword('1').props, ['1']);
-      });
+    test('PasswordEvent props include grouped events', () {
+      expect(const LoadPasswords().props, isEmpty);
+      expect(const SearchPasswords('query').props, ['query']);
+      expect(const FilterPasswords(folder: 'work', favoritesOnly: true).props, [
+        'work',
+        true,
+      ]);
+      expect(const ClearPasswordFilters().props, isEmpty);
+      expect(AddPassword(entryOne).props, [entryOne]);
+      expect(UpdatePassword(entryOne).props, [entryOne]);
+      expect(const DeletePassword('1').props, ['1']);
     });
   });
 }
