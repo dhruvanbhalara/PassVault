@@ -22,7 +22,6 @@ class GroupedPasswordListTile extends StatelessWidget {
         : context.l10n.groupedCredentialCount(group.accountCount);
 
     return AppCard(
-      hasGlow: false,
       isVaultStyle: true,
       child: InkWell(
         key: Key('grouped_password_tile_${group.canonicalKey}'),

@@ -28,7 +28,6 @@ class PasswordListTile extends StatelessWidget {
       direction: DismissDirection.endToStart,
       onDismissed: (_) => onDismissed(),
       child: AppCard(
-        hasGlow: false,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(AppRadius.m),

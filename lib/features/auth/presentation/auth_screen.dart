@@ -81,8 +81,7 @@ class _AuthContentState extends State<_AuthContent> {
         if (state is AuthLoading) {
           return const AppLoader(key: Key('auth_loading'));
         }
-
-        final isAmoled = theme.primaryGlow != null;
+        final isAmoled = theme.background == AppColors.bgAmoled;
 
         return CustomScrollView(
           slivers: [

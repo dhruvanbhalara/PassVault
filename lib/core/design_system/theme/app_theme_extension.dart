@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:passvault/core/design_system/theme/app_colors.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
@@ -41,11 +42,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.vaultGradient,
     required this.onVaultGradient,
     required this.inputFocusedBorder,
-    this.primaryGlow,
-    this.secondaryGlow,
-    this.errorGlow,
-    this.successGlow,
-    this.accentGlow,
   });
 
   final Color primary;
@@ -92,21 +88,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   /// Specialized color for focused input states.
   final Color inputFocusedBorder;
 
-  /// Glow for primary-colored elements (FABs, main action buttons).
-  final BoxShadow? primaryGlow;
-
-  /// Glow for secondary-colored elements (chips, toggles).
-  final BoxShadow? secondaryGlow;
-
-  /// Glow for error / danger states (error banners, delete buttons).
-  final BoxShadow? errorGlow;
-
-  /// Glow for success states (strength-max indicators, confirmations).
-  final BoxShadow? successGlow;
-
-  /// Generic accent glow for highlighted items (active icons, focus rings).
-  final BoxShadow? accentGlow;
-
   @override
   AppThemeExtension copyWith({
     Color? primary,
@@ -139,11 +120,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     LinearGradient? vaultGradient,
     Color? onVaultGradient,
     Color? inputFocusedBorder,
-    BoxShadow? primaryGlow,
-    BoxShadow? secondaryGlow,
-    BoxShadow? errorGlow,
-    BoxShadow? successGlow,
-    BoxShadow? accentGlow,
   }) {
     return AppThemeExtension(
       primary: primary ?? this.primary,
@@ -176,11 +152,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       vaultGradient: vaultGradient ?? this.vaultGradient,
       onVaultGradient: onVaultGradient ?? this.onVaultGradient,
       inputFocusedBorder: inputFocusedBorder ?? this.inputFocusedBorder,
-      primaryGlow: primaryGlow ?? this.primaryGlow,
-      secondaryGlow: secondaryGlow ?? this.secondaryGlow,
-      errorGlow: errorGlow ?? this.errorGlow,
-      successGlow: successGlow ?? this.successGlow,
-      accentGlow: accentGlow ?? this.accentGlow,
     );
   }
 
@@ -246,11 +217,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         other.inputFocusedBorder,
         t,
       )!,
-      primaryGlow: BoxShadow.lerp(primaryGlow, other.primaryGlow, t),
-      secondaryGlow: BoxShadow.lerp(secondaryGlow, other.secondaryGlow, t),
-      errorGlow: BoxShadow.lerp(errorGlow, other.errorGlow, t),
-      successGlow: BoxShadow.lerp(successGlow, other.successGlow, t),
-      accentGlow: BoxShadow.lerp(accentGlow, other.accentGlow, t),
     );
   }
 }
@@ -261,7 +227,7 @@ extension AppThemeExtensionContext on BuildContext {
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
   TextTheme get typography => Theme.of(this).textTheme;
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
-  bool get isAmoled => theme.primaryGlow != null;
+  bool get isAmoled => theme.background == AppColors.bgAmoled;
 
   /// Shortcut for accessing the current localizations.
   AppLocalizations get l10n => AppLocalizations.of(this)!;

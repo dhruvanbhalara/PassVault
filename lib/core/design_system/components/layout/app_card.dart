@@ -23,12 +23,6 @@ class AppCard extends StatelessWidget {
   /// The background color. Defaults to [AppThemeExtension.surface].
   final Color? backgroundColor;
 
-  /// Whether to show a border outline. Defaults to false.
-  final bool hasOutline;
-
-  /// Whether to show a glow effect (useful for AMOLED).
-  final bool hasGlow;
-
   /// Whether to apply the premium glassmorphic vault styling.
   final bool isVaultStyle;
 
@@ -40,8 +34,6 @@ class AppCard extends StatelessWidget {
     this.margin,
     this.onTap,
     this.backgroundColor,
-    this.hasOutline = false,
-    this.hasGlow = false,
     this.isVaultStyle = false,
   });
 
@@ -74,12 +66,7 @@ class AppCard extends StatelessWidget {
 
       return Container(
         margin: margin,
-        decoration: BoxDecoration(
-          borderRadius: borderRadius,
-          boxShadow: [
-            if (hasGlow && theme.accentGlow != null) theme.accentGlow!,
-          ],
-        ),
+        decoration: BoxDecoration(borderRadius: borderRadius),
         child: ClipRRect(
           borderRadius: borderRadius,
           child: BackdropFilter(
@@ -104,13 +91,7 @@ class AppCard extends StatelessWidget {
     final decoration = BoxDecoration(
       color: backgroundColor ?? theme.surface,
       borderRadius: borderRadius,
-      border: hasOutline
-          ? Border.all(color: theme.outline.withValues(alpha: 0.1))
-          : null,
-      boxShadow: [
-        if (!hasOutline) theme.cardShadow,
-        if (hasGlow && theme.accentGlow != null) theme.accentGlow!,
-      ],
+      boxShadow: [theme.cardShadow],
     );
 
     return Container(

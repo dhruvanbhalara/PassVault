@@ -54,9 +54,6 @@ class AppTextField extends StatelessWidget {
   /// Whether to use the monospaced password text style.
   final bool usePasswordStyle;
 
-  /// Whether to show a focus glow (useful for AMOLED).
-  final bool hasFocusGlow;
-
   const AppTextField({
     super.key,
     required this.label,
@@ -70,7 +67,6 @@ class AppTextField extends StatelessWidget {
     this.textInputAction,
     this.onChanged,
     this.usePasswordStyle = false,
-    this.hasFocusGlow = false,
   });
 
   @override

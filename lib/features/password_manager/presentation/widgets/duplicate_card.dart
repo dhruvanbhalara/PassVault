@@ -19,10 +19,8 @@ class DuplicateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    final isAmoled = theme.primaryGlow != null;
 
     return AppCard(
-      hasGlow: isAmoled && duplicate.userChoice != null,
       padding: const EdgeInsets.all(AppSpacing.l),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

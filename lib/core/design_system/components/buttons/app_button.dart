@@ -27,9 +27,6 @@ class AppButton extends StatelessWidget {
   /// The variant of the button (primary or outlined).
   final AppButtonVariant variant;
 
-  /// Whether to show a glow effect (mandatory for some AMOLED designs).
-  final bool hasGlow;
-
   /// Optional background color override.
   final Color? backgroundColor;
 
@@ -45,7 +42,6 @@ class AppButton extends StatelessWidget {
     this.icon,
     this.isFullWidth = true,
     this.variant = AppButtonVariant.primary,
-    this.hasGlow = false,
     this.backgroundColor,
     this.foregroundColor,
   });
@@ -74,18 +70,6 @@ class AppButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: _getElevatedButtonStyle(context, theme),
         child: child,
-      );
-    }
-
-    if (hasGlow &&
-        variant == AppButtonVariant.primary &&
-        theme.primaryGlow != null) {
-      button = Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppRadius.m),
-          boxShadow: [theme.primaryGlow!],
-        ),
-        child: button,
       );
     }
 

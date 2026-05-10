@@ -55,33 +55,6 @@ class AmoledThemePreset {
       ),
       onVaultGradient: AppColors.white,
       inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.dark),
-      // AMOLED glow effects – subtle outer glow for accent elements on
-      // pure-black backgrounds.  Blur 12, spread 1, accent at ~40% opacity.
-      primaryGlow: BoxShadow(
-        color: AppColors.primaryAmoled.withValues(alpha: 0.40),
-        blurRadius: 12,
-        spreadRadius: 1,
-      ),
-      secondaryGlow: BoxShadow(
-        color: AppColors.secondaryAmoled.withValues(alpha: 0.35),
-        blurRadius: 10,
-        spreadRadius: 1,
-      ),
-      errorGlow: BoxShadow(
-        color: AppColors.errorAmoled.withValues(alpha: 0.35),
-        blurRadius: 10,
-        spreadRadius: 1,
-      ),
-      successGlow: BoxShadow(
-        color: AppColors.successAmoled.withValues(alpha: 0.35),
-        blurRadius: 10,
-        spreadRadius: 1,
-      ),
-      accentGlow: BoxShadow(
-        color: AppColors.primaryAmoled.withValues(alpha: 0.30),
-        blurRadius: 8,
-        spreadRadius: 0,
-      ),
     );
   }
 

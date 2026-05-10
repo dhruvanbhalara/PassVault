@@ -16,7 +16,6 @@ class DuplicateResolutionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAmoled = context.isAmoled;
     final l10n = context.l10n;
 
     final importExportState = context.watch<ImportExportBloc>().state;
@@ -57,7 +56,6 @@ class DuplicateResolutionScreen extends StatelessWidget {
                         text: '${l10n.apply} (${resolutions.length})',
                         isLoading: isLoading,
                         onPressed: () => _handleResolve(context, state),
-                        hasGlow: isAmoled,
                       ),
                     ),
                   ),
