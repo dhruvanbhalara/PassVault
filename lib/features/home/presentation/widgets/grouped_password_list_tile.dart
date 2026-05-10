@@ -23,6 +23,7 @@ class GroupedPasswordListTile extends StatelessWidget {
 
     return AppCard(
       hasGlow: false,
+      isVaultStyle: true,
       child: InkWell(
         key: Key('grouped_password_tile_${group.canonicalKey}'),
         onTap: onTap,
@@ -78,7 +79,7 @@ class _GroupLeadingIcon extends StatelessWidget {
       height: AppDimensions.listTileIconSize,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: context.theme.primary.withValues(alpha: 0.1),
+          color: context.theme.primary.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(AppRadius.m),
         ),
         child: Center(

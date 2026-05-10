@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
@@ -28,6 +29,9 @@ class AppCard extends StatelessWidget {
   /// Whether to show a glow effect (useful for AMOLED).
   final bool hasGlow;
 
+  /// Whether to apply the premium glassmorphic vault styling.
+  final bool isVaultStyle;
+
   /// Standardized application card/container.
   const AppCard({
     super.key,
@@ -38,15 +42,70 @@ class AppCard extends StatelessWidget {
     this.backgroundColor,
     this.hasOutline = false,
     this.hasGlow = false,
+    this.isVaultStyle = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
+    final borderRadius = BorderRadius.circular(AppRadius.l);
 
+    final content = Padding(
+      padding: padding ?? const EdgeInsets.all(AppSpacing.m),
+      child: child,
+    );
+
+    final materialInner = Material(
+      color: Colors.transparent,
+      child: onTap != null ? InkWell(onTap: onTap, child: content) : content,
+    );
+
+    if (isVaultStyle) {
+      final vaultGradient = theme.vaultGradient;
+      final frostedGradient = LinearGradient(
+        colors: vaultGradient.colors
+            .map((c) => c.withValues(alpha: theme.glassOpacity))
+            .toList(),
+        stops: vaultGradient.stops,
+        begin: vaultGradient.begin,
+        end: vaultGradient.end,
+        transform: vaultGradient.transform,
+      );
+
+      return Container(
+        margin: margin,
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+          boxShadow: [
+            if (hasGlow && theme.accentGlow != null) theme.accentGlow!,
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: borderRadius,
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: theme.glassBlur,
+              sigmaY: theme.glassBlur,
+            ),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: frostedGradient,
+                borderRadius: borderRadius,
+                border: Border.all(
+                  color: theme.outline.withValues(alpha: 0.2),
+                ),
+              ),
+              child: materialInner,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Standard styling
     final decoration = BoxDecoration(
       color: backgroundColor ?? theme.surface,
-      borderRadius: BorderRadius.circular(AppRadius.l),
+      borderRadius: borderRadius,
       border: hasOutline
           ? Border.all(color: theme.outline.withValues(alpha: 0.1))
           : null,
@@ -56,20 +115,11 @@ class AppCard extends StatelessWidget {
       ],
     );
 
-    final content = Padding(
-      padding: padding ?? const EdgeInsets.all(AppSpacing.m),
-      child: child,
-    );
-
     return Container(
       margin: margin,
       decoration: decoration,
-      clipBehavior:
-          Clip.antiAlias, // Ensures splashes don't overflow rounded corners
-      child: Material(
-        color: theme.surface.withValues(alpha: 0),
-        child: onTap != null ? InkWell(onTap: onTap, child: content) : content,
-      ),
+      clipBehavior: Clip.antiAlias,
+      child: materialInner,
     );
   }
 }

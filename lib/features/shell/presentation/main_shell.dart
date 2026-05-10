@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -103,71 +104,90 @@ class _BottomNavBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m),
         child: DecoratedBox(
           decoration: _buildDecoration(colors, themeType),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final itemWidth = constraints.maxWidth / itemCount;
-              const indicatorSize = AppIconSize.xxxl;
-              final indicatorOffset =
-                  (itemWidth - indicatorSize) / 2 + itemWidth * currentIndex;
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.full),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: colors.glassBlur,
+                sigmaY: colors.glassBlur,
+              ),
+              child: ColoredBox(
+                color: colors.surface.withValues(alpha: colors.glassOpacity),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final itemWidth = constraints.maxWidth / itemCount;
+                    const indicatorSize = AppIconSize.xxxl;
+                    final indicatorOffset =
+                        (itemWidth - indicatorSize) / 2 +
+                        itemWidth * currentIndex;
 
-              return Stack(
-                alignment: Alignment.center,
-                children: [
-                  AnimatedPositioned(
-                    duration: AppDuration.slow,
-                    curve: AppCurves.emphasizeEntrance,
-                    left: indicatorOffset,
-                    child: Container(
-                      width: indicatorSize,
-                      height: indicatorSize,
-                      decoration: BoxDecoration(
-                        color: colors.primary.withValues(alpha: 0.16),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: colors.primary.withValues(alpha: 0.25),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        AnimatedPositioned(
+                          duration: AppDuration.slow,
+                          curve: AppCurves.emphasizeEntrance,
+                          left: indicatorOffset,
+                          child: Container(
+                            width: indicatorSize,
+                            height: indicatorSize,
+                            decoration: BoxDecoration(
+                              color: colors.primary.withValues(alpha: 0.16),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: colors.primary.withValues(alpha: 0.25),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _NavItem(
-                        width: itemWidth,
-                        icon: LucideIcons.house,
-                        semanticsLabel: l10n.tabSemanticsLabel(l10n.vault),
-                        isActive: currentIndex == 0,
-                        activeColor: colors.primary,
-                        inactiveColor: _inactiveColor(colors, isAmoled),
-                        onTap: () => onTap(0),
-                      ),
-                      _NavItem(
-                        width: itemWidth,
-                        icon: LucideIcons.shield,
-                        semanticsLabel: l10n.tabSemanticsLabel(l10n.generator),
-                        isActive: currentIndex == 1,
-                        activeColor: colors.primary,
-                        inactiveColor: _inactiveColor(colors, isAmoled),
-                        onTap: () => onTap(1),
-                      ),
-                      _NavItem(
-                        width: itemWidth,
-                        icon: LucideIcons.settings,
-                        semanticsLabel: l10n.tabSemanticsLabel(l10n.settings),
-                        isActive: currentIndex == 2,
-                        activeColor: colors.primary,
-                        inactiveColor: _inactiveColor(colors, isAmoled),
-                        onTap: () => onTap(2),
-                      ),
-                    ],
-                  ),
-                ],
-              );
-            },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _NavItem(
+                              width: itemWidth,
+                              icon: LucideIcons.house,
+                              semanticsLabel: l10n.tabSemanticsLabel(
+                                l10n.vault,
+                              ),
+                              isActive: currentIndex == 0,
+                              activeColor: colors.primary,
+                              inactiveColor: _inactiveColor(colors, isAmoled),
+                              onTap: () => onTap(0),
+                            ),
+                            _NavItem(
+                              width: itemWidth,
+                              icon: LucideIcons.shield,
+                              semanticsLabel: l10n.tabSemanticsLabel(
+                                l10n.generator,
+                              ),
+                              isActive: currentIndex == 1,
+                              activeColor: colors.primary,
+                              inactiveColor: _inactiveColor(colors, isAmoled),
+                              onTap: () => onTap(1),
+                            ),
+                            _NavItem(
+                              width: itemWidth,
+                              icon: LucideIcons.settings,
+                              semanticsLabel: l10n.tabSemanticsLabel(
+                                l10n.settings,
+                              ),
+                              isActive: currentIndex == 2,
+                              activeColor: colors.primary,
+                              inactiveColor: _inactiveColor(colors, isAmoled),
+                              onTap: () => onTap(2),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -200,7 +220,7 @@ class _BottomNavBar extends StatelessWidget {
     switch (themeType) {
       case ThemeType.amoled:
         return BoxDecoration(
-          color: colors.background,
+          color: Colors.transparent, // Background handled by inner ColoredBox
           borderRadius: borderRadius,
           border: Border.all(color: colors.primary.withValues(alpha: 0.3)),
           boxShadow: [
@@ -213,7 +233,7 @@ class _BottomNavBar extends StatelessWidget {
         );
       case ThemeType.dark:
         return BoxDecoration(
-          color: colors.surface,
+          color: Colors.transparent, // Background handled by inner ColoredBox
           borderRadius: borderRadius,
           border: Border.all(color: colors.outline.withValues(alpha: 0.5)),
           boxShadow: [
@@ -227,7 +247,7 @@ class _BottomNavBar extends StatelessWidget {
       case ThemeType.light:
       case ThemeType.system:
         return BoxDecoration(
-          color: colors.surface,
+          color: Colors.transparent, // Background handled by inner ColoredBox
           borderRadius: borderRadius,
           boxShadow: [
             BoxShadow(
