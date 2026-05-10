@@ -91,9 +91,7 @@ class AppCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: frostedGradient,
                 borderRadius: borderRadius,
-                border: Border.all(
-                  color: theme.outline.withValues(alpha: 0.2),
-                ),
+                border: Border.all(color: theme.outline.withValues(alpha: 0.2)),
               ),
               child: materialInner,
             ),
