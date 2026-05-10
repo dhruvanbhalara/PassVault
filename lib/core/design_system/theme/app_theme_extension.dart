@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:passvault/core/design_system/theme/app_colors.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/l10n/app_localizations.dart';
 
@@ -42,6 +41,22 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.vaultGradient,
     required this.onVaultGradient,
     required this.inputFocusedBorder,
+    required this.cardBorder,
+    required this.inputBorder,
+    required this.inputDisabledBorder,
+    required this.chipSelectedBackground,
+    required this.chipUnselectedBackground,
+    required this.chipSelectedText,
+    required this.chipUnselectedText,
+    required this.chipBorder,
+    required this.radioCardSelectedBorder,
+    required this.radioCardUnselectedBorder,
+    required this.badgeBackground,
+    required this.bottomNavInactiveIcon,
+    required this.logoBackground,
+    required this.logoBorder,
+    this.logoShadow,
+    required this.radioCardSelectedShadow,
   });
 
   final Color primary;
@@ -88,6 +103,23 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   /// Specialized color for focused input states.
   final Color inputFocusedBorder;
 
+  final Color cardBorder;
+  final Color inputBorder;
+  final Color inputDisabledBorder;
+  final Color chipSelectedBackground;
+  final Color chipUnselectedBackground;
+  final Color chipSelectedText;
+  final Color chipUnselectedText;
+  final Color chipBorder;
+  final Color radioCardSelectedBorder;
+  final Color radioCardUnselectedBorder;
+  final Color badgeBackground;
+  final Color bottomNavInactiveIcon;
+  final Color logoBackground;
+  final Color logoBorder;
+  final BoxShadow? logoShadow;
+  final BoxShadow radioCardSelectedShadow;
+
   @override
   AppThemeExtension copyWith({
     Color? primary,
@@ -120,6 +152,22 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     LinearGradient? vaultGradient,
     Color? onVaultGradient,
     Color? inputFocusedBorder,
+    Color? cardBorder,
+    Color? inputBorder,
+    Color? inputDisabledBorder,
+    Color? chipSelectedBackground,
+    Color? chipUnselectedBackground,
+    Color? chipSelectedText,
+    Color? chipUnselectedText,
+    Color? chipBorder,
+    Color? radioCardSelectedBorder,
+    Color? radioCardUnselectedBorder,
+    Color? badgeBackground,
+    Color? bottomNavInactiveIcon,
+    Color? logoBackground,
+    Color? logoBorder,
+    BoxShadow? logoShadow,
+    BoxShadow? radioCardSelectedShadow,
   }) {
     return AppThemeExtension(
       primary: primary ?? this.primary,
@@ -152,6 +200,28 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       vaultGradient: vaultGradient ?? this.vaultGradient,
       onVaultGradient: onVaultGradient ?? this.onVaultGradient,
       inputFocusedBorder: inputFocusedBorder ?? this.inputFocusedBorder,
+      cardBorder: cardBorder ?? this.cardBorder,
+      inputBorder: inputBorder ?? this.inputBorder,
+      inputDisabledBorder: inputDisabledBorder ?? this.inputDisabledBorder,
+      chipSelectedBackground:
+          chipSelectedBackground ?? this.chipSelectedBackground,
+      chipUnselectedBackground:
+          chipUnselectedBackground ?? this.chipUnselectedBackground,
+      chipSelectedText: chipSelectedText ?? this.chipSelectedText,
+      chipUnselectedText: chipUnselectedText ?? this.chipUnselectedText,
+      chipBorder: chipBorder ?? this.chipBorder,
+      radioCardSelectedBorder:
+          radioCardSelectedBorder ?? this.radioCardSelectedBorder,
+      radioCardUnselectedBorder:
+          radioCardUnselectedBorder ?? this.radioCardUnselectedBorder,
+      badgeBackground: badgeBackground ?? this.badgeBackground,
+      bottomNavInactiveIcon:
+          bottomNavInactiveIcon ?? this.bottomNavInactiveIcon,
+      logoBackground: logoBackground ?? this.logoBackground,
+      logoBorder: logoBorder ?? this.logoBorder,
+      logoShadow: logoShadow ?? this.logoShadow,
+      radioCardSelectedShadow:
+          radioCardSelectedShadow ?? this.radioCardSelectedShadow,
     );
   }
 
@@ -217,6 +287,58 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         other.inputFocusedBorder,
         t,
       )!,
+      cardBorder: Color.lerp(cardBorder, other.cardBorder, t)!,
+      inputBorder: Color.lerp(inputBorder, other.inputBorder, t)!,
+      inputDisabledBorder: Color.lerp(
+        inputDisabledBorder,
+        other.inputDisabledBorder,
+        t,
+      )!,
+      chipSelectedBackground: Color.lerp(
+        chipSelectedBackground,
+        other.chipSelectedBackground,
+        t,
+      )!,
+      chipUnselectedBackground: Color.lerp(
+        chipUnselectedBackground,
+        other.chipUnselectedBackground,
+        t,
+      )!,
+      chipSelectedText: Color.lerp(
+        chipSelectedText,
+        other.chipSelectedText,
+        t,
+      )!,
+      chipUnselectedText: Color.lerp(
+        chipUnselectedText,
+        other.chipUnselectedText,
+        t,
+      )!,
+      chipBorder: Color.lerp(chipBorder, other.chipBorder, t)!,
+      radioCardSelectedBorder: Color.lerp(
+        radioCardSelectedBorder,
+        other.radioCardSelectedBorder,
+        t,
+      )!,
+      radioCardUnselectedBorder: Color.lerp(
+        radioCardUnselectedBorder,
+        other.radioCardUnselectedBorder,
+        t,
+      )!,
+      badgeBackground: Color.lerp(badgeBackground, other.badgeBackground, t)!,
+      bottomNavInactiveIcon: Color.lerp(
+        bottomNavInactiveIcon,
+        other.bottomNavInactiveIcon,
+        t,
+      )!,
+      logoBackground: Color.lerp(logoBackground, other.logoBackground, t)!,
+      logoBorder: Color.lerp(logoBorder, other.logoBorder, t)!,
+      logoShadow: BoxShadow.lerp(logoShadow, other.logoShadow, t),
+      radioCardSelectedShadow: BoxShadow.lerp(
+        radioCardSelectedShadow,
+        other.radioCardSelectedShadow,
+        t,
+      )!,
     );
   }
 }
@@ -227,7 +349,6 @@ extension AppThemeExtensionContext on BuildContext {
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
   TextTheme get typography => Theme.of(this).textTheme;
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
-  bool get isAmoled => theme.background == AppColors.bgAmoled;
 
   /// Shortcut for accessing the current localizations.
   AppLocalizations get l10n => AppLocalizations.of(this)!;

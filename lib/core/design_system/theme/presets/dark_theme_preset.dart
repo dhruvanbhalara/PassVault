@@ -55,6 +55,25 @@ class DarkThemePreset {
       ),
       onVaultGradient: AppColors.white,
       inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.dark),
+      cardBorder: scheme.outline.withValues(alpha: 0.1),
+      inputBorder: scheme.outline.withValues(alpha: 0.62),
+      inputDisabledBorder: scheme.outline.withValues(alpha: 0.40),
+      chipSelectedBackground: AppColors.secondaryDark,
+      chipUnselectedBackground: AppColors.surfaceDimDark,
+      chipSelectedText: AppColors.bgDark,
+      chipUnselectedText: AppColors.textDarkPrimary,
+      chipBorder: AppColors.transparent,
+      radioCardSelectedBorder: AppColors.secondaryDark,
+      radioCardUnselectedBorder: AppColors.primaryDark.withValues(alpha: 0.1),
+      badgeBackground: scheme.primaryContainer,
+      bottomNavInactiveIcon: AppColors.textDarkPrimary.withValues(alpha: 0.6),
+      logoBackground: AppColors.primaryDark.withValues(alpha: 0.1),
+      logoBorder: AppColors.transparent,
+      radioCardSelectedShadow: BoxShadow(
+        color: AppColors.primaryDark.withValues(alpha: 0.15),
+        blurRadius: 8,
+        offset: const Offset(0, 2),
+      ),
     );
   }
 

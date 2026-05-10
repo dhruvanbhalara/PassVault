@@ -55,6 +55,30 @@ class AmoledThemePreset {
       ),
       onVaultGradient: AppColors.white,
       inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.dark),
+      cardBorder: AppColors.white.withValues(alpha: 0.1),
+      inputBorder: AppColors.white.withValues(alpha: 0.24),
+      inputDisabledBorder: AppColors.white.withValues(alpha: 0.11),
+      chipSelectedBackground: AppColors.primaryAmoled,
+      chipUnselectedBackground: AppColors.bgAmoled,
+      chipSelectedText: AppColors.bgAmoled,
+      chipUnselectedText: AppColors.textDarkPrimary,
+      chipBorder: AppColors.textDarkPrimary.withValues(alpha: 0.5),
+      radioCardSelectedBorder: AppColors.primaryAmoled,
+      radioCardUnselectedBorder: AppColors.borderAmoled,
+      badgeBackground: AppColors.white.withValues(alpha: 0.1),
+      bottomNavInactiveIcon: AppColors.textDarkPrimary.withValues(alpha: 0.8),
+      logoBackground: AppColors.transparent,
+      logoBorder: AppColors.primaryAmoled,
+      logoShadow: BoxShadow(
+        color: AppColors.primaryAmoled.withValues(alpha: 0.4),
+        blurRadius: 16,
+        spreadRadius: 2,
+      ),
+      radioCardSelectedShadow: BoxShadow(
+        color: AppColors.primaryAmoled.withValues(alpha: 0.35),
+        blurRadius: 12,
+        spreadRadius: 1,
+      ),
     );
   }
 

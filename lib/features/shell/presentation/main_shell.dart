@@ -93,7 +93,6 @@ class _BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.theme;
-    final isAmoled = context.isAmoled;
     final themeType = _resolveThemeType(context);
     final l10n = context.l10n;
     const itemCount = 3;
@@ -155,7 +154,7 @@ class _BottomNavBar extends StatelessWidget {
                               ),
                               isActive: currentIndex == 0,
                               activeColor: colors.primary,
-                              inactiveColor: _inactiveColor(colors, isAmoled),
+                              inactiveColor: colors.bottomNavInactiveIcon,
                               onTap: () => onTap(0),
                             ),
                             _NavItem(
@@ -166,7 +165,7 @@ class _BottomNavBar extends StatelessWidget {
                               ),
                               isActive: currentIndex == 1,
                               activeColor: colors.primary,
-                              inactiveColor: _inactiveColor(colors, isAmoled),
+                              inactiveColor: colors.bottomNavInactiveIcon,
                               onTap: () => onTap(1),
                             ),
                             _NavItem(
@@ -177,7 +176,7 @@ class _BottomNavBar extends StatelessWidget {
                               ),
                               isActive: currentIndex == 2,
                               activeColor: colors.primary,
-                              inactiveColor: _inactiveColor(colors, isAmoled),
+                              inactiveColor: colors.bottomNavInactiveIcon,
                               onTap: () => onTap(2),
                             ),
                           ],
@@ -192,11 +191,6 @@ class _BottomNavBar extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  /// Returns the inactive icon color based on brightness.
-  Color _inactiveColor(AppThemeExtension colors, bool isAmoled) {
-    return colors.onSurface.withValues(alpha: isAmoled ? 0.8 : 0.6);
   }
 
   /// Resolves the current [ThemeType] from the [ThemeBloc] state.

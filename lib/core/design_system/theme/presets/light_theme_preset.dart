@@ -55,6 +55,25 @@ class LightThemePreset {
       ),
       onVaultGradient: AppColors.white,
       inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.light),
+      cardBorder: scheme.outline.withValues(alpha: 0.1),
+      inputBorder: scheme.outline.withValues(alpha: 0.58),
+      inputDisabledBorder: scheme.outline.withValues(alpha: 0.36),
+      chipSelectedBackground: AppColors.primaryLight,
+      chipUnselectedBackground: AppColors.white,
+      chipSelectedText: AppColors.bgLight,
+      chipUnselectedText: AppColors.textLightPrimary,
+      chipBorder: AppColors.transparent,
+      radioCardSelectedBorder: AppColors.primaryLight,
+      radioCardUnselectedBorder: AppColors.borderLight,
+      badgeBackground: scheme.primaryContainer,
+      bottomNavInactiveIcon: AppColors.textLightPrimary.withValues(alpha: 0.6),
+      logoBackground: AppColors.primaryLight.withValues(alpha: 0.1),
+      logoBorder: AppColors.transparent,
+      radioCardSelectedShadow: BoxShadow(
+        color: AppColors.primaryLight.withValues(alpha: 0.12),
+        blurRadius: 6,
+        offset: const Offset(0, 2),
+      ),
     );
   }
 
