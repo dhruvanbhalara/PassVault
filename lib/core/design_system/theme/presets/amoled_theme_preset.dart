@@ -46,7 +46,10 @@ class AmoledThemePreset {
       ),
       bodyRelaxed: const TextStyle(height: 1.6, letterSpacing: 0.2),
       vaultGradient: const LinearGradient(
-        colors: [AppColors.vaultGradientDarkEnd, AppColors.black],
+        colors: [
+          AppColors.vaultGradientDarkStart,
+          AppColors.vaultGradientDarkEnd,
+        ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),

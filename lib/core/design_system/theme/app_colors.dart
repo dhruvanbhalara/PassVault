@@ -22,10 +22,10 @@ abstract class AppColors {
   static const Color primaryLight = Color(0xFF1976D2);
 
   /// Primary brand color for dark theme (Light Blue).
-  static const Color primaryDark = Color(0xFF64B5F6);
+  static const Color primaryDark = Color(0xFF10B981);
 
   /// Primary brand color for AMOLED theme (Bright Blue).
-  static const Color primaryAmoled = Color(0xFF2196F3);
+  static const Color primaryAmoled = Color(0xFF10B981);
 
   /// Secondary brand color for light theme (Orange).
   static const Color secondaryLight = Color(0xFFFF6F00);
@@ -42,7 +42,7 @@ abstract class AppColors {
   static const Color bgLight = Color(0xFFFFFFFF);
 
   /// Main scaffold background for dark theme.
-  static const Color bgDark = Color(0xFF121212);
+  static const Color bgDark = Color(0xFF0A0A0A);
 
   /// Pure black background for AMOLED support (#000000).
   static const Color bgAmoled = black;
@@ -51,7 +51,7 @@ abstract class AppColors {
   static const Color surfaceLight = Color(0xFFF5F5F5);
 
   /// Default surface color for dark theme.
-  static const Color surfaceDark = Color(0xFF1E1E1E);
+  static const Color surfaceDark = Color(0xFF171717);
 
   /// Elevated surface color for dark theme.
   static const Color surfaceElevatedDark = Color(0xFF2C2C2C);
@@ -152,10 +152,10 @@ abstract class AppColors {
   static const Color vaultGradientLightEnd = Color(0xFF1E88E5);
 
   /// Dark theme vault gradient start color.
-  static const Color vaultGradientDarkStart = Color(0xFF1E1E1E);
+  static const Color vaultGradientDarkStart = Color(0xFF10B981);
 
   /// Dark theme vault gradient end color.
-  static const Color vaultGradientDarkEnd = Color(0xFF121212);
+  static const Color vaultGradientDarkEnd = Color(0xFF047857);
 
   // AMOLED Surface Containers (Neutral Grays)
 
