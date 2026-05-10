@@ -59,7 +59,6 @@ class AppTheme {
       AppColors.surfaceAmoled,
       true,
       AmoledThemePreset.extension,
-      isAmoled: true,
     );
   }
 
@@ -68,21 +67,14 @@ class AppTheme {
     Color bg,
     Color surface,
     bool isDark,
-    AppThemeExtension extension, {
-    bool isAmoled = false,
-  }) {
+    AppThemeExtension extension,
+  ) {
     final textPrimary = isDark
         ? AppColors.textDarkPrimary
         : AppColors.textLightPrimary;
     final textSecondary = isDark
         ? AppColors.textDarkSecondary
         : AppColors.textLightSecondary;
-    final inputBorderColor = isAmoled
-        ? AppColors.white.withValues(alpha: 0.24)
-        : scheme.outline.withValues(alpha: isDark ? 0.62 : 0.58);
-    final inputDisabledBorderColor = isAmoled
-        ? AppColors.white.withValues(alpha: 0.11)
-        : scheme.outline.withValues(alpha: isDark ? 0.40 : 0.36);
 
     final textTheme = const AppTextThemeBuilder(
       _fontFamily,
@@ -122,11 +114,7 @@ class AppTheme {
         surfaceTintColor: AppColors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
-          side: BorderSide(
-            color: isAmoled
-                ? AppColors.white.withValues(alpha: 0.1)
-                : scheme.outline.withValues(alpha: 0.1),
-          ),
+          side: BorderSide(color: extension.cardBorder),
         ),
       ),
       bottomSheetTheme: BottomSheetThemeData(
@@ -146,11 +134,11 @@ class AppTheme {
         hintStyle: TextStyle(color: textSecondary.withValues(alpha: 0.5)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
-          borderSide: BorderSide(color: inputBorderColor, width: 2),
+          borderSide: BorderSide(color: extension.inputBorder, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
-          borderSide: BorderSide(color: inputBorderColor, width: 2),
+          borderSide: BorderSide(color: extension.inputBorder, width: 2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
@@ -158,7 +146,10 @@ class AppTheme {
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),
-          borderSide: BorderSide(color: inputDisabledBorderColor, width: 1.0),
+          borderSide: BorderSide(
+            color: extension.inputDisabledBorder,
+            width: 1.0,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.m),

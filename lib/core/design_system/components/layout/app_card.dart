@@ -52,7 +52,7 @@ class AppCard extends StatelessWidget {
           : null,
       boxShadow: [
         if (!hasOutline) theme.cardShadow,
-        if (hasGlow && theme.accentGlow != null) theme.accentGlow!,
+        if (hasGlow && theme.focusGlow != null) theme.focusGlow!,
       ],
     );
 

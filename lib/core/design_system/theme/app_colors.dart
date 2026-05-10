@@ -18,17 +18,17 @@ abstract class AppColors {
 
   // Brand / Core
 
-  /// Primary brand color for light theme (Blue).
-  static const Color primaryLight = Color(0xFF1976D2);
+  /// Primary brand color for light theme (Emerald).
+  static const Color primaryLight = Color(0xFF059669);
 
   /// Primary brand color for dark theme (Light Blue).
-  static const Color primaryDark = Color(0xFF64B5F6);
+  static const Color primaryDark = Color(0xFF10B981);
 
   /// Primary brand color for AMOLED theme (Bright Blue).
-  static const Color primaryAmoled = Color(0xFF2196F3);
+  static const Color primaryAmoled = Color(0xFF10B981);
 
-  /// Secondary brand color for light theme (Orange).
-  static const Color secondaryLight = Color(0xFFFF6F00);
+  /// Secondary brand color for light theme (Teal).
+  static const Color secondaryLight = Color(0xFF0D9488);
 
   /// Secondary brand color for dark theme (Teal).
   static const Color secondaryDark = Color(0xFF26A69A);
@@ -42,7 +42,7 @@ abstract class AppColors {
   static const Color bgLight = Color(0xFFFFFFFF);
 
   /// Main scaffold background for dark theme.
-  static const Color bgDark = Color(0xFF121212);
+  static const Color bgDark = Color(0xFF0A0A0A);
 
   /// Pure black background for AMOLED support (#000000).
   static const Color bgAmoled = black;
@@ -51,10 +51,7 @@ abstract class AppColors {
   static const Color surfaceLight = Color(0xFFF5F5F5);
 
   /// Default surface color for dark theme.
-  static const Color surfaceDark = Color(0xFF1E1E1E);
-
-  /// Elevated surface color for dark theme.
-  static const Color surfaceElevatedDark = Color(0xFF2C2C2C);
+  static const Color surfaceDark = Color(0xFF171717);
 
   /// Surface color optimized for AMOLED dark mode (slightly elevated).
   static const Color surfaceAmoled = Color(0xFF0A0A0A);
@@ -98,8 +95,8 @@ abstract class AppColors {
   /// Returns a high-contrast variation of the primary color for interactive states.
   static Color getPrimaryFocus(Brightness brightness) {
     return brightness == Brightness.light
-        ? const Color(0xFF1565C0) // Blue 800
-        : const Color(0xFF90CAF9); // Blue 200
+        ? const Color(0xFF065F46) // Emerald 800
+        : const Color(0xFF10B981); // Emerald 500 (Vibrant for Dark)
   }
 
   // Security Semantic Colors
@@ -146,18 +143,16 @@ abstract class AppColors {
   // Vault Gradient Colors
 
   /// Light theme vault gradient start color.
-  static const Color vaultGradientLightStart = Color(0xFF1976D2);
+  static const Color vaultGradientLightStart = Color(0xFF059669);
 
   /// Light theme vault gradient end color.
-  static const Color vaultGradientLightEnd = Color(0xFF1E88E5);
+  static const Color vaultGradientLightEnd = Color(0xFF047857);
 
   /// Dark theme vault gradient start color.
-  static const Color vaultGradientDarkStart = Color(0xFF1E1E1E);
+  static const Color vaultGradientDarkStart = Color(0xFF10B981);
 
   /// Dark theme vault gradient end color.
-  static const Color vaultGradientDarkEnd = Color(0xFF121212);
-
-  // AMOLED Surface Containers (Neutral Grays)
+  static const Color vaultGradientDarkEnd = Color(0xFF047857);
 
   /// AMOLED surface container low.
   static const Color amoledSurfaceContainerLow = Color(0xFF121212);

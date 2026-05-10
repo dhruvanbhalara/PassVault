@@ -82,7 +82,7 @@ class _AuthContentState extends State<_AuthContent> {
           return const AppLoader(key: Key('auth_loading'));
         }
 
-        final isAmoled = theme.primaryGlow != null;
+        final isAmoled = theme.buttonGlow != null;
 
         return CustomScrollView(
           slivers: [
