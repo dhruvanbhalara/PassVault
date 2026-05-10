@@ -79,11 +79,11 @@ class AppButton extends StatelessWidget {
 
     if (hasGlow &&
         variant == AppButtonVariant.primary &&
-        theme.primaryGlow != null) {
+        theme.buttonGlow != null) {
       button = Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppRadius.m),
-          boxShadow: [theme.primaryGlow!],
+          boxShadow: [theme.buttonGlow!],
         ),
         child: button,
       );

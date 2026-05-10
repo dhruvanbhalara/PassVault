@@ -84,7 +84,7 @@ class _FilterChip extends StatefulWidget {
 class _FilterChipState extends State<_FilterChip> {
   bool _isPressed = false;
 
-  bool _isAmoled(AppThemeExtension theme) => theme.primaryGlow != null;
+  bool _isAmoled(AppThemeExtension theme) => theme.buttonGlow != null;
 
   Color _backgroundColor(AppThemeExtension theme, bool isDark) {
     if (widget.isSelected) {
@@ -114,7 +114,7 @@ class _FilterChipState extends State<_FilterChip> {
   List<BoxShadow>? _boxShadow(AppThemeExtension theme) {
     if (!_isAmoled(theme) || !widget.isSelected) return null;
     // Glow effect for active AMOLED chip
-    final glow = theme.primaryGlow;
+    final glow = theme.buttonGlow;
     return glow != null ? [glow] : null;
   }
 

@@ -34,7 +34,7 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
   late Animation<double> _scaleAnimation;
   bool _previousSelected = false;
 
-  bool get _isAmoled => context.theme.primaryGlow != null;
+  bool get _isAmoled => context.theme.buttonGlow != null;
 
   @override
   void initState() {
