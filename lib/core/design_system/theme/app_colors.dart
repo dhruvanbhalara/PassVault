@@ -53,9 +53,6 @@ abstract class AppColors {
   /// Default surface color for dark theme.
   static const Color surfaceDark = Color(0xFF171717);
 
-  /// Elevated surface color for dark theme.
-  static const Color surfaceElevatedDark = Color(0xFF2C2C2C);
-
   /// Surface color optimized for AMOLED dark mode (slightly elevated).
   static const Color surfaceAmoled = Color(0xFF0A0A0A);
 

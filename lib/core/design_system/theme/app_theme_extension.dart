@@ -23,7 +23,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.warning,
     required this.surfaceDim,
     required this.surfaceHighlight,
-    required this.securitySurface,
     required this.strengthVeryWeak,
     required this.strengthWeak,
     required this.strengthFair,
@@ -37,9 +36,9 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.glassBlur,
     required this.glassOpacity,
     required this.passwordText,
-    required this.bodyRelaxed,
     required this.vaultGradient,
     required this.onVaultGradient,
+    required this.primaryGradient,
     required this.inputFocusedBorder,
     required this.cardBorder,
     required this.inputBorder,
@@ -51,12 +50,15 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.chipBorder,
     required this.radioCardSelectedBorder,
     required this.radioCardUnselectedBorder,
-    required this.badgeBackground,
     required this.bottomNavInactiveIcon,
     required this.logoBackground,
     required this.logoBorder,
     this.logoShadow,
     required this.radioCardSelectedShadow,
+    required this.cardPressedScale,
+    this.navIndicatorShadow,
+    this.focusGlow,
+    this.buttonGlow,
   });
 
   final Color primary;
@@ -72,7 +74,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
 
   final Color surfaceDim;
   final Color surfaceHighlight;
-  final Color securitySurface;
   final Color strengthVeryWeak;
   final Color strengthWeak;
   final Color strengthFair;
@@ -92,13 +93,14 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   /// Optimized for semantic dynamic scaling.
   final TextStyle passwordText;
 
-  final TextStyle bodyRelaxed;
-
   /// Secure surface gradient for high-priority cards and headers.
   final LinearGradient vaultGradient;
 
   /// Foreground color for text and icons displayed over vaultGradient.
   final Color onVaultGradient;
+
+  /// Main brand gradient for primary buttons and high-vibrancy surfaces.
+  final LinearGradient primaryGradient;
 
   /// Specialized color for focused input states.
   final Color inputFocusedBorder;
@@ -113,12 +115,15 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   final Color chipBorder;
   final Color radioCardSelectedBorder;
   final Color radioCardUnselectedBorder;
-  final Color badgeBackground;
   final Color bottomNavInactiveIcon;
   final Color logoBackground;
   final Color logoBorder;
   final BoxShadow? logoShadow;
   final BoxShadow radioCardSelectedShadow;
+  final double cardPressedScale;
+  final BoxShadow? navIndicatorShadow;
+  final BoxShadow? focusGlow;
+  final BoxShadow? buttonGlow;
 
   @override
   AppThemeExtension copyWith({
@@ -134,7 +139,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     Color? warning,
     Color? surfaceDim,
     Color? surfaceHighlight,
-    Color? securitySurface,
     Color? strengthVeryWeak,
     Color? strengthWeak,
     Color? strengthFair,
@@ -148,9 +152,9 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     double? glassBlur,
     double? glassOpacity,
     TextStyle? passwordText,
-    TextStyle? bodyRelaxed,
     LinearGradient? vaultGradient,
     Color? onVaultGradient,
+    LinearGradient? primaryGradient,
     Color? inputFocusedBorder,
     Color? cardBorder,
     Color? inputBorder,
@@ -162,12 +166,15 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     Color? chipBorder,
     Color? radioCardSelectedBorder,
     Color? radioCardUnselectedBorder,
-    Color? badgeBackground,
     Color? bottomNavInactiveIcon,
     Color? logoBackground,
     Color? logoBorder,
     BoxShadow? logoShadow,
     BoxShadow? radioCardSelectedShadow,
+    double? cardPressedScale,
+    BoxShadow? navIndicatorShadow,
+    BoxShadow? focusGlow,
+    BoxShadow? buttonGlow,
   }) {
     return AppThemeExtension(
       primary: primary ?? this.primary,
@@ -182,13 +189,12 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       warning: warning ?? this.warning,
       surfaceDim: surfaceDim ?? this.surfaceDim,
       surfaceHighlight: surfaceHighlight ?? this.surfaceHighlight,
-      securitySurface: securitySurface ?? this.securitySurface,
-      strengthVeryWeak: strengthWeak ?? this.strengthWeak,
+      strengthVeryWeak: strengthVeryWeak ?? this.strengthVeryWeak,
       strengthWeak: strengthWeak ?? this.strengthWeak,
       strengthFair: strengthFair ?? this.strengthFair,
       strengthGood: strengthGood ?? this.strengthGood,
-      strengthVeryStrong: strengthStrong ?? this.strengthStrong,
       strengthStrong: strengthStrong ?? this.strengthStrong,
+      strengthVeryStrong: strengthVeryStrong ?? this.strengthVeryStrong,
       outline: outline ?? this.outline,
       primaryContainer: primaryContainer ?? this.primaryContainer,
       onPrimaryContainer: onPrimaryContainer ?? this.onPrimaryContainer,
@@ -196,9 +202,9 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       glassBlur: glassBlur ?? this.glassBlur,
       glassOpacity: glassOpacity ?? this.glassOpacity,
       passwordText: passwordText ?? this.passwordText,
-      bodyRelaxed: bodyRelaxed ?? this.bodyRelaxed,
       vaultGradient: vaultGradient ?? this.vaultGradient,
       onVaultGradient: onVaultGradient ?? this.onVaultGradient,
+      primaryGradient: primaryGradient ?? this.primaryGradient,
       inputFocusedBorder: inputFocusedBorder ?? this.inputFocusedBorder,
       cardBorder: cardBorder ?? this.cardBorder,
       inputBorder: inputBorder ?? this.inputBorder,
@@ -214,7 +220,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
           radioCardSelectedBorder ?? this.radioCardSelectedBorder,
       radioCardUnselectedBorder:
           radioCardUnselectedBorder ?? this.radioCardUnselectedBorder,
-      badgeBackground: badgeBackground ?? this.badgeBackground,
       bottomNavInactiveIcon:
           bottomNavInactiveIcon ?? this.bottomNavInactiveIcon,
       logoBackground: logoBackground ?? this.logoBackground,
@@ -222,6 +227,10 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       logoShadow: logoShadow ?? this.logoShadow,
       radioCardSelectedShadow:
           radioCardSelectedShadow ?? this.radioCardSelectedShadow,
+      cardPressedScale: cardPressedScale ?? this.cardPressedScale,
+      navIndicatorShadow: navIndicatorShadow ?? this.navIndicatorShadow,
+      focusGlow: focusGlow ?? this.focusGlow,
+      buttonGlow: buttonGlow ?? this.buttonGlow,
     );
   }
 
@@ -245,7 +254,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         other.surfaceHighlight,
         t,
       )!,
-      securitySurface: Color.lerp(securitySurface, other.securitySurface, t)!,
       strengthVeryWeak: Color.lerp(
         strengthVeryWeak,
         other.strengthVeryWeak,
@@ -275,13 +283,17 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       glassBlur: lerpDouble(glassBlur, other.glassBlur, t)!,
       glassOpacity: lerpDouble(glassOpacity, other.glassOpacity, t)!,
       passwordText: TextStyle.lerp(passwordText, other.passwordText, t)!,
-      bodyRelaxed: TextStyle.lerp(bodyRelaxed, other.bodyRelaxed, t)!,
       vaultGradient: LinearGradient.lerp(
         vaultGradient,
         other.vaultGradient,
         t,
       )!,
       onVaultGradient: Color.lerp(onVaultGradient, other.onVaultGradient, t)!,
+      primaryGradient: LinearGradient.lerp(
+        primaryGradient,
+        other.primaryGradient,
+        t,
+      )!,
       inputFocusedBorder: Color.lerp(
         inputFocusedBorder,
         other.inputFocusedBorder,
@@ -325,7 +337,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         other.radioCardUnselectedBorder,
         t,
       )!,
-      badgeBackground: Color.lerp(badgeBackground, other.badgeBackground, t)!,
       bottomNavInactiveIcon: Color.lerp(
         bottomNavInactiveIcon,
         other.bottomNavInactiveIcon,
@@ -339,6 +350,18 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         other.radioCardSelectedShadow,
         t,
       )!,
+      cardPressedScale: lerpDouble(
+        cardPressedScale,
+        other.cardPressedScale,
+        t,
+      )!,
+      navIndicatorShadow: BoxShadow.lerp(
+        navIndicatorShadow,
+        other.navIndicatorShadow,
+        t,
+      ),
+      focusGlow: BoxShadow.lerp(focusGlow, other.focusGlow, t),
+      buttonGlow: BoxShadow.lerp(buttonGlow, other.buttonGlow, t),
     );
   }
 }

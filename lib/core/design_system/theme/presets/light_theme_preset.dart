@@ -21,7 +21,6 @@ class LightThemePreset {
       warning: AppColors.warning,
       surfaceDim: AppColors.surfaceDimLight,
       surfaceHighlight: AppColors.primaryLight.withValues(alpha: 0.05),
-      securitySurface: AppColors.surfaceDimLight,
       strengthVeryWeak: AppColors.strengthVeryWeak,
       strengthWeak: AppColors.strengthWeak,
       strengthFair: AppColors.strengthFair,
@@ -44,7 +43,6 @@ class LightThemePreset {
         letterSpacing: 1.2,
         fontWeight: FontWeight.w600,
       ),
-      bodyRelaxed: const TextStyle(height: 1.6, letterSpacing: 0.2),
       vaultGradient: const LinearGradient(
         colors: [
           AppColors.vaultGradientLightStart,
@@ -54,6 +52,11 @@ class LightThemePreset {
         end: Alignment.bottomRight,
       ),
       onVaultGradient: AppColors.white,
+      primaryGradient: const LinearGradient(
+        colors: [AppColors.primaryLight, AppColors.secondaryLight],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
       inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.light),
       cardBorder: scheme.outline.withValues(alpha: 0.1),
       inputBorder: scheme.outline.withValues(alpha: 0.58),
@@ -65,7 +68,6 @@ class LightThemePreset {
       chipBorder: AppColors.transparent,
       radioCardSelectedBorder: AppColors.primaryLight,
       radioCardUnselectedBorder: AppColors.borderLight,
-      badgeBackground: scheme.primaryContainer,
       bottomNavInactiveIcon: AppColors.textLightPrimary.withValues(alpha: 0.6),
       logoBackground: AppColors.primaryLight.withValues(alpha: 0.1),
       logoBorder: AppColors.transparent,
@@ -73,6 +75,18 @@ class LightThemePreset {
         color: AppColors.primaryLight.withValues(alpha: 0.12),
         blurRadius: 6,
         offset: const Offset(0, 2),
+      ),
+      cardPressedScale: 0.98,
+      navIndicatorShadow: null,
+      focusGlow: BoxShadow(
+        color: AppColors.primaryLight.withValues(alpha: 0.15),
+        blurRadius: 8,
+        spreadRadius: 1,
+      ),
+      buttonGlow: BoxShadow(
+        color: AppColors.primaryLight.withValues(alpha: 0.2),
+        blurRadius: 12,
+        offset: const Offset(0, 4),
       ),
     );
   }
