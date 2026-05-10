@@ -21,7 +21,6 @@ class AmoledThemePreset {
       warning: AppColors.warning,
       surfaceDim: AppColors.surfaceAmoled,
       surfaceHighlight: AppColors.primaryAmoled.withValues(alpha: 0.15),
-      securitySurface: AppColors.surfaceAmoled,
       strengthVeryWeak: AppColors.strengthVeryWeak,
       strengthWeak: AppColors.strengthWeak,
       strengthFair: AppColors.strengthFair,
@@ -31,11 +30,9 @@ class AmoledThemePreset {
       outline: AppColors.borderAmoled,
       primaryContainer: scheme.primaryContainer,
       onPrimaryContainer: scheme.onPrimaryContainer,
-      cardShadow: BoxShadow(
-        color: AppColors.white.withValues(alpha: 0.05),
-        blurRadius: 15,
-        offset: const Offset(0, 0),
-      ),
+      cardShadow: const BoxShadow(
+        color: AppColors.transparent,
+      ), // Shadowless AMOLED
       glassBlur: 20,
       glassOpacity: 0.2,
       passwordText: const TextStyle(
@@ -44,40 +41,65 @@ class AmoledThemePreset {
         letterSpacing: 1.2,
         fontWeight: FontWeight.w600,
       ),
-      bodyRelaxed: const TextStyle(height: 1.6, letterSpacing: 0.2),
       vaultGradient: const LinearGradient(
-        colors: [AppColors.vaultGradientDarkEnd, AppColors.black],
+        colors: [
+          AppColors.vaultGradientDarkStart,
+          AppColors.vaultGradientDarkEnd,
+        ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
       onVaultGradient: AppColors.white,
+      primaryGradient: const LinearGradient(
+        colors: [
+          AppColors.primaryAmoled,
+          AppColors
+              .secondaryDark, // Using secondary dark for a deep emerald feel
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
       inputFocusedBorder: AppColors.getPrimaryFocus(Brightness.dark),
-      // AMOLED glow effects – subtle outer glow for accent elements on
-      // pure-black backgrounds.  Blur 12, spread 1, accent at ~40% opacity.
-      primaryGlow: BoxShadow(
-        color: AppColors.primaryAmoled.withValues(alpha: 0.40),
+      cardBorder: AppColors.white.withValues(
+        alpha: 0.12,
+      ), // Defined stroke for AMOLED
+      inputBorder: AppColors.white.withValues(alpha: 0.24),
+      inputDisabledBorder: AppColors.white.withValues(alpha: 0.11),
+      chipSelectedBackground: AppColors.primaryAmoled,
+      chipUnselectedBackground: AppColors.bgAmoled,
+      chipSelectedText: AppColors.bgAmoled,
+      chipUnselectedText: AppColors.textDarkPrimary,
+      chipBorder: AppColors.textDarkPrimary.withValues(alpha: 0.5),
+      radioCardSelectedBorder: AppColors.primaryAmoled,
+      radioCardUnselectedBorder: AppColors.borderAmoled,
+      bottomNavInactiveIcon: AppColors.textDarkPrimary.withValues(alpha: 0.8),
+      logoBackground: AppColors.transparent,
+      logoBorder: AppColors.primaryAmoled,
+      logoShadow: BoxShadow(
+        color: AppColors.primaryAmoled.withValues(alpha: 0.4),
+        blurRadius: 16,
+        spreadRadius: 2,
+      ),
+      radioCardSelectedShadow: BoxShadow(
+        color: AppColors.primaryAmoled.withValues(alpha: 0.35),
         blurRadius: 12,
         spreadRadius: 1,
       ),
-      secondaryGlow: BoxShadow(
-        color: AppColors.secondaryAmoled.withValues(alpha: 0.35),
-        blurRadius: 10,
+      cardPressedScale: 0.97,
+      navIndicatorShadow: BoxShadow(
+        color: AppColors.primaryAmoled.withValues(alpha: 0.4),
+        blurRadius: 16,
+        spreadRadius: 2,
+      ),
+      focusGlow: BoxShadow(
+        color: AppColors.primaryAmoled.withValues(alpha: 0.25),
+        blurRadius: 12,
         spreadRadius: 1,
       ),
-      errorGlow: BoxShadow(
-        color: AppColors.errorAmoled.withValues(alpha: 0.35),
-        blurRadius: 10,
-        spreadRadius: 1,
-      ),
-      successGlow: BoxShadow(
-        color: AppColors.successAmoled.withValues(alpha: 0.35),
-        blurRadius: 10,
-        spreadRadius: 1,
-      ),
-      accentGlow: BoxShadow(
-        color: AppColors.primaryAmoled.withValues(alpha: 0.30),
-        blurRadius: 8,
-        spreadRadius: 0,
+      buttonGlow: BoxShadow(
+        color: AppColors.primaryAmoled.withValues(alpha: 0.3),
+        blurRadius: 20,
+        spreadRadius: 2,
       ),
     );
   }
