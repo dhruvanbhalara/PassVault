@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -19,6 +20,8 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
+  bool _isNavVisible = true;
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -26,56 +29,66 @@ class _MainShellState extends State<MainShell> {
     const reserveSpace = kBottomNavigationBarHeight + AppSpacing.m;
 
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background Content
-          MediaQuery(
-            data: mediaQuery.copyWith(
-              padding: mediaQuery.padding.copyWith(
-                bottom: mediaQuery.padding.bottom + reserveSpace,
-              ),
-              viewPadding: mediaQuery.viewPadding.copyWith(
-                bottom: mediaQuery.viewPadding.bottom + reserveSpace,
-              ),
-            ),
-            child: widget.navigationShell,
-          ),
-
-          // Floating Navigation Bar (Permanently Visible)
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.m,
-                  0,
-                  AppSpacing.m,
-                  AppSpacing.m,
+      body: NotificationListener<UserScrollNotification>(
+        onNotification: (notification) {
+          if (notification.direction == ScrollDirection.reverse) {
+            if (_isNavVisible) setState(() => _isNavVisible = false);
+          } else if (notification.direction == ScrollDirection.forward) {
+            if (!_isNavVisible) setState(() => _isNavVisible = true);
+          }
+          return false;
+        },
+        child: Stack(
+          children: [
+            // Background Content
+            MediaQuery(
+              data: mediaQuery.copyWith(
+                padding: mediaQuery.padding.copyWith(
+                  bottom: mediaQuery.padding.bottom + reserveSpace,
                 ),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 400),
-                    child: _BottomNavBar(
-                      currentIndex: widget.navigationShell.currentIndex,
-                      onTap: (index) => _onTabTapped(context, index),
+                viewPadding: mediaQuery.viewPadding.copyWith(
+                  bottom: mediaQuery.viewPadding.bottom + reserveSpace,
+                ),
+              ),
+              child: widget.navigationShell,
+            ),
+
+            // Floating Navigation Bar
+            AnimatedPositioned(
+              duration: AppDuration.normal,
+              curve: AppCurves.emphasizeEntrance,
+              left: 0,
+              right: 0,
+              bottom: _isNavVisible ? 0 : -reserveSpace - 20,
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.m,
+                    0,
+                    AppSpacing.m,
+                    AppSpacing.m,
+                  ),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: _BottomNavBar(
+                        currentIndex: widget.navigationShell.currentIndex,
+                        onTap: (index) => _onTabTapped(context, index),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   void _onTabTapped(BuildContext context, int index) {
-    // If tapping the already-active tab, navigate to the initial location
-    // of that branch (effectively "scroll to top" / pop to root).
     widget.navigationShell.goBranch(
       index,
       initialLocation: index == widget.navigationShell.currentIndex,
@@ -115,31 +128,34 @@ class _BottomNavBar extends StatelessWidget {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final itemWidth = constraints.maxWidth / itemCount;
-                    const indicatorSize = AppIconSize.xxxl;
+                    // Premium Fluid Pill Indicator
+                    final indicatorWidth = itemWidth * 0.7;
+                    const indicatorHeight = 40.0;
                     final indicatorOffset =
-                        (itemWidth - indicatorSize) / 2 +
+                        (itemWidth - indicatorWidth) / 2 +
                         itemWidth * currentIndex;
 
                     return Stack(
                       alignment: Alignment.center,
                       children: [
                         AnimatedPositioned(
-                          duration: AppDuration.slow,
+                          duration: AppDuration.normal,
                           curve: AppCurves.emphasizeEntrance,
                           left: indicatorOffset,
-                          child: Container(
-                            width: indicatorSize,
-                            height: indicatorSize,
-                            decoration: BoxDecoration(
-                              color: colors.primary.withValues(alpha: 0.16),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: colors.primary.withValues(alpha: 0.25),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
+                          child: Center(
+                            child: Container(
+                              width: indicatorWidth,
+                              height: indicatorHeight,
+                              decoration: BoxDecoration(
+                                color: colors.primary.withValues(alpha: 0.16),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.full,
                                 ),
-                              ],
+                                boxShadow: [
+                                  if (colors.navIndicatorShadow != null)
+                                    colors.navIndicatorShadow!,
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -193,7 +209,6 @@ class _BottomNavBar extends StatelessWidget {
     );
   }
 
-  /// Resolves the current [ThemeType] from the [ThemeBloc] state.
   ThemeType _resolveThemeType(BuildContext context) {
     final state = context.read<ThemeBloc>().state;
     return switch (state) {
@@ -201,10 +216,6 @@ class _BottomNavBar extends StatelessWidget {
     };
   }
 
-  /// Builds the container decoration per theme variant:
-  /// - Light: 8dp elevation shadow
-  /// - Dark: top border, no elevation
-  /// - AMOLED: top border with glow accent
   BoxDecoration _buildDecoration(
     AppThemeExtension colors,
     ThemeType themeType,
@@ -214,7 +225,6 @@ class _BottomNavBar extends StatelessWidget {
     switch (themeType) {
       case ThemeType.amoled:
         return BoxDecoration(
-          color: Colors.transparent, // Background handled by inner ColoredBox
           borderRadius: borderRadius,
           border: Border.all(color: colors.primary.withValues(alpha: 0.3)),
           boxShadow: [
@@ -227,7 +237,6 @@ class _BottomNavBar extends StatelessWidget {
         );
       case ThemeType.dark:
         return BoxDecoration(
-          color: Colors.transparent, // Background handled by inner ColoredBox
           borderRadius: borderRadius,
           border: Border.all(color: colors.outline.withValues(alpha: 0.5)),
           boxShadow: [
@@ -241,7 +250,6 @@ class _BottomNavBar extends StatelessWidget {
       case ThemeType.light:
       case ThemeType.system:
         return BoxDecoration(
-          color: Colors.transparent, // Background handled by inner ColoredBox
           borderRadius: borderRadius,
           boxShadow: [
             BoxShadow(
@@ -255,7 +263,6 @@ class _BottomNavBar extends StatelessWidget {
   }
 }
 
-/// A single bottom navigation item with icon and label.
 class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.width,
@@ -294,11 +301,11 @@ class _NavItem extends StatelessWidget {
             child: AnimatedSlide(
               duration: AppDuration.normal,
               curve: AppCurves.standard,
-              offset: Offset(0, isActive ? -0.08 : 0),
+              offset: Offset(0, isActive ? -0.05 : 0),
               child: AnimatedScale(
                 duration: AppDuration.normal,
                 curve: AppCurves.standard,
-                scale: isActive ? 1.15 : 1,
+                scale: isActive ? 1.1 : 1,
                 child: Icon(icon, size: 24, color: color),
               ),
             ),

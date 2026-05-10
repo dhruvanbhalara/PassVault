@@ -43,7 +43,7 @@ class HomeScreen extends StatelessWidget {
               ),
               BlocBuilder<PasswordBloc, PasswordState>(
                 builder: (context, state) {
-                  if (state is PasswordLoading) {
+                  if (state is PasswordLoading || state is PasswordInitial) {
                     return SliverFillRemaining(
                       child: Center(
                         child: AppSemantics.loading(
