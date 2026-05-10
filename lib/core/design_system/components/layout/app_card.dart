@@ -1,13 +1,33 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:passvault/core/design_system/theme/app_animations.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 
+/// Defines the visual variants for [AppCard].
+enum AppCardVariant {
+  /// Elevated style with a shadow (best for Light mode).
+  elevated,
+
+  /// Outlined style with a subtle border (best for Dark/AMOLED modes).
+  outlined,
+
+  /// Flat background without borders or shadows.
+  filled,
+
+  /// Premium glassmorphic vault styling with blur and gradient.
+  glass,
+}
+
 /// A standardized container for grouping related content (Card).
 ///
-/// Applies consistent padding, border radius, background color, and optional
-/// shadows/elevation based on the design system.
-class AppCard extends StatelessWidget {
+/// Features:
+/// - Interactive "squish" scale animation.
+/// - Haptic feedback on tap.
+/// - Shadowless AMOLED support (automatic stroke fallback).
+/// - Glassmorphic support.
+class AppCard extends StatefulWidget {
   /// The content of the card.
   final Widget child;
 
@@ -17,16 +37,18 @@ class AppCard extends StatelessWidget {
   /// Custom margin override. Defaults to zero.
   final EdgeInsetsGeometry? margin;
 
-  /// The click handler. If provided, adds an [InkWell] splash effect.
+  /// The click handler. If provided, adds an [InkWell] splash effect and scale animation.
   final VoidCallback? onTap;
 
-  /// The background color. Defaults to [AppThemeExtension.surface].
+  /// The background color override.
   final Color? backgroundColor;
+
+  /// The visual variant of the card. Defaults to [AppCardVariant.elevated].
+  final AppCardVariant variant;
 
   /// Whether to apply the premium glassmorphic vault styling.
   final bool isVaultStyle;
 
-  /// Standardized application card/container.
   const AppCard({
     super.key,
     required this.child,
@@ -34,40 +56,56 @@ class AppCard extends StatelessWidget {
     this.margin,
     this.onTap,
     this.backgroundColor,
+    this.variant = AppCardVariant.elevated,
     this.isVaultStyle = false,
   });
+
+  @override
+  State<AppCard> createState() => _AppCardState();
+}
+
+class _AppCardState extends State<AppCard> {
+  bool _isPressed = false;
+
+  void _handleTap() {
+    if (widget.onTap != null) {
+      HapticFeedback.lightImpact();
+      widget.onTap?.call();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
     final borderRadius = BorderRadius.circular(AppRadius.l);
+    final effectiveVariant = widget.isVaultStyle
+        ? AppCardVariant.glass
+        : widget.variant;
 
     final content = Padding(
-      padding: padding ?? const EdgeInsets.all(AppSpacing.m),
-      child: child,
+      padding: widget.padding ?? const EdgeInsets.all(AppSpacing.m),
+      child: widget.child,
     );
 
     final materialInner = Material(
       color: Colors.transparent,
-      child: onTap != null ? InkWell(onTap: onTap, child: content) : content,
+      child: widget.onTap != null
+          ? InkWell(
+              onTap: _handleTap,
+              onTapDown: (_) => setState(() => _isPressed = true),
+              onTapUp: (_) => setState(() => _isPressed = false),
+              onTapCancel: () => setState(() => _isPressed = false),
+              borderRadius: borderRadius,
+              child: content,
+            )
+          : content,
     );
 
-    if (isVaultStyle) {
-      final vaultGradient = theme.vaultGradient;
-      final frostedGradient = LinearGradient(
-        colors: vaultGradient.colors
-            .map((c) => c.withValues(alpha: theme.glassOpacity))
-            .toList(),
-        stops: vaultGradient.stops,
-        begin: vaultGradient.begin,
-        end: vaultGradient.end,
-        transform: vaultGradient.transform,
-      );
+    Widget cardBody;
 
-      return Container(
-        margin: margin,
-        decoration: BoxDecoration(borderRadius: borderRadius),
-        child: ClipRRect(
+    switch (effectiveVariant) {
+      case AppCardVariant.glass:
+        cardBody = ClipRRect(
           borderRadius: borderRadius,
           child: BackdropFilter(
             filter: ImageFilter.blur(
@@ -76,29 +114,58 @@ class AppCard extends StatelessWidget {
             ),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                gradient: frostedGradient,
+                color: theme.surface.withValues(alpha: theme.glassOpacity),
                 borderRadius: borderRadius,
-                border: Border.all(color: theme.outline.withValues(alpha: 0.2)),
+                border: Border.all(color: theme.cardBorder),
               ),
               child: materialInner,
             ),
           ),
-        ),
-      );
+        );
+        break;
+
+      case AppCardVariant.outlined:
+        cardBody = DecoratedBox(
+          decoration: BoxDecoration(
+            color: widget.backgroundColor ?? theme.surface,
+            borderRadius: borderRadius,
+            border: Border.all(color: theme.cardBorder),
+          ),
+          child: materialInner,
+        );
+        break;
+
+      case AppCardVariant.filled:
+        cardBody = DecoratedBox(
+          decoration: BoxDecoration(
+            color: widget.backgroundColor ?? theme.surfaceHighlight,
+            borderRadius: borderRadius,
+          ),
+          child: materialInner,
+        );
+        break;
+
+      case AppCardVariant.elevated:
+        final isShadowless = theme.cardShadow.color == Colors.transparent;
+        cardBody = DecoratedBox(
+          decoration: BoxDecoration(
+            color: widget.backgroundColor ?? theme.surface,
+            borderRadius: borderRadius,
+            boxShadow: isShadowless ? null : [theme.cardShadow],
+            border: (isShadowless || context.isDarkMode)
+                ? Border.all(color: theme.cardBorder)
+                : null,
+          ),
+          child: materialInner,
+        );
+        break;
     }
 
-    // Standard styling
-    final decoration = BoxDecoration(
-      color: backgroundColor ?? theme.surface,
-      borderRadius: borderRadius,
-      boxShadow: [theme.cardShadow],
-    );
-
-    return Container(
-      margin: margin,
-      decoration: decoration,
-      clipBehavior: Clip.antiAlias,
-      child: materialInner,
+    return AnimatedScale(
+      scale: _isPressed ? theme.cardPressedScale : 1.0,
+      duration: AppDuration.fast,
+      curve: AppCurves.standard,
+      child: Container(margin: widget.margin, child: cardBody),
     );
   }
 }

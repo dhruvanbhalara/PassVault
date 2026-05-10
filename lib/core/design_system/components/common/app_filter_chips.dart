@@ -105,6 +105,9 @@ class _FilterChipState extends State<_FilterChip> {
   }
 
   List<BoxShadow>? _boxShadow(AppThemeExtension theme) {
+    if (widget.isSelected && theme.buttonGlow != null) {
+      return [theme.buttonGlow!];
+    }
     return null;
   }
 
