@@ -18,8 +18,8 @@ abstract class AppColors {
 
   // Brand / Core
 
-  /// Primary brand color for light theme (Blue).
-  static const Color primaryLight = Color(0xFF1976D2);
+  /// Primary brand color for light theme (Emerald).
+  static const Color primaryLight = Color(0xFF059669);
 
   /// Primary brand color for dark theme (Light Blue).
   static const Color primaryDark = Color(0xFF10B981);
@@ -27,8 +27,8 @@ abstract class AppColors {
   /// Primary brand color for AMOLED theme (Bright Blue).
   static const Color primaryAmoled = Color(0xFF10B981);
 
-  /// Secondary brand color for light theme (Orange).
-  static const Color secondaryLight = Color(0xFFFF6F00);
+  /// Secondary brand color for light theme (Teal).
+  static const Color secondaryLight = Color(0xFF0D9488);
 
   /// Secondary brand color for dark theme (Teal).
   static const Color secondaryDark = Color(0xFF26A69A);
@@ -98,8 +98,8 @@ abstract class AppColors {
   /// Returns a high-contrast variation of the primary color for interactive states.
   static Color getPrimaryFocus(Brightness brightness) {
     return brightness == Brightness.light
-        ? const Color(0xFF1565C0) // Blue 800
-        : const Color(0xFF90CAF9); // Blue 200
+        ? const Color(0xFF065F46) // Emerald 800
+        : const Color(0xFF10B981); // Emerald 500 (Vibrant for Dark)
   }
 
   // Security Semantic Colors
@@ -146,18 +146,16 @@ abstract class AppColors {
   // Vault Gradient Colors
 
   /// Light theme vault gradient start color.
-  static const Color vaultGradientLightStart = Color(0xFF1976D2);
+  static const Color vaultGradientLightStart = Color(0xFF059669);
 
   /// Light theme vault gradient end color.
-  static const Color vaultGradientLightEnd = Color(0xFF1E88E5);
+  static const Color vaultGradientLightEnd = Color(0xFF047857);
 
   /// Dark theme vault gradient start color.
   static const Color vaultGradientDarkStart = Color(0xFF10B981);
 
   /// Dark theme vault gradient end color.
   static const Color vaultGradientDarkEnd = Color(0xFF047857);
-
-  // AMOLED Surface Containers (Neutral Grays)
 
   /// AMOLED surface container low.
   static const Color amoledSurfaceContainerLow = Color(0xFF121212);
