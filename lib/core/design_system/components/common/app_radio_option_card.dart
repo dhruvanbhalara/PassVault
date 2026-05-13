@@ -34,8 +34,6 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
   late Animation<double> _scaleAnimation;
   bool _previousSelected = false;
 
-  bool get _isAmoled => context.theme.buttonGlow != null;
-
   @override
   void initState() {
     super.initState();
@@ -86,19 +84,16 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
     final theme = context.theme;
     final colorScheme = context.colorScheme;
     final typography = context.typography;
-    final isAmoled = _isAmoled;
 
     final borderColor = widget.isSelected
-        ? theme.primary
-        : isAmoled
-        ? theme.onSurface.withValues(alpha: 0.15)
-        : theme.outline;
+        ? theme.radioCardSelectedBorder
+        : theme.radioCardUnselectedBorder;
 
     final borderWidth = widget.isSelected ? 2.0 : 1.0;
 
-    final cardColor = isAmoled ? theme.background : theme.surface;
+    final cardColor = theme.surface;
 
-    final selectedShadows = _buildSelectedShadows(theme, isAmoled);
+    final selectedShadows = [theme.radioCardSelectedShadow];
 
     return Semantics(
       toggled: widget.isSelected,
@@ -173,7 +168,6 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
                                 AppRadioOptionBadge(
                                   text: widget.badgeText!,
                                   color: widget.badgeColor ?? theme.success,
-                                  isAmoled: isAmoled,
                                 ),
                               ],
                             ],
@@ -213,38 +207,5 @@ class _AppRadioOptionCardState extends State<AppRadioOptionCard>
           : ', ${l10n.notSelectedState}',
     );
     return buffer.toString();
-  }
-
-  List<BoxShadow> _buildSelectedShadows(
-    AppThemeExtension theme,
-    bool isAmoled,
-  ) {
-    if (isAmoled) {
-      return [
-        BoxShadow(
-          color: theme.primary.withValues(alpha: 0.35),
-          blurRadius: 12,
-          spreadRadius: 1,
-        ),
-      ];
-    }
-
-    if (context.isDarkMode) {
-      return [
-        BoxShadow(
-          color: theme.primary.withValues(alpha: 0.15),
-          blurRadius: 8,
-          offset: const Offset(0, 2),
-        ),
-      ];
-    }
-
-    return [
-      BoxShadow(
-        color: theme.primary.withValues(alpha: 0.12),
-        blurRadius: 6,
-        offset: const Offset(0, 2),
-      ),
-    ];
   }
 }

@@ -84,47 +84,38 @@ class _FilterChip extends StatefulWidget {
 class _FilterChipState extends State<_FilterChip> {
   bool _isPressed = false;
 
-  bool _isAmoled(AppThemeExtension theme) => theme.buttonGlow != null;
-
-  Color _backgroundColor(AppThemeExtension theme, bool isDark) {
+  Color _backgroundColor(AppThemeExtension theme) {
     if (widget.isSelected) {
-      // Light: primary (#1976D2), Dark: secondary/teal (#26A69A),
-      // AMOLED: primary (#2196F3)
-      if (_isAmoled(theme)) return theme.primary;
-      return isDark ? theme.secondary : theme.primary;
+      return theme.chipSelectedBackground;
     }
-    // Inactive backgrounds
-    if (_isAmoled(theme)) return theme.background;
-    return isDark ? theme.surfaceDim : theme.surfaceDim;
+    return theme.chipUnselectedBackground;
   }
 
-  Color _foregroundColor(AppThemeExtension theme, bool isDark) {
-    if (widget.isSelected) return theme.onPrimary;
-    if (_isAmoled(theme)) return theme.onSurface;
-    return isDark ? theme.onSurface.withValues(alpha: 0.7) : theme.onSurface;
+  Color _foregroundColor(AppThemeExtension theme) {
+    if (widget.isSelected) {
+      return theme.chipSelectedText;
+    }
+    return theme.chipUnselectedText;
   }
 
   Border? _border(AppThemeExtension theme) {
-    if (!_isAmoled(theme)) return null;
-    // AMOLED inactive: outlined white border; active: no visible border
     if (widget.isSelected) return null;
-    return Border.all(color: theme.onSurface.withValues(alpha: 0.5));
+    if (theme.chipBorder == AppColors.transparent) return null;
+    return Border.all(color: theme.chipBorder);
   }
 
   List<BoxShadow>? _boxShadow(AppThemeExtension theme) {
-    if (!_isAmoled(theme) || !widget.isSelected) return null;
-    // Glow effect for active AMOLED chip
-    final glow = theme.buttonGlow;
-    return glow != null ? [glow] : null;
+    if (widget.isSelected && theme.buttonGlow != null) {
+      return [theme.buttonGlow!];
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    final isDark = context.isDarkMode;
-
-    final bgColor = _backgroundColor(theme, isDark);
-    final fgColor = _foregroundColor(theme, isDark);
+    final bgColor = _backgroundColor(theme);
+    final fgColor = _foregroundColor(theme);
     final border = _border(theme);
     final shadow = _boxShadow(theme);
 

@@ -1,16 +1,18 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/components/feedback/app_loader.dart';
 
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
   group('$AppLoader', () {
-    testWidgets('renders CircularProgressIndicator', (tester) async {
+    testWidgets('renders pulsing shield icon', (tester) async {
       await tester.pumpApp(const AppLoader(), usePumpAndSettle: false);
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byIcon(LucideIcons.shieldCheck), findsOneWidget);
+      expect(find.byType(Container), findsOneWidget);
     });
 
-    testWidgets('uses custom size', (tester) async {
+    testWidgets('respects custom size', (tester) async {
       const size = 50.0;
 
       await tester.pumpApp(
@@ -18,14 +20,14 @@ void main() {
         usePumpAndSettle: false,
       );
 
-      final sizedBox = tester.widget<SizedBox>(
+      final container = tester.widget<Container>(
         find.descendant(
           of: find.byType(AppLoader),
-          matching: find.byType(SizedBox),
+          matching: find.byType(Container),
         ),
       );
-      expect(sizedBox.height, size);
-      expect(sizedBox.width, size);
+      expect(container.constraints?.minWidth, size);
+      expect(container.constraints?.minHeight, size);
     });
   });
 }

@@ -2,60 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 
-/// A Design System Input Field that encapsulates labeling, styling, and validation.
+/// A premium Input Field that encapsulates labeling, styling, and focus glows.
 ///
-/// This atom unifies the input field experience by coupling the label with
-/// the input decoration logic, ensuring consistent spacing and typography.
-///
-/// Example:
-/// ```dart
-/// AppTextField(
-///   label: 'Username',
-///   hint: 'Enter username',
-///   controller: _controller,
-///   prefixIcon: LucideIcons.user,
-/// )
-/// ```
-/// A Design System Input Field that encapsulates labeling, styling, and validation.
-///
-/// This atom unifies the input field experience by coupling the label with
-/// the input decoration logic, ensuring consistent spacing and typography.
-class AppTextField extends StatelessWidget {
-  /// The label displayed above the input field.
+/// This atom provides:
+/// - Focused glow effects (Obsidian Emerald).
+/// - Glassmorphic background support.
+/// - Integrated password style support.
+class AppTextField extends StatefulWidget {
   final String label;
-
-  /// The hint text displayed inside the input field when empty.
   final String? hint;
-
-  /// The controller for the text field.
   final TextEditingController? controller;
-
-  /// The validation function.
   final FormFieldValidator<String>? validator;
-
-  /// The icon to display at the start of the field.
   final IconData? prefixIcon;
-
-  /// The widget to display at the end of the field (e.g. visibility toggle).
   final Widget? suffixIcon;
-
-  /// Whether to obscure the text (for passwords).
   final bool obscureText;
-
-  /// The type of keyboard to display.
   final TextInputType? keyboardType;
-
-  /// The action button on the keyboard.
   final TextInputAction? textInputAction;
-
-  /// Callback when text changes.
   final ValueChanged<String>? onChanged;
-
-  /// Whether to use the monospaced password text style.
   final bool usePasswordStyle;
-
-  /// Whether to show a focus glow (useful for AMOLED).
-  final bool hasFocusGlow;
+  final bool isGlass;
 
   const AppTextField({
     super.key,
@@ -70,30 +35,93 @@ class AppTextField extends StatelessWidget {
     this.textInputAction,
     this.onChanged,
     this.usePasswordStyle = false,
-    this.hasFocusGlow = false,
+    this.isGlass = false,
   });
+
+  @override
+  State<AppTextField> createState() => _AppTextFieldState();
+}
+
+class _AppTextFieldState extends State<AppTextField> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() => _isFocused = _focusNode.hasFocus);
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
 
-    return TextFormField(
-      controller: controller,
-      validator: validator,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      textInputAction: textInputAction,
-      onChanged: onChanged,
-      style: usePasswordStyle ? theme.passwordText : null,
-      decoration: InputDecoration(
-        hintText: hint,
-        labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.auto,
-        prefixIcon: prefixIcon != null
-            ? Icon(prefixIcon, size: AppIconSize.m)
-            : null,
-        suffixIcon: suffixIcon,
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.m),
+            boxShadow: _isFocused && theme.focusGlow != null
+                ? [theme.focusGlow!]
+                : null,
+          ),
+          child: TextFormField(
+            focusNode: _focusNode,
+            controller: widget.controller,
+            validator: widget.validator,
+            obscureText: widget.obscureText,
+            keyboardType: widget.keyboardType,
+            textInputAction: widget.textInputAction,
+            onChanged: widget.onChanged,
+            style: widget.usePasswordStyle
+                ? theme.passwordText
+                : context.typography.bodyLarge,
+            decoration: InputDecoration(
+              hintText: widget.hint,
+              labelText: widget.label,
+              floatingLabelBehavior: FloatingLabelBehavior.auto,
+              prefixIcon: widget.prefixIcon != null
+                  ? Icon(widget.prefixIcon, size: AppIconSize.m)
+                  : null,
+              suffixIcon: widget.suffixIcon,
+              filled: true,
+              fillColor: widget.isGlass
+                  ? theme.surface.withValues(alpha: theme.glassOpacity)
+                  : theme.surfaceDim.withValues(alpha: 0.5),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.m),
+                borderSide: BorderSide(color: theme.cardBorder),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.m),
+                borderSide: BorderSide(color: theme.primary, width: 2),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.m),
+                borderSide: BorderSide(color: theme.error),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.m),
+                borderSide: BorderSide(color: theme.error, width: 2),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
