@@ -60,7 +60,6 @@ class ActiveStrategyCard extends StatelessWidget {
     final colorScheme = context.colorScheme;
 
     return AppCard(
-      hasOutline: true,
       onTap: onEdit,
       padding: const EdgeInsets.all(AppSpacing.l),
       child: Row(

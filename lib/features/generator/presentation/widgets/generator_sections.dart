@@ -26,7 +26,6 @@ class GeneratorGeneratedPasswordCard extends StatelessWidget {
         : state.generatedPassword;
     return RepaintBoundary(
       child: AppCard(
-        hasGlow: context.isAmoled,
         padding: const EdgeInsets.all(AppSpacing.l),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 40),

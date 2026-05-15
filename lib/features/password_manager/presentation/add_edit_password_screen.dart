@@ -143,8 +143,6 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
         }
       },
       builder: (context, state) {
-        final isAmoled = context.isAmoled;
-
         return Scaffold(
           bottomNavigationBar: PersistentBottomBar(
             scrollController: _scrollController,
@@ -207,7 +205,6 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           AppCard(
-                            hasGlow: isAmoled,
                             padding: const EdgeInsets.all(AppSpacing.l),
                             child: Column(
                               spacing: AppSpacing.l,

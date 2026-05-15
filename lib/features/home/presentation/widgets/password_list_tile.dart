@@ -28,10 +28,10 @@ class PasswordListTile extends StatelessWidget {
       direction: DismissDirection.endToStart,
       onDismissed: (_) => onDismissed(),
       child: AppCard(
-        hasGlow: false,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppRadius.m),
+        onTap: onTap,
+        padding: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.m),
           child: Row(
             children: [
               _PasswordLeadingIcon(appName: entry.appName),

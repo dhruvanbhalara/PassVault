@@ -22,11 +22,12 @@ class GroupedPasswordListTile extends StatelessWidget {
         : context.l10n.groupedCredentialCount(group.accountCount);
 
     return AppCard(
-      hasGlow: false,
-      child: InkWell(
-        key: Key('grouped_password_tile_${group.canonicalKey}'),
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.m),
+      key: Key('grouped_password_tile_${group.canonicalKey}'),
+      onTap: onTap,
+      variant: AppCardVariant.glass,
+      padding: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.m),
         child: Row(
           children: [
             _GroupLeadingIcon(label: group.displayName),
@@ -78,7 +79,7 @@ class _GroupLeadingIcon extends StatelessWidget {
       height: AppDimensions.listTileIconSize,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: context.theme.primary.withValues(alpha: 0.1),
+          color: context.theme.primary.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(AppRadius.m),
         ),
         child: Center(

@@ -40,7 +40,6 @@ class PasswordGenerationControlsCard extends StatelessWidget {
     final isRandom = strategy.type == PasswordStrategyType.random;
 
     return AppCard(
-      hasGlow: context.isAmoled,
       padding: const EdgeInsets.all(AppSpacing.l),
       child: AnimatedSize(
         duration: const Duration(milliseconds: 300),
