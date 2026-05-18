@@ -10,12 +10,6 @@ enum AppCardVariant {
   /// Elevated style with a shadow (best for Light mode).
   elevated,
 
-  /// Outlined style with a subtle border (best for Dark/AMOLED modes).
-  outlined,
-
-  /// Flat background without borders or shadows.
-  filled,
-
   /// Premium glassmorphic vault styling with blur and gradient.
   glass,
 }
@@ -103,62 +97,37 @@ class _AppCardState extends State<AppCard> {
 
     Widget cardBody;
 
-    switch (effectiveVariant) {
-      case AppCardVariant.glass:
-        cardBody = ClipRRect(
+    if (effectiveVariant == AppCardVariant.glass) {
+      cardBody = ClipRRect(
+        borderRadius: borderRadius,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: theme.glassBlur,
+            sigmaY: theme.glassBlur,
+          ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: theme.surface.withValues(alpha: theme.glassOpacity),
+              borderRadius: borderRadius,
+              border: Border.all(color: theme.cardBorder),
+            ),
+            child: materialInner,
+          ),
+        ),
+      );
+    } else {
+      final isShadowless = theme.cardShadow.color == Colors.transparent;
+      cardBody = DecoratedBox(
+        decoration: BoxDecoration(
+          color: widget.backgroundColor ?? theme.surface,
           borderRadius: borderRadius,
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: theme.glassBlur,
-              sigmaY: theme.glassBlur,
-            ),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: theme.surface.withValues(alpha: theme.glassOpacity),
-                borderRadius: borderRadius,
-                border: Border.all(color: theme.cardBorder),
-              ),
-              child: materialInner,
-            ),
-          ),
-        );
-        break;
-
-      case AppCardVariant.outlined:
-        cardBody = DecoratedBox(
-          decoration: BoxDecoration(
-            color: widget.backgroundColor ?? theme.surface,
-            borderRadius: borderRadius,
-            border: Border.all(color: theme.cardBorder),
-          ),
-          child: materialInner,
-        );
-        break;
-
-      case AppCardVariant.filled:
-        cardBody = DecoratedBox(
-          decoration: BoxDecoration(
-            color: widget.backgroundColor ?? theme.surfaceHighlight,
-            borderRadius: borderRadius,
-          ),
-          child: materialInner,
-        );
-        break;
-
-      case AppCardVariant.elevated:
-        final isShadowless = theme.cardShadow.color == Colors.transparent;
-        cardBody = DecoratedBox(
-          decoration: BoxDecoration(
-            color: widget.backgroundColor ?? theme.surface,
-            borderRadius: borderRadius,
-            boxShadow: isShadowless ? null : [theme.cardShadow],
-            border: (isShadowless || context.isDarkMode)
-                ? Border.all(color: theme.cardBorder)
-                : null,
-          ),
-          child: materialInner,
-        );
-        break;
+          boxShadow: isShadowless ? null : [theme.cardShadow],
+          border: (isShadowless || context.isDarkMode)
+              ? Border.all(color: theme.cardBorder)
+              : null,
+        ),
+        child: materialInner,
+      );
     }
 
     return AnimatedScale(

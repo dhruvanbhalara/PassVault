@@ -24,50 +24,54 @@ class PageHeader extends StatelessWidget {
     final colors = context.theme;
     final hasSubtitle = subtitle != null && subtitle!.isNotEmpty;
 
-    return SizedBox(
-      height: hasSubtitle ? 64 : 44,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: showBack
-                ? IconButton(
-                    tooltip: MaterialLocalizations.of(
-                      context,
-                    ).backButtonTooltip,
-                    icon: const Icon(LucideIcons.chevronLeft),
-                    color: colors.onSurface,
-                    onPressed: onBack ?? () => Navigator.of(context).maybePop(),
-                  )
-                : const SizedBox(width: AppSpacing.s),
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  title,
-                  style: typography.headlineSmall,
-                  textAlign: TextAlign.center,
-                ),
-                if (hasSubtitle) ...[
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    subtitle!,
-                    textAlign: TextAlign.center,
-                    style: typography.bodyMedium?.copyWith(
-                      color: colors.onSurface.withValues(alpha: 0.7),
-                    ),
-                  ),
-                ],
-              ],
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: AppSpacing.xxl),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.s),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: showBack
+                  ? IconButton(
+                      tooltip: MaterialLocalizations.of(
+                        context,
+                      ).backButtonTooltip,
+                      icon: const Icon(LucideIcons.chevronLeft),
+                      color: colors.onSurface,
+                      onPressed:
+                          onBack ?? () => Navigator.of(context).maybePop(),
+                    )
+                  : const SizedBox(width: AppSpacing.s),
             ),
-          ),
-          if (trailing != null)
-            Align(alignment: Alignment.centerRight, child: trailing),
-        ],
+            Align(
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: typography.headlineSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                  if (hasSubtitle) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      subtitle!,
+                      textAlign: TextAlign.center,
+                      style: typography.bodyMedium?.copyWith(
+                        color: colors.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (trailing != null)
+              Align(alignment: Alignment.centerRight, child: trailing),
+          ],
+        ),
       ),
     );
   }

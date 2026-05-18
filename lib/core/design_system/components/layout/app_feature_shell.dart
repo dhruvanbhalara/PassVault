@@ -24,15 +24,38 @@ class AppFeatureShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final body = _buildBody(context);
+    final body = _FeatureShellBody(
+      title: title,
+      slivers: slivers,
+      showBack: showBack,
+      onBack: onBack,
+      floatingActionButton: floatingActionButton,
+    );
 
     return Scaffold(
       backgroundColor: backgroundColor,
       body: bodyWrapper?.call(context, body) ?? body,
     );
   }
+}
 
-  Widget _buildBody(BuildContext context) {
+class _FeatureShellBody extends StatelessWidget {
+  final String title;
+  final List<Widget> slivers;
+  final bool showBack;
+  final VoidCallback? onBack;
+  final Widget? floatingActionButton;
+
+  const _FeatureShellBody({
+    required this.title,
+    required this.slivers,
+    required this.showBack,
+    this.onBack,
+    this.floatingActionButton,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final scrollView = CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -54,6 +77,12 @@ class AppFeatureShell extends StatelessWidget {
           ),
         ),
         ...slivers,
+        if (floatingActionButton != null)
+          const SliverPadding(
+            padding: EdgeInsets.only(
+              bottom: AppSpacing.xxl * 2,
+            ), // Ensure space for FAB
+          ),
       ],
     );
 
@@ -62,7 +91,7 @@ class AppFeatureShell extends StatelessWidget {
     }
 
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    const fabSize = 56.0;
+    const fabSize = AppSpacing.xxl + 8.0; // Typically 56.0
     final fabBottomOffset =
         AppSpacing.m + (kBottomNavigationBarHeight - fabSize) / 2 + bottomInset;
 

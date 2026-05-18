@@ -3,9 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:passvault/core/design_system/theme/app_dimensions.dart';
 import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 
-enum AppButtonVariant { primary, outlined, ghost }
-
-/// A premium interactive button component.
+/// A premium interactive primary button component.
 ///
 /// Features:
 /// - "Obsidian Emerald" gradient support.
@@ -18,7 +16,6 @@ class AppButton extends StatefulWidget {
   final bool isLoading;
   final IconData? icon;
   final bool isFullWidth;
-  final AppButtonVariant variant;
   final bool isGradient;
   final Color? backgroundColor;
   final Color? foregroundColor;
@@ -30,7 +27,6 @@ class AppButton extends StatefulWidget {
     this.isLoading = false,
     this.icon,
     this.isFullWidth = true,
-    this.variant = AppButtonVariant.primary,
     this.isGradient = false,
     this.backgroundColor,
     this.foregroundColor,
@@ -78,8 +74,6 @@ class _AppButtonState extends State<AppButton>
       text: widget.text,
       icon: widget.icon,
       foregroundColor: widget.foregroundColor,
-      variant: widget.variant,
-      isGradient: widget.isGradient,
     );
 
     return AnimatedScale(
@@ -92,7 +86,6 @@ class _AppButtonState extends State<AppButton>
         onTapCancel: _handleTapCancel,
         onTap: _onTap,
         child: _ButtonBackground(
-          variant: widget.variant,
           isGradient: widget.isGradient,
           isFullWidth: widget.isFullWidth,
           backgroundColor: widget.backgroundColor,
@@ -106,7 +99,6 @@ class _AppButtonState extends State<AppButton>
 }
 
 class _ButtonBackground extends StatelessWidget {
-  final AppButtonVariant variant;
   final bool isGradient;
   final bool isFullWidth;
   final Color? backgroundColor;
@@ -115,7 +107,6 @@ class _ButtonBackground extends StatelessWidget {
   final Widget child;
 
   const _ButtonBackground({
-    required this.variant,
     required this.isGradient,
     required this.isFullWidth,
     this.backgroundColor,
@@ -146,23 +137,6 @@ class _ButtonBackground extends StatelessWidget {
 
   BoxDecoration _getDecoration(AppThemeExtension theme, bool isDisabled) {
     final borderRadius = BorderRadius.circular(AppRadius.m);
-
-    if (variant == AppButtonVariant.ghost) {
-      return const BoxDecoration();
-    }
-
-    if (variant == AppButtonVariant.outlined) {
-      final color = backgroundColor ?? theme.primary;
-      return BoxDecoration(
-        borderRadius: borderRadius,
-        border: Border.all(
-          color: isDisabled ? color.withValues(alpha: 0.3) : color,
-          width: 1.5,
-        ),
-      );
-    }
-
-    // Primary variant
     final baseColor = backgroundColor ?? theme.primary;
 
     return BoxDecoration(
@@ -186,30 +160,18 @@ class _ButtonContent extends StatelessWidget {
   final String text;
   final IconData? icon;
   final Color? foregroundColor;
-  final AppButtonVariant variant;
-  final bool isGradient;
 
   const _ButtonContent({
     required this.isLoading,
     required this.text,
     this.icon,
     this.foregroundColor,
-    required this.variant,
-    required this.isGradient,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-
-    Color textColor;
-    if (foregroundColor != null) {
-      textColor = foregroundColor!;
-    } else if (variant == AppButtonVariant.primary) {
-      textColor = theme.onPrimary;
-    } else {
-      textColor = theme.primary;
-    }
+    final textColor = foregroundColor ?? theme.onPrimary;
 
     if (isLoading) {
       return Center(
