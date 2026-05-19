@@ -35,8 +35,6 @@ class DarkThemePreset {
         blurRadius: 12,
         offset: const Offset(0, 4),
       ),
-      glassBlur: 20,
-      glassOpacity: 0.15,
       passwordText: const TextStyle(
         fontFamily: _monoFontFamily,
         fontSize: 16,

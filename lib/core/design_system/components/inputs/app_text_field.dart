@@ -6,7 +6,6 @@ import 'package:passvault/core/design_system/theme/app_theme_extension.dart';
 ///
 /// This atom provides:
 /// - Focused glow effects (Obsidian Emerald).
-/// - Glassmorphic background support.
 /// - Integrated password style support.
 class AppTextField extends StatefulWidget {
   final String label;
@@ -20,7 +19,6 @@ class AppTextField extends StatefulWidget {
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onChanged;
   final bool usePasswordStyle;
-  final bool isGlass;
 
   const AppTextField({
     super.key,
@@ -35,7 +33,6 @@ class AppTextField extends StatefulWidget {
     this.textInputAction,
     this.onChanged,
     this.usePasswordStyle = false,
-    this.isGlass = false,
   });
 
   @override
@@ -99,9 +96,7 @@ class _AppTextFieldState extends State<AppTextField> {
                   : null,
               suffixIcon: widget.suffixIcon,
               filled: true,
-              fillColor: widget.isGlass
-                  ? theme.surface.withValues(alpha: theme.glassOpacity)
-                  : theme.surfaceDim.withValues(alpha: 0.5),
+              fillColor: theme.surfaceDim.withValues(alpha: 0.5),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.m),
                 borderSide: BorderSide(color: theme.cardBorder),

@@ -24,7 +24,6 @@ class GroupedPasswordListTile extends StatelessWidget {
     return AppCard(
       key: Key('grouped_password_tile_${group.canonicalKey}'),
       onTap: onTap,
-      variant: AppCardVariant.glass,
       padding: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.m),

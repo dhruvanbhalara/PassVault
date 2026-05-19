@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -118,89 +117,81 @@ class _BottomNavBar extends StatelessWidget {
           decoration: _buildDecoration(colors, themeType),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(AppRadius.full),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: colors.glassBlur,
-                sigmaY: colors.glassBlur,
-              ),
-              child: ColoredBox(
-                color: colors.surface.withValues(alpha: colors.glassOpacity),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final itemWidth = constraints.maxWidth / itemCount;
-                    // Premium Fluid Pill Indicator
-                    final indicatorWidth = itemWidth * 0.7;
-                    const indicatorHeight = 40.0;
-                    final indicatorOffset =
-                        (itemWidth - indicatorWidth) / 2 +
-                        itemWidth * currentIndex;
+            child: ColoredBox(
+              color: colors.surface,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final itemWidth = constraints.maxWidth / itemCount;
+                  // Premium Fluid Pill Indicator
+                  final indicatorWidth = itemWidth * 0.7;
+                  const indicatorHeight = 40.0;
+                  final indicatorOffset =
+                      (itemWidth - indicatorWidth) / 2 +
+                      itemWidth * currentIndex;
 
-                    return Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        AnimatedPositioned(
-                          duration: AppDuration.normal,
-                          curve: AppCurves.emphasizeEntrance,
-                          left: indicatorOffset,
-                          child: Center(
-                            child: Container(
-                              width: indicatorWidth,
-                              height: indicatorHeight,
-                              decoration: BoxDecoration(
-                                color: colors.primary.withValues(alpha: 0.16),
-                                borderRadius: BorderRadius.circular(
-                                  AppRadius.full,
-                                ),
-                                boxShadow: [
-                                  if (colors.navIndicatorShadow != null)
-                                    colors.navIndicatorShadow!,
-                                ],
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      AnimatedPositioned(
+                        duration: AppDuration.normal,
+                        curve: AppCurves.emphasizeEntrance,
+                        left: indicatorOffset,
+                        child: Center(
+                          child: Container(
+                            width: indicatorWidth,
+                            height: indicatorHeight,
+                            decoration: BoxDecoration(
+                              color: colors.primary.withValues(alpha: 0.16),
+                              borderRadius: BorderRadius.circular(
+                                AppRadius.full,
                               ),
+                              boxShadow: [
+                                if (colors.navIndicatorShadow != null)
+                                  colors.navIndicatorShadow!,
+                              ],
                             ),
                           ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _NavItem(
-                              width: itemWidth,
-                              icon: LucideIcons.house,
-                              semanticsLabel: l10n.tabSemanticsLabel(
-                                l10n.vault,
-                              ),
-                              isActive: currentIndex == 0,
-                              activeColor: colors.primary,
-                              inactiveColor: colors.bottomNavInactiveIcon,
-                              onTap: () => onTap(0),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _NavItem(
+                            width: itemWidth,
+                            icon: LucideIcons.house,
+                            semanticsLabel: l10n.tabSemanticsLabel(l10n.vault),
+                            isActive: currentIndex == 0,
+                            activeColor: colors.primary,
+                            inactiveColor: colors.bottomNavInactiveIcon,
+                            onTap: () => onTap(0),
+                          ),
+                          _NavItem(
+                            width: itemWidth,
+                            icon: LucideIcons.shield,
+                            semanticsLabel: l10n.tabSemanticsLabel(
+                              l10n.generator,
                             ),
-                            _NavItem(
-                              width: itemWidth,
-                              icon: LucideIcons.shield,
-                              semanticsLabel: l10n.tabSemanticsLabel(
-                                l10n.generator,
-                              ),
-                              isActive: currentIndex == 1,
-                              activeColor: colors.primary,
-                              inactiveColor: colors.bottomNavInactiveIcon,
-                              onTap: () => onTap(1),
+                            isActive: currentIndex == 1,
+                            activeColor: colors.primary,
+                            inactiveColor: colors.bottomNavInactiveIcon,
+                            onTap: () => onTap(1),
+                          ),
+                          _NavItem(
+                            width: itemWidth,
+                            icon: LucideIcons.settings,
+                            semanticsLabel: l10n.tabSemanticsLabel(
+                              l10n.settings,
                             ),
-                            _NavItem(
-                              width: itemWidth,
-                              icon: LucideIcons.settings,
-                              semanticsLabel: l10n.tabSemanticsLabel(
-                                l10n.settings,
-                              ),
-                              isActive: currentIndex == 2,
-                              activeColor: colors.primary,
-                              inactiveColor: colors.bottomNavInactiveIcon,
-                              onTap: () => onTap(2),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
-                ),
+                            isActive: currentIndex == 2,
+                            activeColor: colors.primary,
+                            inactiveColor: colors.bottomNavInactiveIcon,
+                            onTap: () => onTap(2),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),

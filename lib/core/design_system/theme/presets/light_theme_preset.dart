@@ -35,8 +35,6 @@ class LightThemePreset {
         blurRadius: 10,
         offset: const Offset(0, 4),
       ),
-      glassBlur: 16,
-      glassOpacity: 0.1,
       passwordText: const TextStyle(
         fontFamily: _monoFontFamily,
         fontSize: 16,

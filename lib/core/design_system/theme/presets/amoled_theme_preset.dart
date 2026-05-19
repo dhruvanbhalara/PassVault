@@ -33,8 +33,6 @@ class AmoledThemePreset {
       cardShadow: const BoxShadow(
         color: AppColors.transparent,
       ), // Shadowless AMOLED
-      glassBlur: 20,
-      glassOpacity: 0.2,
       passwordText: const TextStyle(
         fontFamily: _monoFontFamily,
         fontSize: 16,
