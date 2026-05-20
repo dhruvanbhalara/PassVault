@@ -59,18 +59,10 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
             SliverToBoxAdapter(
               child: SafeArea(
                 bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.l,
-                    AppSpacing.m,
-                    AppSpacing.l,
-                    AppSpacing.s,
-                  ),
-                  child: PageHeader(
-                    title: l10n.exportVault,
-                    showBack: true,
-                    onBack: () => Navigator.of(context).maybePop(),
-                  ),
+                child: PageHeader(
+                  title: l10n.exportVault,
+                  showBack: true,
+                  onBack: () => Navigator.of(context).maybePop(),
                 ),
               ),
             ),

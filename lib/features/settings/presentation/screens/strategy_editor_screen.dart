@@ -73,26 +73,21 @@ class _StrategyEditorScreenState extends State<StrategyEditorScreen> {
           bottom: false,
           child: CustomScrollView(
             slivers: [
+              SliverToBoxAdapter(
+                child: SafeArea(
+                  bottom: false,
+                  child: PageHeader(
+                    title: l10n.errorOccurred,
+                    showBack: true,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
               SliverFillRemaining(
                 hasScrollBody: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.l,
-                    AppSpacing.m,
-                    AppSpacing.l,
-                    AppSpacing.m,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      PageHeader(
-                        title: l10n.errorOccurred,
-                        showBack: true,
-                        onBack: () => context.pop(),
-                      ),
-                      const SizedBox(height: AppSpacing.l),
-                      Text('${l10n.errorOccurred}: ${l10n.noStrategiesFound}'),
-                    ],
+                child: Center(
+                  child: Text(
+                    '${l10n.errorOccurred}: ${l10n.noStrategiesFound}',
                   ),
                 ),
               ),
@@ -129,18 +124,10 @@ class _StrategyEditorScreenState extends State<StrategyEditorScreen> {
               SliverToBoxAdapter(
                 child: SafeArea(
                   bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.l,
-                      AppSpacing.m,
-                      AppSpacing.l,
-                      AppSpacing.s,
-                    ),
-                    child: PageHeader(
-                      title: title,
-                      showBack: true,
-                      onBack: () => context.pop(),
-                    ),
+                  child: PageHeader(
+                    title: title,
+                    showBack: true,
+                    onBack: () => context.pop(),
                   ),
                 ),
               ),

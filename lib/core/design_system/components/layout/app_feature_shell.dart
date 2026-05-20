@@ -61,19 +61,7 @@ class _FeatureShellBody extends StatelessWidget {
         SliverToBoxAdapter(
           child: SafeArea(
             bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.l,
-                AppSpacing.m,
-                AppSpacing.l,
-                AppSpacing.s,
-              ),
-              child: PageHeader(
-                title: title,
-                showBack: showBack,
-                onBack: onBack,
-              ),
-            ),
+            child: PageHeader(title: title, showBack: showBack, onBack: onBack),
           ),
         ),
         ...slivers,

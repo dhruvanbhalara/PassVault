@@ -30,15 +30,7 @@ class HomeScreen extends StatelessWidget {
               SliverToBoxAdapter(
                 child: SafeArea(
                   bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.l,
-                      AppSpacing.m,
-                      AppSpacing.l,
-                      AppSpacing.s,
-                    ),
-                    child: PageHeader(title: l10n.vault),
-                  ),
+                  child: PageHeader(title: l10n.vault),
                 ),
               ),
               BlocBuilder<PasswordBloc, PasswordState>(
