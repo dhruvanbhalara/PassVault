@@ -3,42 +3,6 @@ import 'package:passvault/features/generator/presentation/widgets/generator_cont
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
-  group('$LengthStepperButton', () {
-    testWidgets('renders icon and calls onTap when enabled', (tester) async {
-      var tapped = false;
-      await tester.pumpApp(
-        LengthStepperButton(
-          icon: Icons.add,
-          isEnabled: true,
-          onTap: () => tapped = true,
-        ),
-      );
-
-      expect(find.byIcon(Icons.add), findsOneWidget);
-
-      await tester.tap(find.byType(IconButton));
-      await tester.pump();
-
-      expect(tapped, isTrue);
-    });
-
-    testWidgets('does not call onTap when disabled', (tester) async {
-      var tapped = false;
-      await tester.pumpApp(
-        LengthStepperButton(
-          icon: Icons.remove,
-          isEnabled: false,
-          onTap: () => tapped = true,
-        ),
-      );
-
-      await tester.tap(find.byType(IconButton));
-      await tester.pump();
-
-      expect(tapped, isFalse);
-    });
-  });
-
   group('$GeneratorToggleTile', () {
     testWidgets('renders label and toggle switch', (tester) async {
       await tester.pumpApp(

@@ -7,11 +7,13 @@ import 'package:password_engine/password_engine.dart' show PasswordStrength;
 class PasswordStrengthWidget extends StatelessWidget {
   final PasswordFeedback strength;
   final Color? labelColor;
+  final Color? valueColor;
 
   const PasswordStrengthWidget({
     super.key,
     required this.strength,
     this.labelColor,
+    this.valueColor,
   });
 
   @override
@@ -22,7 +24,6 @@ class PasswordStrengthWidget extends StatelessWidget {
 
     final color = _strengthColor(strength.strength, theme);
     final text = _strengthText(strength.strength, l10n);
-    final progress = _strengthProgress(strength.strength);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +41,7 @@ class PasswordStrengthWidget extends StatelessWidget {
             AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 300),
               style: typography.labelMedium!.copyWith(
-                color: color,
+                color: valueColor ?? color,
                 fontWeight: FontWeight.bold,
               ),
               child: Text(text),
@@ -48,51 +49,45 @@ class PasswordStrengthWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.s),
-        Stack(
-          children: [
-            // Background track
-            Container(
-              height: 6,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: theme.surfaceDim,
-                borderRadius: BorderRadius.circular(AppRadius.full),
-              ),
-            ),
-            // Progress bar
-            AnimatedFractionallySizedBox(
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeOutCubic,
-              widthFactor: progress,
+        Row(
+          children: List.generate(5, (index) {
+            final isActive = index < _strengthSegmentCount(strength.strength);
+            return Expanded(
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 height: 6,
+                margin: EdgeInsets.only(right: index == 4 ? 0 : AppSpacing.xs),
                 decoration: BoxDecoration(
-                  color: color,
+                  color: isActive
+                      ? (labelColor ?? color)
+                      : (labelColor?.withValues(alpha: 0.2) ??
+                            theme.surfaceDim),
                   borderRadius: BorderRadius.circular(AppRadius.full),
-                  boxShadow: [
-                    BoxShadow(
-                      color: color.withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                  ],
+                  boxShadow: isActive
+                      ? [
+                          BoxShadow(
+                            color: (labelColor ?? color).withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            spreadRadius: 1,
+                          ),
+                        ]
+                      : null,
                 ),
               ),
-            ),
-          ],
+            );
+          }),
         ),
       ],
     );
   }
 
-  double _strengthProgress(PasswordStrength strength) {
+  int _strengthSegmentCount(PasswordStrength strength) {
     return switch (strength) {
-      PasswordStrength.veryWeak => 0.2,
-      PasswordStrength.weak => 0.4,
-      PasswordStrength.medium => 0.6,
-      PasswordStrength.strong => 0.8,
-      PasswordStrength.veryStrong => 1.0,
+      PasswordStrength.veryWeak => 1,
+      PasswordStrength.weak => 2,
+      PasswordStrength.medium => 3,
+      PasswordStrength.strong => 4,
+      PasswordStrength.veryStrong => 5,
     };
   }
 

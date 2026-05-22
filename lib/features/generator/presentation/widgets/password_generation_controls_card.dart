@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/generator/presentation/widgets/generator_control_widgets.dart';
@@ -58,20 +57,23 @@ class PasswordGenerationControlsCard extends StatelessWidget {
                               style: context.typography.labelMedium,
                             ),
                           ),
-                          _CountStepper(
-                            decreaseKey: Key(
-                              '${controlsPrefix}_length_decrease',
+                          Text(
+                            length.toString(),
+                            style: context.typography.labelLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: context.colorScheme.primary,
                             ),
-                            increaseKey: Key(
-                              '${controlsPrefix}_length_increase',
-                            ),
-                            badgeKey: Key('${controlsPrefix}_length_badge'),
-                            value: length,
-                            min: 16,
-                            max: 64,
-                            onChanged: onLengthChanged,
                           ),
                         ],
+                      ),
+                      const SizedBox(height: AppSpacing.s),
+                      Slider(
+                        value: length.toDouble(),
+                        min: 16,
+                        max: 64,
+                        divisions: 48, // (64 - 16)
+                        label: length.toString(),
+                        onChanged: (value) => onLengthChanged(value.round()),
                       ),
                       const Divider(height: AppSpacing.l),
                       GeneratorToggleTile(
@@ -114,20 +116,23 @@ class PasswordGenerationControlsCard extends StatelessWidget {
                               style: context.typography.labelMedium,
                             ),
                           ),
-                          _CountStepper(
-                            decreaseKey: Key(
-                              '${controlsPrefix}_word_count_decrease',
+                          Text(
+                            strategy.wordCount.toString(),
+                            style: context.typography.labelLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: context.colorScheme.primary,
                             ),
-                            increaseKey: Key(
-                              '${controlsPrefix}_word_count_increase',
-                            ),
-                            badgeKey: Key('${controlsPrefix}_word_count_badge'),
-                            value: strategy.wordCount,
-                            min: 3,
-                            max: 10,
-                            onChanged: onWordCountChanged,
                           ),
                         ],
+                      ),
+                      const SizedBox(height: AppSpacing.s),
+                      Slider(
+                        value: strategy.wordCount.toDouble(),
+                        min: 3,
+                        max: 10,
+                        divisions: 7, // (10 - 3)
+                        label: strategy.wordCount.toString(),
+                        onChanged: (value) => onWordCountChanged(value.round()),
                       ),
                       const Divider(height: AppSpacing.l),
                       Row(
@@ -181,72 +186,6 @@ class PasswordGenerationControlsCard extends StatelessWidget {
                 .animate()
                 .fadeIn(duration: 300.ms, curve: Curves.easeOut)
                 .slideX(begin: 0.05, end: 0, curve: Curves.easeOutQuad),
-      ),
-    );
-  }
-}
-
-class _CountStepper extends StatelessWidget {
-  final Key decreaseKey;
-  final Key increaseKey;
-  final Key badgeKey;
-  final int value;
-  final int min;
-  final int max;
-  final ValueChanged<int> onChanged;
-
-  const _CountStepper({
-    required this.decreaseKey,
-    required this.increaseKey,
-    required this.badgeKey,
-    required this.value,
-    required this.min,
-    required this.max,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.theme.primaryContainer,
-        borderRadius: BorderRadius.circular(AppRadius.m),
-      ),
-      child: Row(
-        children: [
-          LengthStepperButton(
-            key: decreaseKey,
-            icon: LucideIcons.minus,
-            isEnabled: value > min,
-            onTap: () => onChanged(value - 1),
-          ),
-          const SizedBox(width: AppSpacing.xs),
-          Container(
-            key: badgeKey,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.m,
-              vertical: AppSpacing.xs,
-            ),
-            decoration: BoxDecoration(
-              color: context.theme.primaryContainer,
-              borderRadius: BorderRadius.circular(AppRadius.full),
-            ),
-            child: Text(
-              value.toString(),
-              style: context.typography.labelMedium?.copyWith(
-                color: context.theme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(width: AppSpacing.xs),
-          LengthStepperButton(
-            key: increaseKey,
-            icon: LucideIcons.plus,
-            isEnabled: value < max,
-            onTap: () => onChanged(value + 1),
-          ),
-        ],
       ),
     );
   }

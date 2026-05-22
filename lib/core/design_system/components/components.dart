@@ -9,6 +9,7 @@ export 'buttons/app_button.dart';
 export 'common/app_radio_option_card.dart';
 export 'common/app_section_header.dart';
 export 'common/page_header.dart';
+export 'common/password_preview_card.dart';
 export 'common/password_strength_widget.dart';
 // Feedback
 export 'feedback/app_loader.dart';
