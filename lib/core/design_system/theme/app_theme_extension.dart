@@ -33,6 +33,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.primaryContainer,
     required this.onPrimaryContainer,
     required this.cardShadow,
+    required this.glassBlur,
+    required this.glassOpacity,
     required this.passwordText,
     required this.vaultGradient,
     required this.onVaultGradient,
@@ -51,12 +53,12 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.bottomNavInactiveIcon,
     required this.logoBackground,
     required this.logoBorder,
+    this.logoShadow,
     required this.radioCardSelectedShadow,
     required this.cardPressedScale,
     this.navIndicatorShadow,
     this.focusGlow,
     this.buttonGlow,
-    this.logoShadow,
   });
 
   final Color primary;
@@ -83,6 +85,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   final Color onPrimaryContainer;
 
   final BoxShadow cardShadow;
+  final double glassBlur;
+  final double glassOpacity;
 
   /// Monospaced style for clear, unambiguous password reading.
   ///
@@ -145,6 +149,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     Color? primaryContainer,
     Color? onPrimaryContainer,
     BoxShadow? cardShadow,
+    double? glassBlur,
+    double? glassOpacity,
     TextStyle? passwordText,
     LinearGradient? vaultGradient,
     Color? onVaultGradient,
@@ -193,6 +199,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       primaryContainer: primaryContainer ?? this.primaryContainer,
       onPrimaryContainer: onPrimaryContainer ?? this.onPrimaryContainer,
       cardShadow: cardShadow ?? this.cardShadow,
+      glassBlur: glassBlur ?? this.glassBlur,
+      glassOpacity: glassOpacity ?? this.glassOpacity,
       passwordText: passwordText ?? this.passwordText,
       vaultGradient: vaultGradient ?? this.vaultGradient,
       onVaultGradient: onVaultGradient ?? this.onVaultGradient,
@@ -272,6 +280,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         t,
       )!,
       cardShadow: BoxShadow.lerp(cardShadow, other.cardShadow, t)!,
+      glassBlur: lerpDouble(glassBlur, other.glassBlur, t)!,
+      glassOpacity: lerpDouble(glassOpacity, other.glassOpacity, t)!,
       passwordText: TextStyle.lerp(passwordText, other.passwordText, t)!,
       vaultGradient: LinearGradient.lerp(
         vaultGradient,
