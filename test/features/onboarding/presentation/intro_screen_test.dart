@@ -44,6 +44,14 @@ void main() {
     });
 
     Future<void> loadIntroScreen(WidgetTester tester) async {
+      // Set a realistic mobile device screen size to ensure layout fits perfectly without nested viewport clipping
+      tester.view.physicalSize = const Size(400, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
       robot = OnboardingRobot(tester);
       await tester.pumpApp(
         BlocProvider<OnboardingBloc>.value(
