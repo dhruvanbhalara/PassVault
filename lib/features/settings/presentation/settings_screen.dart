@@ -69,15 +69,7 @@ class SettingsScreen extends StatelessWidget {
             SliverToBoxAdapter(
               child: SafeArea(
                 bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.l,
-                    AppSpacing.m,
-                    AppSpacing.l,
-                    AppSpacing.s,
-                  ),
-                  child: PageHeader(title: l10n.settings),
-                ),
+                child: PageHeader(title: l10n.settings),
               ),
             ),
 

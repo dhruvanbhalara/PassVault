@@ -80,18 +80,10 @@ class _GroupedDetailsLoadedScaffold extends StatelessWidget {
           SliverToBoxAdapter(
             child: SafeArea(
               bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.l,
-                  AppSpacing.m,
-                  AppSpacing.l,
-                  AppSpacing.s,
-                ),
-                child: PageHeader(
-                  title: group.displayName,
-                  showBack: true,
-                  onBack: () => Navigator.of(context).maybePop(),
-                ),
+              child: PageHeader(
+                title: group.displayName,
+                showBack: true,
+                onBack: () => Navigator.of(context).maybePop(),
               ),
             ),
           ),

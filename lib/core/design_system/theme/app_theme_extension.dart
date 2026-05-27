@@ -372,7 +372,6 @@ extension AppThemeExtensionContext on BuildContext {
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
   TextTheme get typography => Theme.of(this).textTheme;
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
-  bool get isAmoled => Theme.of(this).scaffoldBackgroundColor == Colors.black;
 
   /// Shortcut for accessing the current localizations.
   AppLocalizations get l10n => AppLocalizations.of(this)!;

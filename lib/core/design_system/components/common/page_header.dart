@@ -24,8 +24,11 @@ class PageHeader extends StatelessWidget {
     final colors = context.theme;
     final hasSubtitle = subtitle != null && subtitle!.isNotEmpty;
 
-    return SizedBox(
-      height: hasSubtitle ? 64 : 44,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minHeight: kToolbarHeight,
+        maxHeight: kToolbarHeight,
+      ),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -40,7 +43,7 @@ class PageHeader extends StatelessWidget {
                     color: colors.onSurface,
                     onPressed: onBack ?? () => Navigator.of(context).maybePop(),
                   )
-                : const SizedBox(width: AppSpacing.s),
+                : const SizedBox.shrink(),
           ),
           Align(
             alignment: Alignment.center,

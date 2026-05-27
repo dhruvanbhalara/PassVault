@@ -16,32 +16,29 @@ class AppErrorPage extends StatelessWidget {
         bottom: false,
         child: CustomScrollView(
           slivers: [
+            SliverToBoxAdapter(
+              child: SafeArea(
+                bottom: false,
+                child: PageHeader(title: context.l10n.errorOccurred),
+              ),
+            ),
             SliverFillRemaining(
               hasScrollBody: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.l,
-                  AppSpacing.m,
-                  AppSpacing.l,
-                  AppSpacing.l,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    PageHeader(title: context.l10n.errorOccurred),
-                    const SizedBox(height: AppSpacing.l),
-                    Text(
-                      error?.message ?? context.l10n.errorOccurred,
-                      textAlign: TextAlign.left,
-                      style: context.typography.bodyLarge,
-                    ),
-                    const SizedBox(height: AppSpacing.l),
-                    FilledButton(
-                      onPressed: () => context.go(AppRoutes.home),
-                      child: Text(context.l10n.home),
-                    ),
-                  ],
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: AppSpacing.l),
+                  Text(
+                    error?.message ?? context.l10n.errorOccurred,
+                    textAlign: TextAlign.left,
+                    style: context.typography.bodyLarge,
+                  ),
+                  const SizedBox(height: AppSpacing.l),
+                  FilledButton(
+                    onPressed: () => context.go(AppRoutes.home),
+                    child: Text(context.l10n.home),
+                  ),
+                ],
               ),
             ),
           ],

@@ -143,8 +143,6 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
         }
       },
       builder: (context, state) {
-        final isAmoled = context.isAmoled;
-
         return Scaffold(
           bottomNavigationBar: PersistentBottomBar(
             scrollController: _scrollController,
@@ -175,20 +173,12 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                 SliverToBoxAdapter(
                   child: SafeArea(
                     bottom: false,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.l,
-                        AppSpacing.m,
-                        AppSpacing.l,
-                        AppSpacing.s,
-                      ),
-                      child: PageHeader(
-                        title: widget.id == null
-                            ? l10n.addPassword
-                            : l10n.editPassword,
-                        showBack: true,
-                        onBack: () => Navigator.of(context).maybePop(),
-                      ),
+                    child: PageHeader(
+                      title: widget.id == null
+                          ? l10n.addPassword
+                          : l10n.editPassword,
+                      showBack: true,
+                      onBack: () => Navigator.of(context).maybePop(),
                     ),
                   ),
                 ),
@@ -207,7 +197,6 @@ class _AddEditPasswordViewState extends State<AddEditPasswordView> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           AppCard(
-                            hasGlow: isAmoled,
                             padding: const EdgeInsets.all(AppSpacing.l),
                             child: Column(
                               spacing: AppSpacing.l,

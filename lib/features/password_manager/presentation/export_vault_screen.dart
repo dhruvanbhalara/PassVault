@@ -32,7 +32,7 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    final isAmoled = context.isAmoled;
+
     final l10n = context.l10n;
 
     return BlocListener<ImportExportBloc, ImportExportState>(
@@ -59,18 +59,10 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
             SliverToBoxAdapter(
               child: SafeArea(
                 bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.l,
-                    AppSpacing.m,
-                    AppSpacing.l,
-                    AppSpacing.s,
-                  ),
-                  child: PageHeader(
-                    title: l10n.exportVault,
-                    showBack: true,
-                    onBack: () => Navigator.of(context).maybePop(),
-                  ),
+                child: PageHeader(
+                  title: l10n.exportVault,
+                  showBack: true,
+                  onBack: () => Navigator.of(context).maybePop(),
                 ),
               ),
             ),
@@ -81,7 +73,6 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
                   children: [
                     // Warning Banner
                     AppCard(
-                      hasGlow: isAmoled,
                       backgroundColor: theme.error.withValues(alpha: 0.1),
                       padding: const EdgeInsets.all(AppSpacing.m),
                       child: Row(
@@ -127,7 +118,6 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
                     const SizedBox(height: AppSpacing.xl),
                     // Encryption Toggle
                     AppCard(
-                      hasGlow: isAmoled,
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.m,
                         vertical: AppSpacing.s,
@@ -150,7 +140,6 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
                         controller: _passwordController,
                         obscureText: true,
                         prefixIcon: LucideIcons.lock,
-                        hasFocusGlow: isAmoled,
                       ),
                     ],
                     const SizedBox(height: AppSpacing.xxl),
@@ -158,7 +147,6 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
                       key: const Key('export_button'),
                       text: l10n.exportNow,
                       onPressed: () => _handleExport(context),
-                      hasGlow: isAmoled,
                     ),
                     const SizedBox(height: AppSpacing.xxl),
                   ],

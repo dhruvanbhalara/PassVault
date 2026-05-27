@@ -81,9 +81,6 @@ class _AuthContentState extends State<_AuthContent> {
         if (state is AuthLoading) {
           return const AppLoader(key: Key('auth_loading'));
         }
-
-        final isAmoled = theme.buttonGlow != null;
-
         return CustomScrollView(
           slivers: [
             SliverFillRemaining(
@@ -95,22 +92,21 @@ class _AuthContentState extends State<_AuthContent> {
                   children: [
                     SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
                     // App Logo (shield)
-                    _AppLogo(isAmoled: isAmoled),
+                    const _AppLogo(),
                     const SizedBox(height: AppSpacing.xxl),
                     // Header
                     Text(
                       context.l10n.unlockVaultTitle,
                       style: context.typography.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: isAmoled ? theme.onPrimary : theme.onSurface,
+                        color: theme.onSurface,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.m),
                     Text(
                       context.l10n.biometricAuthRequired,
                       style: context.typography.bodyMedium?.copyWith(
-                        color: (isAmoled ? theme.onPrimary : theme.onSurface)
-                            .withValues(alpha: 0.7),
+                        color: theme.onSurface.withValues(alpha: 0.7),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -164,32 +160,23 @@ class _AuthContentState extends State<_AuthContent> {
 }
 
 class _AppLogo extends StatelessWidget {
-  final bool isAmoled;
-
-  const _AppLogo({required this.isAmoled});
+  const _AppLogo();
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
+    final hasBorder = theme.logoBorder != AppColors.transparent;
 
     return Container(
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: isAmoled
-            ? theme.background.withValues(alpha: 0)
-            : theme.primary.withValues(alpha: 0.1),
+        color: theme.logoBackground,
         shape: BoxShape.circle,
-        border: isAmoled ? Border.all(color: theme.primary, width: 2) : null,
-        boxShadow: isAmoled
-            ? [
-                BoxShadow(
-                  color: theme.primary.withValues(alpha: 0.4),
-                  blurRadius: 16,
-                  spreadRadius: 2,
-                ),
-              ]
+        border: hasBorder
+            ? Border.all(color: theme.logoBorder, width: 2)
             : null,
+        boxShadow: theme.logoShadow != null ? [theme.logoShadow!] : null,
       ),
       child: Icon(LucideIcons.shield, size: 40, color: theme.primary),
     );

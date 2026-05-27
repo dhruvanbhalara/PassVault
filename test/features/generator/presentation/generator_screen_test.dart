@@ -126,7 +126,7 @@ void main() {
 
         expect(find.text(l10n.passwordGenerator), findsOneWidget);
         expect(find.text(l10n.excludeAmbiguous), findsOneWidget);
-        expect(find.byKey(const Key('generator_generate_fab')), findsOneWidget);
+        expect(find.byKey(const Key('preview_refresh')), findsOneWidget);
         expect(
           find.byKey(const Key('generator_exclude_ambiguous_toggle')),
           findsOneWidget,
@@ -134,12 +134,12 @@ void main() {
       },
     );
 
-    testWidgets('dispatches generate event on generate button tap', (
+    testWidgets('dispatches generate event on refresh icon tap', (
       tester,
     ) async {
       await loadScreen(tester);
 
-      await tester.tap(find.byKey(const Key('generator_generate_fab')));
+      await tester.tap(find.byKey(const Key('preview_refresh')));
 
       verify(() => mockGeneratorBloc.add(const GeneratorRequested())).called(1);
     });
@@ -166,15 +166,20 @@ void main() {
       ).called(1);
     });
 
-    testWidgets('dispatches length increase event on plus tap', (tester) async {
+    testWidgets('dispatches length change event on slider move', (
+      tester,
+    ) async {
       await loadScreen(tester);
 
-      await tester.tap(find.byKey(const Key('generator_length_increase')));
+      final slider = find.byType(Slider);
+      expect(slider, findsOneWidget);
+
+      await tester.drag(slider, const Offset(50, 0));
       await tester.pump();
 
       verify(
-        () => mockGeneratorBloc.add(const GeneratorLengthChanged(17)),
-      ).called(1);
+        () => mockGeneratorBloc.add(any(that: isA<GeneratorLengthChanged>())),
+      ).called(greaterThan(0));
     });
 
     testWidgets('dispatches strategy change event on dropdown select', (

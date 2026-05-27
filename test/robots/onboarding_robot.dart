@@ -10,8 +10,9 @@ class OnboardingRobot {
   final pageViewFinder = find.byKey(const Key('intro_page_view'));
   final nextButtonFinder = find.byKey(const Key('intro_next_button'));
   final skipButtonFinder = find.byKey(const Key('intro_skip_button'));
-  final biometricEnableButtonFinder = find.byKey(
-    const Key('intro_biometric_enable_button'),
+  final biometricEnableButtonFinder = find.descendant(
+    of: find.byKey(const Key('intro_biometric_enable_button')),
+    matching: find.byType(GestureDetector),
   );
   final doneButtonFinder = find.byKey(const Key('intro_done_button'));
 

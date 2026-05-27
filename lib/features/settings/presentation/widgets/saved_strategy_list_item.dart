@@ -88,7 +88,6 @@ class StrategyListItem extends StatelessWidget {
       onDismissed: (_) =>
           context.read<SettingsBloc>().add(DeleteStrategy(strategy.id)),
       child: AppCard(
-        hasGlow: false,
         child: Row(
           children: [
             Expanded(

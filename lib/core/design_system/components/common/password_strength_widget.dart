@@ -3,15 +3,17 @@ import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_feedback.dart';
 import 'package:password_engine/password_engine.dart' show PasswordStrength;
 
-/// A widget for displaying password strength with semantic colors.
+/// A premium widget for displaying password strength with fluid progress and pulse animations.
 class PasswordStrengthWidget extends StatelessWidget {
   final PasswordFeedback strength;
   final Color? labelColor;
+  final Color? valueColor;
 
   const PasswordStrengthWidget({
     super.key,
     required this.strength,
     this.labelColor,
+    this.valueColor,
   });
 
   @override
@@ -23,47 +25,70 @@ class PasswordStrengthWidget extends StatelessWidget {
     final color = _strengthColor(strength.strength, theme);
     final text = _strengthText(strength.strength, l10n);
 
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Text(
-            l10n.strength,
-            overflow: TextOverflow.ellipsis,
-            style: typography.labelLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: labelColor,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              l10n.strength,
+              style: typography.labelLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: labelColor,
+              ),
             ),
-          ),
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 300),
+              style: typography.labelMedium!.copyWith(
+                color: valueColor ?? color,
+                fontWeight: FontWeight.bold,
+              ),
+              child: Text(text),
+            ),
+          ],
         ),
-        const SizedBox(width: AppSpacing.s),
-        Flexible(
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppSpacing.s),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.m,
-                  vertical: AppSpacing.xs,
+        const SizedBox(height: AppSpacing.s),
+        Row(
+          children: List.generate(5, (index) {
+            final isActive = index < _strengthSegmentCount(strength.strength);
+            return Expanded(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                height: 6,
+                margin: EdgeInsets.only(right: index == 4 ? 0 : AppSpacing.xs),
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? (labelColor ?? color)
+                      : (labelColor?.withValues(alpha: 0.2) ??
+                            theme.surfaceDim),
+                  borderRadius: BorderRadius.circular(AppRadius.full),
+                  boxShadow: isActive
+                      ? [
+                          BoxShadow(
+                            color: (labelColor ?? color).withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            spreadRadius: 1,
+                          ),
+                        ]
+                      : null,
                 ),
-                child: Text(
-                  text,
-                  key: ValueKey(text),
-                  overflow: TextOverflow.ellipsis,
-                  style: typography.labelMedium?.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
               ),
-            ),
-          ),
+            );
+          }),
         ),
       ],
     );
+  }
+
+  int _strengthSegmentCount(PasswordStrength strength) {
+    return switch (strength) {
+      PasswordStrength.veryWeak => 1,
+      PasswordStrength.weak => 2,
+      PasswordStrength.medium => 3,
+      PasswordStrength.strong => 4,
+      PasswordStrength.veryStrong => 5,
+    };
   }
 
   String _strengthText(PasswordStrength strength, AppLocalizations l10n) {

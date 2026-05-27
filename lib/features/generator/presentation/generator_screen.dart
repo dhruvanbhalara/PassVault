@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/generator/presentation/bloc/generator/generator_bloc.dart';
@@ -17,29 +15,10 @@ class GeneratorScreen extends StatefulWidget {
 }
 
 class _GeneratorScreenState extends State<GeneratorScreen> {
-  int _refreshTick = 0;
-
-  void _handleGenerate() {
-    setState(() => _refreshTick++);
-    context.read<GeneratorBloc>().add(const GeneratorRequested());
-  }
-
   @override
   Widget build(BuildContext context) {
     return AppFeatureShell(
       title: context.l10n.passwordGenerator,
-      floatingActionButton: FloatingActionButton(
-        key: const Key('generator_generate_fab'),
-        heroTag: 'generator_generate_fab',
-        onPressed: _handleGenerate,
-        backgroundColor: context.colorScheme.primary,
-        foregroundColor: context.colorScheme.onPrimary,
-        child: Icon(
-          LucideIcons.refreshCw,
-          key: ValueKey(_refreshTick),
-          size: AppIconSize.l,
-        ).animate().rotate(duration: 650.ms, curve: Curves.easeOutCubic),
-      ),
       bodyWrapper: (context, child) {
         return BlocListener<SettingsBloc, SettingsState>(
           listenWhen: (previous, current) =>
@@ -73,14 +52,13 @@ class _GeneratorContentSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const fabSize = 56.0;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return SliverPadding(
       padding: EdgeInsets.fromLTRB(
         AppSpacing.l,
         AppSpacing.m,
         AppSpacing.l,
-        AppSpacing.l + kBottomNavigationBarHeight + bottomInset + fabSize,
+        AppSpacing.l + kBottomNavigationBarHeight + bottomInset + AppSpacing.xl,
       ),
       sliver: SliverList(
         delegate: SliverChildListDelegate([

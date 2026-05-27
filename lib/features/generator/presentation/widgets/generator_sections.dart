@@ -1,9 +1,6 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:passvault/core/design_system/components/components.dart';
 import 'package:passvault/core/design_system/theme/theme.dart';
 import 'package:passvault/features/generator/presentation/bloc/generator/generator_bloc.dart';
@@ -18,104 +15,25 @@ class GeneratorGeneratedPasswordCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
     final l10n = context.l10n;
-    final colorScheme = context.colorScheme;
     final password = state.generatedPassword.isEmpty
         ? l10n.hintPassword
         : state.generatedPassword;
-    return RepaintBoundary(
-      child: AppCard(
-        hasGlow: context.isAmoled,
-        padding: const EdgeInsets.all(AppSpacing.l),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 40),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: AppSpacing.m,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Align(
-                alignment: Alignment.centerRight,
-                child: PasswordStrengthWidget(strength: state.strength),
-              ),
-              PasswordFeedbackView(feedback: state.strength),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 76,
-                      child: PageTransitionSwitcher(
-                        duration: const Duration(milliseconds: 320),
-                        layoutBuilder: (entries) => Stack(children: entries),
-                        transitionBuilder:
-                            (child, primaryAnimation, secondaryAnimation) =>
-                                SharedAxisTransition(
-                                  animation: primaryAnimation,
-                                  secondaryAnimation: secondaryAnimation,
-                                  transitionType:
-                                      SharedAxisTransitionType.vertical,
-                                  fillColor: colorScheme.surface.withValues(
-                                    alpha: 0,
-                                  ),
-                                  child: child,
-                                ),
-                        child: Align(
-                          key: ValueKey(password),
-                          alignment: Alignment.centerLeft,
-                          child:
-                              SelectableText(
-                                    password,
-                                    minLines: 1,
-                                    maxLines: 2,
-                                    style: theme.passwordText.copyWith(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w600,
-                                      color: theme.primary,
-                                      height: 1.2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  )
-                                  .animate(key: ValueKey(password))
-                                  .fadeIn(
-                                    duration: 320.ms,
-                                    curve: Curves.easeOut,
-                                  )
-                                  .slideX(
-                                    begin: 0.08,
-                                    end: 0,
-                                    duration: 320.ms,
-                                    curve: Curves.easeOutQuad,
-                                  )
-                                  .shimmer(
-                                    delay: 250.ms,
-                                    duration: 850.ms,
-                                    color: theme.onSurface.withValues(
-                                      alpha: 0.22,
-                                    ),
-                                  ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    key: const Key('generator_copy_icon_button'),
-                    tooltip: l10n.copyPassword,
-                    onPressed: state.generatedPassword.isEmpty
-                        ? null
-                        : () => _copyPassword(
-                            context,
-                            password: state.generatedPassword,
-                          ),
-                    icon: const Icon(LucideIcons.copy),
-                  ),
-                ],
-              ),
-            ],
-          ),
+
+    return Column(
+      children: [
+        PasswordPreviewCard(
+          password: password,
+          strength: state.strength,
+          onRefresh: () =>
+              context.read<GeneratorBloc>().add(const GeneratorRequested()),
+          onCopy: state.generatedPassword.isEmpty
+              ? null
+              : () => _copyPassword(context, password: state.generatedPassword),
+          isLoading: false, // GeneratorBloc handles state updates
         ),
-      ),
+        PasswordFeedbackView(feedback: state.strength),
+      ],
     );
   }
 

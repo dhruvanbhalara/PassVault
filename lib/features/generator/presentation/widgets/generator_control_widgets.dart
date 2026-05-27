@@ -1,27 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:passvault/core/design_system/theme/theme.dart';
-
-class LengthStepperButton extends StatelessWidget {
-  final IconData icon;
-  final bool isEnabled;
-  final VoidCallback onTap;
-
-  const LengthStepperButton({
-    super.key,
-    required this.icon,
-    required this.isEnabled,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: isEnabled ? onTap : null,
-      icon: Icon(icon, size: AppIconSize.m),
-      visualDensity: VisualDensity.compact,
-    );
-  }
-}
 
 class GeneratorToggleTile extends StatelessWidget {
   final String label;
