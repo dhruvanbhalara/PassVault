@@ -51,6 +51,7 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
 
     // Subscribe to repository data changes for cross-screen sync
     _dataChangeSubscription = _repository.dataChanges.listen((_) {
+      if (isClosed) return;
       AppLogger.debug(
         'External data change detected, reloading passwords',
         tag: 'PasswordBloc',
@@ -68,6 +69,7 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
   Future<void> close() {
     AppLogger.debug('Canceling data change subscription', tag: 'PasswordBloc');
     _dataChangeSubscription?.cancel();
+    _dataChangeSubscription = null;
     return super.close();
   }
 
