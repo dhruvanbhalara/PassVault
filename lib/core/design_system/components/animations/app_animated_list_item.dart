@@ -96,9 +96,16 @@ class _AppAnimatedListItemState extends State<AppAnimatedListItem>
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: SlideTransition(position: _slideAnimation, child: widget.child),
+      child: AnimatedBuilder(
+        animation: _controller,
+        child: widget.child,
+        builder: (context, child) => Opacity(
+          opacity: _fadeAnimation.value,
+          child: FractionalTranslation(
+            translation: _slideAnimation.value,
+            child: child!,
+          ),
+        ),
       ),
     );
   }
