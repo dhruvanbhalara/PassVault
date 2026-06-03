@@ -34,6 +34,14 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               BlocBuilder<PasswordBloc, PasswordState>(
+                buildWhen: (previous, current) {
+                  // Prevent list destruction during background refresh
+                  if (previous is PasswordLoaded &&
+                      current is PasswordLoading) {
+                    return false;
+                  }
+                  return true;
+                },
                 builder: (context, state) {
                   if (state is PasswordLoading || state is PasswordInitial) {
                     return SliverFillRemaining(
