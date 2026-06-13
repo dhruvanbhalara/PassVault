@@ -670,6 +670,12 @@ abstract class AppLocalizations {
   /// **'Exported files contain your sensitive data. Keep them secure or delete them after use.'**
   String get warningSensitiveData;
 
+  /// No description provided for @csvWarningNoStrategies.
+  ///
+  /// In en, this message translates to:
+  /// **'CSV exports do not include custom generation strategies. Use JSON or Encrypted (.pvault) format to back up your strategies.'**
+  String get csvWarningNoStrategies;
+
   /// No description provided for @passwordGenerator.
   ///
   /// In en, this message translates to:

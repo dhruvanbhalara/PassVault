@@ -279,17 +279,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i360.GetBiometricsEnabledUseCase>(),
       ),
     );
-    gh.lazySingleton<_i454.ImportExportBloc>(
-      () => _i454.ImportExportBloc(
-        gh<_i823.ImportPasswordsUseCase>(),
-        gh<_i649.ResolveDuplicatesUseCase>(),
-        gh<_i766.ClearAllPasswordsUseCase>(),
-        gh<_i580.PasswordRepository>(),
-        gh<_i636.DataService>(),
-        gh<_i367.FileService>(),
-        gh<_i108.IFilePickerService>(),
-      ),
-    );
     gh.lazySingleton<_i847.PasswordBloc>(
       () => _i847.PasswordBloc(
         gh<_i969.GetPasswordsUseCase>(),
@@ -322,6 +311,19 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i16.GeneratePasswordUseCase>(),
         gh<_i371.EstimatePasswordStrengthUseCase>(),
         gh<_i739.GetPasswordGenerationSettingsUseCase>(),
+      ),
+    );
+    gh.lazySingleton<_i454.ImportExportBloc>(
+      () => _i454.ImportExportBloc(
+        gh<_i823.ImportPasswordsUseCase>(),
+        gh<_i649.ResolveDuplicatesUseCase>(),
+        gh<_i766.ClearAllPasswordsUseCase>(),
+        gh<_i580.PasswordRepository>(),
+        gh<_i636.DataService>(),
+        gh<_i367.FileService>(),
+        gh<_i108.IFilePickerService>(),
+        gh<_i739.GetPasswordGenerationSettingsUseCase>(),
+        gh<_i739.SavePasswordGenerationSettingsUseCase>(),
       ),
     );
     return this;

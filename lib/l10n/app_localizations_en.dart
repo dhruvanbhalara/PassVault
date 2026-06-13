@@ -307,6 +307,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Exported files contain your sensitive data. Keep them secure or delete them after use.';
 
   @override
+  String get csvWarningNoStrategies =>
+      'CSV exports do not include custom generation strategies. Use JSON or Encrypted (.pvault) format to back up your strategies.';
+
+  @override
   String get passwordGenerator => 'Password Generator';
 
   @override

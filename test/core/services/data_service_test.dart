@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:passvault/core/services/crypto_service.dart';
 import 'package:passvault/core/services/data_service.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
+import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 
 class MockCryptoService extends Mock implements CryptoService {}
 
@@ -147,10 +148,52 @@ void main() {
         final json = dataService.generateJson(entries);
         final result = dataService.importFromJson(json);
 
-        expect(result.length, 1);
-        expect(result[0].appName, tEntry.appName);
-        expect(result[0].username, tEntry.username);
-        expect(result[0].password, tEntry.password);
+        expect(result.passwords.length, 1);
+        expect(result.passwords[0].appName, tEntry.appName);
+        expect(result.passwords[0].username, tEntry.username);
+        expect(result.passwords[0].password, tEntry.password);
+      });
+    });
+
+    group('Strategies Export/Import', () {
+      final tEntry = PasswordEntry(
+        id: '1',
+        appName: 'Test',
+        username: 'user',
+        password: 'pass',
+        lastUpdated: DateTime(2024, 1, 1),
+      );
+      final tStrategy = const PasswordGenerationStrategy(
+        id: 'strat-1',
+        name: 'My Custom Strategy',
+        length: 20,
+        useNumbers: true,
+        useSpecialChars: false,
+      );
+
+      test('should export and import both passwords and strategies', () {
+        final entries = [tEntry];
+        final strategies = [tStrategy];
+        final json = dataService.generateJson(entries, strategies: strategies);
+
+        final result = dataService.importFromJson(json);
+        expect(result.passwords.length, 1);
+        expect(result.passwords[0].appName, tEntry.appName);
+
+        expect(result.strategies.length, 1);
+        expect(result.strategies[0].name, 'My Custom Strategy');
+        expect(result.strategies[0].length, 20);
+        expect(result.strategies[0].useNumbers, true);
+        expect(result.strategies[0].useSpecialChars, false);
+      });
+
+      test('should remain backward compatible with legacy JSON list', () {
+        final legacyJson = jsonEncode([tEntry.toJson()]);
+        final result = dataService.importFromJson(legacyJson);
+
+        expect(result.passwords.length, 1);
+        expect(result.passwords[0].appName, tEntry.appName);
+        expect(result.strategies, isEmpty);
       });
     });
 
@@ -187,8 +230,8 @@ void main() {
           encrypted,
           tPassword,
         );
-        expect(resultDecrypted.length, 1);
-        expect(resultDecrypted[0].appName, 'Secure App');
+        expect(resultDecrypted.passwords.length, 1);
+        expect(resultDecrypted.passwords[0].appName, 'Secure App');
       });
     });
   });

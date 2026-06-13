@@ -115,6 +115,33 @@ class _ExportVaultScreenState extends State<ExportVaultScreen> {
                       isSelected: !_isJsonSelected,
                       onTap: () => setState(() => _isJsonSelected = false),
                     ),
+                    if (!_isJsonSelected) ...[
+                      const SizedBox(height: AppSpacing.m),
+                      AppCard(
+                        key: const Key('export_csv_warning_card'),
+                        backgroundColor: theme.warning.withValues(alpha: 0.1),
+                        padding: const EdgeInsets.all(AppSpacing.m),
+                        child: Row(
+                          children: [
+                            Icon(
+                              LucideIcons.triangleAlert,
+                              color: theme.warning,
+                              size: 20,
+                            ),
+                            const SizedBox(width: AppSpacing.m),
+                            Expanded(
+                              child: Text(
+                                l10n.csvWarningNoStrategies,
+                                style: context.typography.bodySmall?.copyWith(
+                                  color: theme.warning,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: AppSpacing.xl),
                     // Encryption Toggle
                     AppCard(
