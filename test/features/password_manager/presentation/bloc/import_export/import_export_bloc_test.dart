@@ -16,6 +16,8 @@ import 'package:passvault/features/password_manager/domain/usecases/clear_all_pa
 import 'package:passvault/features/password_manager/domain/usecases/import_passwords_usecase.dart';
 import 'package:passvault/features/password_manager/domain/usecases/resolve_duplicates_usecase.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_bloc.dart';
+import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
+import 'package:passvault/features/settings/domain/usecases/password_settings_usecases.dart';
 
 class MockBiometricService extends Mock implements BiometricService {}
 
@@ -36,6 +38,12 @@ class MockFileService extends Mock implements FileService {}
 
 class MockFilePickerService extends Mock implements IFilePickerService {}
 
+class MockGetPasswordGenerationSettingsUseCase extends Mock
+    implements GetPasswordGenerationSettingsUseCase {}
+
+class MockSavePasswordGenerationSettingsUseCase extends Mock
+    implements SavePasswordGenerationSettingsUseCase {}
+
 void main() {
   late ImportExportBloc bloc;
   late MockImportPasswordsUseCase mockImportUseCase;
@@ -46,6 +54,9 @@ void main() {
   late MockFileService mockFileService;
   late MockFilePickerService mockFilePickerService;
   late MockBiometricService mockBiometricService;
+  late MockGetPasswordGenerationSettingsUseCase mockGetPasswordSettingsUseCase;
+  late MockSavePasswordGenerationSettingsUseCase
+  mockSavePasswordSettingsUseCase;
 
   final testEntries = [
     PasswordEntry(
@@ -61,6 +72,7 @@ void main() {
     registerFallbackValue(<PasswordEntry>[]);
     registerFallbackValue(<DuplicatePasswordEntry>[]);
     registerFallbackValue(Uint8List(0));
+    registerFallbackValue(PasswordGenerationSettings.initial());
   });
 
   setUp(() {
@@ -72,6 +84,9 @@ void main() {
     mockFileService = MockFileService();
     mockFilePickerService = MockFilePickerService();
     mockBiometricService = MockBiometricService();
+    mockGetPasswordSettingsUseCase = MockGetPasswordGenerationSettingsUseCase();
+    mockSavePasswordSettingsUseCase =
+        MockSavePasswordGenerationSettingsUseCase();
 
     // Default auth success
     when(
@@ -79,6 +94,13 @@ void main() {
         localizedReason: any(named: 'localizedReason'),
       ),
     ).thenAnswer((_) async => true);
+
+    when(
+      () => mockGetPasswordSettingsUseCase(),
+    ).thenReturn(Success(PasswordGenerationSettings.initial()));
+    when(
+      () => mockSavePasswordSettingsUseCase(any()),
+    ).thenAnswer((_) async => const Success(null));
 
     bloc = ImportExportBloc(
       mockImportUseCase,
@@ -88,6 +110,8 @@ void main() {
       mockDataService,
       mockFileService,
       mockFilePickerService,
+      mockGetPasswordSettingsUseCase,
+      mockSavePasswordSettingsUseCase,
     );
   });
 
@@ -101,7 +125,12 @@ void main() {
           when(
             () => mockPasswordRepository.getPasswords(),
           ).thenAnswer((_) async => Success(testEntries));
-          when(() => mockDataService.generateJson(any())).thenReturn('{}');
+          when(
+            () => mockDataService.generateJson(
+              any(),
+              strategies: any(named: 'strategies'),
+            ),
+          ).thenReturn('{}');
           when(
             () => mockFilePickerService.pickSavePath(
               fileName: any(named: 'fileName'),
@@ -142,7 +171,12 @@ void main() {
           when(
             () => mockPasswordRepository.getPasswords(),
           ).thenAnswer((_) async => Success(testEntries));
-          when(() => mockDataService.generateJson(any())).thenReturn('{}');
+          when(
+            () => mockDataService.generateJson(
+              any(),
+              strategies: any(named: 'strategies'),
+            ),
+          ).thenReturn('{}');
           when(
             () => mockFilePickerService.pickSavePath(
               fileName: any(named: 'fileName'),
@@ -170,9 +204,10 @@ void main() {
             when(
               () => mockFileService.readAsString(any()),
             ).thenAnswer((_) async => '{}');
-            when(
-              () => mockDataService.importFromJson(any()),
-            ).thenReturn(testEntries);
+            when(() => mockDataService.importFromJson(any())).thenReturn((
+              passwords: testEntries,
+              strategies: <PasswordGenerationStrategy>[],
+            ));
             when(() => mockImportUseCase(any())).thenAnswer(
               (_) async => const Success(
                 ImportResult(
@@ -216,7 +251,11 @@ void main() {
               () => mockPasswordRepository.getPasswords(),
             ).thenAnswer((_) async => Success(testEntries));
             when(
-              () => mockDataService.generateEncryptedJson(any(), any()),
+              () => mockDataService.generateEncryptedJson(
+                any(),
+                any(),
+                strategies: any(named: 'strategies'),
+              ),
             ).thenReturn(Uint8List(0));
             when(
               () => mockFilePickerService.pickSavePath(
@@ -245,7 +284,10 @@ void main() {
             ).thenAnswer((_) async => Uint8List(0));
             when(
               () => mockDataService.importFromEncrypted(any(), any()),
-            ).thenReturn([testEntries.first]);
+            ).thenReturn((
+              passwords: [testEntries.first],
+              strategies: <PasswordGenerationStrategy>[],
+            ));
             when(() => mockImportUseCase(any())).thenAnswer(
               (_) async => const Success(
                 ImportResult(

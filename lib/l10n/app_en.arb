@@ -103,6 +103,7 @@
   "encryptionPassword": "Encryption Password",
   "exportNow": "Export Now",
   "warningSensitiveData": "Exported files contain your sensitive data. Keep them secure or delete them after use.",
+  "csvWarningNoStrategies": "CSV exports do not include custom generation strategies. Use JSON or Encrypted (.pvault) format to back up your strategies.",
   "passwordGenerator": "Password Generator",
   "lengthLabel": "Length",
   "uppercaseLabel": "Uppercase (A-Z)",

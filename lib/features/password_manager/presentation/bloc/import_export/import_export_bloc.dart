@@ -14,6 +14,8 @@ import 'package:passvault/features/password_manager/domain/usecases/import_passw
 import 'package:passvault/features/password_manager/domain/usecases/resolve_duplicates_usecase.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_helpers.dart';
 import 'package:passvault/features/password_manager/presentation/bloc/import_export/import_export_path_resolver.dart';
+import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
+import 'package:passvault/features/settings/domain/usecases/password_settings_usecases.dart';
 
 part 'import_export_event.dart';
 part 'import_export_state.dart';
@@ -27,6 +29,10 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
   final DataService _dataService;
   final FileService _fileService;
   final IFilePickerService _filePickerService;
+  final GetPasswordGenerationSettingsUseCase
+  _getPasswordGenerationSettingsUseCase;
+  final SavePasswordGenerationSettingsUseCase
+  _savePasswordGenerationSettingsUseCase;
 
   ImportExportBloc(
     this._importPasswordsUseCase,
@@ -36,6 +42,8 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     this._dataService,
     this._fileService,
     this._filePickerService,
+    this._getPasswordGenerationSettingsUseCase,
+    this._savePasswordGenerationSettingsUseCase,
   ) : super(const ImportExportInitial()) {
     on<ExportDataEvent>(_onExportData);
     on<ExportEncryptedEvent>(_onExportEncrypted);
@@ -73,8 +81,15 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
             'passvault_export',
             extension,
           );
+
+          final settingsResult = _getPasswordGenerationSettingsUseCase();
+          final strategies = settingsResult.fold(
+            (failure) => <PasswordGenerationStrategy>[],
+            (settings) => settings.strategies,
+          );
+
           final content = event.isJson
-              ? _dataService.generateJson(passwords)
+              ? _dataService.generateJson(passwords, strategies: strategies)
               : _dataService.generateCsv(passwords);
 
           await _saveAndEmit(fileName, utf8.encode(content), [extension], emit);
@@ -108,9 +123,17 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
           }
 
           final fileName = generateExportFileName('passvault_export', 'pvault');
+
+          final settingsResult = _getPasswordGenerationSettingsUseCase();
+          final strategies = settingsResult.fold(
+            (failure) => <PasswordGenerationStrategy>[],
+            (settings) => settings.strategies,
+          );
+
           final content = _dataService.generateEncryptedJson(
             passwords,
             event.password,
+            strategies: strategies,
           );
 
           await _saveAndEmit(fileName, content, ['pvault'], emit);
@@ -164,6 +187,57 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     }
   }
 
+  Future<void> _importStrategies(
+    List<PasswordGenerationStrategy>? importedStrategies,
+  ) async {
+    if (importedStrategies == null || importedStrategies.isEmpty) return;
+
+    final currentSettingsResult = _getPasswordGenerationSettingsUseCase();
+    await currentSettingsResult.fold((failure) async {}, (
+      currentSettings,
+    ) async {
+      final currentStrategies = List<PasswordGenerationStrategy>.from(
+        currentSettings.strategies,
+      );
+      final defaultStrategyIds = {'default-strategy', 'memorable-strategy'};
+
+      for (final imported in importedStrategies) {
+        // 1. Skip importing predefined default/memorable strategies.
+        if (defaultStrategyIds.contains(imported.id) ||
+            imported.name.toLowerCase() == 'default' ||
+            imported.name.toLowerCase() == 'memorable') {
+          continue;
+        }
+
+        // 2. Overwrite custom strategy if ID matches.
+        final existingByIdIndex = currentStrategies.indexWhere(
+          (s) => s.id == imported.id,
+        );
+
+        if (existingByIdIndex != -1) {
+          currentStrategies[existingByIdIndex] = imported;
+        } else {
+          // 3. Resolve name collisions.
+          var strategyToInsert = imported;
+          final hasSameName = currentStrategies.any(
+            (s) => s.name.toLowerCase() == imported.name.toLowerCase(),
+          );
+          if (hasSameName) {
+            strategyToInsert = imported.copyWith(
+              name: '${imported.name} (Imported)',
+            );
+          }
+          currentStrategies.add(strategyToInsert);
+        }
+      }
+
+      final newSettings = currentSettings.copyWith(
+        strategies: currentStrategies,
+      );
+      await _savePasswordGenerationSettingsUseCase(newSettings);
+    });
+  }
+
   Future<void> _resolveAndImport(
     String path,
     Emitter<ImportExportState> emit, {
@@ -173,7 +247,8 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     final result = await resolver.resolve(path, password: password);
 
     switch (result) {
-      case ImportPathEntries(:final entries):
+      case ImportPathEntries(:final entries, :final strategies):
+        await _importStrategies(strategies);
         emit(
           await resolveImportState(
             importPasswordsUseCase: _importPasswordsUseCase,

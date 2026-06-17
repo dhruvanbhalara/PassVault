@@ -134,7 +134,9 @@ void main() {
       },
     );
 
-    testWidgets('Shows success message on ImportSuccess', (tester) async {
+    testWidgets('Shows success message on ImportSuccess and reloads settings', (
+      tester,
+    ) async {
       whenListen(
         mockImportExportBloc,
         Stream.value(const ImportSuccess(5)),
@@ -143,6 +145,23 @@ void main() {
       await loadSettingsScreen(tester);
 
       robot.expectSnackBarContaining(l10n.importSuccess);
+      verify(() => mockSettingsBloc.add(const LoadSettings())).called(1);
+      verify(
+        () => mockImportExportBloc.add(const ResetMigrationStatus()),
+      ).called(1);
+    });
+
+    testWidgets('Reloads settings on DuplicatesResolved', (tester) async {
+      whenListen(
+        mockImportExportBloc,
+        Stream.value(
+          const DuplicatesResolved(totalResolved: 3, totalImported: 3),
+        ),
+        initialState: const ImportExportInitial(),
+      );
+      await loadSettingsScreen(tester);
+
+      verify(() => mockSettingsBloc.add(const LoadSettings())).called(1);
       verify(
         () => mockImportExportBloc.add(const ResetMigrationStatus()),
       ).called(1);

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:passvault/core/services/data_service.dart';
 import 'package:passvault/core/services/file_service.dart';
 import 'package:passvault/features/password_manager/domain/entities/password_entry.dart';
+import 'package:passvault/features/settings/domain/entities/password_generation_settings.dart';
 
 sealed class ImportPathResult {
   const ImportPathResult();
@@ -10,7 +11,8 @@ sealed class ImportPathResult {
 
 final class ImportPathEntries extends ImportPathResult {
   final List<PasswordEntry> entries;
-  const ImportPathEntries(this.entries);
+  final List<PasswordGenerationStrategy>? strategies;
+  const ImportPathEntries(this.entries, {this.strategies});
 }
 
 final class ImportPathRequiresPassword extends ImportPathResult {
@@ -31,12 +33,16 @@ class ImportExportPathResolver {
   Future<ImportPathResult> resolve(String path, {String? password}) async {
     if (_isJson(path)) {
       final content = await _fileService.readAsString(path);
-      return ImportPathEntries(_dataService.importFromJson(content));
+      final result = _dataService.importFromJson(content);
+      return ImportPathEntries(result.passwords, strategies: result.strategies);
     }
 
     if (_isCsv(path)) {
       final content = await _fileService.readAsString(path);
-      return ImportPathEntries(_dataService.importFromCsv(content));
+      return ImportPathEntries(
+        _dataService.importFromCsv(content),
+        strategies: const [],
+      );
     }
 
     if (_isEncryptedBackup(path)) {
@@ -44,12 +50,11 @@ class ImportExportPathResolver {
         return ImportPathRequiresPassword(path);
       }
       final encryptedData = await _fileService.readAsBytes(path);
-      return ImportPathEntries(
-        _dataService.importFromEncrypted(
-          Uint8List.fromList(encryptedData),
-          password,
-        ),
+      final result = _dataService.importFromEncrypted(
+        Uint8List.fromList(encryptedData),
+        password,
       );
+      return ImportPathEntries(result.passwords, strategies: result.strategies);
     }
 
     return const ImportPathInvalidFormat();

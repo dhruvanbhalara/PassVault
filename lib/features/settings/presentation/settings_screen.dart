@@ -34,10 +34,12 @@ class SettingsScreen extends StatelessWidget {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(l10n.importSuccess)));
+          context.read<SettingsBloc>().add(const LoadSettings());
           context.read<ImportExportBloc>().add(const ResetMigrationStatus());
         } else if (state is DuplicatesDetected) {
           context.push(AppRoutes.resolveDuplicates, extra: state.duplicates);
         } else if (state is DuplicatesResolved) {
+          context.read<SettingsBloc>().add(const LoadSettings());
           context.read<ImportExportBloc>().add(const ResetMigrationStatus());
         } else if (state is ImportEncryptedFileSelected) {
           showDialog(
